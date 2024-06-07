@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message CharacterMissionTypeOrder {
+  option (master_db_file) = "characterMissionTypeOrders.json";
+  enum CharacterMissionType {
+    UNKNOWN_CHARACTER_MISSION_TYPE = 0;
+    COLLECT_COSTUME_3D             = 1 [(json_value) = "collect_costume_3d"];
+    COLLECT_STAMP                  = 2 [(json_value) = "collect_stamp"];
+    MASTER_RANK                    = 3 [(json_value) = "master_rank"];
+    PLAY_LIVE                      = 4 [(json_value) = "play_live"];
+    READ_AREA_TALK                 = 5 [(json_value) = "read_area_talk"];
+    READ_CARD_EPISODE_FIRST        = 6 [(json_value) = "read_card_episode_first"];
+    READ_CARD_EPISODE_SECOND       = 7 [(json_value) = "read_card_episode_second"];
+    SKILL_LEVEL_UP                 = 8 [(json_value) = "skill_level_up"];
+    WAITING_ROOM                   = 9 [(json_value) = "waiting_room"];
+  }
+
+  optional int32 id                                    = 1 [(json_name) = "id"];
+  optional CharacterMissionType character_mission_type = 2 [(json_name) = "characterMissionType"];
+  optional int32 seq                                   = 3 [(json_name) = "seq"];
+}

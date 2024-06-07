@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message OmikujiCost {
+  option (master_db_file) = "omikujiCosts.json";
+  enum ResourceType {
+    UNKNOWN_RESOURCE_TYPE = 0;
+    JEWEL                 = 1 [(json_value) = "jewel"];
+    VIRTUAL_COIN          = 2 [(json_value) = "virtual_coin"];
+  }
+
+  optional int32 id                   = 1 [(json_name) = "id"];
+  optional int32 omikuji_group_id     = 2 [(json_name) = "omikujiGroupId"];
+  optional int32 seq                  = 3 [(json_name) = "seq"];
+  optional ResourceType resource_type = 4 [(json_name) = "resourceType"];
+  optional int32 resource_quantity    = 5 [(json_name) = "resourceQuantity"];
+}

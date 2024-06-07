@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message EventCard {
+  option (master_db_file)   = "eventCards.json";
+  optional int32 id         = 1 [(json_name) = "id"];
+  optional int32 card_id    = 2 [(json_name) = "cardId"];
+  optional int32 event_id   = 3 [(json_name) = "eventId", (primary_key) = true];
+  optional float bonus_rate = 4 [(json_name) = "bonusRate"];
+}

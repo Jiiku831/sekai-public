@@ -1,0 +1,71 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message ResourceBox {
+  option (master_db_file) = "resourceBoxes.json";
+  enum ResourceBoxType {
+    UNKNOWN_RESOURCE_BOX_TYPE = 0;
+    COSTUME_3D                = 1 [(json_value) = "costume_3d"];
+    EXPAND                    = 2 [(json_value) = "expand"];
+    LIST                      = 3 [(json_value) = "list"];
+  }
+
+  message Detail {
+    enum ResourceType {
+      UNKNOWN_RESOURCE_TYPE              = 0;
+      AREA_ITEM                          = 1 [(json_value) = "area_item"];
+      AVATAR_ACCESSORY                   = 2 [(json_value) = "avatar_accessory"];
+      AVATAR_COORDINATE                  = 3 [(json_value) = "avatar_coordinate"];
+      AVATAR_COSTUME                     = 4 [(json_value) = "avatar_costume"];
+      AVATAR_MOTION                      = 5 [(json_value) = "avatar_motion"];
+      AVATAR_SKIN_COLOR                  = 6 [(json_value) = "avatar_skin_color"];
+      BONDS_HONOR                        = 7 [(json_value) = "bonds_honor"];
+      BONDS_HONOR_WORD                   = 8 [(json_value) = "bonds_honor_word"];
+      BOOST_ITEM                         = 9 [(json_value) = "boost_item"];
+      CARD                               = 10 [(json_value) = "card"];
+      CHARACTER_RANK_EXP                 = 11 [(json_value) = "character_rank_exp"];
+      COIN                               = 12 [(json_value) = "coin"];
+      COLORFUL_PASS                      = 13 [(json_value) = "colorful_pass"];
+      COLORFUL_PASS_V2                   = 14 [(json_value) = "colorful_pass_v2"];
+      COSTUME_3D                         = 15 [(json_value) = "costume_3d"];
+      CUSTOM_PROFILE_COLLECTION_RESOURCE = 16 [(json_value) = "custom_profile_collection_resource"];
+      EVENT_ITEM                         = 17 [(json_value) = "event_item"];
+      GACHA_CEIL_ITEM                    = 18 [(json_value) = "gacha_ceil_item"];
+      GACHA_TICKET                       = 19 [(json_value) = "gacha_ticket"];
+      HONOR                              = 20 [(json_value) = "honor"];
+      JEWEL                              = 21 [(json_value) = "jewel"];
+      LIVE_POINT                         = 22 [(json_value) = "live_point"];
+      MATERIAL                           = 23 [(json_value) = "material"];
+      MUSIC                              = 24 [(json_value) = "music"];
+      MUSIC_VOCAL                        = 25 [(json_value) = "music_vocal"];
+      PAID_JEWEL                         = 26 [(json_value) = "paid_jewel"];
+      PAID_VIRTUAL_LIVE                  = 27 [(json_value) = "paid_virtual_live"];
+      PENLIGHT                           = 28 [(json_value) = "penlight"];
+      PRACTICE_TICKET                    = 29 [(json_value) = "practice_ticket"];
+      SKILL_PRACTICE_TICKET              = 30 [(json_value) = "skill_practice_ticket"];
+      STAMP                              = 31 [(json_value) = "stamp"];
+      VIRTUAL_COIN                       = 32 [(json_value) = "virtual_coin"];
+      VIRTUAL_LIVE_PAMPHLET              = 33 [(json_value) = "virtual_live_pamphlet"];
+      VIRTUAL_LIVE_TICKET                = 34 [(json_value) = "virtual_live_ticket"];
+    }
+
+    optional string resource_box_purpose = 1 [(json_name) = "resourceBoxPurpose"];
+    optional int32 resource_box_id       = 2 [(json_name) = "resourceBoxId"];
+    optional int32 seq                   = 3 [(json_name) = "seq"];
+    optional ResourceType resource_type  = 4 [(json_name) = "resourceType"];
+    optional int32 resource_quantity     = 5 [(json_name) = "resourceQuantity"];
+    optional int32 resource_id           = 6 [(json_name) = "resourceId"];
+    optional int32 resource_level        = 7 [(json_name) = "resourceLevel"];
+  }
+
+  optional string resource_box_purpose       = 1 [(json_name) = "resourceBoxPurpose"];
+  optional int32 id                          = 2 [(json_name) = "id"];
+  optional ResourceBoxType resource_box_type = 3 [(json_name) = "resourceBoxType"];
+  repeated Detail details                    = 4 [(json_name) = "details"];
+  optional string description                = 5 [(json_name) = "description"];
+  optional string assetbundle_name           = 6 [(json_name) = "assetbundleName"];
+  optional string name                       = 7 [(json_name) = "name"];
+}

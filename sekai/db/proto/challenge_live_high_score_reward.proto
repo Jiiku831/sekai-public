@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message ChallengeLiveHighScoreReward {
+  option (master_db_file)        = "challengeLiveHighScoreRewards.json";
+  optional int32 id              = 1 [(json_name) = "id"];
+  optional int32 character_id    = 2 [(json_name) = "characterId"];
+  optional int32 high_score      = 3 [(json_name) = "highScore"];
+  optional int32 resource_box_id = 4 [(json_name) = "resourceBoxId"];
+}

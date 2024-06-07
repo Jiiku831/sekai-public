@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message UnitStory {
+  option (master_db_file) = "unitStories.json";
+  enum Unit {
+    UNKNOWN_UNIT   = 0;
+    IDOL           = 1 [(json_value) = "idol"];
+    LIGHT_SOUND    = 2 [(json_value) = "light_sound"];
+    PIAPRO         = 3 [(json_value) = "piapro"];
+    SCHOOL_REFUSAL = 4 [(json_value) = "school_refusal"];
+    STREET         = 5 [(json_value) = "street"];
+    THEME_PARK     = 6 [(json_value) = "theme_park"];
+  }
+
+  message Chapter {
+    enum Unit {
+      UNKNOWN_UNIT   = 0;
+      IDOL           = 1 [(json_value) = "idol"];
+      LIGHT_SOUND    = 2 [(json_value) = "light_sound"];
+      PIAPRO         = 3 [(json_value) = "piapro"];
+      SCHOOL_REFUSAL = 4 [(json_value) = "school_refusal"];
+      STREET         = 5 [(json_value) = "street"];
+      THEME_PARK     = 6 [(json_value) = "theme_park"];
+    }
+
+    message Episode {
+      optional int32 id                          = 1 [(json_name) = "id"];
+      optional int32 unit_story_episode_group_id = 2 [(json_name) = "unitStoryEpisodeGroupId"];
+      optional int32 chapter_no                  = 3 [(json_name) = "chapterNo"];
+      optional int32 episode_no                  = 4 [(json_name) = "episodeNo"];
+      optional string episode_no_label           = 5 [(json_name) = "episodeNoLabel"];
+      optional string title                      = 6 [(json_name) = "title"];
+      optional string assetbundle_name           = 7 [(json_name) = "assetbundleName"];
+      optional string scenario_id                = 8 [(json_name) = "scenarioId"];
+      optional int32 release_condition_id        = 9 [(json_name) = "releaseConditionId"];
+      repeated int32 reward_resource_box_ids     = 10 [(json_name) = "rewardResourceBoxIds"];
+    }
+
+    optional int32 id                = 1 [(json_name) = "id"];
+    optional Unit unit               = 2 [(json_name) = "unit"];
+    optional int32 chapter_no        = 3 [(json_name) = "chapterNo"];
+    optional string title            = 4 [(json_name) = "title"];
+    optional string assetbundle_name = 5 [(json_name) = "assetbundleName"];
+    repeated Episode episodes        = 6 [(json_name) = "episodes"];
+  }
+
+  optional Unit unit        = 1 [(json_name) = "unit"];
+  optional int32 seq        = 2 [(json_name) = "seq"];
+  repeated Chapter chapters = 3 [(json_name) = "chapters"];
+}

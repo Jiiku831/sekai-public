@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message EventExchangeSummary {
+  option (master_db_file) = "eventExchangeSummaries.json";
+
+  message EventExchange {
+
+    message EventExchangeCost {
+      enum ResourceType {
+        UNKNOWN_RESOURCE_TYPE = 0;
+        EVENT_ITEM            = 1 [(json_value) = "event_item"];
+      }
+
+      optional int32 id                   = 1 [(json_name) = "id"];
+      optional int32 event_exchange_id    = 2 [(json_name) = "eventExchangeId"];
+      optional ResourceType resource_type = 3 [(json_name) = "resourceType"];
+      optional int32 resource_id          = 4 [(json_name) = "resourceId"];
+      optional int32 resource_quantity    = 5 [(json_name) = "resourceQuantity"];
+    }
+
+    optional int32 id                              = 1 [(json_name) = "id"];
+    optional int32 event_exchange_summary_id       = 2 [(json_name) = "eventExchangeSummaryId"];
+    optional int32 seq                             = 3 [(json_name) = "seq"];
+    optional int32 resource_box_id                 = 4 [(json_name) = "resourceBoxId"];
+    optional int32 exchange_limit                  = 5 [(json_name) = "exchangeLimit"];
+    optional EventExchangeCost event_exchange_cost = 6 [(json_name) = "eventExchangeCost"];
+    optional int32 game_character_id               = 7 [(json_name) = "gameCharacterId"];
+  }
+
+  optional int32 id                      = 1 [(json_name) = "id"];
+  optional int32 event_id                = 2 [(json_name) = "eventId"];
+  optional string assetbundle_name       = 3 [(json_name) = "assetbundleName"];
+  optional int64 start_at                = 4 [(json_name) = "startAt"];
+  optional int64 end_at                  = 5 [(json_name) = "endAt"];
+  repeated EventExchange event_exchanges = 6 [(json_name) = "eventExchanges"];
+}

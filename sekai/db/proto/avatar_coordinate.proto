@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message AvatarCoordinate {
+  option (master_db_file)                    = "avatarCoordinates.json";
+  optional int32 id                          = 1 [(json_name) = "id"];
+  optional int32 seq                         = 2 [(json_name) = "seq"];
+  optional string name                       = 3 [(json_name) = "name"];
+  optional string assetbundle_name           = 4 [(json_name) = "assetbundleName"];
+  optional string skin_color_code            = 5 [(json_name) = "skinColorCode"];
+  optional string costume_assetbundle_name   = 6 [(json_name) = "costumeAssetbundleName"];
+  optional string accessory_part             = 7 [(json_name) = "accessoryPart"];
+  optional string accessory_assetbundle_name = 8 [(json_name) = "accessoryAssetbundleName"];
+}

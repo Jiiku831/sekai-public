@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message CustomProfileGachaTab {
+  option (master_db_file)                       = "customProfileGachaTabs.json";
+  optional int32 id                             = 1 [(json_name) = "id"];
+  repeated int32 child_custom_profile_gacha_ids = 2 [(json_name) = "childCustomProfileGachaIds"];
+  optional int32 seq                            = 3 [(json_name) = "seq"];
+  optional string assetbundle_name              = 4 [(json_name) = "assetbundleName"];
+}

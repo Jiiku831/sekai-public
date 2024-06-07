@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message AvatarMotion {
+  option (master_db_file)          = "avatarMotions.json";
+  optional int32 id                = 1 [(json_name) = "id"];
+  optional int32 seq               = 2 [(json_name) = "seq"];
+  optional string name             = 3 [(json_name) = "name"];
+  optional bool sync_music_flg     = 4 [(json_name) = "syncMusicFlg"];
+  optional int32 repeat_count      = 5 [(json_name) = "repeatCount"];
+  optional string assetbundle_name = 6 [(json_name) = "assetbundleName"];
+}

@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message Shop {
+  option (master_db_file) = "shops.json";
+  enum ShopType {
+    UNKNOWN_SHOP_TYPE = 0;
+    AREA_ITEM         = 1 [(json_value) = "area_item"];
+    LIVE_COSTUME      = 2 [(json_value) = "live_costume"];
+    MUSIC             = 3 [(json_value) = "music"];
+    MUSIC_VOCAL       = 4 [(json_value) = "music_vocal"];
+    STAMP             = 5 [(json_value) = "stamp"];
+  }
+
+  optional int32 id                   = 1 [(json_name) = "id"];
+  optional int32 seq                  = 2 [(json_name) = "seq"];
+  optional ShopType shop_type         = 3 [(json_name) = "shopType"];
+  optional int32 area_id              = 4 [(json_name) = "areaId"];
+  optional string name                = 5 [(json_name) = "name"];
+  optional int32 release_condition_id = 6 [(json_name) = "releaseConditionId"];
+}

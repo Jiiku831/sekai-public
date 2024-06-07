@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message EventMission {
+  option (master_db_file) = "eventMissions.json";
+  enum EventMissionType {
+    UNKNOWN_EVENT_MISSION_TYPE    = 0;
+    ACHIEVE_EVENT_MISSION         = 1 [(json_value) = "achieve_event_mission"];
+    ANY_LIVE_CLEAR                = 2 [(json_value) = "any_live_clear"];
+    CONSUME_EVENT_ITEM            = 3 [(json_value) = "consume_event_item"];
+    JOIN_VIRTUAL_LIVE             = 4 [(json_value) = "join_virtual_live"];
+    LIVE_CLEAR_DAILY              = 5 [(json_value) = "live_clear_daily"];
+    LIVE_CLEAR_DIFFERENT_MUSIC    = 6 [(json_value) = "live_clear_different_music"];
+    LIVE_CLEAR_FULL_COMBO         = 7 [(json_value) = "live_clear_full_combo"];
+    READ_LAST_EVENT_STORY_EPISODE = 8 [(json_value) = "read_last_event_story_episode"];
+  }
+
+  message Reward {
+    enum MissionType {
+      UNKNOWN_MISSION_TYPE = 0;
+      EVENT_MISSION        = 1 [(json_value) = "event_mission"];
+    }
+
+    optional int32 id                 = 1 [(json_name) = "id"];
+    optional MissionType mission_type = 2 [(json_name) = "missionType"];
+    optional int32 mission_id         = 3 [(json_name) = "missionId"];
+    optional int32 seq                = 4 [(json_name) = "seq"];
+    optional int32 resource_box_id    = 5 [(json_name) = "resourceBoxId"];
+  }
+
+  optional int32 id                            = 1 [(json_name) = "id"];
+  optional int32 event_id                      = 2 [(json_name) = "eventId"];
+  optional int32 seq                           = 3 [(json_name) = "seq"];
+  optional EventMissionType event_mission_type = 4 [(json_name) = "eventMissionType"];
+  optional string event_mission_category       = 5 [(json_name) = "eventMissionCategory"];
+  optional int32 requirement1                  = 6 [(json_name) = "requirement1"];
+  optional string sentence                     = 7 [(json_name) = "sentence"];
+  repeated Reward rewards                      = 8 [(json_name) = "rewards"];
+  optional int32 requirement2                  = 9 [(json_name) = "requirement2"];
+}

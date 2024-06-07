@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message IngameCutin {
+  option (master_db_file)          = "ingameCutins.json";
+  optional int32 id                = 1 [(json_name) = "id"];
+  optional string music_difficulty = 2 [(json_name) = "musicDifficulty"];
+  optional int32 combo             = 3 [(json_name) = "combo"];
+}

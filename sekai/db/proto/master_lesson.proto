@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+import "sekai/db/proto/enums.proto";
+
+message MasterLesson {
+  option (master_db_file) = "masterLessons.json";
+  message Cost {
+    optional int32 id                        = 1 [(json_name) = "id"];
+    optional CardRarityType card_rarity_type = 2 [(json_name) = "cardRarityType"];
+    optional int32 master_rank               = 3 [(json_name) = "masterRank"];
+    optional int32 seq                       = 4 [(json_name) = "seq"];
+    optional ResourceType resource_type      = 5 [(json_name) = "resourceType"];
+    optional int32 resource_id               = 6 [(json_name) = "resourceId"];
+    optional int32 quantity                  = 7 [(json_name) = "quantity"];
+  }
+
+  optional CardRarityType card_rarity_type = 1 [(json_name) = "cardRarityType", (primary_key) = true];
+  optional int32 master_rank               = 2 [(json_name) = "masterRank"];
+  optional int32 power1_bonus_fixed        = 3 [(json_name) = "power1BonusFixed"];
+  optional int32 power2_bonus_fixed        = 4 [(json_name) = "power2BonusFixed"];
+  optional int32 power3_bonus_fixed        = 5 [(json_name) = "power3BonusFixed"];
+  optional int32 character_rank_exp        = 6 [(json_name) = "characterRankExp"];
+  repeated Cost costs                      = 7 [(json_name) = "costs"];
+}

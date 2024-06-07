@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message UserInformation {
+  option (master_db_file) = "userInformations.json";
+  enum InformationType {
+    UNKNOWN_INFORMATION_TYPE = 0;
+    BUG                      = 1 [(json_value) = "bug"];
+    CONTENT                  = 2 [(json_value) = "content"];
+    NORMAL                   = 3 [(json_value) = "normal"];
+  }
+
+  enum BrowseType {
+    UNKNOWN_BROWSE_TYPE = 0;
+    EXTERNAL            = 1 [(json_value) = "external"];
+    INTERNAL            = 2 [(json_value) = "internal"];
+  }
+
+  optional int32 id                         = 1 [(json_name) = "id"];
+  optional int32 seq                        = 2 [(json_name) = "seq"];
+  optional int32 display_order              = 3 [(json_name) = "displayOrder"];
+  optional InformationType information_type = 4 [(json_name) = "informationType"];
+  optional string information_tag           = 5 [(json_name) = "informationTag"];
+  optional BrowseType browse_type           = 6 [(json_name) = "browseType"];
+  optional string platform                  = 7 [(json_name) = "platform"];
+  optional string title                     = 8 [(json_name) = "title"];
+  optional string path                      = 9 [(json_name) = "path"];
+  optional int64 start_at                   = 10 [(json_name) = "startAt"];
+  optional string banner_assetbundle_name   = 11 [(json_name) = "bannerAssetbundleName"];
+  optional int64 end_at                     = 12 [(json_name) = "endAt"];
+}

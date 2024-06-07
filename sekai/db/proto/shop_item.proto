@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message ShopItem {
+  option (master_db_file) = "shopItems.json";
+
+  message Cost {
+
+    message Cost {
+      enum ResourceType {
+        UNKNOWN_RESOURCE_TYPE = 0;
+        COIN                  = 1 [(json_value) = "coin"];
+        MATERIAL              = 2 [(json_value) = "material"];
+      }
+
+      optional int32 resource_id          = 1 [(json_name) = "resourceId"];
+      optional ResourceType resource_type = 2 [(json_name) = "resourceType"];
+      optional int32 resource_level       = 3 [(json_name) = "resourceLevel"];
+      optional int32 quantity             = 4 [(json_name) = "quantity"];
+    }
+
+    optional int32 shop_item_id = 1 [(json_name) = "shopItemId"];
+    optional int32 seq          = 2 [(json_name) = "seq"];
+    optional Cost cost          = 3 [(json_name) = "cost"];
+  }
+
+  optional int32 id                   = 1 [(json_name) = "id"];
+  optional int32 shop_id              = 2 [(json_name) = "shopId"];
+  optional int32 seq                  = 3 [(json_name) = "seq"];
+  optional int32 release_condition_id = 4 [(json_name) = "releaseConditionId"];
+  optional int32 resource_box_id      = 5 [(json_name) = "resourceBoxId"];
+  repeated Cost costs                 = 6 [(json_name) = "costs"];
+  optional int64 start_at             = 7 [(json_name) = "startAt"];
+}

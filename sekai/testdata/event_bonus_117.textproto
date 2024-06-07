@@ -1,0 +1,397 @@
+# proto-file: sekai/proto/event_bonus.proto
+# proto-message: EventBonusProto
+card_bonus {key: 842 value: 20}
+card_bonus {key: 843 value: 20}
+card_bonus {key: 844 value: 20}
+deck_bonus {
+  char_id: 1
+  attr_bonus {
+    attr: ATTR_MYST
+    unit_bonus {unit: UNIT_LN rate: 25}
+  }
+}
+deck_bonus {
+  char_id: 2
+  attr_bonus {
+    attr: ATTR_COOL
+    unit_bonus {unit: UNIT_LN rate: 25}
+  }
+  attr_bonus {
+    attr: ATTR_CUTE
+    unit_bonus {unit: UNIT_LN rate: 25}
+  }
+  attr_bonus {
+    attr: ATTR_HAPPY
+    unit_bonus {unit: UNIT_LN rate: 25}
+  }
+  attr_bonus {
+    attr: ATTR_MYST
+    unit_bonus {unit: UNIT_LN rate: 50}
+  }
+  attr_bonus {
+    attr: ATTR_PURE
+    unit_bonus {unit: UNIT_LN rate: 25}
+  }
+}
+deck_bonus {
+  char_id: 3
+  attr_bonus {
+    attr: ATTR_MYST
+    unit_bonus {unit: UNIT_LN rate: 25}
+  }
+}
+deck_bonus {
+  char_id: 4
+  attr_bonus {
+    attr: ATTR_COOL
+    unit_bonus {unit: UNIT_LN rate: 25}
+  }
+  attr_bonus {
+    attr: ATTR_CUTE
+    unit_bonus {unit: UNIT_LN rate: 25}
+  }
+  attr_bonus {
+    attr: ATTR_HAPPY
+    unit_bonus {unit: UNIT_LN rate: 25}
+  }
+  attr_bonus {
+    attr: ATTR_MYST
+    unit_bonus {unit: UNIT_LN rate: 50}
+  }
+  attr_bonus {
+    attr: ATTR_PURE
+    unit_bonus {unit: UNIT_LN rate: 25}
+  }
+}
+deck_bonus {
+  char_id: 5
+  attr_bonus {
+    attr: ATTR_MYST
+    unit_bonus {unit: UNIT_MMJ rate: 25}
+  }
+}
+deck_bonus {
+  char_id: 6
+  attr_bonus {
+    attr: ATTR_MYST
+    unit_bonus {unit: UNIT_MMJ rate: 25}
+  }
+}
+deck_bonus {
+  char_id: 7
+  attr_bonus {
+    attr: ATTR_MYST
+    unit_bonus {unit: UNIT_MMJ rate: 25}
+  }
+}
+deck_bonus {
+  char_id: 8
+  attr_bonus {
+    attr: ATTR_MYST
+    unit_bonus {unit: UNIT_MMJ rate: 25}
+  }
+}
+deck_bonus {
+  char_id: 9
+  attr_bonus {
+    attr: ATTR_MYST
+    unit_bonus {unit: UNIT_VBS rate: 25}
+  }
+}
+deck_bonus {
+  char_id: 10
+  attr_bonus {
+    attr: ATTR_MYST
+    unit_bonus {unit: UNIT_VBS rate: 25}
+  }
+}
+deck_bonus {
+  char_id: 11
+  attr_bonus {
+    attr: ATTR_MYST
+    unit_bonus {unit: UNIT_VBS rate: 25}
+  }
+}
+deck_bonus {
+  char_id: 12
+  attr_bonus {
+    attr: ATTR_MYST
+    unit_bonus {unit: UNIT_VBS rate: 25}
+  }
+}
+deck_bonus {
+  char_id: 13
+  attr_bonus {
+    attr: ATTR_MYST
+    unit_bonus {unit: UNIT_WXS rate: 25}
+  }
+}
+deck_bonus {
+  char_id: 14
+  attr_bonus {
+    attr: ATTR_MYST
+    unit_bonus {unit: UNIT_WXS rate: 25}
+  }
+}
+deck_bonus {
+  char_id: 15
+  attr_bonus {
+    attr: ATTR_MYST
+    unit_bonus {unit: UNIT_WXS rate: 25}
+  }
+}
+deck_bonus {
+  char_id: 16
+  attr_bonus {
+    attr: ATTR_MYST
+    unit_bonus {unit: UNIT_WXS rate: 25}
+  }
+}
+deck_bonus {
+  char_id: 17
+  attr_bonus {
+    attr: ATTR_MYST
+    unit_bonus {unit: UNIT_25 rate: 25}
+  }
+}
+deck_bonus {
+  char_id: 18
+  attr_bonus {
+    attr: ATTR_COOL
+    unit_bonus {unit: UNIT_25 rate: 25}
+  }
+  attr_bonus {
+    attr: ATTR_CUTE
+    unit_bonus {unit: UNIT_25 rate: 25}
+  }
+  attr_bonus {
+    attr: ATTR_HAPPY
+    unit_bonus {unit: UNIT_25 rate: 25}
+  }
+  attr_bonus {
+    attr: ATTR_MYST
+    unit_bonus {unit: UNIT_25 rate: 50}
+  }
+  attr_bonus {
+    attr: ATTR_PURE
+    unit_bonus {unit: UNIT_25 rate: 25}
+  }
+}
+deck_bonus {
+  char_id: 19
+  attr_bonus {
+    attr: ATTR_MYST
+    unit_bonus {unit: UNIT_25 rate: 25}
+  }
+}
+deck_bonus {
+  char_id: 20
+  attr_bonus {
+    attr: ATTR_COOL
+    unit_bonus {unit: UNIT_25 rate: 25}
+  }
+  attr_bonus {
+    attr: ATTR_CUTE
+    unit_bonus {unit: UNIT_25 rate: 25}
+  }
+  attr_bonus {
+    attr: ATTR_HAPPY
+    unit_bonus {unit: UNIT_25 rate: 25}
+  }
+  attr_bonus {
+    attr: ATTR_MYST
+    unit_bonus {unit: UNIT_25 rate: 50}
+  }
+  attr_bonus {
+    attr: ATTR_PURE
+    unit_bonus {unit: UNIT_25 rate: 25}
+  }
+}
+deck_bonus {
+  char_id: 21
+  attr_bonus {
+    attr: ATTR_MYST
+    unit_bonus {unit: UNIT_LN rate: 25}
+    unit_bonus {unit: UNIT_MMJ rate: 25}
+    unit_bonus {unit: UNIT_VBS rate: 25}
+    unit_bonus {unit: UNIT_WXS rate: 25}
+    unit_bonus {unit: UNIT_25 rate: 25}
+    unit_bonus {unit: UNIT_VS rate: 25}
+  }
+}
+deck_bonus {
+  char_id: 22
+  attr_bonus {
+    attr: ATTR_MYST
+    unit_bonus {unit: UNIT_LN rate: 25}
+    unit_bonus {unit: UNIT_MMJ rate: 25}
+    unit_bonus {unit: UNIT_VBS rate: 25}
+    unit_bonus {unit: UNIT_WXS rate: 25}
+    unit_bonus {unit: UNIT_25 rate: 25}
+    unit_bonus {unit: UNIT_VS rate: 25}
+  }
+}
+deck_bonus {
+  char_id: 23
+  attr_bonus {
+    attr: ATTR_MYST
+    unit_bonus {unit: UNIT_LN rate: 25}
+    unit_bonus {unit: UNIT_MMJ rate: 25}
+    unit_bonus {unit: UNIT_VBS rate: 25}
+    unit_bonus {unit: UNIT_WXS rate: 25}
+    unit_bonus {unit: UNIT_25 rate: 25}
+    unit_bonus {unit: UNIT_VS rate: 25}
+  }
+}
+deck_bonus {
+  char_id: 24
+  attr_bonus {
+    attr: ATTR_MYST
+    unit_bonus {unit: UNIT_LN rate: 25}
+    unit_bonus {unit: UNIT_MMJ rate: 25}
+    unit_bonus {unit: UNIT_VBS rate: 25}
+    unit_bonus {unit: UNIT_WXS rate: 25}
+    unit_bonus {unit: UNIT_25 rate: 25}
+    unit_bonus {unit: UNIT_VS rate: 25}
+  }
+}
+deck_bonus {
+  char_id: 25
+  attr_bonus {
+    attr: ATTR_COOL
+    unit_bonus {unit: UNIT_LN rate: 25}
+    unit_bonus {unit: UNIT_VS rate: 15}
+  }
+  attr_bonus {
+    attr: ATTR_CUTE
+    unit_bonus {unit: UNIT_LN rate: 25}
+    unit_bonus {unit: UNIT_VS rate: 15}
+  }
+  attr_bonus {
+    attr: ATTR_HAPPY
+    unit_bonus {unit: UNIT_LN rate: 25}
+    unit_bonus {unit: UNIT_VS rate: 15}
+  }
+  attr_bonus {
+    attr: ATTR_MYST
+    unit_bonus {unit: UNIT_LN rate: 50}
+    unit_bonus {unit: UNIT_MMJ rate: 25}
+    unit_bonus {unit: UNIT_VBS rate: 25}
+    unit_bonus {unit: UNIT_WXS rate: 25}
+    unit_bonus {unit: UNIT_25 rate: 25}
+    unit_bonus {unit: UNIT_VS rate: 40}
+  }
+  attr_bonus {
+    attr: ATTR_PURE
+    unit_bonus {unit: UNIT_LN rate: 25}
+    unit_bonus {unit: UNIT_VS rate: 15}
+  }
+}
+deck_bonus {
+  char_id: 26
+  attr_bonus {
+    attr: ATTR_MYST
+    unit_bonus {unit: UNIT_LN rate: 25}
+    unit_bonus {unit: UNIT_MMJ rate: 25}
+    unit_bonus {unit: UNIT_VBS rate: 25}
+    unit_bonus {unit: UNIT_WXS rate: 25}
+    unit_bonus {unit: UNIT_25 rate: 25}
+    unit_bonus {unit: UNIT_VS rate: 25}
+  }
+}
+master_rank_bonus {
+  level_bonus: 0
+  level_bonus: 0
+  level_bonus: 0
+  level_bonus: 0
+  level_bonus: 0
+  level_bonus: 0
+}
+master_rank_bonus {
+  level_bonus: 0
+  level_bonus: 0.1
+  level_bonus: 0.2
+  level_bonus: 0.3
+  level_bonus: 0.4
+  level_bonus: 0.5
+}
+master_rank_bonus {
+  level_bonus: 0
+  level_bonus: 0.2
+  level_bonus: 0.4
+  level_bonus: 0.6
+  level_bonus: 0.8
+  level_bonus: 1
+}
+master_rank_bonus {
+  level_bonus: 0
+  level_bonus: 1
+  level_bonus: 2
+  level_bonus: 3
+  level_bonus: 4
+  level_bonus: 5
+}
+master_rank_bonus {
+  level_bonus: 10
+  level_bonus: 12.5
+  level_bonus: 15
+  level_bonus: 17.5
+  level_bonus: 20
+  level_bonus: 25
+}
+master_rank_bonus {
+  level_bonus: 5
+  level_bonus: 7
+  level_bonus: 9
+  level_bonus: 11
+  level_bonus: 13
+  level_bonus: 15
+}
+skill_level_bonus {
+  level_bonus: 0
+  level_bonus: 0
+  level_bonus: 0
+  level_bonus: 0
+  level_bonus: 0
+}
+skill_level_bonus {
+  level_bonus: 0
+  level_bonus: 0
+  level_bonus: 0
+  level_bonus: 0
+  level_bonus: 0
+}
+skill_level_bonus {
+  level_bonus: 0
+  level_bonus: 0
+  level_bonus: 0
+  level_bonus: 0
+  level_bonus: 0
+}
+skill_level_bonus {
+  level_bonus: 0
+  level_bonus: 0
+  level_bonus: 0
+  level_bonus: 0
+  level_bonus: 0
+}
+skill_level_bonus {
+  level_bonus: 0
+  level_bonus: 0
+  level_bonus: 0
+  level_bonus: 0
+  level_bonus: 0
+}
+skill_level_bonus {
+  level_bonus: 0
+  level_bonus: 0
+  level_bonus: 0
+  level_bonus: 0
+  level_bonus: 0
+}
+diff_attr_bonus: 0
+diff_attr_bonus: 0
+diff_attr_bonus: 0
+diff_attr_bonus: 0
+diff_attr_bonus: 0
+diff_attr_bonus: 0

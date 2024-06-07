@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message MultiLiveLobby {
+  option (master_db_file) = "multiLiveLobbies.json";
+  enum MultiLiveLobbyType {
+    UNKNOWN_MULTI_LIVE_LOBBY_TYPE = 0;
+    CHEERFUL_CARNIVAL             = 1 [(json_value) = "cheerful_carnival"];
+    NORMAL                        = 2 [(json_value) = "normal"];
+  }
+
+  optional int32 id                                 = 1 [(json_name) = "id"];
+  optional int32 seq                                = 2 [(json_name) = "seq"];
+  optional string name                              = 3 [(json_name) = "name"];
+  optional string photon_lobby_name                 = 4 [(json_name) = "photonLobbyName"];
+  optional string matching_logic                    = 5 [(json_name) = "matchingLogic"];
+  optional int32 total_power                        = 6 [(json_name) = "totalPower"];
+  optional string assetbundle_name                  = 7 [(json_name) = "assetbundleName"];
+  optional MultiLiveLobbyType multi_live_lobby_type = 8 [(json_name) = "multiLiveLobbyType"];
+}

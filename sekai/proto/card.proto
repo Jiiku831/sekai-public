@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package sekai;
+
+import "sekai/db/proto/card.proto";
+import "sekai/proto/card_state.proto";
+
+message CardProto {
+  optional int32 card_id   = 1;
+  optional db.Card db_card = 2;
+  optional CardState state = 3;
+
+  // Only makes sense in a team
+  optional int32 team_power_contrib = 4;
+  optional float team_bonus_contrib = 5;
+  optional int32 team_skill_contrib = 6;
+}

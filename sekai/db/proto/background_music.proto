@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message BackgroundMusic {
+  option (master_db_file) = "backgroundMusics.json";
+  optional int32 id       = 1 [(json_name) = "id"];
+  optional string title   = 2 [(json_name) = "title"];
+}

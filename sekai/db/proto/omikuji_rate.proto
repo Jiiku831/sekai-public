@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message OmikujiRate {
+  option (master_db_file) = "omikujiRates.json";
+  enum FortuneType {
+    UNKNOWN_FORTUNE_TYPE = 0;
+    FORTUNE              = 1 [(json_value) = "fortune"];
+    GRATE_FORTUNE        = 2 [(json_value) = "grate_fortune"];
+    GRATE_MISFORTUNE     = 3 [(json_value) = "grate_misfortune"];
+    MIDDLE_FORTUNE       = 4 [(json_value) = "middle_fortune"];
+    MISFORTUNE           = 5 [(json_value) = "misfortune"];
+    SMALL_FORTUNE        = 6 [(json_value) = "small_fortune"];
+    UNCERTAIN_LUCK       = 7 [(json_value) = "uncertain_luck"];
+  }
+
+  optional int32 id                 = 1 [(json_name) = "id"];
+  optional int32 omikuji_group_id   = 2 [(json_name) = "omikujiGroupId"];
+  optional FortuneType fortune_type = 3 [(json_name) = "fortuneType"];
+  optional float rate               = 4 [(json_name) = "rate"];
+}

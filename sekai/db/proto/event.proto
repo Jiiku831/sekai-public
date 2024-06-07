@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+import "sekai/db/proto/enums.proto";
+
+message Event {
+  option (master_db_file) = "events.json";
+  enum Type {
+    UNKNOWN_EVENT_TYPE = 0;
+    CHEERFUL_CARNIVAL  = 1 [(json_value) = "cheerful_carnival"];
+    MARATHON           = 2 [(json_value) = "marathon"];
+    WORLD_BLOOM        = 3 [(json_value) = "world_bloom"];
+  }
+
+  message RankingRewardRange {
+    message Reward {
+      optional int32 id              = 1 [(json_name) = "id"];
+      optional int32 reward_range_id = 2 [(json_name) = "eventRankingRewardRangeId"];
+      optional int32 resource_box_id = 3 [(json_name) = "resourceBoxId"];
+    }
+
+    optional int32 id               = 1 [(json_name) = "id"];
+    optional int32 event_id         = 2 [(json_name) = "eventId"];
+    optional int32 from_rank        = 3 [(json_name) = "fromRank"];
+    optional int32 to_rank          = 4 [(json_name) = "toRank"];
+    repeated Reward reward          = 5 [(json_name) = "eventRankingRewards"];
+    optional bool is_to_rank_border = 6 [(json_name) = "isToRankBorder"];
+  }
+
+  optional int32 id                                    = 1 [(json_name) = "id", (primary_key) = true];
+  optional Type event_type                             = 2 [(json_name) = "eventType"];
+  optional string name                                 = 3 [(json_name) = "name"];
+  optional string assetbundle_name                     = 4 [(json_name) = "assetbundleName"];
+  optional string bgm_assetbundle_name                 = 5 [(json_name) = "bgmAssetbundleName"];
+  optional int64 event_only_component_display_start_at = 6 [(json_name) = "eventOnlyComponentDisplayStartAt"];
+  optional int64 start_at                              = 7 [(json_name) = "startAt"];
+  optional int64 aggregate_at                          = 8 [(json_name) = "aggregateAt"];
+  optional int64 ranking_announce_at                   = 9 [(json_name) = "rankingAnnounceAt"];
+  optional int64 distribution_start_at                 = 10 [(json_name) = "distributionStartAt"];
+  optional int64 event_only_component_display_end_at   = 11 [(json_name) = "eventOnlyComponentDisplayEndAt"];
+  optional int64 closed_at                             = 12 [(json_name) = "closedAt"];
+  optional int64 distribution_end_at                   = 13 [(json_name) = "distributionEndAt"];
+  optional int32 virtual_live_id                       = 14 [(json_name) = "virtualLiveId"];
+  optional Unit unit                                   = 15 [(json_name) = "unit"];
+  repeated RankingRewardRange ranking_reward_range     = 16 [(json_name) = "eventRankingRewardRanges"];
+  optional string event_point_assetbundle_name         = 17 [(json_name) = "eventPointAssetbundleName"];
+}

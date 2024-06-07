@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message MusicDifficulty {
+  option (master_db_file)             = "musicDifficulties.json";
+  optional int32 id                   = 1 [(json_name) = "id"];
+  optional int32 music_id             = 2 [(json_name) = "musicId"];
+  optional string music_difficulty    = 3 [(json_name) = "musicDifficulty"];
+  optional int32 play_level           = 4 [(json_name) = "playLevel"];
+  optional int32 release_condition_id = 5 [(json_name) = "releaseConditionId"];
+  optional int32 total_note_count     = 6 [(json_name) = "totalNoteCount"];
+}

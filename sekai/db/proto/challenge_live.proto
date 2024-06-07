@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message ChallengeLive {
+  option (master_db_file) = "challengeLives.json";
+
+  message ChallengeLiveDetail {
+    enum ChallengeLiveType {
+      UNKNOWN_CHALLENGE_LIVE_TYPE = 0;
+      SOLO                        = 1 [(json_value) = "solo"];
+    }
+
+    optional int32 id                              = 1 [(json_name) = "id"];
+    optional int32 challenge_live_id               = 2 [(json_name) = "challengeLiveId"];
+    optional ChallengeLiveType challenge_live_type = 3 [(json_name) = "challengeLiveType"];
+  }
+
+  optional int32 id                                   = 1 [(json_name) = "id"];
+  optional int32 playable_count                       = 2 [(json_name) = "playableCount"];
+  repeated ChallengeLiveDetail challenge_live_details = 3 [(json_name) = "challengeLiveDetails"];
+}

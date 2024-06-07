@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message SpecialStory {
+  option (master_db_file) = "specialStories.json";
+
+  message Episode {
+    enum SpecialStoryEpisodeType {
+      UNKNOWN_SPECIAL_STORY_EPISODE_TYPE = 0;
+      AREA                               = 1 [(json_value) = "area"];
+      NONE                               = 2 [(json_value) = "none"];
+    }
+
+    optional int32 id                                           = 1 [(json_name) = "id"];
+    optional int32 special_story_id                             = 2 [(json_name) = "specialStoryId"];
+    optional int32 episode_no                                   = 3 [(json_name) = "episodeNo"];
+    optional string title                                       = 4 [(json_name) = "title"];
+    optional SpecialStoryEpisodeType special_story_episode_type = 5 [(json_name) = "specialStoryEpisodeType"];
+    optional string assetbundle_name                            = 6 [(json_name) = "assetbundleName"];
+    optional string scenario_id                                 = 7 [(json_name) = "scenarioId"];
+    optional int32 release_condition_id                         = 8 [(json_name) = "releaseConditionId"];
+    optional bool is_able_skip                                  = 9 [(json_name) = "isAbleSkip"];
+    optional bool is_action_set_refresh                         = 10 [(json_name) = "isActionSetRefresh"];
+    repeated int32 reward_resource_box_ids                      = 11 [(json_name) = "rewardResourceBoxIds"];
+    optional int32 special_story_episode_type_id                = 12 [(json_name) = "specialStoryEpisodeTypeId"];
+  }
+
+  optional int32 id                = 1 [(json_name) = "id"];
+  optional int32 seq               = 2 [(json_name) = "seq"];
+  optional string title            = 3 [(json_name) = "title"];
+  optional string assetbundle_name = 4 [(json_name) = "assetbundleName"];
+  optional int64 start_at          = 5 [(json_name) = "startAt"];
+  optional int64 end_at            = 6 [(json_name) = "endAt"];
+  repeated Episode episodes        = 7 [(json_name) = "episodes"];
+}

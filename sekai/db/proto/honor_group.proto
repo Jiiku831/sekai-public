@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message HonorGroup {
+  option (master_db_file) = "honorGroups.json";
+  enum HonorType {
+    UNKNOWN_HONOR_TYPE = 0;
+    ACHIEVEMENT        = 1 [(json_value) = "achievement"];
+    CHARACTER          = 2 [(json_value) = "character"];
+    EVENT              = 3 [(json_value) = "event"];
+    RANK_MATCH         = 4 [(json_value) = "rank_match"];
+  }
+
+  optional int32 id                           = 1 [(json_name) = "id"];
+  optional string name                        = 2 [(json_name) = "name"];
+  optional HonorType honor_type               = 3 [(json_name) = "honorType"];
+  optional string background_assetbundle_name = 4 [(json_name) = "backgroundAssetbundleName"];
+  optional string frame_name                  = 5 [(json_name) = "frameName"];
+}

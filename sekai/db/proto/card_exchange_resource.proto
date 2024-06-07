@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message CardExchangeResource {
+  option (master_db_file) = "cardExchangeResources.json";
+  enum CardRarityType {
+    UNKNOWN_CARD_RARITY_TYPE = 0;
+    RARITY_2                 = 1 [(json_value) = "rarity_2"];
+    RARITY_3                 = 2 [(json_value) = "rarity_3"];
+    RARITY_4                 = 3 [(json_value) = "rarity_4"];
+    RARITY_BIRTHDAY          = 4 [(json_value) = "rarity_birthday"];
+  }
+
+  optional CardRarityType card_rarity_type = 1 [(json_name) = "cardRarityType"];
+  optional int32 seq                       = 2 [(json_name) = "seq"];
+  optional int32 resource_box_id           = 3 [(json_name) = "resourceBoxId"];
+}

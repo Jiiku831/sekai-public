@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message CheerfulCarnivalSummary {
+  option (master_db_file)             = "cheerfulCarnivalSummaries.json";
+  optional int32 id                   = 1 [(json_name) = "id"];
+  optional int32 event_id             = 2 [(json_name) = "eventId"];
+  optional string theme               = 3 [(json_name) = "theme"];
+  optional int64 midterm_announce1_at = 4 [(json_name) = "midtermAnnounce1At"];
+  optional int64 midterm_announce2_at = 5 [(json_name) = "midtermAnnounce2At"];
+  optional string assetbundle_name    = 6 [(json_name) = "assetbundleName"];
+}

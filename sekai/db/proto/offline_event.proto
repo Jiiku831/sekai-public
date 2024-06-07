@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message OfflineEvent {
+  option (master_db_file)                                 = "offlineEvents.json";
+  optional int32 id                                       = 1 [(json_name) = "id"];
+  optional string name                                    = 2 [(json_name) = "name"];
+  optional int64 display_start_at                         = 3 [(json_name) = "displayStartAt"];
+  optional int64 entry_evaluation_start_at                = 4 [(json_name) = "entryEvaluationStartAt"];
+  optional int64 entry_start_at                           = 5 [(json_name) = "entryStartAt"];
+  optional int64 entry_end_at                             = 6 [(json_name) = "entryEndAt"];
+  optional int32 condition_continuous_buy_high_tier_count = 7 [(json_name) = "conditionContinuousBuyHighTierCount"];
+  optional string url                                     = 8 [(json_name) = "url"];
+}

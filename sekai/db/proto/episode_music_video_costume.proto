@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message EpisodeMusicVideoCostume {
+  option (master_db_file)        = "episodeMusicVideoCostumes.json";
+  optional int32 id              = 1 [(json_name) = "id"];
+  optional int32 music_vocal_id  = 2 [(json_name) = "musicVocalId"];
+  optional int32 character3d_id1 = 3 [(json_name) = "character3dId1"];
+  optional int32 character3d_id2 = 4 [(json_name) = "character3dId2"];
+  optional int32 character3d_id3 = 5 [(json_name) = "character3dId3"];
+  optional int32 character3d_id4 = 6 [(json_name) = "character3dId4"];
+  optional int32 character3d_id5 = 7 [(json_name) = "character3dId5"];
+}

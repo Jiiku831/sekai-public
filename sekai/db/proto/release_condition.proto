@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message ReleaseCondition {
+  option (master_db_file) = "releaseConditions.json";
+  enum ReleaseConditionType {
+    UNKNOWN_RELEASE_CONDITION_TYPE         = 0;
+    ACTION_SET                             = 1 [(json_value) = "action_set"];
+    BONDS_RANK                             = 2 [(json_value) = "bonds_rank"];
+    CARD_LEVEL                             = 3 [(json_value) = "card_level"];
+    CHALLENGE_LIVE_CHARACTER_FORCE_RELEASE = 4 [(json_value) = "challenge_live_character_force_release"];
+    CHARACTER_LIVE_USAGE_LEADER            = 5 [(json_value) = "character_live_usage_leader"];
+    CHARACTER_RANK                         = 6 [(json_value) = "character_rank"];
+    EVENT_POINT                            = 7 [(json_value) = "event_point"];
+    EVENT_STORY                            = 8 [(json_value) = "event_story"];
+    INHERIT_COMPLETE                       = 9 [(json_value) = "inherit_complete"];
+    MASTER_RANK                            = 10 [(json_value) = "master_rank"];
+    MUSIC_DIFFICULTY_BETTER_PLAY           = 11 [(json_value) = "music_difficulty_better_play"];
+    MUSIC_SHOP                             = 12 [(json_value) = "music_shop"];
+    NONE                                   = 13 [(json_value) = "none"];
+    PRESENT_RECEIVE                        = 14 [(json_value) = "present_receive"];
+    RANK_MATCH                             = 15 [(json_value) = "rank_match"];
+    SHOP                                   = 16 [(json_value) = "shop"];
+    SPECIAL_STORY                          = 17 [(json_value) = "special_story"];
+    UNIT_STORY                             = 18 [(json_value) = "unit_story"];
+    USER_RANK                              = 19 [(json_value) = "user_rank"];
+    VIRTUAL_LIVE_PARTICIPATION             = 20 [(json_value) = "virtual_live_participation"];
+    WORLD_BLOOM_CHAPTER_AGGREGATE          = 21 [(json_value) = "world_bloom_chapter_aggregate"];
+    WORLD_BLOOM_CHAPTER_START              = 22 [(json_value) = "world_bloom_chapter_start"];
+  }
+
+  optional int32 id                                    = 1 [(json_name) = "id"];
+  optional string sentence                             = 2 [(json_name) = "sentence"];
+  optional ReleaseConditionType release_condition_type = 3 [(json_name) = "releaseConditionType"];
+  optional int32 release_condition_type_level          = 4 [(json_name) = "releaseConditionTypeLevel"];
+  optional int32 release_condition_type_id             = 5 [(json_name) = "releaseConditionTypeId"];
+  optional int32 release_condition_type_quantity       = 6 [(json_name) = "releaseConditionTypeQuantity"];
+  optional int32 release_condition_type_id2            = 7 [(json_name) = "releaseConditionTypeId2"];
+}

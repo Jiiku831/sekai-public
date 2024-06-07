@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message PaidVirtualLive {
+  option (master_db_file) = "paidVirtualLives.json";
+  enum PaidVirtualLiveType {
+    UNKNOWN_PAID_VIRTUAL_LIVE_TYPE = 0;
+    BIRTHDAY                       = 1 [(json_value) = "birthday"];
+    SEASON                         = 2 [(json_value) = "season"];
+    STREAMING                      = 3 [(json_value) = "streaming"];
+    WELCOME                        = 4 [(json_value) = "welcome"];
+  }
+
+  optional int32 id                                   = 1 [(json_name) = "id"];
+  optional int32 virtual_live_id                      = 2 [(json_name) = "virtualLiveId"];
+  optional int32 virtual_live_part                    = 3 [(json_name) = "virtualLivePart"];
+  optional PaidVirtualLiveType paid_virtual_live_type = 4 [(json_name) = "paidVirtualLiveType"];
+  repeated string units                               = 5 [(json_name) = "units"];
+  optional string icon_assetbundle_name               = 6 [(json_name) = "iconAssetbundleName"];
+  optional string background_assetbundle_name         = 7 [(json_name) = "backgroundAssetbundleName"];
+}

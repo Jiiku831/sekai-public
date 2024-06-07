@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message GachaTicket {
+  option (master_db_file) = "gachaTickets.json";
+  enum GachaDisplayType {
+    UNKNOWN_GACHA_DISPLAY_TYPE = 0;
+    ALWAYS                     = 1 [(json_value) = "always"];
+    HAVING                     = 2 [(json_value) = "having"];
+  }
+
+  optional int32 id                            = 1 [(json_name) = "id"];
+  optional string name                         = 2 [(json_name) = "name"];
+  optional string assetbundle_name             = 3 [(json_name) = "assetbundleName"];
+  optional GachaDisplayType gacha_display_type = 4 [(json_name) = "gachaDisplayType"];
+}

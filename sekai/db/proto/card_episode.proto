@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+import "sekai/db/proto/enums.proto";
+
+message CardEpisode {
+  option (master_db_file) = "cardEpisodes.json";
+  message Cost {
+    optional int32 resource_id          = 1 [(json_name) = "resourceId"];
+    optional ResourceType resource_type = 2 [(json_name) = "resourceType"];
+    optional int32 quantity             = 3 [(json_name) = "quantity"];
+  }
+
+  enum PartType {
+    UNKNOWN_PART_TYPE = 0;
+    FIRST_PART        = 1 [(json_value) = "first_part"];
+    SECOND_PART       = 2 [(json_value) = "second_part"];
+  }
+  optional int32 id                        = 1 [(json_name) = "id"];
+  optional int32 seq                       = 2 [(json_name) = "seq"];
+  optional int32 card_id                   = 3 [(json_name) = "cardId", (primary_key) = true];
+  optional string title                    = 4 [(json_name) = "title"];
+  optional string scenario_id              = 5 [(json_name) = "scenarioId"];
+  optional string assetbundle_name         = 6 [(json_name) = "assetbundleName"];
+  optional int32 release_condition_id      = 7 [(json_name) = "releaseConditionId"];
+  optional int32 power1_bonus_fixed        = 8 [(json_name) = "power1BonusFixed"];
+  optional int32 power2_bonus_fixed        = 9 [(json_name) = "power2BonusFixed"];
+  optional int32 power3_bonus_fixed        = 10 [(json_name) = "power3BonusFixed"];
+  repeated int32 reward_resource_box_ids   = 11 [(json_name) = "rewardResourceBoxIds"];
+  repeated Cost costs                      = 12 [(json_name) = "costs"];
+  optional PartType card_episode_part_type = 13 [(json_name) = "cardEpisodePartType"];
+}

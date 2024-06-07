@@ -1,0 +1,78 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/enums.proto";
+import "sekai/db/proto/descriptor.proto";
+
+message Skill {
+  option (master_db_file)                 = "skills.json";
+  optional int32 id                       = 1 [(json_name) = "id", (primary_key) = true];
+  optional string short_description       = 2 [(json_name) = "shortDescription"];
+  optional string description             = 3 [(json_name) = "description"];
+  optional string description_sprite_name = 4 [(json_name) = "descriptionSpriteName"];
+  optional int32 skill_filter_id          = 5 [(json_name) = "skillFilterId"];
+  repeated SkillEffect skill_effects      = 6 [(json_name) = "skillEffects"];
+}
+
+enum ActivateEffectValueType {
+  UNKNOWN_ACTIVATE_EFFECT_VALUE_TYPE = 0;
+  ACTIVATE_EFFECT_FIXED              = 1 [(json_value) = "fixed"];
+  ACTIVATE_EFFECT_RATE               = 2 [(json_value) = "rate"];
+}
+
+message SkillEnhance {
+  enum Type {
+    UNKNOWN_SKILL_ENHANCE_TYPE = 0;
+    SUB_UNIT_SCORE_UP          = 1 [(json_value) = "sub_unit_score_up"];
+  }
+
+  message SkillEnhanceCondition {
+    optional int32 id  = 1 [(json_name) = "id"];
+    optional int32 seq = 2 [(json_name) = "seq"];
+    optional Unit unit = 3 [(json_name) = "unit"];
+  }
+
+  optional int32 id                                           = 1 [(json_name) = "id"];
+  optional Type skill_enhance_type                            = 2 [(json_name) = "skillEnhanceType"];
+  optional ActivateEffectValueType activate_effect_value_type = 3 [(json_name) = "activateEffectValueType"];
+  optional int32 activate_effect_value                        = 4 [(json_name) = "activateEffectValue"];
+  optional SkillEnhanceCondition skill_enhance_condition      = 5 [(json_name) = "skillEnhanceCondition"];
+}
+
+message SkillEffect {
+  enum Type {
+    UNKNOWN_EFFECT_TYPE     = 0;
+    JUDGMENT_UP             = 1 [(json_value) = "judgment_up"];
+    LIFE_RECOVERY           = 2 [(json_value) = "life_recovery"];
+    SCORE_UP                = 3 [(json_value) = "score_up"];
+    SCORE_UP_CONDITION_LIFE = 4 [(json_value) = "score_up_condition_life"];
+    SCORE_UP_KEEP           = 5 [(json_value) = "score_up_keep"];
+  }
+  enum ActivateNotesJudgmentType {
+    UNKNOWN_ACTIVATE_NOTES_JUDGMENT_TYPE = 0;
+    BAD                                  = 1 [(json_value) = "bad"];
+    GOOD                                 = 2 [(json_value) = "good"];
+    GREAT                                = 3 [(json_value) = "great"];
+    PERFECT                              = 4 [(json_value) = "perfect"];
+  }
+  message Details {
+    optional int32 id                                           = 1 [(json_name) = "id"];
+    optional int32 level                                        = 2 [(json_name) = "level"];
+    optional float activate_effect_duration                     = 3 [(json_name) = "activateEffectDuration"];
+    optional ActivateEffectValueType activate_effect_value_type = 4 [(json_name) = "activateEffectValueType"];
+    optional int32 activate_effect_value                        = 5 [(json_name) = "activateEffectValue"];
+  }
+
+  enum ConditionType {
+    UNKNOWN_CONDITION_TYPE = 0;
+    EQUALS_OR_OVER         = 1 [(json_value) = "equals_or_over"];
+  }
+  optional int32 id                                               = 1 [(json_name) = "id"];
+  optional Type skill_effect_type                                 = 2 [(json_name) = "skillEffectType"];
+  optional ActivateNotesJudgmentType activate_notes_judgment_type = 3 [(json_name) = "activateNotesJudgmentType"];
+  repeated Details skill_effect_details                           = 4 [(json_name) = "skillEffectDetails"];
+  optional int32 activate_life                                    = 5 [(json_name) = "activateLife"];
+  optional ConditionType condition_type                           = 6 [(json_name) = "conditionType"];
+  optional SkillEnhance skill_enhance                             = 7 [(json_name) = "skillEnhance"];
+}

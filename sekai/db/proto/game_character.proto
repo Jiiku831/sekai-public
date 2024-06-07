@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+import "sekai/db/proto/enums.proto";
+
+message GameCharacter {
+  option (master_db_file) = "gameCharacters.json";
+
+  enum SupportUnitType {
+    UNKNOWN_SUPPORT_UNIT_TYPE = 0;
+    FULL                      = 1 [(json_value) = "full"];
+    NONE                      = 2 [(json_value) = "none"];
+    UNIT                      = 3 [(json_value) = "unit"];
+  }
+  optional int32 id                          = 1 [(json_name) = "id", (primary_key) = true];
+  optional int32 seq                         = 2 [(json_name) = "seq"];
+  optional int32 resource_id                 = 3 [(json_name) = "resourceId"];
+  optional string first_name                 = 4 [(json_name) = "firstName"];
+  optional string given_name                 = 5 [(json_name) = "givenName"];
+  optional string first_name_ruby            = 6 [(json_name) = "firstNameRuby"];
+  optional string given_name_ruby            = 7 [(json_name) = "givenNameRuby"];
+  optional string gender                     = 8 [(json_name) = "gender"];
+  optional float height                      = 9 [(json_name) = "height"];
+  optional float live2d_height_adjustment    = 10 [(json_name) = "live2dHeightAdjustment"];
+  optional string figure                     = 11 [(json_name) = "figure"];
+  optional string breast_size                = 12 [(json_name) = "breastSize"];
+  optional string model_name                 = 13 [(json_name) = "modelName"];
+  optional Unit unit                         = 14 [(json_name) = "unit"];
+  optional SupportUnitType support_unit_type = 15 [(json_name) = "supportUnitType"];
+}

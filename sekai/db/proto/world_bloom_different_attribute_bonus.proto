@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message WorldBloomDifferentAttributeBonus {
+  option (master_db_file)        = "worldBloomDifferentAttributeBonuses.json";
+  optional int32 attribute_count = 1 [(json_name) = "attributeCount"];
+  optional float bonus_rate      = 2 [(json_name) = "bonusRate"];
+}

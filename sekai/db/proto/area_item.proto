@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message AreaItem {
+  option (master_db_file)          = "areaItems.json";
+  optional int32 id                = 1 [(json_name) = "id", (primary_key) = true];
+  optional int32 area_id           = 2 [(json_name) = "areaId"];
+  optional string name             = 3 [(json_name) = "name"];
+  optional string flavor_text      = 4 [(json_name) = "flavorText"];
+  optional string spawn_point      = 5 [(json_name) = "spawnPoint"];
+  optional string assetbundle_name = 6 [(json_name) = "assetbundleName"];
+}

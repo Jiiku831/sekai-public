@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message Costume3D {
+  option (master_db_file) = "costume3ds.json";
+  enum Costume3DType {
+    UNKNOWN_COSTUME3_D_TYPE = 0;
+    DEFAULT                 = 1 [(json_value) = "default"];
+    DISTRIBUTION            = 2 [(json_value) = "distribution"];
+    NORMAL                  = 3 [(json_value) = "normal"];
+  }
+
+  enum PartType {
+    UNKNOWN_PART_TYPE = 0;
+    BODY              = 1 [(json_value) = "body"];
+    HAIR              = 2 [(json_value) = "hair"];
+    HEAD              = 3 [(json_value) = "head"];
+  }
+
+  enum ArchiveDisplayType {
+    UNKNOWN_ARCHIVE_DISPLAY_TYPE = 0;
+    NONE                         = 1 [(json_value) = "none"];
+  }
+
+  optional int32 id                                = 1 [(json_name) = "id"];
+  optional int32 seq                               = 2 [(json_name) = "seq"];
+  optional int32 costume3d_group_id                = 3 [(json_name) = "costume3dGroupId"];
+  optional Costume3DType costume3d_type            = 4 [(json_name) = "costume3dType"];
+  optional string name                             = 5 [(json_name) = "name"];
+  optional PartType part_type                      = 6 [(json_name) = "partType"];
+  optional int32 color_id                          = 7 [(json_name) = "colorId"];
+  optional string color_name                       = 8 [(json_name) = "colorName"];
+  optional int32 character_id                      = 9 [(json_name) = "characterId"];
+  optional string costume3d_rarity                 = 10 [(json_name) = "costume3dRarity"];
+  optional string how_to_obtain                    = 11 [(json_name) = "howToObtain"];
+  optional string assetbundle_name                 = 12 [(json_name) = "assetbundleName"];
+  optional string designer                         = 13 [(json_name) = "designer"];
+  optional ArchiveDisplayType archive_display_type = 14 [(json_name) = "archiveDisplayType"];
+  optional int64 archive_published_at              = 15 [(json_name) = "archivePublishedAt"];
+  optional int64 published_at                      = 16 [(json_name) = "publishedAt"];
+}

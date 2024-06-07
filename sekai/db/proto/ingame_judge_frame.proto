@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message IngameJudgeFrame {
+  option (master_db_file) = "ingameJudgeFrames.json";
+  enum IngameNoteType {
+    UNKNOWN_INGAME_NOTE_TYPE   = 0;
+    FLICK                      = 1 [(json_value) = "flick"];
+    FLICK_CRITICAL             = 2 [(json_value) = "flick_critical"];
+    FRICTION                   = 3 [(json_value) = "friction"];
+    FRICTION_CRITICAL          = 4 [(json_value) = "friction_critical"];
+    FRICTION_FLICK             = 5 [(json_value) = "friction_flick"];
+    FRICTION_FLICK_CRITICAL    = 6 [(json_value) = "friction_flick_critical"];
+    FRICTION_LONG              = 7 [(json_value) = "friction_long"];
+    FRICTION_LONG_CRITICAL     = 8 [(json_value) = "friction_long_critical"];
+    FRICTION_LONG_END          = 9 [(json_value) = "friction_long_end"];
+    FRICTION_LONG_END_CRITICAL = 10 [(json_value) = "friction_long_end_critical"];
+    LONG                       = 11 [(json_value) = "long"];
+    LONG_CRITICAL              = 12 [(json_value) = "long_critical"];
+    LONG_END                   = 13 [(json_value) = "long_end"];
+    LONG_END_CRITICAL          = 14 [(json_value) = "long_end_critical"];
+    LONG_END_FLICK             = 15 [(json_value) = "long_end_flick"];
+    LONG_END_FLICK_CRITICAL    = 16 [(json_value) = "long_end_flick_critical"];
+    NORMAL                     = 17 [(json_value) = "normal"];
+    NORMAL_CRITICAL            = 18 [(json_value) = "normal_critical"];
+  }
+
+  optional int32 id                        = 1 [(json_name) = "id"];
+  optional IngameNoteType ingame_note_type = 2 [(json_name) = "ingameNoteType"];
+  optional float perfect                   = 3 [(json_name) = "perfect"];
+  optional float great                     = 4 [(json_name) = "great"];
+  optional float good                      = 5 [(json_name) = "good"];
+  optional float bad                       = 6 [(json_name) = "bad"];
+  optional float perfect_before            = 7 [(json_name) = "perfectBefore"];
+  optional float perfect_after             = 8 [(json_name) = "perfectAfter"];
+  optional float great_before              = 9 [(json_name) = "greatBefore"];
+  optional float great_after               = 10 [(json_name) = "greatAfter"];
+  optional float good_before               = 11 [(json_name) = "goodBefore"];
+  optional float good_after                = 12 [(json_name) = "goodAfter"];
+  optional float bad_before                = 13 [(json_name) = "badBefore"];
+  optional float bad_after                 = 14 [(json_name) = "badAfter"];
+}

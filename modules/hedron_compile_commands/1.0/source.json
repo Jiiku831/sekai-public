@@ -1,0 +1,5 @@
+{
+    "type": "git_repository",
+    "remote": "https://github.com/hedronvision/bazel-compile-commands-extractor.git",
+    "commit": "9d438afd4febf622aa05b9a267c09439717e58b9"
+}

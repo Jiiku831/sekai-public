@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message MusicDanceMember {
+  option (master_db_file) = "musicDanceMembers.json";
+  enum DefaultMusicType {
+    UNKNOWN_DEFAULT_MUSIC_TYPE = 0;
+    ORIGINAL_MUSIC             = 1 [(json_value) = "original_music"];
+    SEKAI                      = 2 [(json_value) = "sekai"];
+  }
+
+  optional int32 id                            = 1 [(json_name) = "id"];
+  optional int32 music_id                      = 2 [(json_name) = "musicId"];
+  optional DefaultMusicType default_music_type = 3 [(json_name) = "defaultMusicType"];
+  optional int32 character_id1                 = 4 [(json_name) = "characterId1"];
+  optional string unit1                        = 5 [(json_name) = "unit1"];
+  optional int32 character_id2                 = 6 [(json_name) = "characterId2"];
+  optional string unit2                        = 7 [(json_name) = "unit2"];
+  optional int32 character_id3                 = 8 [(json_name) = "characterId3"];
+  optional string unit3                        = 9 [(json_name) = "unit3"];
+  optional int32 character_id4                 = 10 [(json_name) = "characterId4"];
+  optional string unit4                        = 11 [(json_name) = "unit4"];
+  optional int32 character_id5                 = 12 [(json_name) = "characterId5"];
+  optional string unit5                        = 13 [(json_name) = "unit5"];
+}

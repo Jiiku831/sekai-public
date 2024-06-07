@@ -1,0 +1,114 @@
+load("@rules_cc//cc:defs.bzl", "cc_library", "cc_test")
+
+cc_library(
+    name = "card_pruning",
+    srcs = ["card_pruning.cc"],
+    hdrs = ["card_pruning.h"],
+    deps = [
+        "//sekai:card",
+        "//sekai:config",
+        "//sekai:estimator",
+        "@abseil-cpp//absl/log",
+    ],
+)
+
+cc_library(
+    name = "max_bonus_team_builder",
+    srcs = ["max_bonus_team_builder.cc"],
+    hdrs = ["max_bonus_team_builder.h"],
+    deps = [
+        ":team_builder",
+        "//sekai:array_size",
+        "//sekai:card",
+        "//sekai:combinations",
+        "//sekai:estimator",
+        "//sekai:event_bonus",
+        "//sekai:profile",
+        "//sekai:team",
+        "@abseil-cpp//absl/log:absl_check",
+        "@abseil-cpp//absl/time",
+    ],
+)
+
+cc_library(
+    name = "event_team_builder",
+    srcs = ["event_team_builder.cc"],
+    hdrs = ["event_team_builder.h"],
+    deps = [
+        ":card_pruning",
+        ":team_builder",
+        "//sekai:array_size",
+        "//sekai:card",
+        "//sekai:combinations",
+        "//sekai:estimator",
+        "//sekai:event_bonus",
+        "//sekai:profile",
+        "//sekai:team",
+        "@abseil-cpp//absl/base:core_headers",
+        "@abseil-cpp//absl/log:absl_check",
+        "@abseil-cpp//absl/strings:str_format",
+        "@abseil-cpp//absl/time",
+        "@bs-thread-pool",
+        "@indicators",
+    ],
+)
+
+cc_library(
+    name = "naive_team_builder",
+    srcs = ["naive_team_builder.cc"],
+    hdrs = ["naive_team_builder.h"],
+    deps = [
+        ":team_builder",
+        "//sekai:array_size",
+        "//sekai:bitset",
+        "//sekai:card",
+        "//sekai:combinations",
+        "//sekai:estimator",
+        "//sekai:event_bonus",
+        "//sekai:profile",
+        "//sekai:team",
+        "@abseil-cpp//absl/log:absl_check",
+        "@abseil-cpp//absl/time",
+    ],
+)
+
+cc_library(
+    name = "team_builder",
+    hdrs = ["team_builder.h"],
+    deps = [
+        "//sekai:card",
+        "//sekai:estimator",
+        "//sekai:event_bonus",
+        "//sekai:profile",
+        "//sekai:team",
+        "@abseil-cpp//absl/time",
+    ],
+)
+
+cc_test(
+    name = "team_builder_benchmark",
+    srcs = ["team_builder_benchmark.cc"],
+    data = [
+        "//data:flat-db",
+    ],
+    deps = [
+        ":event_team_builder",
+        ":max_bonus_team_builder",
+        ":naive_team_builder",
+        "//sekai:card",
+        "//sekai:estimator",
+        "//sekai:event_bonus",
+        "//sekai:profile",
+        "//sekai:team",
+        "//sekai/db:master_db",
+        "//sekai/db/proto:all",
+        "//sekai/html:report",
+        "//sekai/html:team",
+        "//sekai/proto:profile_cc_proto",
+        "//testing:util",
+        "@abseil-cpp//absl/container:flat_hash_set",
+        "@abseil-cpp//absl/functional:any_invocable",
+        "@ctml",
+        "@google_benchmark//:benchmark_main",
+    ],
+)

@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message CustomProfileMemberResourceExcludeCard {
+  option (master_db_file) = "customProfileMemberResourceExcludeCards.json";
+}

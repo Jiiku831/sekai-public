@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message ChallengeLiveStageEx {
+  option (master_db_file)                       = "challengeLiveStageExs.json";
+  optional int32 id                             = 1 [(json_name) = "id"];
+  optional int32 character_id                   = 2 [(json_name) = "characterId"];
+  optional int32 from_rank                      = 3 [(json_name) = "fromRank"];
+  optional int32 to_rank                        = 4 [(json_name) = "toRank"];
+  optional string name                          = 5 [(json_name) = "name"];
+  optional int32 next_stage_challenge_point     = 6 [(json_name) = "nextStageChallengePoint"];
+  optional int32 complete_stage_resource_box_id = 7 [(json_name) = "completeStageResourceBoxId"];
+  optional int32 complete_stage_character_exp   = 8 [(json_name) = "completeStageCharacterExp"];
+}

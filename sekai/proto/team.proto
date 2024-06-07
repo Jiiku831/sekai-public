@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package sekai;
+
+import "sekai/proto/card.proto";
+
+message TeamProto {
+  repeated CardProto cards      = 1;
+  optional int32 power          = 2;
+  optional float event_bonus    = 3;
+  optional int32 skill_value    = 4;
+  optional int32 expected_ep    = 5;
+  repeated int32 power_detailed = 6;
+}

@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message CharacterMissionV2ParameterGroup {
+  option (master_db_file)    = "characterMissionV2ParameterGroups.json";
+  optional int32 id          = 1 [(json_name) = "id"];
+  optional int32 seq         = 2 [(json_name) = "seq"];
+  optional int32 requirement = 3 [(json_name) = "requirement"];
+  optional int32 exp         = 4 [(json_name) = "exp"];
+  optional int32 quantity    = 5 [(json_name) = "quantity"];
+}

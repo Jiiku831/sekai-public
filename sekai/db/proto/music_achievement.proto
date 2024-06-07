@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message MusicAchievement {
+  option (master_db_file) = "musicAchievements.json";
+  enum MusicAchievementType {
+    UNKNOWN_MUSIC_ACHIEVEMENT_TYPE = 0;
+    COMBO                          = 1 [(json_value) = "combo"];
+    SCORE_RANK                     = 2 [(json_value) = "score_rank"];
+  }
+
+  enum MusicDifficultyType {
+    UNKNOWN_MUSIC_DIFFICULTY_TYPE = 0;
+    APPEND                        = 1 [(json_value) = "append"];
+    EASY                          = 2 [(json_value) = "easy"];
+    EXPERT                        = 3 [(json_value) = "expert"];
+    HARD                          = 4 [(json_value) = "hard"];
+    MASTER                        = 5 [(json_value) = "master"];
+    NORMAL                        = 6 [(json_value) = "normal"];
+  }
+
+  optional int32 id                                    = 1 [(json_name) = "id"];
+  optional MusicAchievementType music_achievement_type = 2 [(json_name) = "musicAchievementType"];
+  optional string music_achievement_type_value         = 3 [(json_name) = "musicAchievementTypeValue"];
+  optional int32 resource_box_id                       = 4 [(json_name) = "resourceBoxId"];
+  optional MusicDifficultyType music_difficulty_type   = 5 [(json_name) = "musicDifficultyType"];
+}

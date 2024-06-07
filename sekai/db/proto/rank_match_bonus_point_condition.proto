@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message RankMatchBonusPointCondition {
+  option (master_db_file) = "rankMatchBonusPointConditions.json";
+  enum RankMatchBonusPointConditionType {
+    UNKNOWN_RANK_MATCH_BONUS_POINT_CONDITION_TYPE = 0;
+    ALL_PERFECT                                   = 1 [(json_value) = "all_perfect"];
+    FULL_COMBO                                    = 2 [(json_value) = "full_combo"];
+    HIGHER_CLASS_WIN                              = 3 [(json_value) = "higher_class_win"];
+    LIFE_0                                        = 4 [(json_value) = "life_0"];
+  }
+
+  enum CalcType {
+    UNKNOWN_CALC_TYPE = 0;
+    ADD               = 1 [(json_value) = "add"];
+    SUBTRACT          = 2 [(json_value) = "subtract"];
+  }
+
+  optional int32 id                                                               = 1 [(json_name) = "id"];
+  optional RankMatchBonusPointConditionType rank_match_bonus_point_condition_type = 2
+      [(json_name) = "rankMatchBonusPointConditionType"];
+  optional int32 group_id     = 3 [(json_name) = "groupId"];
+  optional int32 priority     = 4 [(json_name) = "priority"];
+  optional CalcType calc_type = 5 [(json_name) = "calcType"];
+  optional int32 bonus_point  = 6 [(json_name) = "bonusPoint"];
+}

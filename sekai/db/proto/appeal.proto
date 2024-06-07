@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message Appeal {
+  option (master_db_file) = "appeals.json";
+  enum AppealTargetType {
+    UNKNOWN_APPEAL_TARGET_TYPE = 0;
+    GACHA                      = 1 [(json_value) = "gacha"];
+  }
+
+  enum AppealType {
+    UNKNOWN_APPEAL_TYPE = 0;
+    ONCE                = 1 [(json_value) = "once"];
+  }
+
+  enum AppealReadConditionType {
+    UNKNOWN_APPEAL_READ_CONDITION_TYPE = 0;
+    TRANSITION                         = 1 [(json_value) = "transition"];
+  }
+
+  optional int32 id                                           = 1 [(json_name) = "id"];
+  optional int32 seq                                          = 2 [(json_name) = "seq"];
+  optional AppealTargetType appeal_target_type                = 3 [(json_name) = "appealTargetType"];
+  optional AppealType appeal_type                             = 4 [(json_name) = "appealType"];
+  optional int64 start_at                                     = 5 [(json_name) = "startAt"];
+  optional int64 end_at                                       = 6 [(json_name) = "endAt"];
+  optional AppealReadConditionType appeal_read_condition_type = 7 [(json_name) = "appealReadConditionType"];
+  optional string text                                        = 8 [(json_name) = "text"];
+}

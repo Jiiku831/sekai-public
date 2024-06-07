@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message RankMatchPenalty {
+  option (master_db_file) = "rankMatchPenalties.json";
+  enum RankMatchPenaltyType {
+    UNKNOWN_RANK_MATCH_PENALTY_TYPE = 0;
+    HOURS_BAN                       = 1 [(json_value) = "hours_ban"];
+    MINUTES_BAN                     = 2 [(json_value) = "minutes_ban"];
+    SEASON_BAN                      = 3 [(json_value) = "season_ban"];
+    WARNING_POP                     = 4 [(json_value) = "warning_pop"];
+  }
+
+  optional int32 id                                     = 1 [(json_name) = "id"];
+  optional int32 count                                  = 2 [(json_name) = "count"];
+  optional RankMatchPenaltyType rank_match_penalty_type = 3 [(json_name) = "rankMatchPenaltyType"];
+  optional int32 rank_match_penalty_type_value          = 4 [(json_name) = "rankMatchPenaltyTypeValue"];
+}

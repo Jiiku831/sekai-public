@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message GachaCeilItem {
+  option (master_db_file)                = "gachaCeilItems.json";
+  optional int32 id                      = 1 [(json_name) = "id"];
+  optional int32 gacha_id                = 2 [(json_name) = "gachaId"];
+  optional string name                   = 3 [(json_name) = "name"];
+  optional string assetbundle_name       = 4 [(json_name) = "assetbundleName"];
+  optional int64 convert_start_at        = 5 [(json_name) = "convertStartAt"];
+  optional int32 convert_resource_box_id = 6 [(json_name) = "convertResourceBoxId"];
+}

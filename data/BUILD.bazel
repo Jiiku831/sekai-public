@@ -1,0 +1,45 @@
+load("@rules_pkg//pkg:mappings.bzl", "pkg_files")
+
+genrule(
+    name = "flat-db.genrule",
+    srcs = [
+        "@sekai-master-db",
+        ":sekai-best",
+    ],
+    outs = [
+        "flat-db",
+    ],
+    cmd = "./$(execpath //sekai/db:generate_flat_db_main) --output=$@",
+    #cmd = "find . > $@",
+    tools = ["//sekai/db:generate_flat_db_main"],
+)
+
+filegroup(
+    name = "profile",
+    srcs = [
+        ":profile/cards",
+        ":profile/profile",
+    ],
+)
+
+filegroup(
+    name = "profile/cards",
+    srcs = ["profile/cards.csv"],
+)
+
+filegroup(
+    name = "profile/profile",
+    srcs = ["profile/profile.textproto"],
+)
+
+filegroup(
+    name = "sekai-best",
+    srcs = [
+        ":sekai-best/music_metas",
+    ],
+)
+
+filegroup(
+    name = "sekai-best/music_metas",
+    srcs = ["@sekai-best-music-metas//file"],
+)

@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message ColorfulPassV2 {
+  option (master_db_file)                                     = "colorfulPassV2s.json";
+  optional int32 id                                           = 1 [(json_name) = "id"];
+  optional string name                                        = 2 [(json_name) = "name"];
+  optional string colorful_pass_tier                          = 3 [(json_name) = "colorfulPassTier"];
+  optional int32 resource_box_id                              = 4 [(json_name) = "resourceBoxId"];
+  optional string present_sentence                            = 5 [(json_name) = "presentSentence"];
+  optional int32 expire_days                                  = 6 [(json_name) = "expireDays"];
+  optional int32 challenge_live_point_rate                    = 7 [(json_name) = "challengeLivePointRate"];
+  optional int32 live_point_rate                              = 8 [(json_name) = "livePointRate"];
+  optional int32 daily_paid_gacha_spin_limit                  = 9 [(json_name) = "dailyPaidGachaSpinLimit"];
+  optional int32 daily_free_gacha_spin_limit                  = 10 [(json_name) = "dailyFreeGachaSpinLimit"];
+  optional int32 weekly_colorful_pass_gacha_spin_limit        = 11 [(json_name) = "weeklyColorfulPassGachaSpinLimit"];
+  optional bool is_priority_for_offline_event_entry           = 12 [(json_name) = "isPriorityForOfflineEventEntry"];
+  optional int32 virtual_item_relation_group_id               = 13 [(json_name) = "virtualItemRelationGroupId"];
+  optional int32 virtual_live_cheer_message_relation_group_id = 14
+      [(json_name) = "virtualLiveCheerMessageRelationGroupId"];
+  optional int32 max_live_bonus_count = 15 [(json_name) = "maxLiveBonusCount"];
+  optional int32 max_auto_play_count  = 16 [(json_name) = "maxAutoPlayCount"];
+}

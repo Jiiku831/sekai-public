@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message IngameCombo {
+  option (master_db_file)          = "ingameCombos.json";
+  optional int32 id                = 1 [(json_name) = "id"];
+  optional int32 from_count        = 2 [(json_name) = "fromCount"];
+  optional int32 to_count          = 3 [(json_name) = "toCount"];
+  optional float score_coefficient = 4 [(json_name) = "scoreCoefficient"];
+}

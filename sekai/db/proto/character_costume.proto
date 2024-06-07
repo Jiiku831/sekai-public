@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message CharacterCostume {
+  option (master_db_file)                 = "characterCostumes.json";
+  optional int32 id                       = 1 [(json_name) = "id"];
+  optional int32 character_id             = 2 [(json_name) = "characterId"];
+  optional int32 costume_id               = 3 [(json_name) = "costumeId"];
+  optional string sd_assetbundle_name     = 4 [(json_name) = "sdAssetbundleName"];
+  optional string live2d_assetbundle_name = 5 [(json_name) = "live2dAssetbundleName"];
+}

@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message PlayLevelScore {
+  option (master_db_file) = "playLevelScores.json";
+  enum LiveType {
+    UNKNOWN_LIVE_TYPE         = 0;
+    CHALLENGE_LIVE            = 1 [(json_value) = "challenge_live"];
+    CHEERFUL_CARNIVAL_OPEN    = 2 [(json_value) = "cheerful_carnival_open"];
+    CHEERFUL_CARNIVAL_PRIVATE = 3 [(json_value) = "cheerful_carnival_private"];
+    MULTI_OPEN                = 4 [(json_value) = "multi_open"];
+    PRELIMINARY_TOURNAMENT    = 5 [(json_value) = "preliminary_tournament"];
+    RANK_MATCH                = 6 [(json_value) = "rank_match"];
+    SOLO                      = 7 [(json_value) = "solo"];
+  }
+
+  optional LiveType live_type = 1 [(json_name) = "liveType"];
+  optional int32 play_level   = 2 [(json_name) = "playLevel"];
+  optional int32 s            = 3 [(json_name) = "s"];
+  optional int32 a            = 4 [(json_name) = "a"];
+  optional int32 b            = 5 [(json_name) = "b"];
+  optional int32 c            = 6 [(json_name) = "c"];
+}

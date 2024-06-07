@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message BillingProduct {
+  option (master_db_file)    = "billingProducts.json";
+  optional int32 id          = 1 [(json_name) = "id"];
+  optional int32 group_id    = 2 [(json_name) = "groupId"];
+  optional string platform   = 3 [(json_name) = "platform"];
+  optional string product_id = 4 [(json_name) = "productId"];
+  optional int32 price       = 5 [(json_name) = "price"];
+  optional float unit_price  = 6 [(json_name) = "unitPrice"];
+}

@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message Stamp {
+  option (master_db_file) = "stamps.json";
+  enum StampType {
+    UNKNOWN_STAMP_TYPE        = 0;
+    CHEERFUL_CARNIVAL_MESSAGE = 1 [(json_value) = "cheerful_carnival_message"];
+    ILLUSTRATION              = 2 [(json_value) = "illustration"];
+    TEXT                      = 3 [(json_value) = "text"];
+  }
+
+  enum ArchiveDisplayType {
+    UNKNOWN_ARCHIVE_DISPLAY_TYPE = 0;
+    NONE                         = 1 [(json_value) = "none"];
+  }
+
+  optional int32 id                                = 1 [(json_name) = "id"];
+  optional StampType stamp_type                    = 2 [(json_name) = "stampType"];
+  optional int32 seq                               = 3 [(json_name) = "seq"];
+  optional string name                             = 4 [(json_name) = "name"];
+  optional string assetbundle_name                 = 5 [(json_name) = "assetbundleName"];
+  optional string balloon_assetbundle_name         = 6 [(json_name) = "balloonAssetbundleName"];
+  optional int32 character_id1                     = 7 [(json_name) = "characterId1"];
+  optional int32 game_character_unit_id            = 8 [(json_name) = "gameCharacterUnitId"];
+  optional int64 archive_published_at              = 9 [(json_name) = "archivePublishedAt"];
+  optional string description                      = 10 [(json_name) = "description"];
+  optional ArchiveDisplayType archive_display_type = 11 [(json_name) = "archiveDisplayType"];
+  optional int32 character_id2                     = 12 [(json_name) = "characterId2"];
+}

@@ -1,0 +1,45 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+repos:
+-   repo: local
+    hooks:
+    -   id: refresh-compile-commands
+        name: Refresh compile_commands.json
+        entry: refresh_compile_commands.sh
+        language: script
+        always_run: true
+        files: 'none'
+    -   id: test-all
+        name: Test all targets
+        entry: test.sh
+        language: script
+        always_run: true
+        files: 'none'
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+    -   id: trailing-whitespace
+    -   id: end-of-file-fixer
+    -   id: check-yaml
+        exclude: '^.clang-format'
+    -   id: check-added-large-files
+-   repo: https://github.com/jlebar/pre-commit-hooks.git
+    rev: f2d115a052860b09b2888b4f104be614bf3b4779
+    hooks:
+    -   id: do-not-submit
+    -   id: bazel-buildifier
+-   repo: https://github.com/pocc/pre-commit-hooks
+    rev: v1.3.5
+    hooks:
+    -   id: clang-format
+        args: [-i]
+        types_or: [c++, proto, textproto]
+        exclude: 'data/profile/profile.textproto'
+-   repo: https://github.com/google/pyink
+    rev: 23.10.0
+    hooks:
+    -   id: pyink
+-   repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.1.9
+    hooks:
+    -   id: ruff

@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message MusicMeta {
+  option (sekai_best_file)          = "music_metas.json";
+  optional int32 music_id           = 1 [(json_name) = "music_id"];
+  optional string difficulty        = 2 [(json_name) = "difficulty"];
+  optional float music_time         = 3 [(json_name) = "music_time"];
+  optional int32 event_rate         = 4 [(json_name) = "event_rate"];
+  optional double base_score        = 5 [(json_name) = "base_score"];
+  optional double base_score_auto   = 6 [(json_name) = "base_score_auto"];
+  repeated double skill_score_solo  = 7 [(json_name) = "skill_score_solo"];
+  repeated double skill_score_auto  = 8 [(json_name) = "skill_score_auto"];
+  repeated double skill_score_multi = 9 [(json_name) = "skill_score_multi"];
+  optional double fever_score       = 10 [(json_name) = "fever_score"];
+  optional float fever_end_time     = 11 [(json_name) = "fever_end_time"];
+  optional int32 tap_count          = 12 [(json_name) = "tap_count"];
+}

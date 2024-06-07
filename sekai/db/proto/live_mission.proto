@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message LiveMission {
+  option (master_db_file) = "liveMissions.json";
+  enum LiveMissionType {
+    UNKNOWN_LIVE_MISSION_TYPE = 0;
+    FREE                      = 1 [(json_value) = "free"];
+    PREMIUM                   = 2 [(json_value) = "premium"];
+  }
+
+  message Reward {
+    enum MissionType {
+      UNKNOWN_MISSION_TYPE = 0;
+      LIVE_MISSION         = 1 [(json_value) = "live_mission"];
+    }
+
+    optional int32 id                 = 1 [(json_name) = "id"];
+    optional MissionType mission_type = 2 [(json_name) = "missionType"];
+    optional int32 mission_id         = 3 [(json_name) = "missionId"];
+    optional int32 seq                = 4 [(json_name) = "seq"];
+    optional int32 resource_box_id    = 5 [(json_name) = "resourceBoxId"];
+  }
+
+  optional int32 id                          = 1 [(json_name) = "id"];
+  optional int32 live_mission_period_id      = 2 [(json_name) = "liveMissionPeriodId"];
+  optional LiveMissionType live_mission_type = 3 [(json_name) = "liveMissionType"];
+  optional int32 requirement                 = 4 [(json_name) = "requirement"];
+  repeated Reward rewards                    = 5 [(json_name) = "rewards"];
+}

@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message SpecialSeason {
+  option (master_db_file) = "specialSeasons.json";
+  enum SpecialSeasonType {
+    UNKNOWN_SPECIAL_SEASON_TYPE = 0;
+    APRIL_FOOL_2022             = 1 [(json_value) = "april_fool_2022"];
+  }
+
+  optional int32 id                              = 1 [(json_name) = "id"];
+  optional SpecialSeasonType special_season_type = 2 [(json_name) = "specialSeasonType"];
+  optional int64 start_at                        = 3 [(json_name) = "startAt"];
+  optional int64 end_at                          = 4 [(json_name) = "endAt"];
+  optional int32 priority                        = 5 [(json_name) = "priority"];
+}

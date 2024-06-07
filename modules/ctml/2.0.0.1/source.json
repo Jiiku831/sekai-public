@@ -1,0 +1,10 @@
+{
+    "integrity": "sha256-MZ4wcGqhoBu4JnfbrcIvbQB/DD+iRhF6IQXQqOzp30s=",
+    "strip_prefix": "CTML-116f11b42ea945f9fcc2b7d4f6d935b76e154587",
+    "url": "https://github.com/tinfoilboy/CTML/archive/116f11b42ea945f9fcc2b7d4f6d935b76e154587.zip",
+    "patch_strip": 0,
+    "patches": {
+      "add_build_file.patch": "",
+      "add_module_file.patch": ""
+    }
+}

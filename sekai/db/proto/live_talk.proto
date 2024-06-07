@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message LiveTalk {
+  option (master_db_file) = "liveTalks.json";
+  enum LiveTalkType {
+    UNKNOWN_LIVE_TALK_TYPE = 0;
+    FAILED                 = 1 [(json_value) = "failed"];
+    SUCCESS                = 2 [(json_value) = "success"];
+  }
+
+  optional int32 id                    = 1 [(json_name) = "id"];
+  optional LiveTalkType live_talk_type = 2 [(json_name) = "liveTalkType"];
+  optional string scenario_id          = 3 [(json_name) = "scenarioId"];
+  optional int32 character_id1         = 4 [(json_name) = "characterId1"];
+  optional int32 character_id2         = 5 [(json_name) = "characterId2"];
+}

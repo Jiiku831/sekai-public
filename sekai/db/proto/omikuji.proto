@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message Omikuji {
+  option (master_db_file) = "omikujis.json";
+  enum Unit {
+    UNKNOWN_UNIT   = 0;
+    IDOL           = 1 [(json_value) = "idol"];
+    LIGHT_SOUND    = 2 [(json_value) = "light_sound"];
+    PIAPRO         = 3 [(json_value) = "piapro"];
+    SCHOOL_REFUSAL = 4 [(json_value) = "school_refusal"];
+    STREET         = 5 [(json_value) = "street"];
+    THEME_PARK     = 6 [(json_value) = "theme_park"];
+  }
+
+  enum FortuneType {
+    UNKNOWN_FORTUNE_TYPE = 0;
+    FORTUNE              = 1 [(json_value) = "fortune"];
+    GRATE_FORTUNE        = 2 [(json_value) = "grate_fortune"];
+    GRATE_MISFORTUNE     = 3 [(json_value) = "grate_misfortune"];
+    MIDDLE_FORTUNE       = 4 [(json_value) = "middle_fortune"];
+    MISFORTUNE           = 5 [(json_value) = "misfortune"];
+    SMALL_FORTUNE        = 6 [(json_value) = "small_fortune"];
+    UNCERTAIN_LUCK       = 7 [(json_value) = "uncertain_luck"];
+  }
+
+  optional int32 id                              = 1 [(json_name) = "id"];
+  optional int32 omikuji_group_id                = 2 [(json_name) = "omikujiGroupId"];
+  optional Unit unit                             = 3 [(json_name) = "unit"];
+  optional FortuneType fortune_type              = 4 [(json_name) = "fortuneType"];
+  optional string summary                        = 5 [(json_name) = "summary"];
+  optional string title1                         = 6 [(json_name) = "title1"];
+  optional string description1                   = 7 [(json_name) = "description1"];
+  optional string title2                         = 8 [(json_name) = "title2"];
+  optional string description2                   = 9 [(json_name) = "description2"];
+  optional string title3                         = 10 [(json_name) = "title3"];
+  optional string description3                   = 11 [(json_name) = "description3"];
+  optional string unit_assetbundle_name          = 12 [(json_name) = "unitAssetbundleName"];
+  optional string fortune_assetbundle_name       = 13 [(json_name) = "fortuneAssetbundleName"];
+  optional string omikuji_cover_assetbundle_name = 14 [(json_name) = "omikujiCoverAssetbundleName"];
+  optional string unit_file_path                 = 15 [(json_name) = "unitFilePath"];
+  optional string fortune_file_path              = 16 [(json_name) = "fortuneFilePath"];
+  optional string omikuji_cover_file_path        = 17 [(json_name) = "omikujiCoverFilePath"];
+}

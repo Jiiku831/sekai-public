@@ -1,0 +1,6 @@
+load("@gzgz_rules_sass//sass:defs.bzl", "sass_binary")
+
+sass_binary(
+    name = "report",
+    src = "report.sass",
+)

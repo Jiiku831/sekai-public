@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message BondsRankUpLive2D {
+  option (master_db_file) = "bondsRankUpLive2ds.json";
+  enum Unit {
+    UNKNOWN_UNIT   = 0;
+    IDOL           = 1 [(json_value) = "idol"];
+    LIGHT_SOUND    = 2 [(json_value) = "light_sound"];
+    PIAPRO         = 3 [(json_value) = "piapro"];
+    SCHOOL_REFUSAL = 4 [(json_value) = "school_refusal"];
+    STREET         = 5 [(json_value) = "street"];
+    THEME_PARK     = 6 [(json_value) = "theme_park"];
+  }
+
+  optional int32 id                = 1 [(json_name) = "id"];
+  optional int32 character_id      = 2 [(json_name) = "characterId"];
+  optional Unit unit               = 3 [(json_name) = "unit"];
+  optional string assetbundle_name = 4 [(json_name) = "assetbundleName"];
+  optional string motion           = 5 [(json_name) = "motion"];
+  optional string expression       = 6 [(json_name) = "expression"];
+  optional int32 weight            = 7 [(json_name) = "weight"];
+  optional bool default_flg        = 8 [(json_name) = "defaultFlg"];
+}

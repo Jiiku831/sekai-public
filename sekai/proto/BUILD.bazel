@@ -1,0 +1,69 @@
+load("@rules_proto//proto:defs.bzl", "proto_library")
+load("@rules_cc//cc:defs.bzl", "cc_proto_library")
+
+proto_library(
+    name = "card_proto",
+    srcs = ["card.proto"],
+    deps = [
+        ":card_state_proto",
+        "//sekai/db/proto:card_proto",
+    ],
+)
+
+cc_proto_library(
+    name = "card_cc_proto",
+    deps = [":card_proto"],
+)
+
+proto_library(
+    name = "card_state_proto",
+    srcs = ["card_state.proto"],
+)
+
+cc_proto_library(
+    name = "card_state_cc_proto",
+    deps = [":card_state_proto"],
+)
+
+proto_library(
+    name = "event_bonus_proto",
+    srcs = ["event_bonus.proto"],
+    deps = ["//sekai/db/proto:enums_proto"],
+)
+
+cc_proto_library(
+    name = "event_bonus_cc_proto",
+    deps = [":event_bonus_proto"],
+)
+
+proto_library(
+    name = "event_id_proto",
+    srcs = ["event_id.proto"],
+)
+
+cc_proto_library(
+    name = "event_id_cc_proto",
+    deps = [":event_id_proto"],
+)
+
+proto_library(
+    name = "profile_proto",
+    srcs = ["profile.proto"],
+    deps = [":card_state_proto"],
+)
+
+cc_proto_library(
+    name = "profile_cc_proto",
+    deps = [":profile_proto"],
+)
+
+proto_library(
+    name = "team_proto",
+    srcs = ["team.proto"],
+    deps = [":card_proto"],
+)
+
+cc_proto_library(
+    name = "team_cc_proto",
+    deps = [":team_proto"],
+)

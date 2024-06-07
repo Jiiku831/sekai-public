@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message PaidVirtualLiveShopItem {
+  option (master_db_file) = "paidVirtualLiveShopItems.json";
+  enum PaidVirtualLiveShopItemPurchaseType {
+    UNKNOWN_PAID_VIRTUAL_LIVE_SHOP_ITEM_PURCHASE_TYPE = 0;
+    BUNDLE                                            = 1 [(json_value) = "bundle"];
+    SINGLE                                            = 2 [(json_value) = "single"];
+  }
+
+  message PaidVirtualLiveShopCost {
+    enum CostResourceType {
+      UNKNOWN_COST_RESOURCE_TYPE = 0;
+      JEWEL                      = 1 [(json_value) = "jewel"];
+      PAID_JEWEL                 = 2 [(json_value) = "paid_jewel"];
+    }
+
+    optional int32 id                            = 1 [(json_name) = "id"];
+    optional CostResourceType cost_resource_type = 2 [(json_name) = "costResourceType"];
+    optional int32 cost_resource_quantity        = 3 [(json_name) = "costResourceQuantity"];
+    optional int64 start_at                      = 4 [(json_name) = "startAt"];
+  }
+
+  optional int32 id                                   = 1 [(json_name) = "id"];
+  optional int32 seq                                  = 2 [(json_name) = "seq"];
+  optional int32 paid_virtual_live_shop_item_group_id = 3 [(json_name) = "paidVirtualLiveShopItemGroupId"];
+  optional string name                                = 4 [(json_name) = "name"];
+  optional int32 resource_box_id                      = 5 [(json_name) = "resourceBoxId"];
+  optional PaidVirtualLiveShopItemPurchaseType paid_virtual_live_shop_item_purchase_type = 6
+      [(json_name) = "paidVirtualLiveShopItemPurchaseType"];
+  repeated PaidVirtualLiveShopCost paid_virtual_live_shop_costs = 7 [(json_name) = "paidVirtualLiveShopCosts"];
+  optional string assetbundle_name                              = 8 [(json_name) = "assetbundleName"];
+  optional string description                                   = 9 [(json_name) = "description"];
+}

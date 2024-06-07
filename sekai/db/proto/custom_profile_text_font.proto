@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message CustomProfileTextFont {
+  option (master_db_file)          = "customProfileTextFonts.json";
+  optional int32 id                = 1 [(json_name) = "id"];
+  optional string name             = 2 [(json_name) = "name"];
+  optional string font_name        = 3 [(json_name) = "fontName"];
+  optional string assetbundle_name = 4 [(json_name) = "assetbundleName"];
+}

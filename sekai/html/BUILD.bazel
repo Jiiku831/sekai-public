@@ -1,0 +1,48 @@
+load("@rules_cc//cc:defs.bzl", "cc_library")
+
+cc_library(
+    name = "card",
+    srcs = ["card.cc"],
+    hdrs = ["card.h"],
+    deps = [
+        "//sekai/db/proto:all",
+        "//sekai/proto:card_cc_proto",
+        "//sekai/proto:card_state_cc_proto",
+        "@abseil-cpp//absl/log:absl_check",
+        "@abseil-cpp//absl/strings",
+        "@abseil-cpp//absl/strings:str_format",
+        "@ctml",
+    ],
+)
+
+cc_library(
+    name = "report",
+    srcs = ["report.cc"],
+    hdrs = ["report.h"],
+    data = [
+        "//sekai/html/styles:report",
+    ],
+    deps = [
+        ":card",
+        "//sekai:file_util",
+        "//sekai/db/proto:all",
+        "//sekai/proto:team_cc_proto",
+        "@abseil-cpp//absl/strings",
+        "@abseil-cpp//absl/strings:str_format",
+        "@ctml",
+    ],
+)
+
+cc_library(
+    name = "team",
+    srcs = ["team.cc"],
+    hdrs = ["team.h"],
+    deps = [
+        ":card",
+        "//sekai/db/proto:all",
+        "//sekai/proto:team_cc_proto",
+        "@abseil-cpp//absl/strings",
+        "@abseil-cpp//absl/strings:str_format",
+        "@ctml",
+    ],
+)

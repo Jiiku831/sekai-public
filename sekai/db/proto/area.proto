@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message Area {
+  option (master_db_file) = "areas.json";
+  enum AreaType {
+    UNKNOWN_AREA_TYPE = 0;
+    REALITY_WORLD     = 1 [(json_value) = "reality_world"];
+    SPIRIT_WORLD      = 2 [(json_value) = "spirit_world"];
+  }
+
+  enum ViewType {
+    UNKNOWN_VIEW_TYPE = 0;
+    QUARTER_VIEW      = 1 [(json_value) = "quarter_view"];
+    SIDE_VIEW         = 2 [(json_value) = "side_view"];
+  }
+
+  enum DisplayTimelineType {
+    UNKNOWN_DISPLAY_TIMELINE_TYPE = 0;
+    ALL                           = 1 [(json_value) = "all"];
+    NEXT_GRADE                    = 2 [(json_value) = "next_grade"];
+  }
+
+  optional int32 id                                  = 1 [(json_name) = "id"];
+  optional string assetbundle_name                   = 2 [(json_name) = "assetbundleName"];
+  optional int32 group_id                            = 3 [(json_name) = "groupId"];
+  optional bool is_base_area                         = 4 [(json_name) = "isBaseArea"];
+  optional AreaType area_type                        = 5 [(json_name) = "areaType"];
+  optional ViewType view_type                        = 6 [(json_name) = "viewType"];
+  optional DisplayTimelineType display_timeline_type = 7 [(json_name) = "displayTimelineType"];
+  optional string name                               = 8 [(json_name) = "name"];
+  optional int32 release_condition_id                = 9 [(json_name) = "releaseConditionId"];
+  optional string sub_name                           = 10 [(json_name) = "subName"];
+  optional string label                              = 11 [(json_name) = "label"];
+  optional int64 start_at                            = 12 [(json_name) = "startAt"];
+  optional int64 end_at                              = 13 [(json_name) = "endAt"];
+}

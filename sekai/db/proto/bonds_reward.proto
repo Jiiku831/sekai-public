@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message BondsReward {
+  option (master_db_file) = "bondsRewards.json";
+  enum BondsRewardType {
+    UNKNOWN_BONDS_REWARD_TYPE = 0;
+    CUT_IN_VOICE              = 1 [(json_value) = "cut_in_voice"];
+    RESOURCE                  = 2 [(json_value) = "resource"];
+  }
+
+  optional int32 id                          = 1 [(json_name) = "id"];
+  optional int32 bonds_group_id              = 2 [(json_name) = "bondsGroupId"];
+  optional int32 rank                        = 3 [(json_name) = "rank"];
+  optional int32 seq                         = 4 [(json_name) = "seq"];
+  optional BondsRewardType bonds_reward_type = 5 [(json_name) = "bondsRewardType"];
+  optional int32 resource_box_id             = 6 [(json_name) = "resourceBoxId"];
+  optional string description                = 7 [(json_name) = "description"];
+}

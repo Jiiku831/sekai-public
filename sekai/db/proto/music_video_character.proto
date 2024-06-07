@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message MusicVideoCharacter {
+  option (master_db_file) = "musicVideoCharacters.json";
+  enum DefaultMusicType {
+    UNKNOWN_DEFAULT_MUSIC_TYPE = 0;
+    ORIGINAL_MUSIC             = 1 [(json_value) = "original_music"];
+    SEKAI                      = 2 [(json_value) = "sekai"];
+  }
+
+  optional int32 id                            = 1 [(json_name) = "id"];
+  optional int32 music_id                      = 2 [(json_name) = "musicId"];
+  optional DefaultMusicType default_music_type = 3 [(json_name) = "defaultMusicType"];
+  optional int32 game_character_unit_id        = 4 [(json_name) = "gameCharacterUnitId"];
+  optional int32 dance_priority                = 5 [(json_name) = "dancePriority"];
+  optional int32 seq                           = 6 [(json_name) = "seq"];
+  optional int32 priority                      = 7 [(json_name) = "priority"];
+}

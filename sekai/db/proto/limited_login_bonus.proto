@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message LimitedLoginBonus {
+  option (master_db_file) = "limitedLoginBonuses.json";
+  message LimitedLoginBonusDetail {
+    optional int32 id                     = 1 [(json_name) = "id"];
+    optional int32 limited_login_bonus_id = 2 [(json_name) = "limitedLoginBonusId"];
+    optional int32 day                    = 3 [(json_name) = "day"];
+    optional int32 resource_box_id        = 4 [(json_name) = "resourceBoxId"];
+  }
+
+  optional int32 id                                            = 1 [(json_name) = "id"];
+  optional int32 seq                                           = 2 [(json_name) = "seq"];
+  optional string name                                         = 3 [(json_name) = "name"];
+  optional int64 start_at                                      = 4 [(json_name) = "startAt"];
+  optional int64 end_at                                        = 5 [(json_name) = "endAt"];
+  optional string assetbundle_name                             = 6 [(json_name) = "assetbundleName"];
+  optional int64 close_at                                      = 7 [(json_name) = "closeAt"];
+  repeated LimitedLoginBonusDetail limited_login_bonus_details = 8 [(json_name) = "limitedLoginBonusDetails"];
+}

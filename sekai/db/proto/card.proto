@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+import "sekai/db/proto/enums.proto";
+import "sekai/db/proto/descriptor.proto";
+
+package sekai.db;
+
+message Card {
+  option (master_db_file) = "cards.json";
+  message CardParameter {
+    optional int32 id                              = 1 [(json_name) = "id"];
+    optional int32 card_id                         = 2 [(json_name) = "cardId"];
+    optional int32 card_level                      = 3 [(json_name) = "cardLevel"];
+    optional CardParameterType card_parameter_type = 4 [(json_name) = "cardParameterType"];
+    optional int32 power                           = 5 [(json_name) = "power"];
+  }
+
+  message MasterLessonAchieveResource {
+    optional int32 release_condition_id = 1 [(json_name) = "releaseConditionId"];
+    optional int32 card_id              = 2 [(json_name) = "cardId"];
+    optional int32 master_rank          = 3 [(json_name) = "masterRank"];
+  }
+
+  message SpecialTrainingCost {
+    message Cost {
+      optional int32 resource_id          = 1 [(json_name) = "resourceId"];
+      optional ResourceType resource_type = 2 [(json_name) = "resourceType"];
+      optional int32 resource_level       = 3 [(json_name) = "resourceLevel"];
+      optional int32 quantity             = 4 [(json_name) = "quantity"];
+    }
+
+    optional int32 card_id = 1 [(json_name) = "cardId"];
+    optional int32 seq     = 2 [(json_name) = "seq"];
+    optional Cost cost     = 3 [(json_name) = "cost"];
+  }
+
+  optional int32 id                                  = 1 [(json_name) = "id", (primary_key) = true];
+  optional int32 seq                                 = 2 [(json_name) = "seq"];
+  optional int32 character_id                        = 3 [(json_name) = "characterId"];
+  optional CardRarityType card_rarity_type           = 4 [(json_name) = "cardRarityType"];
+  optional int32 special_training_power1_bonus_fixed = 5 [(json_name) = "specialTrainingPower1BonusFixed"];
+  optional int32 special_training_power2_bonus_fixed = 6 [(json_name) = "specialTrainingPower2BonusFixed"];
+  optional int32 special_training_power3_bonus_fixed = 7 [(json_name) = "specialTrainingPower3BonusFixed"];
+  optional Attr attr                                 = 8 [(json_name) = "attr"];
+  optional Unit support_unit                         = 9 [(json_name) = "supportUnit"];
+  optional int32 skill_id                            = 10 [(json_name) = "skillId"];
+  optional string card_skill_name                    = 11 [(json_name) = "cardSkillName"];
+  optional string prefix                             = 12 [(json_name) = "prefix"];
+  optional string assetbundle_name                   = 13 [(json_name) = "assetbundleName"];
+  optional string gacha_phrase                       = 14 [(json_name) = "gachaPhrase"];
+  optional string flavor_text                        = 15 [(json_name) = "flavorText"];
+  optional int64 release_at                          = 16 [(json_name) = "releaseAt"];
+  optional int64 archive_published_at                = 17 [(json_name) = "archivePublishedAt"];
+  repeated CardParameter card_parameters             = 18 [(json_name) = "cardParameters"];
+  repeated MasterLessonAchieveResource master_lesson_achieve_resources = 19
+      [(json_name) = "masterLessonAchieveResources"];
+  repeated SpecialTrainingCost special_training_costs = 20 [(json_name) = "specialTrainingCosts"];
+  optional ArchiveDisplayType archive_display_type    = 21 [(json_name) = "archiveDisplayType"];
+}

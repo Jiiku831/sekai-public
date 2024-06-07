@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message VirtualBoothShop {
+  option (master_db_file) = "virtualBoothShops.json";
+  enum VirtualBoothShopType {
+    UNKNOWN_VIRTUAL_BOOTH_SHOP_TYPE = 0;
+    COLLECTION_GACHA                = 1 [(json_value) = "collection_gacha"];
+    OMIKUJI                         = 2 [(json_value) = "omikuji"];
+    VIRTUAL_SHOP                    = 3 [(json_value) = "virtual_shop"];
+  }
+
+  optional int32 id                                     = 1 [(json_name) = "id"];
+  optional int32 virtual_live_id                        = 2 [(json_name) = "virtualLiveId"];
+  optional VirtualBoothShopType virtual_booth_shop_type = 3 [(json_name) = "virtualBoothShopType"];
+  optional int32 target_id                              = 4 [(json_name) = "targetId"];
+}

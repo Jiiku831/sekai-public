@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message WorldBloom {
+  option (master_db_file)          = "worldBlooms.json";
+  optional int32 id                = 1 [(json_name) = "id"];
+  optional int32 event_id          = 2 [(json_name) = "eventId", (primary_key) = true];
+  optional int32 game_character_id = 3 [(json_name) = "gameCharacterId"];
+  optional int32 chapter_no        = 4 [(json_name) = "chapterNo"];
+  optional int64 chapter_start_at  = 5 [(json_name) = "chapterStartAt"];
+  optional int64 aggregate_at      = 6 [(json_name) = "aggregateAt"];
+  optional int64 chapter_end_at    = 7 [(json_name) = "chapterEndAt"];
+  optional int32 costume2d_id      = 8 [(json_name) = "costume2dId"];
+  optional bool is_supplemental    = 9 [(json_name) = "isSupplemental"];
+}

@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message EpisodeBackgroundMusic {
+  option (master_db_file) = "episodeBackgroundMusics.json";
+  enum StoryType {
+    UNKNOWN_STORY_TYPE = 0;
+    CARD_STORY         = 1 [(json_value) = "card_story"];
+    EVENT_STORY        = 2 [(json_value) = "event_story"];
+    SPECIAL_STORY      = 3 [(json_value) = "special_story"];
+    UNIT_STORY         = 4 [(json_value) = "unit_story"];
+  }
+
+  optional int32 id                  = 1 [(json_name) = "id"];
+  optional StoryType story_type      = 2 [(json_name) = "storyType"];
+  optional int32 episode_id          = 3 [(json_name) = "episodeId"];
+  optional int32 background_music_id = 4 [(json_name) = "backgroundMusicId"];
+}

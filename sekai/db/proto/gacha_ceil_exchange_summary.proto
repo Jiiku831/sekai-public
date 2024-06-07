@@ -1,0 +1,66 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message GachaCeilExchangeSummary {
+  option (master_db_file) = "gachaCeilExchangeSummaries.json";
+
+  message GachaCeilExchange {
+
+    message GachaCeilExchangeCost {
+      enum ResourceType {
+        UNKNOWN_RESOURCE_TYPE = 0;
+        GACHA_CEIL_ITEM       = 1 [(json_value) = "gacha_ceil_item"];
+        MATERIAL              = 2 [(json_value) = "material"];
+      }
+
+      optional int32 gacha_ceil_exchange_id = 1 [(json_name) = "gachaCeilExchangeId"];
+      optional int32 gacha_ceil_item_id     = 2 [(json_name) = "gachaCeilItemId"];
+      optional int32 quantity               = 3 [(json_name) = "quantity"];
+      optional ResourceType resource_type   = 4 [(json_name) = "resourceType"];
+      optional int32 resource_id            = 5 [(json_name) = "resourceId"];
+    }
+
+    enum GachaCeilExchangeLabelType {
+      UNKNOWN_GACHA_CEIL_EXCHANGE_LABEL_TYPE = 0;
+      FES                                    = 1 [(json_value) = "fes"];
+      LIMITED                                = 2 [(json_value) = "limited"];
+    }
+
+    message GachaCeilExchangeSubstituteCost {
+      enum ResourceType {
+        UNKNOWN_RESOURCE_TYPE = 0;
+        MATERIAL              = 1 [(json_value) = "material"];
+      }
+
+      optional int32 id                   = 1 [(json_name) = "id"];
+      optional ResourceType resource_type = 2 [(json_name) = "resourceType"];
+      optional int32 resource_id          = 3 [(json_name) = "resourceId"];
+      optional int32 substitute_quantity  = 4 [(json_name) = "substituteQuantity"];
+    }
+
+    optional int32 id                                                  = 1 [(json_name) = "id"];
+    optional int32 gacha_ceil_exchange_summary_id                      = 2 [(json_name) = "gachaCeilExchangeSummaryId"];
+    optional int32 seq                                                 = 3 [(json_name) = "seq"];
+    optional int32 resource_box_id                                     = 4 [(json_name) = "resourceBoxId"];
+    optional int64 start_at                                            = 5 [(json_name) = "startAt"];
+    optional int64 end_at                                              = 6 [(json_name) = "endAt"];
+    optional GachaCeilExchangeCost gacha_ceil_exchange_cost            = 7 [(json_name) = "gachaCeilExchangeCost"];
+    optional int32 exchange_limit                                      = 8 [(json_name) = "exchangeLimit"];
+    optional GachaCeilExchangeLabelType gacha_ceil_exchange_label_type = 9 [(json_name) = "gachaCeilExchangeLabelType"];
+    optional int32 substitute_limit                                    = 10 [(json_name) = "substituteLimit"];
+    repeated GachaCeilExchangeSubstituteCost gacha_ceil_exchange_substitute_costs = 11
+        [(json_name) = "gachaCeilExchangeSubstituteCosts"];
+  }
+
+  optional int32 id                               = 1 [(json_name) = "id"];
+  optional int32 seq                              = 2 [(json_name) = "seq"];
+  optional int32 gacha_id                         = 3 [(json_name) = "gachaId"];
+  optional string assetbundle_name                = 4 [(json_name) = "assetbundleName"];
+  optional int64 start_at                         = 5 [(json_name) = "startAt"];
+  optional int64 end_at                           = 6 [(json_name) = "endAt"];
+  repeated GachaCeilExchange gacha_ceil_exchanges = 7 [(json_name) = "gachaCeilExchanges"];
+  optional int32 gacha_ceil_item_id               = 8 [(json_name) = "gachaCeilItemId"];
+}

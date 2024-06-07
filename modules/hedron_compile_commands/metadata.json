@@ -1,0 +1,17 @@
+{
+    "homepage": "https://github.com/hedronvision/bazel-compile-commands-extractor",
+    "maintainers": [
+        {
+            "email": "contactus@hedronvision.com",
+            "github": "hedronvision",
+            "name": "Hedron Vision"
+        }
+    ],
+    "repository": [
+        "github:hedronvision/bazel-compile-commands-extractor"
+    ],
+    "versions": [
+        "1.0"
+    ],
+    "yanked_versions": {}
+}

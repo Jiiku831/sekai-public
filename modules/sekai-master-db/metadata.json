@@ -1,0 +1,17 @@
+{
+    "homepage": "https://github.com/Sekai-World/sekai-master-db-diff",
+    "maintainers": [
+        {
+            "email": "",
+            "github": "sekai-world",
+            "name": "Sekai World"
+        }
+    ],
+    "repository": [
+        "github:Sekai-World/sekai-master-db-diff"
+    ],
+    "versions": [
+        "3.6.5.11.2"
+    ],
+    "yanked_versions": {}
+}

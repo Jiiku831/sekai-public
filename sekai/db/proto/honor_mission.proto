@@ -1,0 +1,78 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message HonorMission {
+  option (master_db_file) = "honorMissions.json";
+  enum HonorMissionType {
+    UNKNOWN_HONOR_MISSION_TYPE                    = 0;
+    ACTION_SET                                    = 1 [(json_value) = "action_set"];
+    AREA_ITEM_5_LEVEL                             = 2 [(json_value) = "area_item_5_level"];
+    CHARACTER_RANK_ALL                            = 3 [(json_value) = "character_rank_all"];
+    CLEAR_LIVE                                    = 4 [(json_value) = "clear_live"];
+    CLEAR_LIVE_COMBO                              = 5 [(json_value) = "clear_live_combo"];
+    CLEAR_LIVE_DIFFICULTY_ALL                     = 6 [(json_value) = "clear_live_difficulty_all"];
+    CLEAR_LIVE_MALE                               = 7 [(json_value) = "clear_live_male"];
+    CLEAR_LIVE_NEXT_GRADE_SCHOOL_YEAR_2           = 8 [(json_value) = "clear_live_next_grade_school_year_2"];
+    CLEAR_LIVE_NEXT_GRADE_SCHOOL_YEAR_3           = 9 [(json_value) = "clear_live_next_grade_school_year_3"];
+    CLEAR_LIVE_SCHOOL_KAMIYAMA                    = 10 [(json_value) = "clear_live_school_kamiyama"];
+    CLEAR_LIVE_SCHOOL_MIYAMASUZAKA                = 11 [(json_value) = "clear_live_school_miyamasuzaka"];
+    CLEAR_LIVE_SCHOOL_YEAR_1                      = 12 [(json_value) = "clear_live_school_year_1"];
+    CLEAR_LIVE_SCHOOL_YEAR_2                      = 13 [(json_value) = "clear_live_school_year_2"];
+    CLEAR_LIVE_TARGET_LIFE                        = 14 [(json_value) = "clear_live_target_life"];
+    CLEAR_MULTI_LIVE_ALL_FRIEND                   = 15 [(json_value) = "clear_multi_live_all_friend"];
+    CLEAR_MULTI_LIVE_FULL_COMBO_ALL               = 16 [(json_value) = "clear_multi_live_full_combo_all"];
+    COLLECT_ANOTHER_VOCAL                         = 17 [(json_value) = "collect_another_vocal"];
+    COLLECT_COIN_TOTAL                            = 18 [(json_value) = "collect_coin_total"];
+    COLLECT_COSTUME_3D                            = 19 [(json_value) = "collect_costume_3d"];
+    COLLECT_STAMP                                 = 20 [(json_value) = "collect_stamp"];
+    DUPLICATE_CARD_TOTAL                          = 21 [(json_value) = "duplicate_card_total"];
+    EASY_FULL_COMBO                               = 22 [(json_value) = "easy_full_combo"];
+    EXPERT_FULL_COMBO                             = 23 [(json_value) = "expert_full_combo"];
+    FINISH_LIVE_WITH_EMPTY_LIFE                   = 24 [(json_value) = "finish_live_with_empty_life"];
+    HARD_FULL_COMBO                               = 25 [(json_value) = "hard_full_combo"];
+    IDOL_VIRTUAL_LIVE_TOTAL_CHEER_POINT           = 26 [(json_value) = "idol_virtual_live_total_cheer_point"];
+    LIGHT_SOUND_VIRTUAL_LIVE_TOTAL_CHEER_POINT    = 27 [(json_value) = "light_sound_virtual_live_total_cheer_point"];
+    LOGIN_CONTINUED                               = 28 [(json_value) = "login_continued"];
+    LOGIN_TOTAL                                   = 29 [(json_value) = "login_total"];
+    MAKE_FRIEND                                   = 30 [(json_value) = "make_friend"];
+    MASTER_FULL_COMBO                             = 31 [(json_value) = "master_full_combo"];
+    MASTER_FULL_PERFECT                           = 32 [(json_value) = "master_full_perfect"];
+    MULTI_LIVE_MVP                                = 33 [(json_value) = "multi_live_mvp"];
+    MULTI_LIVE_SAME_HONOR                         = 34 [(json_value) = "multi_live_same_honor"];
+    MULTI_LIVE_SELECT_SAME_MUSIC                  = 35 [(json_value) = "multi_live_select_same_music"];
+    MULTI_LIVE_STAMP                              = 36 [(json_value) = "multi_live_stamp"];
+    MULTI_LIVE_SUPER_STAR                         = 37 [(json_value) = "multi_live_super_star"];
+    NORMAL_FULL_COMBO                             = 38 [(json_value) = "normal_full_combo"];
+    PIAPRO_VIRTUAL_LIVE_TOTAL_CHEER_POINT         = 39 [(json_value) = "piapro_virtual_live_total_cheer_point"];
+    PLAYER_RANK                                   = 40 [(json_value) = "player_rank"];
+    READ_STORY_NO_SKIP                            = 41 [(json_value) = "read_story_no_skip"];
+    READ_UNIT_STORY_NO_SKIP                       = 42 [(json_value) = "read_unit_story_no_skip"];
+    SCHOOL_REFUSAL_VIRTUAL_LIVE_TOTAL_CHEER_POINT = 43 [(json_value) = "school_refusal_virtual_live_total_cheer_point"];
+    SEND_FRIEND_REQUEST                           = 44 [(json_value) = "send_friend_request"];
+    STREET_VIRTUAL_LIVE_TOTAL_CHEER_POINT         = 45 [(json_value) = "street_virtual_live_total_cheer_point"];
+    THEME_PARK_VIRTUAL_LIVE_TOTAL_CHEER_POINT     = 46 [(json_value) = "theme_park_virtual_live_total_cheer_point"];
+  }
+
+  message Reward {
+    enum MissionType {
+      UNKNOWN_MISSION_TYPE = 0;
+      HONOR_MISSION        = 1 [(json_value) = "honor_mission"];
+    }
+
+    optional int32 id                 = 1 [(json_name) = "id"];
+    optional MissionType mission_type = 2 [(json_name) = "missionType"];
+    optional int32 mission_id         = 3 [(json_name) = "missionId"];
+    optional int32 seq                = 4 [(json_name) = "seq"];
+    optional int32 resource_box_id    = 5 [(json_name) = "resourceBoxId"];
+  }
+
+  optional int32 id                            = 1 [(json_name) = "id"];
+  optional int32 seq                           = 2 [(json_name) = "seq"];
+  optional HonorMissionType honor_mission_type = 3 [(json_name) = "honorMissionType"];
+  optional int32 requirement                   = 4 [(json_name) = "requirement"];
+  optional string sentence                     = 5 [(json_name) = "sentence"];
+  repeated Reward rewards                      = 6 [(json_name) = "rewards"];
+}

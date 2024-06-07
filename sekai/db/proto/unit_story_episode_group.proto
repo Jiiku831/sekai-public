@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message UnitStoryEpisodeGroup {
+  option (master_db_file) = "unitStoryEpisodeGroups.json";
+  enum Unit {
+    UNKNOWN_UNIT   = 0;
+    IDOL           = 1 [(json_value) = "idol"];
+    LIGHT_SOUND    = 2 [(json_value) = "light_sound"];
+    PIAPRO         = 3 [(json_value) = "piapro"];
+    SCHOOL_REFUSAL = 4 [(json_value) = "school_refusal"];
+    STREET         = 5 [(json_value) = "street"];
+    THEME_PARK     = 6 [(json_value) = "theme_park"];
+  }
+
+  optional int32 id                     = 1 [(json_name) = "id"];
+  optional Unit unit                    = 2 [(json_name) = "unit"];
+  optional string unit_episode_category = 3 [(json_name) = "unitEpisodeCategory"];
+  optional string outline               = 4 [(json_name) = "outline"];
+  optional string assetbundle_name      = 5 [(json_name) = "assetbundleName"];
+}

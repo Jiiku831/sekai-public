@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message IngameNote {
+  option (master_db_file) = "ingameNotes.json";
+  enum IngameNoteType {
+    UNKNOWN_INGAME_NOTE_TYPE = 0;
+    FLICK                    = 1 [(json_value) = "flick"];
+    FLICK_CRITICAL           = 2 [(json_value) = "flick_critical"];
+    FRICTION                 = 3 [(json_value) = "friction"];
+    FRICTION_CRITICAL        = 4 [(json_value) = "friction_critical"];
+    FRICTION_FLICK           = 5 [(json_value) = "friction_flick"];
+    FRICTION_FLICK_CRITICAL  = 6 [(json_value) = "friction_flick_critical"];
+    FRICTION_LONG            = 7 [(json_value) = "friction_long"];
+    FRICTION_LONG_CRITICAL   = 8 [(json_value) = "friction_long_critical"];
+    LONG                     = 9 [(json_value) = "long"];
+    LONG_COMBO_AUTO          = 10 [(json_value) = "long_combo_auto"];
+    LONG_CRITICAL            = 11 [(json_value) = "long_critical"];
+    LONG_MID                 = 12 [(json_value) = "long_mid"];
+    LONG_MID_CRITICAL        = 13 [(json_value) = "long_mid_critical"];
+    NORMAL                   = 14 [(json_value) = "normal"];
+    NORMAL_CRITICAL          = 15 [(json_value) = "normal_critical"];
+  }
+
+  optional int32 id                        = 1 [(json_name) = "id"];
+  optional IngameNoteType ingame_note_type = 2 [(json_name) = "ingameNoteType"];
+  optional float score_coefficient         = 3 [(json_name) = "scoreCoefficient"];
+  optional int32 damage_bad                = 4 [(json_name) = "damageBad"];
+  optional int32 damage_miss               = 5 [(json_name) = "damageMiss"];
+}

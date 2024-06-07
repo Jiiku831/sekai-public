@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "google/protobuf/any.proto";
+
+message Records {
+  repeated google.protobuf.Any records = 1;
+  // Base 64 encoded thumbnails.
+  map<string, string> thumbnails = 2;
+}

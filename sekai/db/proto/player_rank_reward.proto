@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message PlayerRankReward {
+  option (master_db_file)        = "playerRankRewards.json";
+  optional int32 id              = 1 [(json_name) = "id"];
+  optional int32 player_rank     = 2 [(json_name) = "playerRank"];
+  optional int32 seq             = 3 [(json_name) = "seq"];
+  optional int32 resource_box_id = 4 [(json_name) = "resourceBoxId"];
+}

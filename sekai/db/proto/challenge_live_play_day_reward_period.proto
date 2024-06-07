@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message ChallengeLivePlayDayRewardPeriod {
+  option (master_db_file) = "challengeLivePlayDayRewardPeriods.json";
+  message ChallengeLivePlayDayReward {
+    optional int32 id                                       = 1 [(json_name) = "id"];
+    optional int32 challenge_live_play_day_reward_period_id = 2 [(json_name) = "challengeLivePlayDayRewardPeriodId"];
+    optional int32 play_days                                = 3 [(json_name) = "playDays"];
+    optional int32 seq                                      = 4 [(json_name) = "seq"];
+    optional int32 resource_box_id                          = 5 [(json_name) = "resourceBoxId"];
+  }
+
+  optional int32 id                                                   = 1 [(json_name) = "id"];
+  optional int64 start_at                                             = 2 [(json_name) = "startAt"];
+  optional int64 end_at                                               = 3 [(json_name) = "endAt"];
+  optional int32 priority                                             = 4 [(json_name) = "priority"];
+  repeated ChallengeLivePlayDayReward challenge_live_play_day_rewards = 5 [(json_name) = "challengeLivePlayDayRewards"];
+}

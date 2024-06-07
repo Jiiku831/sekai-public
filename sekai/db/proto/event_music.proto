@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message EventMusic {
+  option (master_db_file)             = "eventMusics.json";
+  optional int32 event_id             = 1 [(json_name) = "eventId"];
+  optional int32 music_id             = 2 [(json_name) = "musicId"];
+  optional int32 seq                  = 3 [(json_name) = "seq"];
+  optional int32 release_condition_id = 4 [(json_name) = "releaseConditionId"];
+}

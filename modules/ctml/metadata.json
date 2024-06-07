@@ -1,0 +1,18 @@
+{
+    "homepage": "https://github.com/tinfoilboy/CTML",
+    "maintainers": [
+        {
+            "email": "me@maxwellflynn.com",
+            "github": "tinfoilboy",
+            "name": "Maxwell"
+        }
+    ],
+    "repository": [
+        "github:tinfoilboy/CTML"
+    ],
+    "versions": [
+        "2.0.0",
+        "2.0.0.1"
+    ],
+    "yanked_versions": {}
+}

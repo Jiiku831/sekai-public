@@ -1,0 +1,2537 @@
+load("@rules_proto//proto:defs.bzl", "proto_library")
+load("@rules_cc//cc:defs.bzl", "cc_library", "cc_proto_library")
+
+cc_library(
+    name = "all",
+    hdrs = ["all.h"],
+    deps = [
+        ":area_item_cc_proto",
+        ":area_item_level_cc_proto",
+        ":card_cc_proto",
+        ":card_episode_cc_proto",
+        ":character_rank_cc_proto",
+        ":descriptor_cc_proto",
+        ":enums_cc_proto",
+        ":event_card_cc_proto",
+        ":event_cc_proto",
+        ":event_deck_bonus_cc_proto",
+        ":event_rarity_bonus_rate_cc_proto",
+        ":game_character_cc_proto",
+        ":game_character_unit_cc_proto",
+        ":master_lesson_cc_proto",
+        ":music_meta_cc_proto",
+        ":records_cc_proto",
+        ":skill_cc_proto",
+        ":world_bloom_cc_proto",
+        ":world_bloom_different_attribute_bonus_cc_proto",
+        ":world_bloom_support_deck_bonus_cc_proto",
+    ],
+)
+
+proto_library(
+    name = "action_set_proto",
+    srcs = ["action_set.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "action_set_cc_proto",
+    deps = [":action_set_proto"],
+)
+
+proto_library(
+    name = "another3dmv_cut_in_proto",
+    srcs = ["another3dmv_cut_in.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "another3dmv_cut_in_cc_proto",
+    deps = [":another3dmv_cut_in_proto"],
+)
+
+proto_library(
+    name = "appeal_proto",
+    srcs = ["appeal.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "appeal_cc_proto",
+    deps = [":appeal_proto"],
+)
+
+proto_library(
+    name = "area_item_level_proto",
+    srcs = ["area_item_level.proto"],
+    deps = [
+        ":descriptor_proto",
+        ":enums_proto",
+    ],
+)
+
+cc_proto_library(
+    name = "area_item_level_cc_proto",
+    deps = [":area_item_level_proto"],
+)
+
+proto_library(
+    name = "area_item_proto",
+    srcs = ["area_item.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "area_item_cc_proto",
+    deps = [":area_item_proto"],
+)
+
+proto_library(
+    name = "area_playlist_proto",
+    srcs = ["area_playlist.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "area_playlist_cc_proto",
+    deps = [":area_playlist_proto"],
+)
+
+proto_library(
+    name = "area_proto",
+    srcs = ["area.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "area_cc_proto",
+    deps = [":area_proto"],
+)
+
+proto_library(
+    name = "avatar_accessory_proto",
+    srcs = ["avatar_accessory.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "avatar_accessory_cc_proto",
+    deps = [":avatar_accessory_proto"],
+)
+
+proto_library(
+    name = "avatar_coordinate_proto",
+    srcs = ["avatar_coordinate.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "avatar_coordinate_cc_proto",
+    deps = [":avatar_coordinate_proto"],
+)
+
+proto_library(
+    name = "avatar_costume_proto",
+    srcs = ["avatar_costume.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "avatar_costume_cc_proto",
+    deps = [":avatar_costume_proto"],
+)
+
+proto_library(
+    name = "avatar_motion_proto",
+    srcs = ["avatar_motion.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "avatar_motion_cc_proto",
+    deps = [":avatar_motion_proto"],
+)
+
+proto_library(
+    name = "avatar_skin_color_proto",
+    srcs = ["avatar_skin_color.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "avatar_skin_color_cc_proto",
+    deps = [":avatar_skin_color_proto"],
+)
+
+proto_library(
+    name = "background_music_proto",
+    srcs = ["background_music.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "background_music_cc_proto",
+    deps = [":background_music_proto"],
+)
+
+proto_library(
+    name = "beginner_login_bonus_proto",
+    srcs = ["beginner_login_bonus.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "beginner_login_bonus_cc_proto",
+    deps = [":beginner_login_bonus_proto"],
+)
+
+proto_library(
+    name = "beginner_login_bonus_summary_proto",
+    srcs = ["beginner_login_bonus_summary.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "beginner_login_bonus_summary_cc_proto",
+    deps = [":beginner_login_bonus_summary_proto"],
+)
+
+proto_library(
+    name = "beginner_mission_proto",
+    srcs = ["beginner_mission.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "beginner_mission_cc_proto",
+    deps = [":beginner_mission_proto"],
+)
+
+proto_library(
+    name = "beginner_mission_v2_proto",
+    srcs = ["beginner_mission_v2.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "beginner_mission_v2_cc_proto",
+    deps = [":beginner_mission_v2_proto"],
+)
+
+proto_library(
+    name = "billing_product_proto",
+    srcs = ["billing_product.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "billing_product_cc_proto",
+    deps = [":billing_product_proto"],
+)
+
+proto_library(
+    name = "billing_shop_item_exchange_cost_proto",
+    srcs = ["billing_shop_item_exchange_cost.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "billing_shop_item_exchange_cost_cc_proto",
+    deps = [":billing_shop_item_exchange_cost_proto"],
+)
+
+proto_library(
+    name = "billing_shop_item_group_proto",
+    srcs = ["billing_shop_item_group.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "billing_shop_item_group_cc_proto",
+    deps = [":billing_shop_item_group_proto"],
+)
+
+proto_library(
+    name = "billing_shop_item_proto",
+    srcs = ["billing_shop_item.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "billing_shop_item_cc_proto",
+    deps = [":billing_shop_item_proto"],
+)
+
+proto_library(
+    name = "bonds_honor_proto",
+    srcs = ["bonds_honor.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "bonds_honor_cc_proto",
+    deps = [":bonds_honor_proto"],
+)
+
+proto_library(
+    name = "bonds_honor_word_proto",
+    srcs = ["bonds_honor_word.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "bonds_honor_word_cc_proto",
+    deps = [":bonds_honor_word_proto"],
+)
+
+proto_library(
+    name = "bond_proto",
+    srcs = ["bond.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "bond_cc_proto",
+    deps = [":bond_proto"],
+)
+
+proto_library(
+    name = "bonds_live2d_proto",
+    srcs = ["bonds_live2d.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "bonds_live2d_cc_proto",
+    deps = [":bonds_live2d_proto"],
+)
+
+proto_library(
+    name = "bonds_rank_up_live2d_proto",
+    srcs = ["bonds_rank_up_live2d.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "bonds_rank_up_live2d_cc_proto",
+    deps = [":bonds_rank_up_live2d_proto"],
+)
+
+proto_library(
+    name = "bonds_reward_proto",
+    srcs = ["bonds_reward.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "bonds_reward_cc_proto",
+    deps = [":bonds_reward_proto"],
+)
+
+proto_library(
+    name = "boost_item_proto",
+    srcs = ["boost_item.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "boost_item_cc_proto",
+    deps = [":boost_item_proto"],
+)
+
+proto_library(
+    name = "boost_present_cost_proto",
+    srcs = ["boost_present_cost.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "boost_present_cost_cc_proto",
+    deps = [":boost_present_cost_proto"],
+)
+
+proto_library(
+    name = "boost_present_proto",
+    srcs = ["boost_present.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "boost_present_cc_proto",
+    deps = [":boost_present_proto"],
+)
+
+proto_library(
+    name = "boost_proto",
+    srcs = ["boost.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "boost_cc_proto",
+    deps = [":boost_proto"],
+)
+
+proto_library(
+    name = "card_costume3d_proto",
+    srcs = ["card_costume3d.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "card_costume3d_cc_proto",
+    deps = [":card_costume3d_proto"],
+)
+
+proto_library(
+    name = "card_episode_proto",
+    srcs = ["card_episode.proto"],
+    deps = [
+        ":descriptor_proto",
+        ":enums_proto",
+    ],
+)
+
+cc_proto_library(
+    name = "card_episode_cc_proto",
+    deps = [":card_episode_proto"],
+)
+
+proto_library(
+    name = "card_exchange_resource_proto",
+    srcs = ["card_exchange_resource.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "card_exchange_resource_cc_proto",
+    deps = [":card_exchange_resource_proto"],
+)
+
+proto_library(
+    name = "card_extra_proto",
+    srcs = ["card_extra.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "card_extra_cc_proto",
+    deps = [":card_extra_proto"],
+)
+
+proto_library(
+    name = "card_rarity_proto",
+    srcs = ["card_rarity.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "card_rarity_cc_proto",
+    deps = [":card_rarity_proto"],
+)
+
+proto_library(
+    name = "card_proto",
+    srcs = ["card.proto"],
+    deps = [
+        ":descriptor_proto",
+        ":enums_proto",
+    ],
+)
+
+cc_proto_library(
+    name = "card_cc_proto",
+    deps = [":card_proto"],
+)
+
+proto_library(
+    name = "card_skill_cost_proto",
+    srcs = ["card_skill_cost.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "card_skill_cost_cc_proto",
+    deps = [":card_skill_cost_proto"],
+)
+
+proto_library(
+    name = "challenge_live_character_proto",
+    srcs = ["challenge_live_character.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "challenge_live_character_cc_proto",
+    deps = [":challenge_live_character_proto"],
+)
+
+proto_library(
+    name = "challenge_live_deck_proto",
+    srcs = ["challenge_live_deck.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "challenge_live_deck_cc_proto",
+    deps = [":challenge_live_deck_proto"],
+)
+
+proto_library(
+    name = "challenge_live_high_score_reward_proto",
+    srcs = ["challenge_live_high_score_reward.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "challenge_live_high_score_reward_cc_proto",
+    deps = [":challenge_live_high_score_reward_proto"],
+)
+
+proto_library(
+    name = "challenge_live_play_day_reward_period_proto",
+    srcs = ["challenge_live_play_day_reward_period.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "challenge_live_play_day_reward_period_cc_proto",
+    deps = [":challenge_live_play_day_reward_period_proto"],
+)
+
+proto_library(
+    name = "challenge_live_proto",
+    srcs = ["challenge_live.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "challenge_live_cc_proto",
+    deps = [":challenge_live_proto"],
+)
+
+proto_library(
+    name = "challenge_live_stage_ex_proto",
+    srcs = ["challenge_live_stage_ex.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "challenge_live_stage_ex_cc_proto",
+    deps = [":challenge_live_stage_ex_proto"],
+)
+
+proto_library(
+    name = "challenge_live_stage_proto",
+    srcs = ["challenge_live_stage.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "challenge_live_stage_cc_proto",
+    deps = [":challenge_live_stage_proto"],
+)
+
+proto_library(
+    name = "character2d_proto",
+    srcs = ["character2d.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "character2d_cc_proto",
+    deps = [":character2d_proto"],
+)
+
+proto_library(
+    name = "character3d_proto",
+    srcs = ["character3d.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "character3d_cc_proto",
+    deps = [":character3d_proto"],
+)
+
+proto_library(
+    name = "character_costume_proto",
+    srcs = ["character_costume.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "character_costume_cc_proto",
+    deps = [":character_costume_proto"],
+)
+
+proto_library(
+    name = "character_mission_proto",
+    srcs = ["character_mission.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "character_mission_cc_proto",
+    deps = [":character_mission_proto"],
+)
+
+proto_library(
+    name = "character_mission_type_order_proto",
+    srcs = ["character_mission_type_order.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "character_mission_type_order_cc_proto",
+    deps = [":character_mission_type_order_proto"],
+)
+
+proto_library(
+    name = "character_mission_v2_area_item_proto",
+    srcs = ["character_mission_v2_area_item.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "character_mission_v2_area_item_cc_proto",
+    deps = [":character_mission_v2_area_item_proto"],
+)
+
+proto_library(
+    name = "character_mission_v2_ex_json_proto",
+    srcs = ["character_mission_v2_ex_json.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "character_mission_v2_ex_json_cc_proto",
+    deps = [":character_mission_v2_ex_json_proto"],
+)
+
+proto_library(
+    name = "character_mission_v2_parameter_group_proto",
+    srcs = ["character_mission_v2_parameter_group.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "character_mission_v2_parameter_group_cc_proto",
+    deps = [":character_mission_v2_parameter_group_proto"],
+)
+
+proto_library(
+    name = "character_mission_v2_proto",
+    srcs = ["character_mission_v2.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "character_mission_v2_cc_proto",
+    deps = [":character_mission_v2_proto"],
+)
+
+proto_library(
+    name = "character_profile_proto",
+    srcs = ["character_profile.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "character_profile_cc_proto",
+    deps = [":character_profile_proto"],
+)
+
+proto_library(
+    name = "character_rank_proto",
+    srcs = ["character_rank.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "character_rank_cc_proto",
+    deps = [":character_rank_proto"],
+)
+
+proto_library(
+    name = "cheerful_carnival_character_party_name_proto",
+    srcs = ["cheerful_carnival_character_party_name.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "cheerful_carnival_character_party_name_cc_proto",
+    deps = [":cheerful_carnival_character_party_name_proto"],
+)
+
+proto_library(
+    name = "cheerful_carnival_live_team_point_bonus_proto",
+    srcs = ["cheerful_carnival_live_team_point_bonus.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "cheerful_carnival_live_team_point_bonus_cc_proto",
+    deps = [":cheerful_carnival_live_team_point_bonus_proto"],
+)
+
+proto_library(
+    name = "cheerful_carnival_party_name_proto",
+    srcs = ["cheerful_carnival_party_name.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "cheerful_carnival_party_name_cc_proto",
+    deps = [":cheerful_carnival_party_name_proto"],
+)
+
+proto_library(
+    name = "cheerful_carnival_result_reward_proto",
+    srcs = ["cheerful_carnival_result_reward.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "cheerful_carnival_result_reward_cc_proto",
+    deps = [":cheerful_carnival_result_reward_proto"],
+)
+
+proto_library(
+    name = "cheerful_carnival_reward_proto",
+    srcs = ["cheerful_carnival_reward.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "cheerful_carnival_reward_cc_proto",
+    deps = [":cheerful_carnival_reward_proto"],
+)
+
+proto_library(
+    name = "cheerful_carnival_summary_proto",
+    srcs = ["cheerful_carnival_summary.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "cheerful_carnival_summary_cc_proto",
+    deps = [":cheerful_carnival_summary_proto"],
+)
+
+proto_library(
+    name = "cheerful_carnival_team_proto",
+    srcs = ["cheerful_carnival_team.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "cheerful_carnival_team_cc_proto",
+    deps = [":cheerful_carnival_team_proto"],
+)
+
+proto_library(
+    name = "client_config_proto",
+    srcs = ["client_config.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "client_config_cc_proto",
+    deps = [":client_config_proto"],
+)
+
+proto_library(
+    name = "colorful_pass_proto",
+    srcs = ["colorful_pass.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "colorful_pass_cc_proto",
+    deps = [":colorful_pass_proto"],
+)
+
+proto_library(
+    name = "colorful_pass_v2_proto",
+    srcs = ["colorful_pass_v2.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "colorful_pass_v2_cc_proto",
+    deps = [":colorful_pass_v2_proto"],
+)
+
+proto_library(
+    name = "config_proto",
+    srcs = ["config.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "config_cc_proto",
+    deps = [":config_proto"],
+)
+
+proto_library(
+    name = "costume2d_group_proto",
+    srcs = ["costume2d_group.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "costume2d_group_cc_proto",
+    deps = [":costume2d_group_proto"],
+)
+
+proto_library(
+    name = "costume2d_proto",
+    srcs = ["costume2d.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "costume2d_cc_proto",
+    deps = [":costume2d_proto"],
+)
+
+proto_library(
+    name = "costume3d_model_available_pattern_proto",
+    srcs = ["costume3d_model_available_pattern.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "costume3d_model_available_pattern_cc_proto",
+    deps = [":costume3d_model_available_pattern_proto"],
+)
+
+proto_library(
+    name = "costume3d_model_optional_proto",
+    srcs = ["costume3d_model_optional.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "costume3d_model_optional_cc_proto",
+    deps = [":costume3d_model_optional_proto"],
+)
+
+proto_library(
+    name = "costume3d_model_proto",
+    srcs = ["costume3d_model.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "costume3d_model_cc_proto",
+    deps = [":costume3d_model_proto"],
+)
+
+proto_library(
+    name = "costume3d_shop_item_proto",
+    srcs = ["costume3d_shop_item.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "costume3d_shop_item_cc_proto",
+    deps = [":costume3d_shop_item_proto"],
+)
+
+proto_library(
+    name = "costume3d_proto",
+    srcs = ["costume3d.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "costume3d_cc_proto",
+    deps = [":costume3d_proto"],
+)
+
+proto_library(
+    name = "custom_profile_collection_resource_proto",
+    srcs = ["custom_profile_collection_resource.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "custom_profile_collection_resource_cc_proto",
+    deps = [":custom_profile_collection_resource_proto"],
+)
+
+proto_library(
+    name = "custom_profile_etc_resource_proto",
+    srcs = ["custom_profile_etc_resource.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "custom_profile_etc_resource_cc_proto",
+    deps = [":custom_profile_etc_resource_proto"],
+)
+
+proto_library(
+    name = "custom_profile_gacha_proto",
+    srcs = ["custom_profile_gacha.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "custom_profile_gacha_cc_proto",
+    deps = [":custom_profile_gacha_proto"],
+)
+
+proto_library(
+    name = "custom_profile_gacha_tab_proto",
+    srcs = ["custom_profile_gacha_tab.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "custom_profile_gacha_tab_cc_proto",
+    deps = [":custom_profile_gacha_tab_proto"],
+)
+
+proto_library(
+    name = "custom_profile_general_background_resource_proto",
+    srcs = ["custom_profile_general_background_resource.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "custom_profile_general_background_resource_cc_proto",
+    deps = [":custom_profile_general_background_resource_proto"],
+)
+
+proto_library(
+    name = "custom_profile_member_resource_exclude_card_proto",
+    srcs = ["custom_profile_member_resource_exclude_card.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "custom_profile_member_resource_exclude_card_cc_proto",
+    deps = [":custom_profile_member_resource_exclude_card_proto"],
+)
+
+proto_library(
+    name = "custom_profile_member_standing_picture_resource_proto",
+    srcs = ["custom_profile_member_standing_picture_resource.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "custom_profile_member_standing_picture_resource_cc_proto",
+    deps = [":custom_profile_member_standing_picture_resource_proto"],
+)
+
+proto_library(
+    name = "custom_profile_player_info_resource_proto",
+    srcs = ["custom_profile_player_info_resource.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "custom_profile_player_info_resource_cc_proto",
+    deps = [":custom_profile_player_info_resource_proto"],
+)
+
+proto_library(
+    name = "custom_profile_shape_resource_proto",
+    srcs = ["custom_profile_shape_resource.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "custom_profile_shape_resource_cc_proto",
+    deps = [":custom_profile_shape_resource_proto"],
+)
+
+proto_library(
+    name = "custom_profile_story_background_resource_proto",
+    srcs = ["custom_profile_story_background_resource.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "custom_profile_story_background_resource_cc_proto",
+    deps = [":custom_profile_story_background_resource_proto"],
+)
+
+proto_library(
+    name = "custom_profile_text_color_proto",
+    srcs = ["custom_profile_text_color.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "custom_profile_text_color_cc_proto",
+    deps = [":custom_profile_text_color_proto"],
+)
+
+proto_library(
+    name = "custom_profile_text_font_proto",
+    srcs = ["custom_profile_text_font.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "custom_profile_text_font_cc_proto",
+    deps = [":custom_profile_text_font_proto"],
+)
+
+proto_library(
+    name = "descriptor_proto",
+    srcs = ["descriptor.proto"],
+    deps = ["@protobuf//:descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "descriptor_cc_proto",
+    deps = [":descriptor_proto"],
+)
+
+proto_library(
+    name = "enums_proto",
+    srcs = ["enums.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "enums_cc_proto",
+    deps = [":enums_proto"],
+)
+
+proto_library(
+    name = "episode_background_music_proto",
+    srcs = ["episode_background_music.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "episode_background_music_cc_proto",
+    deps = [":episode_background_music_proto"],
+)
+
+proto_library(
+    name = "episode_character_proto",
+    srcs = ["episode_character.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "episode_character_cc_proto",
+    deps = [":episode_character_proto"],
+)
+
+proto_library(
+    name = "episode_music_video_costume_proto",
+    srcs = ["episode_music_video_costume.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "episode_music_video_costume_cc_proto",
+    deps = [":episode_music_video_costume_proto"],
+)
+
+proto_library(
+    name = "event_card_proto",
+    srcs = ["event_card.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "event_card_cc_proto",
+    deps = [":event_card_proto"],
+)
+
+proto_library(
+    name = "event_deck_bonus_proto",
+    srcs = ["event_deck_bonus.proto"],
+    deps = [
+        ":descriptor_proto",
+        ":enums_proto",
+    ],
+)
+
+cc_proto_library(
+    name = "event_deck_bonus_cc_proto",
+    deps = [":event_deck_bonus_proto"],
+)
+
+proto_library(
+    name = "event_exchange_summary_proto",
+    srcs = ["event_exchange_summary.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "event_exchange_summary_cc_proto",
+    deps = [":event_exchange_summary_proto"],
+)
+
+proto_library(
+    name = "event_item_proto",
+    srcs = ["event_item.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "event_item_cc_proto",
+    deps = [":event_item_proto"],
+)
+
+proto_library(
+    name = "event_mission_proto",
+    srcs = ["event_mission.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "event_mission_cc_proto",
+    deps = [":event_mission_proto"],
+)
+
+proto_library(
+    name = "event_music_proto",
+    srcs = ["event_music.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "event_music_cc_proto",
+    deps = [":event_music_proto"],
+)
+
+proto_library(
+    name = "event_rarity_bonus_rate_proto",
+    srcs = ["event_rarity_bonus_rate.proto"],
+    deps = [
+        ":descriptor_proto",
+        ":enums_proto",
+    ],
+)
+
+cc_proto_library(
+    name = "event_rarity_bonus_rate_cc_proto",
+    deps = [":event_rarity_bonus_rate_proto"],
+)
+
+proto_library(
+    name = "event_proto",
+    srcs = ["event.proto"],
+    deps = [
+        ":descriptor_proto",
+        ":enums_proto",
+    ],
+)
+
+cc_proto_library(
+    name = "event_cc_proto",
+    deps = [":event_proto"],
+)
+
+proto_library(
+    name = "event_story_proto",
+    srcs = ["event_story.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "event_story_cc_proto",
+    deps = [":event_story_proto"],
+)
+
+proto_library(
+    name = "event_story_unit_proto",
+    srcs = ["event_story_unit.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "event_story_unit_cc_proto",
+    deps = [":event_story_unit_proto"],
+)
+
+proto_library(
+    name = "facility_proto",
+    srcs = ["facility.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "facility_cc_proto",
+    deps = [":facility_proto"],
+)
+
+proto_library(
+    name = "friend_invitation_campaign_proto",
+    srcs = ["friend_invitation_campaign.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "friend_invitation_campaign_cc_proto",
+    deps = [":friend_invitation_campaign_proto"],
+)
+
+proto_library(
+    name = "gacha_bonus_proto",
+    srcs = ["gacha_bonus.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "gacha_bonus_cc_proto",
+    deps = [":gacha_bonus_proto"],
+)
+
+proto_library(
+    name = "gacha_bonus_point_proto",
+    srcs = ["gacha_bonus_point.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "gacha_bonus_point_cc_proto",
+    deps = [":gacha_bonus_point_proto"],
+)
+
+proto_library(
+    name = "gacha_ceil_exchange_summary_proto",
+    srcs = ["gacha_ceil_exchange_summary.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "gacha_ceil_exchange_summary_cc_proto",
+    deps = [":gacha_ceil_exchange_summary_proto"],
+)
+
+proto_library(
+    name = "gacha_ceil_item_proto",
+    srcs = ["gacha_ceil_item.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "gacha_ceil_item_cc_proto",
+    deps = [":gacha_ceil_item_proto"],
+)
+
+proto_library(
+    name = "gacha_extra_proto",
+    srcs = ["gacha_extra.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "gacha_extra_cc_proto",
+    deps = [":gacha_extra_proto"],
+)
+
+proto_library(
+    name = "gacha_proto",
+    srcs = ["gacha.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "gacha_cc_proto",
+    deps = [":gacha_proto"],
+)
+
+proto_library(
+    name = "gacha_tab_proto",
+    srcs = ["gacha_tab.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "gacha_tab_cc_proto",
+    deps = [":gacha_tab_proto"],
+)
+
+proto_library(
+    name = "gacha_ticket_proto",
+    srcs = ["gacha_ticket.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "gacha_ticket_cc_proto",
+    deps = [":gacha_ticket_proto"],
+)
+
+proto_library(
+    name = "game_character_proto",
+    srcs = ["game_character.proto"],
+    deps = [
+        ":descriptor_proto",
+        ":enums_proto",
+    ],
+)
+
+cc_proto_library(
+    name = "game_character_cc_proto",
+    deps = [":game_character_proto"],
+)
+
+proto_library(
+    name = "game_character_unit3d_motion_proto",
+    srcs = ["game_character_unit3d_motion.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "game_character_unit3d_motion_cc_proto",
+    deps = [":game_character_unit3d_motion_proto"],
+)
+
+proto_library(
+    name = "game_character_unit_proto",
+    srcs = ["game_character_unit.proto"],
+    deps = [
+        ":descriptor_proto",
+        ":enums_proto",
+    ],
+)
+
+cc_proto_library(
+    name = "game_character_unit_cc_proto",
+    deps = [":game_character_unit_proto"],
+)
+
+proto_library(
+    name = "gift_gacha_exchange_proto",
+    srcs = ["gift_gacha_exchange.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "gift_gacha_exchange_cc_proto",
+    deps = [":gift_gacha_exchange_proto"],
+)
+
+proto_library(
+    name = "honor_group_proto",
+    srcs = ["honor_group.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "honor_group_cc_proto",
+    deps = [":honor_group_proto"],
+)
+
+proto_library(
+    name = "honor_mission_proto",
+    srcs = ["honor_mission.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "honor_mission_cc_proto",
+    deps = [":honor_mission_proto"],
+)
+
+proto_library(
+    name = "honor_proto",
+    srcs = ["honor.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "honor_cc_proto",
+    deps = [":honor_proto"],
+)
+
+proto_library(
+    name = "ingame_combo_proto",
+    srcs = ["ingame_combo.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "ingame_combo_cc_proto",
+    deps = [":ingame_combo_proto"],
+)
+
+proto_library(
+    name = "ingame_cutin_character_proto",
+    srcs = ["ingame_cutin_character.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "ingame_cutin_character_cc_proto",
+    deps = [":ingame_cutin_character_proto"],
+)
+
+proto_library(
+    name = "ingame_cutin_proto",
+    srcs = ["ingame_cutin.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "ingame_cutin_cc_proto",
+    deps = [":ingame_cutin_proto"],
+)
+
+proto_library(
+    name = "ingame_judge_frame_proto",
+    srcs = ["ingame_judge_frame.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "ingame_judge_frame_cc_proto",
+    deps = [":ingame_judge_frame_proto"],
+)
+
+proto_library(
+    name = "ingame_note_judge_proto",
+    srcs = ["ingame_note_judge.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "ingame_note_judge_cc_proto",
+    deps = [":ingame_note_judge_proto"],
+)
+
+proto_library(
+    name = "ingame_note_judge_technical_score_proto",
+    srcs = ["ingame_note_judge_technical_score.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "ingame_note_judge_technical_score_cc_proto",
+    deps = [":ingame_note_judge_technical_score_proto"],
+)
+
+proto_library(
+    name = "ingame_note_proto",
+    srcs = ["ingame_note.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "ingame_note_cc_proto",
+    deps = [":ingame_note_proto"],
+)
+
+proto_library(
+    name = "ingame_play_level_proto",
+    srcs = ["ingame_play_level.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "ingame_play_level_cc_proto",
+    deps = [":ingame_play_level_proto"],
+)
+
+proto_library(
+    name = "jewel_behavior_proto",
+    srcs = ["jewel_behavior.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "jewel_behavior_cc_proto",
+    deps = [":jewel_behavior_proto"],
+)
+
+proto_library(
+    name = "level_proto",
+    srcs = ["level.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "level_cc_proto",
+    deps = [":level_proto"],
+)
+
+proto_library(
+    name = "limited_login_bonus_proto",
+    srcs = ["limited_login_bonus.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "limited_login_bonus_cc_proto",
+    deps = [":limited_login_bonus_proto"],
+)
+
+proto_library(
+    name = "limited_time_music_proto",
+    srcs = ["limited_time_music.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "limited_time_music_cc_proto",
+    deps = [":limited_time_music_proto"],
+)
+
+proto_library(
+    name = "limited_title_screen_proto",
+    srcs = ["limited_title_screen.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "limited_title_screen_cc_proto",
+    deps = [":limited_title_screen_proto"],
+)
+
+proto_library(
+    name = "live_mission_pass_proto",
+    srcs = ["live_mission_pass.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "live_mission_pass_cc_proto",
+    deps = [":live_mission_pass_proto"],
+)
+
+proto_library(
+    name = "live_mission_period_proto",
+    srcs = ["live_mission_period.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "live_mission_period_cc_proto",
+    deps = [":live_mission_period_proto"],
+)
+
+proto_library(
+    name = "live_mission_proto",
+    srcs = ["live_mission.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "live_mission_cc_proto",
+    deps = [":live_mission_proto"],
+)
+
+proto_library(
+    name = "live_stage_proto",
+    srcs = ["live_stage.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "live_stage_cc_proto",
+    deps = [":live_stage_proto"],
+)
+
+proto_library(
+    name = "live_talk_proto",
+    srcs = ["live_talk.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "live_talk_cc_proto",
+    deps = [":live_talk_proto"],
+)
+
+proto_library(
+    name = "login_bonus_proto",
+    srcs = ["login_bonus.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "login_bonus_cc_proto",
+    deps = [":login_bonus_proto"],
+)
+
+proto_library(
+    name = "login_bonus_live2d_proto",
+    srcs = ["login_bonus_live2d.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "login_bonus_live2d_cc_proto",
+    deps = [":login_bonus_live2d_proto"],
+)
+
+proto_library(
+    name = "master_lesson_reward_proto",
+    srcs = ["master_lesson_reward.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "master_lesson_reward_cc_proto",
+    deps = [":master_lesson_reward_proto"],
+)
+
+proto_library(
+    name = "master_lesson_proto",
+    srcs = ["master_lesson.proto"],
+    deps = [
+        ":descriptor_proto",
+        ":enums_proto",
+    ],
+)
+
+cc_proto_library(
+    name = "master_lesson_cc_proto",
+    deps = [":master_lesson_proto"],
+)
+
+proto_library(
+    name = "material_exchange_proto",
+    srcs = ["material_exchange.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "material_exchange_cc_proto",
+    deps = [":material_exchange_proto"],
+)
+
+proto_library(
+    name = "material_exchange_summary_proto",
+    srcs = ["material_exchange_summary.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "material_exchange_summary_cc_proto",
+    deps = [":material_exchange_summary_proto"],
+)
+
+proto_library(
+    name = "material_proto",
+    srcs = ["material.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "material_cc_proto",
+    deps = [":material_proto"],
+)
+
+proto_library(
+    name = "mob_character_proto",
+    srcs = ["mob_character.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mob_character_cc_proto",
+    deps = [":mob_character_proto"],
+)
+
+proto_library(
+    name = "multi_live_lobby_proto",
+    srcs = ["multi_live_lobby.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "multi_live_lobby_cc_proto",
+    deps = [":multi_live_lobby_proto"],
+)
+
+proto_library(
+    name = "music_achievement_proto",
+    srcs = ["music_achievement.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "music_achievement_cc_proto",
+    deps = [":music_achievement_proto"],
+)
+
+proto_library(
+    name = "music_artist_proto",
+    srcs = ["music_artist.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "music_artist_cc_proto",
+    deps = [":music_artist_proto"],
+)
+
+proto_library(
+    name = "music_asset_variant_proto",
+    srcs = ["music_asset_variant.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "music_asset_variant_cc_proto",
+    deps = [":music_asset_variant_proto"],
+)
+
+proto_library(
+    name = "music_collaboration_proto",
+    srcs = ["music_collaboration.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "music_collaboration_cc_proto",
+    deps = [":music_collaboration_proto"],
+)
+
+proto_library(
+    name = "music_dance_member_proto",
+    srcs = ["music_dance_member.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "music_dance_member_cc_proto",
+    deps = [":music_dance_member_proto"],
+)
+
+proto_library(
+    name = "music_difficulty_proto",
+    srcs = ["music_difficulty.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "music_difficulty_cc_proto",
+    deps = [":music_difficulty_proto"],
+)
+
+proto_library(
+    name = "music_meta_proto",
+    srcs = ["music_meta.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "music_meta_cc_proto",
+    deps = [":music_meta_proto"],
+)
+
+proto_library(
+    name = "music_original_proto",
+    srcs = ["music_original.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "music_original_cc_proto",
+    deps = [":music_original_proto"],
+)
+
+proto_library(
+    name = "music_proto",
+    srcs = ["music.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "music_cc_proto",
+    deps = [":music_proto"],
+)
+
+proto_library(
+    name = "music_tag_proto",
+    srcs = ["music_tag.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "music_tag_cc_proto",
+    deps = [":music_tag_proto"],
+)
+
+proto_library(
+    name = "music_video_character_proto",
+    srcs = ["music_video_character.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "music_video_character_cc_proto",
+    deps = [":music_video_character_proto"],
+)
+
+proto_library(
+    name = "music_vocal_proto",
+    srcs = ["music_vocal.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "music_vocal_cc_proto",
+    deps = [":music_vocal_proto"],
+)
+
+proto_library(
+    name = "ng_word_proto",
+    srcs = ["ng_word.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "ng_word_cc_proto",
+    deps = [":ng_word_proto"],
+)
+
+proto_library(
+    name = "normal_mission_proto",
+    srcs = ["normal_mission.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "normal_mission_cc_proto",
+    deps = [":normal_mission_proto"],
+)
+
+proto_library(
+    name = "offline_event_proto",
+    srcs = ["offline_event.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "offline_event_cc_proto",
+    deps = [":offline_event_proto"],
+)
+
+proto_library(
+    name = "omikuji_cost_proto",
+    srcs = ["omikuji_cost.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "omikuji_cost_cc_proto",
+    deps = [":omikuji_cost_proto"],
+)
+
+proto_library(
+    name = "omikuji_group_proto",
+    srcs = ["omikuji_group.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "omikuji_group_cc_proto",
+    deps = [":omikuji_group_proto"],
+)
+
+proto_library(
+    name = "omikuji_rate_proto",
+    srcs = ["omikuji_rate.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "omikuji_rate_cc_proto",
+    deps = [":omikuji_rate_proto"],
+)
+
+proto_library(
+    name = "omikuji_reward_proto",
+    srcs = ["omikuji_reward.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "omikuji_reward_cc_proto",
+    deps = [":omikuji_reward_proto"],
+)
+
+proto_library(
+    name = "omikuji_proto",
+    srcs = ["omikuji.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "omikuji_cc_proto",
+    deps = [":omikuji_proto"],
+)
+
+proto_library(
+    name = "one_time_behavior_proto",
+    srcs = ["one_time_behavior.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "one_time_behavior_cc_proto",
+    deps = [":one_time_behavior_proto"],
+)
+
+proto_library(
+    name = "outside_character_proto",
+    srcs = ["outside_character.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "outside_character_cc_proto",
+    deps = [":outside_character_proto"],
+)
+
+proto_library(
+    name = "paid_virtual_live_shop_item_group_proto",
+    srcs = ["paid_virtual_live_shop_item_group.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "paid_virtual_live_shop_item_group_cc_proto",
+    deps = [":paid_virtual_live_shop_item_group_proto"],
+)
+
+proto_library(
+    name = "paid_virtual_live_shop_item_proto",
+    srcs = ["paid_virtual_live_shop_item.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "paid_virtual_live_shop_item_cc_proto",
+    deps = [":paid_virtual_live_shop_item_proto"],
+)
+
+proto_library(
+    name = "paid_virtual_live_proto",
+    srcs = ["paid_virtual_live.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "paid_virtual_live_cc_proto",
+    deps = [":paid_virtual_live_proto"],
+)
+
+proto_library(
+    name = "panel_mission_campaign_proto",
+    srcs = ["panel_mission_campaign.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "panel_mission_campaign_cc_proto",
+    deps = [":panel_mission_campaign_proto"],
+)
+
+proto_library(
+    name = "penlight_color_proto",
+    srcs = ["penlight_color.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "penlight_color_cc_proto",
+    deps = [":penlight_color_proto"],
+)
+
+proto_library(
+    name = "penlight_proto",
+    srcs = ["penlight.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "penlight_cc_proto",
+    deps = [":penlight_proto"],
+)
+
+proto_library(
+    name = "player_rank_reward_proto",
+    srcs = ["player_rank_reward.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "player_rank_reward_cc_proto",
+    deps = [":player_rank_reward_proto"],
+)
+
+proto_library(
+    name = "play_level_score_proto",
+    srcs = ["play_level_score.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "play_level_score_cc_proto",
+    deps = [":play_level_score_proto"],
+)
+
+proto_library(
+    name = "practice_ticket_proto",
+    srcs = ["practice_ticket.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "practice_ticket_cc_proto",
+    deps = [":practice_ticket_proto"],
+)
+
+proto_library(
+    name = "preliminary_tournament_proto",
+    srcs = ["preliminary_tournament.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "preliminary_tournament_cc_proto",
+    deps = [":preliminary_tournament_proto"],
+)
+
+proto_library(
+    name = "rank_match_bonus_point_condition_proto",
+    srcs = ["rank_match_bonus_point_condition.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "rank_match_bonus_point_condition_cc_proto",
+    deps = [":rank_match_bonus_point_condition_proto"],
+)
+
+proto_library(
+    name = "rank_match_class_proto",
+    srcs = ["rank_match_class.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "rank_match_class_cc_proto",
+    deps = [":rank_match_class_proto"],
+)
+
+proto_library(
+    name = "rank_match_grade_proto",
+    srcs = ["rank_match_grade.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "rank_match_grade_cc_proto",
+    deps = [":rank_match_grade_proto"],
+)
+
+proto_library(
+    name = "rank_match_penalty_proto",
+    srcs = ["rank_match_penalty.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "rank_match_penalty_cc_proto",
+    deps = [":rank_match_penalty_proto"],
+)
+
+proto_library(
+    name = "rank_match_placement_proto",
+    srcs = ["rank_match_placement.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "rank_match_placement_cc_proto",
+    deps = [":rank_match_placement_proto"],
+)
+
+proto_library(
+    name = "rank_match_season_proto",
+    srcs = ["rank_match_season.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "rank_match_season_cc_proto",
+    deps = [":rank_match_season_proto"],
+)
+
+proto_library(
+    name = "rank_match_tier_bonus_point_proto",
+    srcs = ["rank_match_tier_bonus_point.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "rank_match_tier_bonus_point_cc_proto",
+    deps = [":rank_match_tier_bonus_point_proto"],
+)
+
+proto_library(
+    name = "rank_match_tier_proto",
+    srcs = ["rank_match_tier.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "rank_match_tier_cc_proto",
+    deps = [":rank_match_tier_proto"],
+)
+
+proto_library(
+    name = "records_proto",
+    srcs = ["records.proto"],
+    deps = ["@protobuf//:any_proto"],
+)
+
+cc_proto_library(
+    name = "records_cc_proto",
+    deps = [":records_proto"],
+)
+
+proto_library(
+    name = "release_condition_proto",
+    srcs = ["release_condition.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "release_condition_cc_proto",
+    deps = [":release_condition_proto"],
+)
+
+proto_library(
+    name = "resource_box_proto",
+    srcs = ["resource_box.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "resource_box_cc_proto",
+    deps = [":resource_box_proto"],
+)
+
+proto_library(
+    name = "rule_slide_proto",
+    srcs = ["rule_slide.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "rule_slide_cc_proto",
+    deps = [":rule_slide_proto"],
+)
+
+proto_library(
+    name = "shop_item_proto",
+    srcs = ["shop_item.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "shop_item_cc_proto",
+    deps = [":shop_item_proto"],
+)
+
+proto_library(
+    name = "shop_proto",
+    srcs = ["shop.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "shop_cc_proto",
+    deps = [":shop_proto"],
+)
+
+proto_library(
+    name = "skill_practice_ticket_proto",
+    srcs = ["skill_practice_ticket.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "skill_practice_ticket_cc_proto",
+    deps = [":skill_practice_ticket_proto"],
+)
+
+proto_library(
+    name = "skill_proto",
+    srcs = ["skill.proto"],
+    deps = [
+        ":descriptor_proto",
+        ":enums_proto",
+    ],
+)
+
+cc_proto_library(
+    name = "skill_cc_proto",
+    deps = [":skill_proto"],
+)
+
+proto_library(
+    name = "special_season_area_proto",
+    srcs = ["special_season_area.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "special_season_area_cc_proto",
+    deps = [":special_season_area_proto"],
+)
+
+proto_library(
+    name = "special_season_proto",
+    srcs = ["special_season.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "special_season_cc_proto",
+    deps = [":special_season_proto"],
+)
+
+proto_library(
+    name = "special_story_proto",
+    srcs = ["special_story.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "special_story_cc_proto",
+    deps = [":special_story_proto"],
+)
+
+proto_library(
+    name = "stamp_proto",
+    srcs = ["stamp.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "stamp_cc_proto",
+    deps = [":stamp_proto"],
+)
+
+proto_library(
+    name = "streaming_live_archive_proto",
+    srcs = ["streaming_live_archive.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "streaming_live_archive_cc_proto",
+    deps = [":streaming_live_archive_proto"],
+)
+
+proto_library(
+    name = "streaming_live_bgm_proto",
+    srcs = ["streaming_live_bgm.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "streaming_live_bgm_cc_proto",
+    deps = [":streaming_live_bgm_proto"],
+)
+
+proto_library(
+    name = "streaming_live_category_proto",
+    srcs = ["streaming_live_category.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "streaming_live_category_cc_proto",
+    deps = [":streaming_live_category_proto"],
+)
+
+proto_library(
+    name = "sub_game_character_proto",
+    srcs = ["sub_game_character.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "sub_game_character_cc_proto",
+    deps = [":sub_game_character_proto"],
+)
+
+proto_library(
+    name = "system_live2d_proto",
+    srcs = ["system_live2d.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "system_live2d_cc_proto",
+    deps = [":system_live2d_proto"],
+)
+
+proto_library(
+    name = "tip_proto",
+    srcs = ["tip.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "tip_cc_proto",
+    deps = [":tip_proto"],
+)
+
+proto_library(
+    name = "topic_proto",
+    srcs = ["topic.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "topic_cc_proto",
+    deps = [":topic_proto"],
+)
+
+proto_library(
+    name = "unit_profile_proto",
+    srcs = ["unit_profile.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "unit_profile_cc_proto",
+    deps = [":unit_profile_proto"],
+)
+
+proto_library(
+    name = "unit_story_proto",
+    srcs = ["unit_story.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "unit_story_cc_proto",
+    deps = [":unit_story_proto"],
+)
+
+proto_library(
+    name = "unit_story_episode_group_proto",
+    srcs = ["unit_story_episode_group.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "unit_story_episode_group_cc_proto",
+    deps = [":unit_story_episode_group_proto"],
+)
+
+proto_library(
+    name = "user_home_banner_proto",
+    srcs = ["user_home_banner.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "user_home_banner_cc_proto",
+    deps = [":user_home_banner_proto"],
+)
+
+proto_library(
+    name = "user_information_proto",
+    srcs = ["user_information.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "user_information_cc_proto",
+    deps = [":user_information_proto"],
+)
+
+proto_library(
+    name = "version_proto",
+    srcs = ["version.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "version_cc_proto",
+    deps = [":version_proto"],
+)
+
+proto_library(
+    name = "virtual_booth_shop_proto",
+    srcs = ["virtual_booth_shop.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "virtual_booth_shop_cc_proto",
+    deps = [":virtual_booth_shop_proto"],
+)
+
+proto_library(
+    name = "virtual_item_relation_proto",
+    srcs = ["virtual_item_relation.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "virtual_item_relation_cc_proto",
+    deps = [":virtual_item_relation_proto"],
+)
+
+proto_library(
+    name = "virtual_item_proto",
+    srcs = ["virtual_item.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "virtual_item_cc_proto",
+    deps = [":virtual_item_proto"],
+)
+
+proto_library(
+    name = "virtual_live_cheer_message_display_limit_proto",
+    srcs = ["virtual_live_cheer_message_display_limit.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "virtual_live_cheer_message_display_limit_cc_proto",
+    deps = [":virtual_live_cheer_message_display_limit_proto"],
+)
+
+proto_library(
+    name = "virtual_live_cheer_message_relation_proto",
+    srcs = ["virtual_live_cheer_message_relation.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "virtual_live_cheer_message_relation_cc_proto",
+    deps = [":virtual_live_cheer_message_relation_proto"],
+)
+
+proto_library(
+    name = "virtual_live_cheer_message_proto",
+    srcs = ["virtual_live_cheer_message.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "virtual_live_cheer_message_cc_proto",
+    deps = [":virtual_live_cheer_message_proto"],
+)
+
+proto_library(
+    name = "virtual_live_pamphlet_proto",
+    srcs = ["virtual_live_pamphlet.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "virtual_live_pamphlet_cc_proto",
+    deps = [":virtual_live_pamphlet_proto"],
+)
+
+proto_library(
+    name = "virtual_live_proto",
+    srcs = ["virtual_live.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "virtual_live_cc_proto",
+    deps = [":virtual_live_proto"],
+)
+
+proto_library(
+    name = "virtual_live_ticket_proto",
+    srcs = ["virtual_live_ticket.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "virtual_live_ticket_cc_proto",
+    deps = [":virtual_live_ticket_proto"],
+)
+
+proto_library(
+    name = "virtual_shop_proto",
+    srcs = ["virtual_shop.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "virtual_shop_cc_proto",
+    deps = [":virtual_shop_proto"],
+)
+
+proto_library(
+    name = "wording_proto",
+    srcs = ["wording.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "wording_cc_proto",
+    deps = [":wording_proto"],
+)
+
+proto_library(
+    name = "world_bloom_chapter_ranking_reward_range_proto",
+    srcs = ["world_bloom_chapter_ranking_reward_range.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "world_bloom_chapter_ranking_reward_range_cc_proto",
+    deps = [":world_bloom_chapter_ranking_reward_range_proto"],
+)
+
+proto_library(
+    name = "world_bloom_different_attribute_bonus_proto",
+    srcs = ["world_bloom_different_attribute_bonus.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "world_bloom_different_attribute_bonus_cc_proto",
+    deps = [":world_bloom_different_attribute_bonus_proto"],
+)
+
+proto_library(
+    name = "world_bloom_proto",
+    srcs = ["world_bloom.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "world_bloom_cc_proto",
+    deps = [":world_bloom_proto"],
+)
+
+proto_library(
+    name = "world_bloom_support_deck_bonus_proto",
+    srcs = ["world_bloom_support_deck_bonus.proto"],
+    deps = [
+        ":descriptor_proto",
+        ":enums_proto",
+    ],
+)
+
+cc_proto_library(
+    name = "world_bloom_support_deck_bonus_cc_proto",
+    deps = [":world_bloom_support_deck_bonus_proto"],
+)

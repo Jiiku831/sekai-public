@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message BoostPresent {
+  option (master_db_file)              = "boostPresents.json";
+  optional int32 id                    = 1 [(json_name) = "id"];
+  optional int32 seq                   = 2 [(json_name) = "seq"];
+  optional int32 recovery_value        = 3 [(json_name) = "recoveryValue"];
+  optional int32 present_limit         = 4 [(json_name) = "presentLimit"];
+  optional string assetbundle_name     = 5 [(json_name) = "assetbundleName"];
+  optional bool is_unlimited_receive   = 6 [(json_name) = "isUnlimitedReceive"];
+  optional int32 boost_present_cost_id = 7 [(json_name) = "boostPresentCostId"];
+}

@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message ChallengeLiveDeck {
+  option (master_db_file)             = "challengeLiveDecks.json";
+  optional int32 id                   = 1 [(json_name) = "id"];
+  optional int32 character_id         = 2 [(json_name) = "characterId"];
+  optional int32 release_condition_id = 3 [(json_name) = "releaseConditionId"];
+  optional int32 card_limit           = 4 [(json_name) = "cardLimit"];
+}

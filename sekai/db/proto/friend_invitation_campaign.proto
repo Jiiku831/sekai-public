@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message FriendInvitationCampaign {
+  option (master_db_file) = "friendInvitationCampaigns.json";
+
+  message Mission {
+    enum MissionType {
+      UNKNOWN_MISSION_TYPE = 0;
+      GUEST                = 1 [(json_value) = "guest"];
+      HOST                 = 2 [(json_value) = "host"];
+    }
+
+    message Reward {
+      optional int32 id              = 1 [(json_name) = "id"];
+      optional int32 count_group_id  = 2 [(json_name) = "countGroupId"];
+      optional int32 count           = 3 [(json_name) = "count"];
+      optional int32 resource_box_id = 4 [(json_name) = "resourceBoxId"];
+    }
+
+    optional int32 id                  = 1 [(json_name) = "id"];
+    optional MissionType mission_type  = 2 [(json_name) = "missionType"];
+    optional int32 mission_category_id = 3 [(json_name) = "missionCategoryId"];
+    optional string name               = 4 [(json_name) = "name"];
+    optional int32 requirement         = 5 [(json_name) = "requirement"];
+    repeated Reward reward             = 6 [(json_name) = "reward"];
+  }
+
+  optional int32 id                    = 1 [(json_name) = "id"];
+  optional int32 group_id              = 2 [(json_name) = "groupId"];
+  optional string title                = 3 [(json_name) = "title"];
+  optional string assetbundle_name     = 4 [(json_name) = "assetbundleName"];
+  optional int64 start_at              = 5 [(json_name) = "startAt"];
+  optional int64 progress_end_at       = 6 [(json_name) = "progressEndAt"];
+  optional int64 receive_reward_end_at = 7 [(json_name) = "receiveRewardEndAt"];
+  optional int64 closed_at             = 8 [(json_name) = "closedAt"];
+  repeated Mission missions            = 9 [(json_name) = "missions"];
+}

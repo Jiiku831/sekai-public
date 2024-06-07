@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message Music {
+  option (master_db_file)                               = "musics.json";
+  optional int32 id                                     = 1 [(json_name) = "id"];
+  optional int32 seq                                    = 2 [(json_name) = "seq"];
+  optional int32 release_condition_id                   = 3 [(json_name) = "releaseConditionId"];
+  repeated string categories                            = 4 [(json_name) = "categories"];
+  optional string title                                 = 5 [(json_name) = "title"];
+  optional string pronunciation                         = 6 [(json_name) = "pronunciation"];
+  optional int32 creator_artist_id                      = 7 [(json_name) = "creatorArtistId"];
+  optional string lyricist                              = 8 [(json_name) = "lyricist"];
+  optional string composer                              = 9 [(json_name) = "composer"];
+  optional string arranger                              = 10 [(json_name) = "arranger"];
+  optional int32 dancer_count                           = 11 [(json_name) = "dancerCount"];
+  optional int32 self_dancer_position                   = 12 [(json_name) = "selfDancerPosition"];
+  optional string assetbundle_name                      = 13 [(json_name) = "assetbundleName"];
+  optional string live_talk_background_assetbundle_name = 14 [(json_name) = "liveTalkBackgroundAssetbundleName"];
+  optional int64 published_at                           = 15 [(json_name) = "publishedAt"];
+  optional int64 released_at                            = 16 [(json_name) = "releasedAt"];
+  optional int32 live_stage_id                          = 17 [(json_name) = "liveStageId"];
+  optional float filler_sec                             = 18 [(json_name) = "fillerSec"];
+  optional bool is_newly_written_music                  = 19 [(json_name) = "isNewlyWrittenMusic"];
+  optional int32 music_collaboration_id                 = 20 [(json_name) = "musicCollaborationId"];
+}

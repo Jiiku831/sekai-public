@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message EventStory {
+  option (master_db_file) = "eventStories.json";
+
+  message EventStoryEpisode {
+
+    message EpisodeReward {
+      enum StoryType {
+        UNKNOWN_STORY_TYPE = 0;
+        EVENT_STORY        = 1 [(json_value) = "event_story"];
+      }
+
+      optional StoryType story_type  = 1 [(json_name) = "storyType"];
+      optional int32 resource_box_id = 2 [(json_name) = "resourceBoxId"];
+    }
+
+    optional int32 id                      = 1 [(json_name) = "id"];
+    optional int32 event_story_id          = 2 [(json_name) = "eventStoryId"];
+    optional int32 episode_no              = 3 [(json_name) = "episodeNo"];
+    optional string title                  = 4 [(json_name) = "title"];
+    optional string assetbundle_name       = 5 [(json_name) = "assetbundleName"];
+    optional string scenario_id            = 6 [(json_name) = "scenarioId"];
+    optional int32 release_condition_id    = 7 [(json_name) = "releaseConditionId"];
+    repeated EpisodeReward episode_rewards = 8 [(json_name) = "episodeRewards"];
+    optional int32 game_character_id       = 9 [(json_name) = "gameCharacterId"];
+  }
+
+  optional int32 id                               = 1 [(json_name) = "id"];
+  optional int32 event_id                         = 2 [(json_name) = "eventId"];
+  optional string outline                         = 3 [(json_name) = "outline"];
+  optional int32 banner_game_character_unit_id    = 4 [(json_name) = "bannerGameCharacterUnitId"];
+  optional string assetbundle_name                = 5 [(json_name) = "assetbundleName"];
+  repeated EventStoryEpisode event_story_episodes = 6 [(json_name) = "eventStoryEpisodes"];
+}

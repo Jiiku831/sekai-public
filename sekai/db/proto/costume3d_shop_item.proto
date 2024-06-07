@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message Costume3DShopItem {
+  option (master_db_file) = "costume3dShopItems.json";
+
+  message Cost {
+    enum ResourceType {
+      UNKNOWN_RESOURCE_TYPE = 0;
+      MATERIAL              = 1 [(json_value) = "material"];
+    }
+
+    optional int32 id                     = 1 [(json_name) = "id"];
+    optional int32 costume3d_shop_item_id = 2 [(json_name) = "costume3dShopItemId"];
+    optional int32 seq                    = 3 [(json_name) = "seq"];
+    optional ResourceType resource_type   = 4 [(json_name) = "resourceType"];
+    optional int32 resource_id            = 5 [(json_name) = "resourceId"];
+    optional int32 resource_quantity      = 6 [(json_name) = "resourceQuantity"];
+  }
+
+  optional int32 id                   = 1 [(json_name) = "id"];
+  optional int32 seq                  = 2 [(json_name) = "seq"];
+  optional int32 group_id             = 3 [(json_name) = "groupId"];
+  optional string name                = 4 [(json_name) = "name"];
+  optional int32 body_costume3d_id    = 5 [(json_name) = "bodyCostume3dId"];
+  optional int32 release_condition_id = 6 [(json_name) = "releaseConditionId"];
+  repeated Cost costs                 = 7 [(json_name) = "costs"];
+  optional int64 start_at             = 8 [(json_name) = "startAt"];
+  optional int32 head_costume3d_id    = 9 [(json_name) = "headCostume3dId"];
+}

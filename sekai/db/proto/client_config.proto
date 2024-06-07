@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message ClientConfig {
+  option (master_db_file) = "clientConfigs.json";
+  optional int32 id       = 1 [(json_name) = "id"];
+  optional string value   = 2 [(json_name) = "value"];
+  optional string type    = 3 [(json_name) = "type"];
+}

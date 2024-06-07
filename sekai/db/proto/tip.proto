@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message Tip {
+  option (master_db_file)          = "tips.json";
+  optional int32 id                = 1 [(json_name) = "id"];
+  optional string title            = 2 [(json_name) = "title"];
+  optional string assetbundle_name = 3 [(json_name) = "assetbundleName"];
+  optional int32 from_user_rank    = 4 [(json_name) = "fromUserRank"];
+  optional int32 to_user_rank      = 5 [(json_name) = "toUserRank"];
+  optional string description      = 6 [(json_name) = "description"];
+}

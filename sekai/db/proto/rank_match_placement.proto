@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message RankMatchPlacement {
+  option (master_db_file) = "rankMatchPlacements.json";
+  enum RankMatchPlacementConditionType {
+    UNKNOWN_RANK_MATCH_PLACEMENT_CONDITION_TYPE = 0;
+    ALL_LOSE                                    = 1 [(json_value) = "all_lose"];
+    ALL_PERFECT                                 = 2 [(json_value) = "all_perfect"];
+    ALL_WIN                                     = 3 [(json_value) = "all_win"];
+    LIFE_0                                      = 4 [(json_value) = "life_0"];
+  }
+
+  enum TierBehaviorType {
+    UNKNOWN_TIER_BEHAVIOR_TYPE = 0;
+    CLASS_DOWN                 = 1 [(json_value) = "class_down"];
+    CLASS_UP                   = 2 [(json_value) = "class_up"];
+  }
+
+  optional int32 id                                                            = 1 [(json_name) = "id"];
+  optional RankMatchPlacementConditionType rank_match_placement_condition_type = 2
+      [(json_name) = "rankMatchPlacementConditionType"];
+  optional TierBehaviorType tier_behavior_type             = 3 [(json_name) = "tierBehaviorType"];
+  optional int32 tier_behavior_type_value                  = 4 [(json_name) = "tierBehaviorTypeValue"];
+  optional int32 rank_match_placement_condition_type_value = 5 [(json_name) = "rankMatchPlacementConditionTypeValue"];
+}

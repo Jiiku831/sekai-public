@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message OmikujiGroup {
+  option (master_db_file)                 = "omikujiGroups.json";
+  optional int32 id                       = 1 [(json_name) = "id"];
+  optional string name                    = 2 [(json_name) = "name"];
+  optional string summary                 = 3 [(json_name) = "summary"];
+  optional string description             = 4 [(json_name) = "description"];
+  optional string assetbundle_name        = 5 [(json_name) = "assetbundleName"];
+  optional string appeal_assetbundle_name = 6 [(json_name) = "appealAssetbundleName"];
+  optional string sound_assetbundle_name  = 7 [(json_name) = "soundAssetbundleName"];
+}

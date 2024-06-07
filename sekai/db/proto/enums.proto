@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+enum ArchiveDisplayType {
+  ARCHIVE_DISPLAY_UNKNOWN = 0;
+  ARCHIVE_DISPLAY_HIDE    = 1 [(json_value) = "hide"];
+}
+enum Attr {
+  ATTR_UNKNOWN = 0;
+  ATTR_COOL    = 1 [(json_value) = "cool"];
+  ATTR_CUTE    = 2 [(json_value) = "cute"];
+  ATTR_HAPPY   = 3 [(json_value) = "happy"];
+  ATTR_MYST    = 4 [(json_value) = "mysterious"];
+  ATTR_PURE    = 5 [(json_value) = "pure"];
+}
+enum CardParameterType {
+  CARD_PARAM_UNKNOWN = 0;
+  CARD_PARAM_1       = 1 [(json_value) = "param1"];
+  CARD_PARAM_2       = 2 [(json_value) = "param2"];
+  CARD_PARAM_3       = 3 [(json_value) = "param3"];
+}
+enum CardRarityType {
+  RARITY_UNKNOWN = 0;
+  RARITY_1       = 1 [(json_value) = "rarity_1"];
+  RARITY_2       = 2 [(json_value) = "rarity_2"];
+  RARITY_3       = 3 [(json_value) = "rarity_3"];
+  RARITY_4       = 4 [(json_value) = "rarity_4"];
+  RARITY_BD      = 5 [(json_value) = "rarity_birthday"];
+}
+enum ResourceType {
+  RESOURCE_UNKNOWN  = 0;
+  RESOURCE_COIN     = 1 [(json_value) = "coin"];
+  RESOURCE_MATERIAL = 2 [(json_value) = "material"];
+}
+enum Unit {
+  UNIT_NONE = 0 [(json_value) = "none"];
+  UNIT_LN   = 1 [(json_value) = "light_sound"];
+  UNIT_MMJ  = 2 [(json_value) = "idol"];
+  UNIT_VBS  = 3 [(json_value) = "street"];
+  UNIT_WXS  = 4 [(json_value) = "theme_park"];
+  UNIT_25   = 5 [(json_value) = "school_refusal"];
+  UNIT_VS   = 6 [(json_value) = "piapro"];
+}

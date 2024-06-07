@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message IngameNoteJudge {
+  option (master_db_file) = "ingameNoteJudges.json";
+  enum IngameNoteJadgeType {
+    UNKNOWN_INGAME_NOTE_JADGE_TYPE = 0;
+    AUTO                           = 1 [(json_value) = "auto"];
+    BAD                            = 2 [(json_value) = "bad"];
+    DEAD                           = 3 [(json_value) = "dead"];
+    GOOD                           = 4 [(json_value) = "good"];
+    GREAT                          = 5 [(json_value) = "great"];
+    MISS                           = 6 [(json_value) = "miss"];
+    PERFECT                        = 7 [(json_value) = "perfect"];
+  }
+
+  optional int32 id                                   = 1 [(json_name) = "id"];
+  optional IngameNoteJadgeType ingame_note_jadge_type = 2 [(json_name) = "ingameNoteJadgeType"];
+  optional float score_coefficient                    = 3 [(json_name) = "scoreCoefficient"];
+  optional int32 damage                               = 4 [(json_name) = "damage"];
+}

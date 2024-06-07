@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+import "sekai/db/proto/enums.proto";
+
+message EventDeckBonus {
+  option (master_db_file)               = "eventDeckBonuses.json";
+  optional int32 id                     = 1 [(json_name) = "id"];
+  optional int32 event_id               = 2 [(json_name) = "eventId", (primary_key) = true];
+  optional int32 game_character_unit_id = 3 [(json_name) = "gameCharacterUnitId"];
+  optional Attr card_attr               = 4 [(json_name) = "cardAttr"];
+  optional float bonus_rate             = 5 [(json_name) = "bonusRate"];
+}

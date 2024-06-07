@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message CardSkillCost {
+  option (master_db_file)    = "cardSkillCosts.json";
+  optional int32 id          = 1 [(json_name) = "id"];
+  optional int32 material_id = 2 [(json_name) = "materialId"];
+  optional int32 exp         = 3 [(json_name) = "exp"];
+}

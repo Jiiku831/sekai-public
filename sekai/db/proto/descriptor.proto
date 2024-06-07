@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "google/protobuf/descriptor.proto";
+
+extend google.protobuf.EnumValueOptions { optional string json_value = 420001; }
+
+extend google.protobuf.FieldOptions {
+  optional string json_name          = 420001;
+  optional bool primary_key          = 420002;
+  optional string string_empty_value = 420003;
+}
+
+extend google.protobuf.MessageOptions {
+  optional string master_db_file  = 420001;
+  optional string sekai_best_file = 420002;
+}

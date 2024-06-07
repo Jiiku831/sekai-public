@@ -1,0 +1,17 @@
+{
+    "homepage": "https://github.com/bshoshany/thread-pool",
+    "maintainers": [
+        {
+            "email": "baraksh@gmail.com",
+            "github": "bshoshany",
+            "name": "Barak Shoshany"
+        }
+    ],
+    "repository": [
+        "github:bshoshany/thread-pool"
+    ],
+    "versions": [
+        "4.1.0"
+    ],
+    "yanked_versions": {}
+}

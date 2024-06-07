@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message BondsHonor {
+  option (master_db_file) = "bondsHonors.json";
+  message Level {
+    optional int32 id             = 1 [(json_name) = "id"];
+    optional int32 bonds_honor_id = 2 [(json_name) = "bondsHonorId"];
+    optional int32 level          = 3 [(json_name) = "level"];
+    optional string description   = 4 [(json_name) = "description"];
+  }
+
+  optional int32 id                              = 1 [(json_name) = "id"];
+  optional int32 seq                             = 2 [(json_name) = "seq"];
+  optional int32 bonds_group_id                  = 3 [(json_name) = "bondsGroupId"];
+  optional int32 game_character_unit_id1         = 4 [(json_name) = "gameCharacterUnitId1"];
+  optional int32 game_character_unit_id2         = 5 [(json_name) = "gameCharacterUnitId2"];
+  optional string honor_rarity                   = 6 [(json_name) = "honorRarity"];
+  optional string name                           = 7 [(json_name) = "name"];
+  optional string description                    = 8 [(json_name) = "description"];
+  repeated Level levels                          = 9 [(json_name) = "levels"];
+  optional bool configurable_unit_virtual_singer = 10 [(json_name) = "configurableUnitVirtualSinger"];
+}

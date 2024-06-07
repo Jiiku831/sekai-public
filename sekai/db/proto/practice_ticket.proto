@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message PracticeTicket {
+  option (master_db_file)     = "practiceTickets.json";
+  optional int32 id           = 1 [(json_name) = "id"];
+  optional string name        = 2 [(json_name) = "name"];
+  optional int32 exp          = 3 [(json_name) = "exp"];
+  optional string flavor_text = 4 [(json_name) = "flavorText"];
+}

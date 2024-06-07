@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message IngameNoteJudgeTechnicalScore {
+  option (master_db_file) = "ingameNoteJudgeTechnicalScores.json";
+  enum LiveType {
+    UNKNOWN_LIVE_TYPE      = 0;
+    PRELIMINARY_TOURNAMENT = 1 [(json_value) = "preliminary_tournament"];
+    RANK_MATCH             = 2 [(json_value) = "rank_match"];
+  }
+
+  enum IngameNoteJadgeType {
+    UNKNOWN_INGAME_NOTE_JADGE_TYPE = 0;
+    BAD                            = 1 [(json_value) = "bad"];
+    GOOD                           = 2 [(json_value) = "good"];
+    GREAT                          = 3 [(json_value) = "great"];
+    MISS                           = 4 [(json_value) = "miss"];
+    PERFECT                        = 5 [(json_value) = "perfect"];
+  }
+
+  optional int32 id                                   = 1 [(json_name) = "id"];
+  optional LiveType live_type                         = 2 [(json_name) = "liveType"];
+  optional IngameNoteJadgeType ingame_note_jadge_type = 3 [(json_name) = "ingameNoteJadgeType"];
+  optional int32 score                                = 4 [(json_name) = "score"];
+}

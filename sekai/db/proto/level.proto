@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message Level {
+  option (master_db_file) = "levels.json";
+  enum LevelType {
+    UNKNOWN_LEVEL_TYPE  = 0;
+    BONDS               = 1 [(json_value) = "bonds"];
+    CARD                = 2 [(json_value) = "card"];
+    CARD_SKILL_1        = 3 [(json_value) = "card_skill_1"];
+    CARD_SKILL_2        = 4 [(json_value) = "card_skill_2"];
+    CARD_SKILL_3        = 5 [(json_value) = "card_skill_3"];
+    CARD_SKILL_4        = 6 [(json_value) = "card_skill_4"];
+    CARD_SKILL_BIRTHDAY = 7 [(json_value) = "card_skill_birthday"];
+    CHARACTER           = 8 [(json_value) = "character"];
+    UNIT                = 9 [(json_value) = "unit"];
+    USER                = 10 [(json_value) = "user"];
+  }
+
+  optional int32 id             = 1 [(json_name) = "id"];
+  optional LevelType level_type = 2 [(json_name) = "levelType"];
+  optional int32 level          = 3 [(json_name) = "level"];
+  optional int32 total_exp      = 4 [(json_name) = "totalExp"];
+}

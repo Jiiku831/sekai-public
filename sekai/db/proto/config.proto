@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message Config {
+  option (master_db_file)    = "configs.json";
+  optional string config_key = 1 [(json_name) = "configKey"];
+  optional string value      = 2 [(json_name) = "value"];
+}

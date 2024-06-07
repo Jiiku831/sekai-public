@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message BeginnerMission {
+  option (master_db_file) = "beginnerMissions.json";
+  enum BeginnerMissionType {
+    UNKNOWN_BEGINNER_MISSION_TYPE  = 0;
+    ACHIEVE_BEGINNER_MISSION       = 1 [(json_value) = "achieve_beginner_mission"];
+    BUY_AREA_ITEM                  = 2 [(json_value) = "buy_area_item"];
+    BUY_MUSIC                      = 3 [(json_value) = "buy_music"];
+    CLEAR_MULTI_LIVE               = 4 [(json_value) = "clear_multi_live"];
+    MAKE_COSTUME_3D                = 5 [(json_value) = "make_costume_3d"];
+    READ_UNIT_STORY_IDOL           = 6 [(json_value) = "read_unit_story_idol"];
+    READ_UNIT_STORY_LIGHT_SOUND    = 7 [(json_value) = "read_unit_story_light_sound"];
+    READ_UNIT_STORY_PIAPRO         = 8 [(json_value) = "read_unit_story_piapro"];
+    READ_UNIT_STORY_SCHOOL_REFUSAL = 9 [(json_value) = "read_unit_story_school_refusal"];
+    READ_UNIT_STORY_STREET         = 10 [(json_value) = "read_unit_story_street"];
+    READ_UNIT_STORY_THEME_PARK     = 11 [(json_value) = "read_unit_story_theme_park"];
+  }
+
+  message Reward {
+    enum MissionType {
+      UNKNOWN_MISSION_TYPE = 0;
+      BEGINNER_MISSION     = 1 [(json_value) = "beginner_mission"];
+    }
+
+    optional int32 id                 = 1 [(json_name) = "id"];
+    optional MissionType mission_type = 2 [(json_name) = "missionType"];
+    optional int32 mission_id         = 3 [(json_name) = "missionId"];
+    optional int32 seq                = 4 [(json_name) = "seq"];
+    optional int32 resource_box_id    = 5 [(json_name) = "resourceBoxId"];
+  }
+
+  optional int32 id                                  = 1 [(json_name) = "id"];
+  optional int32 seq                                 = 2 [(json_name) = "seq"];
+  optional BeginnerMissionType beginner_mission_type = 3 [(json_name) = "beginnerMissionType"];
+  optional string beginner_mission_category          = 4 [(json_name) = "beginnerMissionCategory"];
+  optional int32 requirement                         = 5 [(json_name) = "requirement"];
+  optional string sentence                           = 6 [(json_name) = "sentence"];
+  repeated Reward rewards                            = 7 [(json_name) = "rewards"];
+}

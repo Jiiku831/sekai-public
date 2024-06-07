@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message IngamePlayLevel {
+  option (master_db_file)          = "ingamePlayLevels.json";
+  optional int32 play_level        = 1 [(json_name) = "playLevel"];
+  optional float score_coefficient = 2 [(json_name) = "scoreCoefficient"];
+}

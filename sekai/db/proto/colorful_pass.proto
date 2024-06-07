@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message ColorfulPass {
+  option (master_db_file)                      = "colorfulPasses.json";
+  optional int32 id                            = 1 [(json_name) = "id"];
+  optional int32 resource_box_id               = 2 [(json_name) = "resourceBoxId"];
+  optional int32 receivable_days               = 3 [(json_name) = "receivableDays"];
+  optional string present_sentence             = 4 [(json_name) = "presentSentence"];
+  optional int32 expire_days                   = 5 [(json_name) = "expireDays"];
+  optional int32 daily_paid_gacha_spin_limit   = 6 [(json_name) = "dailyPaidGachaSpinLimit"];
+  optional int32 challenge_live_point_multiple = 7 [(json_name) = "challengeLivePointMultiple"];
+  optional int32 live_point_multiple           = 8 [(json_name) = "livePointMultiple"];
+}

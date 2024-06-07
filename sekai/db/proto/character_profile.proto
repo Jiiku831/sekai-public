@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message CharacterProfile {
+  option (master_db_file)         = "characterProfiles.json";
+  optional int32 character_id     = 1 [(json_name) = "characterId"];
+  optional string character_voice = 2 [(json_name) = "characterVoice"];
+  optional string birthday        = 3 [(json_name) = "birthday"];
+  optional string height          = 4 [(json_name) = "height"];
+  optional string school          = 5 [(json_name) = "school"];
+  optional string school_year     = 6 [(json_name) = "schoolYear"];
+  optional string hobby           = 7 [(json_name) = "hobby"];
+  optional string special_skill   = 8 [(json_name) = "specialSkill"];
+  optional string favorite_food   = 9 [(json_name) = "favoriteFood"];
+  optional string hated_food      = 10 [(json_name) = "hatedFood"];
+  optional string weak            = 11 [(json_name) = "weak"];
+  optional string introduction    = 12 [(json_name) = "introduction"];
+  optional string scenario_id     = 13 [(json_name) = "scenarioId"];
+}

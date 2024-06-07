@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message LimitedTitleScreen {
+  option (master_db_file)                       = "limitedTitleScreens.json";
+  optional int32 id                             = 1 [(json_name) = "id"];
+  optional int32 priority                       = 2 [(json_name) = "priority"];
+  optional int64 download_start_at              = 3 [(json_name) = "downloadStartAt"];
+  optional int64 download_end_at                = 4 [(json_name) = "downloadEndAt"];
+  optional int64 display_start_at               = 5 [(json_name) = "displayStartAt"];
+  optional int64 display_end_at                 = 6 [(json_name) = "displayEndAt"];
+  optional string bg_assetbundle_name           = 7 [(json_name) = "bgAssetbundleName"];
+  optional string logo_assetbundle_name         = 8 [(json_name) = "logoAssetbundleName"];
+  optional string bgm_assetbundle_name          = 9 [(json_name) = "bgmAssetbundleName"];
+  optional string start_effect_assetbundle_name = 10 [(json_name) = "startEffectAssetbundleName"];
+}

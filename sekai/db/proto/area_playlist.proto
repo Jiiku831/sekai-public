@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message AreaPlaylist {
+  option (master_db_file)             = "areaPlaylists.json";
+  optional int32 id                   = 1 [(json_name) = "id"];
+  optional int32 area_id              = 2 [(json_name) = "areaId"];
+  optional int32 music_id             = 3 [(json_name) = "musicId"];
+  optional string assetbundle_name    = 4 [(json_name) = "assetbundleName"];
+  optional string bgm_name            = 5 [(json_name) = "bgmName"];
+  optional int32 release_condition_id = 6 [(json_name) = "releaseConditionId"];
+}

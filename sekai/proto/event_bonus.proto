@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+package sekai;
+
+import "sekai/db/proto/enums.proto";
+
+message SimpleEventBonus {
+  message CharacterAndUnit {
+    optional int32 char_id = 1;
+    optional db.Unit unit  = 2;
+  }
+
+  optional db.Attr attr           = 1;
+  repeated CharacterAndUnit chars = 2;
+  repeated int32 cards            = 3;
+  optional int32 chapter_char_id  = 4;
+}
+
+message EventBonusProto {
+  message UnitBonus {
+    optional db.Unit unit = 1;
+    optional float rate   = 2;
+  }
+
+  message AttrBonus {
+    optional db.Attr attr         = 1;
+    repeated UnitBonus unit_bonus = 2;
+  }
+
+  message DeckBonus {
+    optional int32 char_id        = 1;
+    repeated AttrBonus attr_bonus = 2;
+  }
+
+  message UnitCharBonus {
+    optional db.Unit unit        = 1;
+    map<int32, float> char_bonus = 2;
+  }
+
+  message LeveledBonus {
+    optional db.CardRarityType rarity = 1;
+    repeated float level_bonus        = 2;
+  }
+
+  map<int32, float> card_bonus            = 1;
+  repeated DeckBonus deck_bonus           = 2;
+  repeated LeveledBonus master_rank_bonus = 3;
+  repeated LeveledBonus skill_level_bonus = 4;
+  repeated float diff_attr_bonus          = 5;
+}

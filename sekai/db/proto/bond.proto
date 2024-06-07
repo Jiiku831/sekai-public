@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message Bond {
+  option (master_db_file)      = "bonds.json";
+  optional int32 id            = 1 [(json_name) = "id"];
+  optional int32 group_id      = 2 [(json_name) = "groupId"];
+  optional int32 character_id1 = 3 [(json_name) = "characterId1"];
+  optional int32 character_id2 = 4 [(json_name) = "characterId2"];
+}

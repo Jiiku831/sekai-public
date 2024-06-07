@@ -1,0 +1,39 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library")
+
+cc_binary(
+    name = "build_event_team_main",
+    data = [
+        "//data:flat-db",
+        "//data:profile",
+    ],
+    deps = [
+        ":build_event_team_lib",
+    ],
+)
+
+cc_library(
+    name = "build_event_team_lib",
+    srcs = ["build_event_team_main.cc"],
+    deps = [
+        "//sekai:card",
+        "//sekai:config",
+        "//sekai:estimator",
+        "//sekai:event_bonus",
+        "//sekai:profile",
+        "//sekai:proto_util",
+        "//sekai:team",
+        "//sekai/db:master_db",
+        "//sekai/db/proto:all",
+        "//sekai/html:report",
+        "//sekai/html:team",
+        "//sekai/proto:card_state_cc_proto",
+        "//sekai/proto:profile_cc_proto",
+        "//sekai/team_builder:event_team_builder",
+        "//sekai/team_builder:max_bonus_team_builder",
+        "@abseil-cpp//absl/flags:flag",
+        "@abseil-cpp//absl/log:flags",
+        "@abseil-cpp//absl/strings:str_format",
+        "@abseil-cpp//absl/time",
+        "@ctml",
+    ],
+)

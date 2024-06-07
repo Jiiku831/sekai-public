@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message LoginBonus {
+  option (master_db_file)        = "loginBonuses.json";
+  optional int32 id              = 1 [(json_name) = "id"];
+  optional int32 day             = 2 [(json_name) = "day"];
+  optional int32 resource_box_id = 3 [(json_name) = "resourceBoxId"];
+}

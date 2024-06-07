@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message BillingShopItem {
+  option (master_db_file) = "billingShopItems.json";
+  enum BillingShopItemType {
+    UNKNOWN_BILLING_SHOP_ITEM_TYPE = 0;
+    COLORFUL_PASS                  = 1 [(json_value) = "colorful_pass"];
+    COLORFUL_PASS_V2               = 2 [(json_value) = "colorful_pass_v2"];
+    COSTUME_3D                     = 3 [(json_value) = "costume_3d"];
+    JEWEL                          = 4 [(json_value) = "jewel"];
+    LIVE_MISSION_PASS              = 5 [(json_value) = "live_mission_pass"];
+    VALUE_SET                      = 6 [(json_value) = "value_set"];
+  }
+
+  enum BillableLimitType {
+    UNKNOWN_BILLABLE_LIMIT_TYPE = 0;
+    COUNT                       = 1 [(json_value) = "count"];
+    LIVE_POINT                  = 2 [(json_value) = "live_point"];
+    UNLIMITED                   = 3 [(json_value) = "unlimited"];
+  }
+
+  enum BillableLimitResetIntervalType {
+    UNKNOWN_BILLABLE_LIMIT_RESET_INTERVAL_TYPE = 0;
+    DAY                                        = 1 [(json_value) = "day"];
+    MONTHLY                                    = 2 [(json_value) = "monthly"];
+    NONE                                       = 3 [(json_value) = "none"];
+  }
+
+  enum SaleType {
+    UNKNOWN_SALE_TYPE = 0;
+    BUNDLE            = 1 [(json_value) = "bundle"];
+    SINGLE            = 2 [(json_value) = "single"];
+  }
+
+  optional int32 id                                   = 1 [(json_name) = "id"];
+  optional int32 seq                                  = 2 [(json_name) = "seq"];
+  optional BillingShopItemType billing_shop_item_type = 3 [(json_name) = "billingShopItemType"];
+  optional int32 billing_product_group_id             = 4 [(json_name) = "billingProductGroupId"];
+  optional string name                                = 5 [(json_name) = "name"];
+  optional string description                         = 6 [(json_name) = "description"];
+  optional BillableLimitType billable_limit_type      = 7 [(json_name) = "billableLimitType"];
+  optional BillableLimitResetIntervalType billable_limit_reset_interval_type = 8
+      [(json_name) = "billableLimitResetIntervalType"];
+  optional string assetbundle_name                   = 9 [(json_name) = "assetbundleName"];
+  optional int32 resource_box_id                     = 10 [(json_name) = "resourceBoxId"];
+  optional int32 billable_limit_value                = 11 [(json_name) = "billableLimitValue"];
+  optional int32 bonus_resource_box_id               = 12 [(json_name) = "bonusResourceBoxId"];
+  optional string label                              = 13 [(json_name) = "label"];
+  optional int64 end_at                              = 14 [(json_name) = "endAt"];
+  optional int64 start_at                            = 15 [(json_name) = "startAt"];
+  optional int32 billable_limit_reset_interval_value = 16 [(json_name) = "billableLimitResetIntervalValue"];
+  optional string purchase_option                    = 17 [(json_name) = "purchaseOption"];
+  optional SaleType sale_type                        = 18 [(json_name) = "saleType"];
+}

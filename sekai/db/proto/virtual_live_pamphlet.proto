@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message VirtualLivePamphlet {
+  option (master_db_file)          = "virtualLivePamphlets.json";
+  optional int32 id                = 1 [(json_name) = "id"];
+  optional int32 virtual_live_id   = 2 [(json_name) = "virtualLiveId"];
+  optional string name             = 3 [(json_name) = "name"];
+  optional string flavor_text      = 4 [(json_name) = "flavorText"];
+  optional string assetbundle_name = 5 [(json_name) = "assetbundleName"];
+}

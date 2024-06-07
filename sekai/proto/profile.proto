@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package sekai;
+
+import "sekai/proto/card_state.proto";
+
+message ProfileProto {
+  repeated int32 area_item_levels = 1;
+  repeated int32 character_ranks  = 2;
+  optional int32 bonus_power      = 3;
+  map<int32, CardState> cards     = 4;
+}

@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+import "sekai/db/proto/enums.proto";
+
+message WorldBloomSupportDeckBonus {
+  option (master_db_file) = "worldBloomSupportDeckBonuses.json";
+
+  message CharacterBonus {
+    enum Type {
+      UNKNOWN_TYPE = 0;
+      OTHERS       = 1 [(json_value) = "others"];
+      SPECIFIC     = 2 [(json_value) = "specific"];
+    }
+
+    optional int32 id         = 1 [(json_name) = "id"];
+    optional Type type        = 2 [(json_name) = "worldBloomSupportDeckCharacterType"];
+    optional float bonus_rate = 3 [(json_name) = "bonusRate"];
+  }
+
+  message MasterRankBonus {
+    optional int32 id          = 1 [(json_name) = "id"];
+    optional int32 master_rank = 2 [(json_name) = "masterRank"];
+    optional float bonus_rate  = 3 [(json_name) = "bonusRate"];
+  }
+
+  message SkillLevelBonus {
+    optional int32 id          = 1 [(json_name) = "id"];
+    optional int32 skill_level = 2 [(json_name) = "skillLevel"];
+    optional float bonus_rate  = 3 [(json_name) = "bonusRate"];
+  }
+
+  optional CardRarityType card_rarity_type     = 1 [(json_name) = "cardRarityType"];
+  repeated CharacterBonus character_bonuses    = 2 [(json_name) = "worldBloomSupportDeckCharacterBonuses"];
+  repeated MasterRankBonus master_rank_bonuses = 3 [(json_name) = "worldBloomSupportDeckMasterRankBonuses"];
+  repeated SkillLevelBonus skill_level_bonuses = 4 [(json_name) = "worldBloomSupportDeckSkillLevelBonuses"];
+}

@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message Boost {
+  option (master_db_file)         = "boosts.json";
+  optional int32 id               = 1 [(json_name) = "id"];
+  optional int32 cost_boost       = 2 [(json_name) = "costBoost"];
+  optional bool is_event_only     = 3 [(json_name) = "isEventOnly"];
+  optional int32 exp_rate         = 4 [(json_name) = "expRate"];
+  optional int32 reward_rate      = 5 [(json_name) = "rewardRate"];
+  optional int32 live_point_rate  = 6 [(json_name) = "livePointRate"];
+  optional int32 event_point_rate = 7 [(json_name) = "eventPointRate"];
+  optional int32 bonds_exp_rate   = 8 [(json_name) = "bondsExpRate"];
+}

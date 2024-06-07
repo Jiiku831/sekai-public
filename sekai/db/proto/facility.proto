@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message Facility {
+  option (master_db_file) = "facilities.json";
+  enum FacilityType {
+    UNKNOWN_FACILITY_TYPE = 0;
+    CHALLENGE_LIVE        = 1 [(json_value) = "challenge_live"];
+    RANK_MATCH            = 2 [(json_value) = "rank_match"];
+    SKILL_PRACTICE        = 3 [(json_value) = "skill_practice"];
+  }
+
+  optional int32 id                       = 1 [(json_name) = "id"];
+  optional FacilityType facility_type     = 2 [(json_name) = "facilityType"];
+  optional int32 release_condition_id     = 3 [(json_name) = "releaseConditionId"];
+  optional int32 and_release_condition_id = 4 [(json_name) = "andReleaseConditionId"];
+}

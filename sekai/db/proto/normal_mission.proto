@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message NormalMission {
+  option (master_db_file) = "normalMissions.json";
+  enum NormalMissionType {
+    UNKNOWN_NORMAL_MISSION_TYPE    = 0;
+    BUY_AVATAR_SKIN                = 1 [(json_value) = "buy_avatar_skin"];
+    CHARACTER_RANK_3               = 2 [(json_value) = "character_rank_3"];
+    CLEAR_LIVE_ANOTHER_VOCAL       = 3 [(json_value) = "clear_live_another_vocal"];
+    CLEAR_SOLO_CHALLENGE_LIVE      = 4 [(json_value) = "clear_solo_challenge_live"];
+    CLEAR_VIRTUAL_LIVE             = 5 [(json_value) = "clear_virtual_live"];
+    INHERIT_PLATFORM               = 6 [(json_value) = "inherit_platform"];
+    LIVE_CLEAR                     = 7 [(json_value) = "live_clear"];
+    MAKE_ANOTHER_COLOR_COSTUME_3D  = 8 [(json_value) = "make_another_color_costume_3d"];
+    MAKE_FRIEND                    = 9 [(json_value) = "make_friend"];
+    MAKE_RARE_COSTUME_3D           = 10 [(json_value) = "make_rare_costume_3d"];
+    MASTER_RANK                    = 11 [(json_value) = "master_rank"];
+    READ_CARD_EPISODE_FIRST        = 12 [(json_value) = "read_card_episode_first"];
+    READ_CARD_EPISODE_SECOND       = 13 [(json_value) = "read_card_episode_second"];
+    READ_CHARACTER_PROFILE_EPISODE = 14 [(json_value) = "read_character_profile_episode"];
+    SET_HONOR                      = 15 [(json_value) = "set_honor"];
+    SKILL_LEVEL_2                  = 16 [(json_value) = "skill_level_2"];
+    USE_VIRTUAL_ITEM               = 17 [(json_value) = "use_virtual_item"];
+  }
+
+  message Reward {
+    enum MissionType {
+      UNKNOWN_MISSION_TYPE = 0;
+      NORMAL_MISSION       = 1 [(json_value) = "normal_mission"];
+    }
+
+    optional int32 id                 = 1 [(json_name) = "id"];
+    optional MissionType mission_type = 2 [(json_name) = "missionType"];
+    optional int32 mission_id         = 3 [(json_name) = "missionId"];
+    optional int32 seq                = 4 [(json_name) = "seq"];
+    optional int32 resource_box_id    = 5 [(json_name) = "resourceBoxId"];
+  }
+
+  optional int32 id                              = 1 [(json_name) = "id"];
+  optional int32 seq                             = 2 [(json_name) = "seq"];
+  optional NormalMissionType normal_mission_type = 3 [(json_name) = "normalMissionType"];
+  optional int32 requirement                     = 4 [(json_name) = "requirement"];
+  optional string sentence                       = 5 [(json_name) = "sentence"];
+  repeated Reward rewards                        = 6 [(json_name) = "rewards"];
+}

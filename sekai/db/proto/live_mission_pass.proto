@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message LiveMissionPass {
+  option (master_db_file)                 = "liveMissionPasses.json";
+  optional int32 id                       = 1 [(json_name) = "id"];
+  optional int32 live_mission_period_id   = 2 [(json_name) = "liveMissionPeriodId"];
+  optional string costume_name            = 3 [(json_name) = "costumeName"];
+  optional int32 character3d_id1          = 4 [(json_name) = "character3dId1"];
+  optional int32 character3d_id2          = 5 [(json_name) = "character3dId2"];
+  optional string male_assetbundle_name   = 6 [(json_name) = "maleAssetbundleName"];
+  optional string female_assetbundle_name = 7 [(json_name) = "femaleAssetbundleName"];
+}

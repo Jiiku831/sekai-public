@@ -1,0 +1,133 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message PanelMissionCampaign {
+  option (master_db_file) = "panelMissionCampaigns.json";
+
+  message PanelMissionSheetGroup {
+
+    message PanelMissionSheet {
+
+      message PanelMission {
+        enum PanelMissionType {
+          UNKNOWN_PANEL_MISSION_TYPE                     = 0;
+          ANY_MEMBER_SKILL_UP                            = 1 [(json_value) = "any_member_skill_up"];
+          CARD_LEVEL_UP                                  = 2 [(json_value) = "card_level_up"];
+          COLLECT_EVENT_POINT                            = 3 [(json_value) = "collect_event_point"];
+          COLLECT_MATERIAL                               = 4 [(json_value) = "collect_material"];
+          COLLECT_VIRTUAL_LIVE_CHEER_POINT               = 5 [(json_value) = "collect_virtual_live_cheer_point"];
+          EXECUTE_GACHA                                  = 6 [(json_value) = "execute_gacha"];
+          EXECUTE_GACHA_TAB                              = 7 [(json_value) = "execute_gacha_tab"];
+          GET_LIVE_PERFECT                               = 8 [(json_value) = "get_live_perfect"];
+          JOIN_VIRTUAL_LIVE                              = 9 [(json_value) = "join_virtual_live"];
+          LIVE_CLEAR_ALL_PERFECT_ALL_DIFFICULTY_IN_MUSIC = 10
+              [(json_value) = "live_clear_all_perfect_all_difficulty_in_music"];
+          LIVE_CLEAR_ALL_PERFECT_IN_MUSIC_DIFFICULTY = 11 [(json_value) = "live_clear_all_perfect_in_music_difficulty"];
+          LIVE_CLEAR_AM_PM                           = 12 [(json_value) = "live_clear_am_pm"];
+          LIVE_CLEAR_FULL_COMBO                      = 13 [(json_value) = "live_clear_full_combo"];
+          LIVE_CLEAR_FULL_COMBO_ALL_DIFFICULTY_IN_MUSIC = 14
+              [(json_value) = "live_clear_full_combo_all_difficulty_in_music"];
+          LIVE_CLEAR_FULL_COMBO_IN_MUSIC_LEVEL           = 15 [(json_value) = "live_clear_full_combo_in_music_level"];
+          LIVE_CLEAR_IN_MUSIC                            = 16 [(json_value) = "live_clear_in_music"];
+          LIVE_CLEAR_IN_MUSIC_GROUP                      = 17 [(json_value) = "live_clear_in_music_group"];
+          LIVE_CLEAR_IN_MUSIC_LEVEL                      = 18 [(json_value) = "live_clear_in_music_level"];
+          LIVE_CLEAR_NO_CONTINUE_IN_MUSIC_AND_DIFFICULTY = 19
+              [(json_value) = "live_clear_no_continue_in_music_and_difficulty"];
+          LIVE_CLEAR_RANK_MATCH                  = 20 [(json_value) = "live_clear_rank_match"];
+          LIVE_CLEAR_SKILL_JUDGEMENT_UP          = 21 [(json_value) = "live_clear_skill_judgement_up"];
+          LIVE_CLEAR_SKILL_LIFE_RECOVERY         = 22 [(json_value) = "live_clear_skill_life_recovery"];
+          LIVE_CLEAR_SKILL_SCORE_UP              = 23 [(json_value) = "live_clear_skill_score_up"];
+          LIVE_CLEAR_WITH_MIRROR                 = 24 [(json_value) = "live_clear_with_mirror"];
+          LIVE_CLEAR_WITH_MV_2D_OR_ORIGINAL      = 25 [(json_value) = "live_clear_with_mv_2d_or_original"];
+          LIVE_CLEAR_WITH_MV_3D                  = 26 [(json_value) = "live_clear_with_mv_3d"];
+          MAKE_NEW_FRIEND                        = 27 [(json_value) = "make_new_friend"];
+          MULTI_LIVE_CLEAR                       = 28 [(json_value) = "multi_live_clear"];
+          MULTI_LIVE_CLEAR_MUSIC_SCORE           = 29 [(json_value) = "multi_live_clear_music_score"];
+          MULTI_LIVE_CLEAR_MUSIC_WITH_FRIENDS    = 30 [(json_value) = "multi_live_clear_music_with_friends"];
+          MULTI_LIVE_CLEAR_PARTY_FULL_COMBO      = 31 [(json_value) = "multi_live_clear_party_full_combo"];
+          MULTI_LIVE_CLEAR_SUPER_FEVER           = 32 [(json_value) = "multi_live_clear_super_fever"];
+          MULTI_LIVE_CLEAR_TOP_SCORE             = 33 [(json_value) = "multi_live_clear_top_score"];
+          MULTI_LIVE_CLEAR_WITH_FRIENDS          = 34 [(json_value) = "multi_live_clear_with_friends"];
+          PURCHASE_BILLING_SHOP_ITEM_IN_CATEGORY = 35 [(json_value) = "purchase_billing_shop_item_in_category"];
+          PURCHASE_PREMIUM_MISSION_PASS          = 36 [(json_value) = "purchase_premium_mission_pass"];
+          READ_EVENT_STORY_EPISODE               = 37 [(json_value) = "read_event_story_episode"];
+          SET_VIRTUAL_LIVE_AVATAR_MOTION         = 38 [(json_value) = "set_virtual_live_avatar_motion"];
+          SPIN_CUSTOM_PROFILE_GACHA_TAB          = 39 [(json_value) = "spin_custom_profile_gacha_tab"];
+          SPIN_GACHA                             = 40 [(json_value) = "spin_gacha"];
+          UNIT_AVATAR_JOIN_VIRTUAL_LIVE          = 41 [(json_value) = "unit_avatar_join_virtual_live"];
+          UNIT_COLLECT_CARD                      = 42 [(json_value) = "unit_collect_card"];
+          UNIT_COLLECT_COSTUME_3D                = 43 [(json_value) = "unit_collect_costume_3d"];
+          UNIT_LIVE_CLEAR                        = 44 [(json_value) = "unit_live_clear"];
+          UNIT_LIVE_CLEAR_ANOTHER_VOCAL          = 45 [(json_value) = "unit_live_clear_another_vocal"];
+          UNIT_LIVE_CLEAR_MUSIC                  = 46 [(json_value) = "unit_live_clear_music"];
+          UNIT_MULTI_LIVE_CLEAR_HONOR            = 47 [(json_value) = "unit_multi_live_clear_honor"];
+        }
+
+        message Reward {
+          enum MissionType {
+            UNKNOWN_MISSION_TYPE = 0;
+            PANEL_MISSION        = 1 [(json_value) = "panel_mission"];
+          }
+
+          optional int32 id                 = 1 [(json_name) = "id"];
+          optional MissionType mission_type = 2 [(json_name) = "missionType"];
+          optional int32 mission_id         = 3 [(json_name) = "missionId"];
+          optional int32 seq                = 4 [(json_name) = "seq"];
+          optional int32 resource_box_id    = 5 [(json_name) = "resourceBoxId"];
+        }
+
+        optional int32 id                            = 1 [(json_name) = "id"];
+        optional int32 panel_mission_sheet_id        = 2 [(json_name) = "panelMissionSheetId"];
+        optional string name                         = 3 [(json_name) = "name"];
+        optional string description                  = 4 [(json_name) = "description"];
+        optional int32 seq                           = 5 [(json_name) = "seq"];
+        optional PanelMissionType panel_mission_type = 6 [(json_name) = "panelMissionType"];
+        optional int32 requirement1                  = 7 [(json_name) = "requirement1"];
+        repeated Reward rewards                      = 8 [(json_name) = "rewards"];
+        optional int32 requirement2                  = 9 [(json_name) = "requirement2"];
+      }
+
+      message Reward {
+        enum MissionType {
+          UNKNOWN_MISSION_TYPE   = 0;
+          PANEL_MISSION_COMPLETE = 1 [(json_value) = "panel_mission_complete"];
+        }
+
+        optional int32 id                 = 1 [(json_name) = "id"];
+        optional MissionType mission_type = 2 [(json_name) = "missionType"];
+        optional int32 mission_id         = 3 [(json_name) = "missionId"];
+        optional int32 seq                = 4 [(json_name) = "seq"];
+        optional int32 resource_box_id    = 5 [(json_name) = "resourceBoxId"];
+      }
+
+      optional int32 id                           = 1 [(json_name) = "id"];
+      optional int32 panel_mission_sheet_group_id = 2 [(json_name) = "panelMissionSheetGroupId"];
+      optional string name                        = 3 [(json_name) = "name"];
+      optional int32 seq                          = 4 [(json_name) = "seq"];
+      optional string assetbundle_name            = 5 [(json_name) = "assetbundleName"];
+      repeated PanelMission panel_missions        = 6 [(json_name) = "panelMissions"];
+      repeated Reward rewards                     = 7 [(json_name) = "rewards"];
+    }
+
+    optional int32 id                               = 1 [(json_name) = "id"];
+    optional int32 panel_mission_campaign_id        = 2 [(json_name) = "panelMissionCampaignId"];
+    optional string name                            = 3 [(json_name) = "name"];
+    optional int32 selectable_limit                 = 4 [(json_name) = "selectableLimit"];
+    optional int32 seq                              = 5 [(json_name) = "seq"];
+    repeated PanelMissionSheet panel_mission_sheets = 6 [(json_name) = "panelMissionSheets"];
+  }
+
+  optional int32 id                                          = 1 [(json_name) = "id"];
+  optional string name                                       = 2 [(json_name) = "name"];
+  optional string assetbundle_name                           = 3 [(json_name) = "assetbundleName"];
+  optional string bgm_assetbundle_name                       = 4 [(json_name) = "bgmAssetbundleName"];
+  optional int32 selectable_limit                            = 5 [(json_name) = "selectableLimit"];
+  optional int64 start_at                                    = 6 [(json_name) = "startAt"];
+  optional int64 progress_end_at                             = 7 [(json_name) = "progressEndAt"];
+  optional int64 closed_at                                   = 8 [(json_name) = "closedAt"];
+  optional int32 information_id                              = 9 [(json_name) = "informationId"];
+  repeated PanelMissionSheetGroup panel_mission_sheet_groups = 10 [(json_name) = "panelMissionSheetGroups"];
+}

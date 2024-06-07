@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message WorldBloomChapterRankingRewardRange {
+  option (master_db_file)          = "worldBloomChapterRankingRewardRanges.json";
+  optional int32 id                = 1 [(json_name) = "id"];
+  optional int32 event_id          = 2 [(json_name) = "eventId"];
+  optional int32 game_character_id = 3 [(json_name) = "gameCharacterId"];
+  optional int32 from_rank         = 4 [(json_name) = "fromRank"];
+  optional int32 to_rank           = 5 [(json_name) = "toRank"];
+  optional int32 resource_box_id   = 6 [(json_name) = "resourceBoxId"];
+}

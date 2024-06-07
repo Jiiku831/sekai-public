@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package sekai;
+
+message CardState {
+  optional int32 level              = 1;
+  optional int32 master_rank        = 2;
+  optional int32 skill_level        = 3;
+  repeated int32 card_episodes_read = 4;
+  optional bool special_training    = 5;
+}

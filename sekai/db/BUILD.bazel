@@ -1,0 +1,88 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library", "cc_test")
+
+cc_binary(
+    name = "generate_flat_db_main",
+    srcs = ["generate_flat_db_main.cc"],
+    deps = [
+        ":json_item_db",
+        "//base",
+        "//sekai:proto_util",
+        "//sekai/db/json:parser",
+        "//sekai/db/proto:all",
+        "@abseil-cpp//absl/flags:flag",
+        "@abseil-cpp//absl/log:absl_check",
+    ],
+)
+
+cc_library(
+    name = "item_db",
+    hdrs = ["item_db.h"],
+    deps = [
+        "//sekai/db/proto:descriptor_cc_proto",
+        "@abseil-cpp//absl/base:nullability",
+        "@abseil-cpp//absl/container:flat_hash_map",
+        "@abseil-cpp//absl/functional:any_invocable",
+        "@abseil-cpp//absl/log:absl_check",
+        "@abseil-cpp//absl/status:status",
+        "@abseil-cpp//absl/status:statusor",
+        "@abseil-cpp//absl/strings:str_format",
+        "@protobuf",
+    ],
+)
+
+cc_library(
+    name = "json_item_db",
+    hdrs = ["json_item_db.h"],
+    deps = [
+        ":item_db",
+        "//sekai/db/json:parser",
+    ],
+)
+
+cc_library(
+    name = "master_db",
+    srcs = ["master_db.cc"],
+    hdrs = ["master_db.h"],
+    deps = [
+        ":item_db",
+        "//sekai:proto_util",
+        "//sekai/db/proto:all",
+        "@abseil-cpp//absl/base:nullability",
+        "@abseil-cpp//absl/container:flat_hash_map",
+        "@abseil-cpp//absl/functional:any_invocable",
+        "@abseil-cpp//absl/log",
+        "@abseil-cpp//absl/status:status",
+        "@abseil-cpp//absl/status:statusor",
+        "@abseil-cpp//absl/strings",
+        "@abseil-cpp//absl/strings:str_format",
+        "@abseil-cpp//absl/time",
+    ],
+)
+
+cc_test(
+    name = "master_db_test",
+    srcs = ["master_db_test.cc"],
+    data = [
+        "//data:flat-db",
+    ],
+    deps = [
+        ":master_db",
+        "//testing:test_main",
+        "@abseil-cpp//absl/log",
+        "@googletest//:gtest",
+    ],
+)
+
+cc_test(
+    name = "master_db_benchmark",
+    srcs = ["master_db_benchmark.cc"],
+    data = [
+        "//data:flat-db",
+    ],
+    deps = [
+        ":master_db",
+        "//sekai/db/proto:all",
+        "@abseil-cpp//absl/log:absl_check",
+        "@google_benchmark//:benchmark_main",
+    ],
+)

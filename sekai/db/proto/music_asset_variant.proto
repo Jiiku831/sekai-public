@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message MusicAssetVariant {
+  option (master_db_file) = "musicAssetVariants.json";
+  enum MusicAssetType {
+    UNKNOWN_MUSIC_ASSET_TYPE = 0;
+    JACKET                   = 1 [(json_value) = "jacket"];
+    MV                       = 2 [(json_value) = "mv"];
+  }
+
+  optional int32 id                        = 1 [(json_name) = "id"];
+  optional int32 music_vocal_id            = 2 [(json_name) = "musicVocalId"];
+  optional int32 seq                       = 3 [(json_name) = "seq"];
+  optional MusicAssetType music_asset_type = 4 [(json_name) = "musicAssetType"];
+  optional string assetbundle_name         = 5 [(json_name) = "assetbundleName"];
+}

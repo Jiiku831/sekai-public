@@ -1,0 +1,315 @@
+load("@rules_cc//cc:defs.bzl", "cc_library", "cc_test")
+
+cc_library(
+    name = "array_size",
+    srcs = ["array_size.cc"],
+    hdrs = ["array_size.h"],
+    deps = [
+        "//sekai/db:master_db",
+        "//sekai/db/proto:all",
+    ],
+)
+
+cc_library(
+    name = "bitset",
+    hdrs = ["bitset.h"],
+    deps = [
+        "//sekai/db/proto:enums_cc_proto",
+        "@abseil-cpp//absl/strings",
+        "@abseil-cpp//absl/strings:str_format",
+        "@protobuf",
+    ],
+)
+
+cc_test(
+    name = "bitset_test",
+    srcs = ["bitset_test.cc"],
+    data = [
+        "//data:flat-db",
+    ],
+    deps = [
+        ":array_size",
+        ":bitset",
+        "//sekai/db/proto:all",
+        "//testing:test_main",
+        "@googletest//:gtest",
+    ],
+)
+
+cc_library(
+    name = "card",
+    srcs = ["card.cc"],
+    hdrs = ["card.h"],
+    deps = [
+        ":array_size",
+        ":bitset",
+        ":character",
+        ":event_bonus",
+        ":profile_bonus",
+        "//sekai/db:master_db",
+        "//sekai/db/proto:all",
+        "//sekai/proto:card_cc_proto",
+        "//sekai/proto:card_state_cc_proto",
+        "@abseil-cpp//absl/base:nullability",
+        "@eigen",
+    ],
+)
+
+cc_test(
+    name = "card_test",
+    srcs = ["card_test.cc"],
+    data = [
+        "//data:flat-db",
+    ],
+    deps = [
+        ":bitset",
+        ":card",
+        ":event_bonus",
+        "//sekai/db:master_db",
+        "//sekai/db/proto:card_cc_proto",
+        "//sekai/proto:card_state_cc_proto",
+        "//testing:test_main",
+        "//testing:util",
+        "@abseil-cpp//absl/base:nullability",
+        "@abseil-cpp//absl/container:flat_hash_map",
+        "@abseil-cpp//absl/log",
+        "@eigen",
+        "@googletest//:gtest",
+    ],
+)
+
+cc_library(
+    name = "character",
+    srcs = ["character.cc"],
+    hdrs = ["character.h"],
+    deps = [
+        ":bitset",
+        "//sekai/db:master_db",
+        "//sekai/db/proto:all",
+    ],
+)
+
+cc_test(
+    name = "character_test",
+    srcs = ["character_test.cc"],
+    data = [
+        "//data:flat-db",
+    ],
+    deps = [
+        ":character",
+        "//sekai/db/proto:all",
+        "//testing:test_main",
+        "@googletest//:gtest",
+    ],
+)
+
+cc_library(
+    name = "combinations",
+    hdrs = ["combinations.h"],
+    deps = [
+        "@abseil-cpp//absl/base:nullability",
+        "@abseil-cpp//absl/functional:any_invocable",
+        "@abseil-cpp//absl/log:absl_check",
+    ],
+)
+
+cc_library(
+    name = "config",
+    srcs = ["config.cc"],
+    hdrs = ["config.h"],
+)
+
+cc_test(
+    name = "config_test",
+    srcs = ["config_test.cc"],
+    deps = [
+        ":config",
+        "//testing:test_main",
+        "@abseil-cpp//absl/log",
+        "@googletest//:gtest",
+    ],
+)
+
+cc_library(
+    name = "estimator",
+    srcs = ["estimator.cc"],
+    hdrs = ["estimator.h"],
+    deps = [
+        ":config",
+        "//sekai/db:master_db",
+        "//sekai/db/proto:all",
+        "@abseil-cpp//absl/base:nullability",
+        "@abseil-cpp//absl/log:absl_check",
+        "@eigen",
+    ],
+)
+
+cc_test(
+    name = "estimator_test",
+    srcs = ["estimator_test.cc"],
+    data = [
+        "//data:flat-db",
+    ],
+    deps = [
+        ":estimator",
+        "//sekai/db:master_db",
+        "//sekai/db/proto:all",
+        "//testing:test_main",
+        "@abseil-cpp//absl/base:nullability",
+        "@eigen",
+        "@googletest//:gtest",
+    ],
+)
+
+cc_library(
+    name = "event_bonus",
+    srcs = ["event_bonus.cc"],
+    hdrs = ["event_bonus.h"],
+    deps = [
+        ":array_size",
+        ":character",
+        ":proto_util",
+        "//sekai/db:master_db",
+        "//sekai/db/proto:all",
+        "//sekai/proto:event_bonus_cc_proto",
+        "//sekai/proto:event_id_cc_proto",
+        "@abseil-cpp//absl/base:nullability",
+        "@abseil-cpp//absl/log:absl_check",
+    ],
+)
+
+cc_test(
+    name = "event_bonus_test",
+    srcs = ["event_bonus_test.cc"],
+    data = [
+        "testdata/event_bonus_112.textproto",
+        "testdata/event_bonus_117.textproto",
+        "testdata/support_event_bonus_112_1.textproto",
+        "//data:flat-db",
+    ],
+    deps = [
+        ":event_bonus",
+        "//sekai/proto:event_bonus_cc_proto",
+        "//testing:test_main",
+        "//testing:util",
+        "@abseil-cpp//absl/log",
+        "@googletest//:gtest",
+    ],
+)
+
+cc_library(
+    name = "file_util",
+    srcs = ["file_util.cc"],
+    hdrs = ["file_util.h"],
+    deps = [
+        ":config",
+    ],
+)
+
+cc_library(
+    name = "profile",
+    srcs = ["profile.cc"],
+    hdrs = ["profile.h"],
+    deps = [
+        ":array_size",
+        ":card",
+        ":character",
+        ":profile_bonus",
+        "//sekai/db:master_db",
+        "//sekai/db/proto:all",
+        "//sekai/proto:profile_cc_proto",
+        "@abseil-cpp//absl/log:absl_check",
+        "@abseil-cpp//absl/strings",
+        "@abseil-cpp//absl/strings:str_format",
+    ],
+)
+
+cc_test(
+    name = "profile_test",
+    srcs = ["profile_test.cc"],
+    data = [
+        "//data:flat-db",
+        "//data:profile/cards",
+    ],
+    deps = [
+        ":profile",
+        "//sekai/db/proto:all",
+        "//testing:test_main",
+        "//testing:util",
+        "@googletest//:gtest",
+    ],
+)
+
+cc_library(
+    name = "profile_bonus",
+    hdrs = ["profile_bonus.h"],
+    deps = [
+        "@abseil-cpp//absl/strings:str_format",
+    ],
+)
+
+cc_library(
+    name = "proto_util",
+    hdrs = ["proto_util.h"],
+    deps = [
+        ":file_util",
+        "//base",
+        "@abseil-cpp//absl/log:absl_check",
+        "@protobuf",
+    ],
+)
+
+cc_library(
+    name = "team",
+    srcs = ["team.cc"],
+    hdrs = ["team.h"],
+    deps = [
+        ":bitset",
+        ":card",
+        ":estimator",
+        ":event_bonus",
+        ":profile",
+        "//sekai/db:master_db",
+        "//sekai/db/proto:all",
+        "//sekai/proto:team_cc_proto",
+        "@eigen",
+    ],
+)
+
+cc_test(
+    name = "team_benchmark",
+    srcs = ["team_benchmark.cc"],
+    data = [
+        "//data:flat-db",
+    ],
+    deps = [
+        ":card",
+        ":event_bonus",
+        ":profile",
+        ":team",
+        "//sekai/db:master_db",
+        "//sekai/db/proto:all",
+        "//sekai/proto:profile_cc_proto",
+        "//testing:util",
+        "@google_benchmark//:benchmark_main",
+    ],
+)
+
+cc_test(
+    name = "team_test",
+    srcs = ["team_test.cc"],
+    data = [
+        "//data:flat-db",
+    ],
+    deps = [
+        ":card",
+        ":profile",
+        ":team",
+        "//sekai/db:master_db",
+        "//sekai/db/proto:all",
+        "//sekai/proto:profile_cc_proto",
+        "//testing:test_main",
+        "//testing:util",
+        "@googletest//:gtest",
+    ],
+)

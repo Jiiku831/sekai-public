@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message GiftGachaExchange {
+  option (master_db_file)        = "giftGachaExchanges.json";
+  optional int32 id              = 1 [(json_name) = "id"];
+  optional int32 gacha_id        = 2 [(json_name) = "gachaId"];
+  optional int32 seq             = 3 [(json_name) = "seq"];
+  optional int32 resource_box_id = 4 [(json_name) = "resourceBoxId"];
+}

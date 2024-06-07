@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message CheerfulCarnivalCharacterPartyName {
+  option (master_db_file)               = "cheerfulCarnivalCharacterPartyNames.json";
+  optional int32 id                     = 1 [(json_name) = "id"];
+  optional string character_party_name  = 2 [(json_name) = "characterPartyName"];
+  optional int32 game_character_unit_id = 3 [(json_name) = "gameCharacterUnitId"];
+}

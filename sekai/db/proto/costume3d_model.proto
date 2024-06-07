@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message Costume3DModel {
+  option (master_db_file) = "costume3dModels.json";
+  enum Unit {
+    UNKNOWN_UNIT   = 0;
+    IDOL           = 1 [(json_value) = "idol"];
+    LIGHT_SOUND    = 2 [(json_value) = "light_sound"];
+    PIAPRO         = 3 [(json_value) = "piapro"];
+    SCHOOL_REFUSAL = 4 [(json_value) = "school_refusal"];
+    STREET         = 5 [(json_value) = "street"];
+    THEME_PARK     = 6 [(json_value) = "theme_park"];
+  }
+
+  enum HeadCostume3DAssetbundleType {
+    UNKNOWN_HEAD_COSTUME3_D_ASSETBUNDLE_TYPE = 0;
+    HEAD_ALL                                 = 1 [(json_value) = "head_all"];
+    HEAD_AND_HAIR                            = 2 [(json_value) = "head_and_hair"];
+    HEAD_BACK                                = 3 [(json_value) = "head_back"];
+    HEAD_FRONT                               = 4 [(json_value) = "head_front"];
+    HEAD_ONLY                                = 5 [(json_value) = "head_only"];
+  }
+
+  optional int32 id                                                     = 1 [(json_name) = "id"];
+  optional int32 costume3d_id                                           = 2 [(json_name) = "costume3dId"];
+  optional Unit unit                                                    = 3 [(json_name) = "unit"];
+  optional HeadCostume3DAssetbundleType head_costume3d_assetbundle_type = 4
+      [(json_name) = "headCostume3dAssetbundleType"];
+  optional string thumbnail_assetbundle_name = 5 [(json_name) = "thumbnailAssetbundleName"];
+  optional string assetbundle_name           = 6 [(json_name) = "assetbundleName"];
+  optional string color_assetbundle_name     = 7 [(json_name) = "colorAssetbundleName"];
+  optional string part                       = 8 [(json_name) = "part"];
+}

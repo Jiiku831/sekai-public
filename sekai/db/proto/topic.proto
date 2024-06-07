@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message Topic {
+  option (master_db_file) = "topics.json";
+  enum TopicType {
+    UNKNOWN_TOPIC_TYPE       = 0;
+    APP_RATING               = 1 [(json_value) = "app_rating"];
+    ATTRIBUTE_AREA_ITEM_SHOP = 2 [(json_value) = "attribute_area_item_shop"];
+    CHALLENGE_LIVE           = 3 [(json_value) = "challenge_live"];
+    CUT_IN_VOICE             = 4 [(json_value) = "cut_in_voice"];
+    EVENT_STORY_EPISODE      = 5 [(json_value) = "event_story_episode"];
+    FACILITY_CARD_SKILL      = 6 [(json_value) = "facility_card_skill"];
+    INHERIT_COMPLETE         = 7 [(json_value) = "inherit_complete"];
+    MUSIC_DIFFICULTY         = 8 [(json_value) = "music_difficulty"];
+    RANK_MATCH_UNLOCK        = 9 [(json_value) = "rank_match_unlock"];
+    RULE_SLIDE               = 10 [(json_value) = "rule_slide"];
+    SPECIAL_STORY_EPISODE    = 11 [(json_value) = "special_story_episode"];
+    UNIT_STORY_EPISODE       = 12 [(json_value) = "unit_story_episode"];
+    VIRTUAL_LIVE_REWARD      = 13 [(json_value) = "virtual_live_reward"];
+    VIRTUAL_LIVE_TUTORIAL    = 14 [(json_value) = "virtual_live_tutorial"];
+  }
+
+  optional int32 id                   = 1 [(json_name) = "id"];
+  optional TopicType topic_type       = 2 [(json_name) = "topicType"];
+  optional int32 topic_type_id        = 3 [(json_name) = "topicTypeId"];
+  optional int32 release_condition_id = 4 [(json_name) = "releaseConditionId"];
+}

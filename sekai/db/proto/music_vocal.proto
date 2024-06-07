@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message MusicVocal {
+  option (master_db_file) = "musicVocals.json";
+  enum MusicVocalType {
+    UNKNOWN_MUSIC_VOCAL_TYPE = 0;
+    ANOTHER_VOCAL            = 1 [(json_value) = "another_vocal"];
+    APRIL_FOOL_2022          = 2 [(json_value) = "april_fool_2022"];
+    INSTRUMENTAL             = 3 [(json_value) = "instrumental"];
+    ORIGINAL_SONG            = 4 [(json_value) = "original_song"];
+    SEKAI                    = 5 [(json_value) = "sekai"];
+    VIRTUAL_SINGER           = 6 [(json_value) = "virtual_singer"];
+  }
+
+  message Character {
+    enum CharacterType {
+      UNKNOWN_CHARACTER_TYPE = 0;
+      GAME_CHARACTER         = 1 [(json_value) = "game_character"];
+      OUTSIDE_CHARACTER      = 2 [(json_value) = "outside_character"];
+    }
+
+    optional int32 id                     = 1 [(json_name) = "id"];
+    optional int32 music_id               = 2 [(json_name) = "musicId"];
+    optional int32 music_vocal_id         = 3 [(json_name) = "musicVocalId"];
+    optional CharacterType character_type = 4 [(json_name) = "characterType"];
+    optional int32 character_id           = 5 [(json_name) = "characterId"];
+    optional int32 seq                    = 6 [(json_name) = "seq"];
+  }
+
+  enum ArchiveDisplayType {
+    UNKNOWN_ARCHIVE_DISPLAY_TYPE = 0;
+    NONE                         = 1 [(json_value) = "none"];
+  }
+
+  optional int32 id                                = 1 [(json_name) = "id"];
+  optional int32 music_id                          = 2 [(json_name) = "musicId"];
+  optional MusicVocalType music_vocal_type         = 3 [(json_name) = "musicVocalType"];
+  optional int32 seq                               = 4 [(json_name) = "seq"];
+  optional int32 release_condition_id              = 5 [(json_name) = "releaseConditionId"];
+  optional string caption                          = 6 [(json_name) = "caption"];
+  repeated Character characters                    = 7 [(json_name) = "characters"];
+  optional string assetbundle_name                 = 8 [(json_name) = "assetbundleName"];
+  optional int64 archive_published_at              = 9 [(json_name) = "archivePublishedAt"];
+  optional int32 special_season_id                 = 10 [(json_name) = "specialSeasonId"];
+  optional ArchiveDisplayType archive_display_type = 11 [(json_name) = "archiveDisplayType"];
+}

@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message GameCharacterUnit3DMotion {
+  option (master_db_file) = "gameCharacterUnit3dMotions.json";
+  enum MotionType {
+    UNKNOWN_MOTION_TYPE = 0;
+    COSTUME_SETTING     = 1 [(json_value) = "costume_setting"];
+  }
+
+  optional int32 id                     = 1 [(json_name) = "id"];
+  optional int32 game_character_unit_id = 2 [(json_name) = "gameCharacterUnitId"];
+  optional MotionType motion_type       = 3 [(json_name) = "motionType"];
+  optional string assetbundle_name      = 4 [(json_name) = "assetbundleName"];
+}

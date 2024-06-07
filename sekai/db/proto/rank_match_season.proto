@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message RankMatchSeason {
+  option (master_db_file) = "rankMatchSeasons.json";
+  message RankMatchSeasonPlayableTime {
+    optional int32 id                   = 1 [(json_name) = "id"];
+    optional int32 rank_match_season_id = 2 [(json_name) = "rankMatchSeasonId"];
+    optional string start_time          = 3 [(json_name) = "startTime"];
+    optional string end_time            = 4 [(json_name) = "endTime"];
+  }
+
+  message RankMatchSeasonTierReward {
+    optional int32 id                   = 1 [(json_name) = "id"];
+    optional int32 rank_match_season_id = 2 [(json_name) = "rankMatchSeasonId"];
+    optional int32 rank_match_tier_id   = 3 [(json_name) = "rankMatchTierId"];
+    optional int32 resource_box_id      = 4 [(json_name) = "resourceBoxId"];
+  }
+
+  message RankMatchSeasonTierMusicPlayLevel {
+    optional int32 id                         = 1 [(json_name) = "id"];
+    optional int32 rank_match_season_id       = 2 [(json_name) = "rankMatchSeasonId"];
+    optional int32 rank_match_tier_id         = 3 [(json_name) = "rankMatchTierId"];
+    optional int32 from_play_level            = 4 [(json_name) = "fromPlayLevel"];
+    optional int32 to_play_level              = 5 [(json_name) = "toPlayLevel"];
+    optional int32 from_play_level_for_append = 6 [(json_name) = "fromPlayLevelForAppend"];
+    optional int32 to_play_level_for_append   = 7 [(json_name) = "toPlayLevelForAppend"];
+  }
+
+  optional int32 id                                                     = 1 [(json_name) = "id"];
+  optional string name                                                  = 2 [(json_name) = "name"];
+  optional int64 start_at                                               = 3 [(json_name) = "startAt"];
+  optional int64 aggregated_at                                          = 4 [(json_name) = "aggregatedAt"];
+  optional int64 ranking_published_at                                   = 5 [(json_name) = "rankingPublishedAt"];
+  optional int64 batch_execution_at                                     = 6 [(json_name) = "batchExecutionAt"];
+  optional int64 distribution_start_at                                  = 7 [(json_name) = "distributionStartAt"];
+  optional int64 distribution_end_at                                    = 8 [(json_name) = "distributionEndAt"];
+  optional int64 closed_at                                              = 9 [(json_name) = "closedAt"];
+  optional string assetbundle_name                                      = 10 [(json_name) = "assetbundleName"];
+  optional bool is_display_result                                       = 11 [(json_name) = "isDisplayResult"];
+  repeated RankMatchSeasonPlayableTime rank_match_season_playable_times = 12
+      [(json_name) = "rankMatchSeasonPlayableTimes"];
+  repeated RankMatchSeasonTierReward rank_match_season_tier_rewards = 13 [(json_name) = "rankMatchSeasonTierRewards"];
+  repeated RankMatchSeasonTierMusicPlayLevel rank_match_season_tier_music_play_levels = 14
+      [(json_name) = "rankMatchSeasonTierMusicPlayLevels"];
+}

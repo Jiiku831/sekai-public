@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message CustomProfileGacha {
+  option (master_db_file) = "customProfileGachas.json";
+
+  message CustomProfileGachaBehavior {
+    enum CostResourceType {
+      UNKNOWN_COST_RESOURCE_TYPE = 0;
+      JEWEL                      = 1 [(json_value) = "jewel"];
+      VIRTUAL_COIN               = 2 [(json_value) = "virtual_coin"];
+    }
+
+    optional int32 id                            = 1 [(json_name) = "id"];
+    optional int32 custom_profile_gacha_id       = 2 [(json_name) = "customProfileGachaId"];
+    optional int32 seq                           = 3 [(json_name) = "seq"];
+    optional CostResourceType cost_resource_type = 4 [(json_name) = "costResourceType"];
+    optional int32 cost_resource_quantity        = 5 [(json_name) = "costResourceQuantity"];
+    optional int32 spin_count                    = 6 [(json_name) = "spinCount"];
+  }
+
+  message CustomProfileGachaDetail {
+    enum CustomProfileResourceType {
+      UNKNOWN_CUSTOM_PROFILE_RESOURCE_TYPE = 0;
+      COLLECTION                           = 1 [(json_value) = "collection"];
+    }
+
+    optional int32 id                                               = 1 [(json_name) = "id"];
+    optional int32 custom_profile_gacha_id                          = 2 [(json_name) = "customProfileGachaId"];
+    optional CustomProfileResourceType custom_profile_resource_type = 3 [(json_name) = "customProfileResourceType"];
+    optional int32 custom_profile_resource_id                       = 4 [(json_name) = "customProfileResourceId"];
+    optional int32 custom_profile_resource_quantity                 = 5 [(json_name) = "customProfileResourceQuantity"];
+    optional int32 weight                                           = 6 [(json_name) = "weight"];
+  }
+
+  optional int32 id                                                  = 1 [(json_name) = "id"];
+  optional string name                                               = 2 [(json_name) = "name"];
+  optional int64 start_at                                            = 3 [(json_name) = "startAt"];
+  optional int64 end_at                                              = 4 [(json_name) = "endAt"];
+  optional string assetbundle_name                                   = 5 [(json_name) = "assetbundleName"];
+  optional string description                                        = 6 [(json_name) = "description"];
+  optional string notice                                             = 7 [(json_name) = "notice"];
+  repeated CustomProfileGachaBehavior custom_profile_gacha_behaviors = 8 [(json_name) = "customProfileGachaBehaviors"];
+  repeated CustomProfileGachaDetail custom_profile_gacha_details     = 9 [(json_name) = "customProfileGachaDetails"];
+}

@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message GachaBonusPoint {
+  option (master_db_file) = "gachaBonusPoints.json";
+  enum ResourceType {
+    UNKNOWN_RESOURCE_TYPE = 0;
+    GACHA_TICKET          = 1 [(json_value) = "gacha_ticket"];
+    JEWEL                 = 2 [(json_value) = "jewel"];
+    PAID_JEWEL            = 3 [(json_value) = "paid_jewel"];
+  }
+
+  optional int32 id                   = 1 [(json_name) = "id"];
+  optional ResourceType resource_type = 2 [(json_name) = "resourceType"];
+  optional float point                = 3 [(json_name) = "point"];
+}

@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message IngameCutinCharacter {
+  option (master_db_file) = "ingameCutinCharacters.json";
+  enum IngameCutinCharacterType {
+    UNKNOWN_INGAME_CUTIN_CHARACTER_TYPE = 0;
+    BONDS                               = 1 [(json_value) = "bonds"];
+    NORMAL                              = 2 [(json_value) = "normal"];
+  }
+
+  optional int32 id                                             = 1 [(json_name) = "id"];
+  optional IngameCutinCharacterType ingame_cutin_character_type = 2 [(json_name) = "ingameCutinCharacterType"];
+  optional int32 priority                                       = 3 [(json_name) = "priority"];
+  optional int32 game_character_unit_id1                        = 4 [(json_name) = "gameCharacterUnitId1"];
+  optional int32 game_character_unit_id2                        = 5 [(json_name) = "gameCharacterUnitId2"];
+  optional string assetbundle_name1                             = 6 [(json_name) = "assetbundleName1"];
+  optional string assetbundle_name2                             = 7 [(json_name) = "assetbundleName2"];
+  optional int32 release_condition_id                           = 8 [(json_name) = "releaseConditionId"];
+}

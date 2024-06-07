@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message PaidVirtualLiveShopItemGroup {
+  option (master_db_file)                        = "paidVirtualLiveShopItemGroups.json";
+  optional int32 id                              = 1 [(json_name) = "id"];
+  optional int32 seq                             = 2 [(json_name) = "seq"];
+  repeated int32 paid_virtual_live_shop_item_ids = 3 [(json_name) = "paidVirtualLiveShopItemIds"];
+  optional string name                           = 4 [(json_name) = "name"];
+  optional string assetbundle_name               = 5 [(json_name) = "assetbundleName"];
+}

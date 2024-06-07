@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message BeginnerLoginBonusSummary {
+  option (master_db_file)       = "beginnerLoginBonusSummaries.json";
+  optional int32 id             = 1 [(json_name) = "id"];
+  optional int32 login_bonus_id = 2 [(json_name) = "loginBonusId"];
+  optional int64 start_at       = 3 [(json_name) = "startAt"];
+  optional int64 end_at         = 4 [(json_name) = "endAt"];
+}

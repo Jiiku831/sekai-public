@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message UserHomeBanner {
+  option (master_db_file) = "userHomeBanners.json";
+  enum HomeBannerType {
+    UNKNOWN_HOME_BANNER_TYPE = 0;
+    EVENT                    = 1 [(json_value) = "event"];
+    GENERAL                  = 2 [(json_value) = "general"];
+  }
+
+  enum TransitionDestinationType {
+    UNKNOWN_TRANSITION_DESTINATION_TYPE = 0;
+    EVENT                               = 1 [(json_value) = "event"];
+    GACHA                               = 2 [(json_value) = "gacha"];
+  }
+
+  optional int32 home_banner_id                                  = 1 [(json_name) = "homeBannerId"];
+  optional int32 seq                                             = 2 [(json_name) = "seq"];
+  optional HomeBannerType home_banner_type                       = 3 [(json_name) = "homeBannerType"];
+  optional string name                                           = 4 [(json_name) = "name"];
+  optional string assetbundle_name                               = 5 [(json_name) = "assetbundleName"];
+  optional TransitionDestinationType transition_destination_type = 6 [(json_name) = "transitionDestinationType"];
+  optional int32 transition_destination_id                       = 7 [(json_name) = "transitionDestinationId"];
+  optional int64 start_at                                        = 8 [(json_name) = "startAt"];
+  optional int64 end_at                                          = 9 [(json_name) = "endAt"];
+}

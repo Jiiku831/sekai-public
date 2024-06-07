@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message LiveMissionPeriod {
+  option (master_db_file)  = "liveMissionPeriods.json";
+  optional int32 id        = 1 [(json_name) = "id"];
+  optional int64 start_at  = 2 [(json_name) = "startAt"];
+  optional int64 end_at    = 3 [(json_name) = "endAt"];
+  optional string sentence = 4 [(json_name) = "sentence"];
+}

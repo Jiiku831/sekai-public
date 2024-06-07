@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message Honor {
+  option (master_db_file) = "honors.json";
+  message Level {
+    optional int32 honor_id          = 1 [(json_name) = "honorId"];
+    optional int32 level             = 2 [(json_name) = "level"];
+    optional int32 bonus             = 3 [(json_name) = "bonus"];
+    optional string description      = 4 [(json_name) = "description"];
+    optional string assetbundle_name = 5 [(json_name) = "assetbundleName"];
+    optional string honor_rarity     = 6 [(json_name) = "honorRarity"];
+  }
+
+  enum HonorMissionType {
+    UNKNOWN_HONOR_MISSION_TYPE = 0;
+    EASY_FULL_COMBO            = 1 [(json_value) = "easy_full_combo"];
+    EXPERT_FULL_COMBO          = 2 [(json_value) = "expert_full_combo"];
+    HARD_FULL_COMBO            = 3 [(json_value) = "hard_full_combo"];
+    MASTER_FULL_COMBO          = 4 [(json_value) = "master_full_combo"];
+    MASTER_FULL_PERFECT        = 5 [(json_value) = "master_full_perfect"];
+    NORMAL_FULL_COMBO          = 6 [(json_value) = "normal_full_combo"];
+  }
+
+  optional int32 id                            = 1 [(json_name) = "id"];
+  optional int32 seq                           = 2 [(json_name) = "seq"];
+  optional int32 group_id                      = 3 [(json_name) = "groupId"];
+  optional string honor_rarity                 = 4 [(json_name) = "honorRarity"];
+  optional string name                         = 5 [(json_name) = "name"];
+  optional string assetbundle_name             = 6 [(json_name) = "assetbundleName"];
+  repeated Level levels                        = 7 [(json_name) = "levels"];
+  optional int32 honor_type_id                 = 8 [(json_name) = "honorTypeId"];
+  optional HonorMissionType honor_mission_type = 9 [(json_name) = "honorMissionType"];
+}

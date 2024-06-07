@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message Material {
+  option (master_db_file) = "materials.json";
+  enum MaterialType {
+    UNKNOWN_MATERIAL_TYPE     = 0;
+    CARD_TICKET               = 1 [(json_value) = "card_ticket"];
+    CHARACTER_RANK_EXP_TICKET = 2 [(json_value) = "character_rank_exp_ticket"];
+    COMMON                    = 3 [(json_value) = "common"];
+    COSTUME                   = 4 [(json_value) = "costume"];
+    GACHA_CEIL_TICKET         = 5 [(json_value) = "gacha_ceil_ticket"];
+    MASTER_LESSON             = 6 [(json_value) = "master_lesson"];
+    MUSIC                     = 7 [(json_value) = "music"];
+    SPECIAL_TRAINING          = 8 [(json_value) = "special_training"];
+    VOCAL_CARD_TICKET         = 9 [(json_value) = "vocal_card_ticket"];
+  }
+
+  optional int32 id                   = 1 [(json_name) = "id"];
+  optional int32 seq                  = 2 [(json_name) = "seq"];
+  optional string name                = 3 [(json_name) = "name"];
+  optional string flavor_text         = 4 [(json_name) = "flavorText"];
+  optional MaterialType material_type = 5 [(json_name) = "materialType"];
+}

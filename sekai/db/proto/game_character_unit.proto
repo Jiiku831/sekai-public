@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+import "sekai/db/proto/enums.proto";
+
+message GameCharacterUnit {
+  option (master_db_file)                 = "gameCharacterUnits.json";
+
+  optional int32 id                       = 1 [(json_name) = "id", (primary_key) = true];
+  optional int32 game_character_id        = 2 [(json_name) = "gameCharacterId"];
+  optional Unit unit                      = 3 [(json_name) = "unit"];
+  optional string color_code              = 4 [(json_name) = "colorCode"];
+  optional string skin_color_code         = 5 [(json_name) = "skinColorCode"];
+  optional string skin_shadow_color_code1 = 6 [(json_name) = "skinShadowColorCode1"];
+  optional string skin_shadow_color_code2 = 7 [(json_name) = "skinShadowColorCode2"];
+}

@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message PreliminaryTournament {
+  option (master_db_file) = "preliminaryTournaments.json";
+  enum PreliminaryTournamentType {
+    UNKNOWN_PRELIMINARY_TOURNAMENT_TYPE = 0;
+    FIRST                               = 1 [(json_value) = "first"];
+    SECOND                              = 2 [(json_value) = "second"];
+    THIRD                               = 3 [(json_value) = "third"];
+  }
+
+  message PreliminaryTournamentCard {
+    optional int32 id                        = 1 [(json_name) = "id"];
+    optional int32 preliminary_tournament_id = 2 [(json_name) = "preliminaryTournamentId"];
+    optional int32 card_id                   = 3 [(json_name) = "cardId"];
+  }
+
+  message PreliminaryTournamentMusic {
+    optional int32 id                        = 1 [(json_name) = "id"];
+    optional int32 preliminary_tournament_id = 2 [(json_name) = "preliminaryTournamentId"];
+    optional int32 music_difficulty_id       = 3 [(json_name) = "musicDifficultyId"];
+    optional int32 music_id                  = 4 [(json_name) = "musicId"];
+  }
+
+  optional int32 id                                                 = 1 [(json_name) = "id"];
+  optional PreliminaryTournamentType preliminary_tournament_type    = 2 [(json_name) = "preliminaryTournamentType"];
+  optional int64 start_at                                           = 3 [(json_name) = "startAt"];
+  optional int64 end_at                                             = 4 [(json_name) = "endAt"];
+  optional int32 release_condition_id                               = 5 [(json_name) = "releaseConditionId"];
+  repeated PreliminaryTournamentCard preliminary_tournament_cards   = 6 [(json_name) = "preliminaryTournamentCards"];
+  repeated PreliminaryTournamentMusic preliminary_tournament_musics = 7 [(json_name) = "preliminaryTournamentMusics"];
+}

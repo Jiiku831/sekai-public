@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message JewelBehavior {
+  option (master_db_file) = "jewelBehaviors.json";
+  enum JewelBehaviorType {
+    UNKNOWN_JEWEL_BEHAVIOR_TYPE = 0;
+    BOOST_RECOVERY              = 1 [(json_value) = "boost_recovery"];
+  }
+
+  optional int32 id                              = 1 [(json_name) = "id"];
+  optional int32 seq                             = 2 [(json_name) = "seq"];
+  optional JewelBehaviorType jewel_behavior_type = 3 [(json_name) = "jewelBehaviorType"];
+  optional int32 jewel_behavior_type_quantity    = 4 [(json_name) = "jewelBehaviorTypeQuantity"];
+  optional int32 amount                          = 5 [(json_name) = "amount"];
+}

@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message MusicTag {
+  option (master_db_file)   = "musicTags.json";
+  optional int32 id         = 1 [(json_name) = "id"];
+  optional int32 music_id   = 2 [(json_name) = "musicId"];
+  optional string music_tag = 3 [(json_name) = "musicTag"];
+  optional int32 seq        = 4 [(json_name) = "seq"];
+}

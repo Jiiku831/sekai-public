@@ -1,0 +1,168 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message VirtualLive {
+  option (master_db_file) = "virtualLives.json";
+  enum VirtualLiveType {
+    UNKNOWN_VIRTUAL_LIVE_TYPE = 0;
+    BEGINNER                  = 1 [(json_value) = "beginner"];
+    CHEERFUL_CARNIVAL         = 2 [(json_value) = "cheerful_carnival"];
+    NORMAL                    = 3 [(json_value) = "normal"];
+    STREAMING                 = 4 [(json_value) = "streaming"];
+  }
+
+  message VirtualLiveSetlist {
+    enum VirtualLiveSetlistType {
+      UNKNOWN_VIRTUAL_LIVE_SETLIST_TYPE = 0;
+      MC                                = 1 [(json_value) = "mc"];
+      MUSIC                             = 2 [(json_value) = "music"];
+    }
+
+    optional int32 id                                         = 1 [(json_name) = "id"];
+    optional int32 virtual_live_id                            = 2 [(json_name) = "virtualLiveId"];
+    optional int32 seq                                        = 3 [(json_name) = "seq"];
+    optional VirtualLiveSetlistType virtual_live_setlist_type = 4 [(json_name) = "virtualLiveSetlistType"];
+    optional string assetbundle_name                          = 5 [(json_name) = "assetbundleName"];
+    optional int32 virtual_live_stage_id                      = 6 [(json_name) = "virtualLiveStageId"];
+    optional int32 music_id                                   = 7 [(json_name) = "musicId"];
+    optional int32 music_vocal_id                             = 8 [(json_name) = "musicVocalId"];
+    optional int32 character3d_id1                            = 9 [(json_name) = "character3dId1"];
+    optional int32 character3d_id2                            = 10 [(json_name) = "character3dId2"];
+    optional int32 character3d_id3                            = 11 [(json_name) = "character3dId3"];
+    optional int32 character3d_id4                            = 12 [(json_name) = "character3dId4"];
+    optional int32 character3d_id5                            = 13 [(json_name) = "character3dId5"];
+    optional int32 character3d_id6                            = 14 [(json_name) = "character3dId6"];
+  }
+
+  message VirtualLiveSchedule {
+    optional int32 id               = 1 [(json_name) = "id"];
+    optional int32 virtual_live_id  = 2 [(json_name) = "virtualLiveId"];
+    optional int32 seq              = 3 [(json_name) = "seq"];
+    optional int64 start_at         = 4 [(json_name) = "startAt"];
+    optional int64 end_at           = 5 [(json_name) = "endAt"];
+    optional string notice_group_id = 6 [(json_name) = "noticeGroupId"];
+  }
+
+  message VirtualLiveCharacter {
+    optional int32 id                     = 1 [(json_name) = "id"];
+    optional int32 virtual_live_id        = 2 [(json_name) = "virtualLiveId"];
+    optional int32 game_character_unit_id = 3 [(json_name) = "gameCharacterUnitId"];
+    optional int32 seq                    = 4 [(json_name) = "seq"];
+  }
+
+  message VirtualLiveReward {
+    enum VirtualLiveType {
+      UNKNOWN_VIRTUAL_LIVE_TYPE = 0;
+      ARCHIVE                   = 1 [(json_value) = "archive"];
+      BEGINNER                  = 2 [(json_value) = "beginner"];
+      CHEERFUL_CARNIVAL         = 3 [(json_value) = "cheerful_carnival"];
+      NORMAL                    = 4 [(json_value) = "normal"];
+      PAID                      = 5 [(json_value) = "paid"];
+      STREAMING                 = 6 [(json_value) = "streaming"];
+    }
+
+    optional int32 id                          = 1 [(json_name) = "id"];
+    optional VirtualLiveType virtual_live_type = 2 [(json_name) = "virtualLiveType"];
+    optional int32 virtual_live_id             = 3 [(json_name) = "virtualLiveId"];
+    optional int32 resource_box_id             = 4 [(json_name) = "resourceBoxId"];
+  }
+
+  message VirtualLiveWaitingRoom {
+    optional int32 id                      = 1 [(json_name) = "id"];
+    optional int32 virtual_live_id         = 2 [(json_name) = "virtualLiveId"];
+    optional string assetbundle_name       = 3 [(json_name) = "assetbundleName"];
+    optional int64 start_at                = 4 [(json_name) = "startAt"];
+    optional int64 end_at                  = 5 [(json_name) = "endAt"];
+    optional string lobby_assetbundle_name = 6 [(json_name) = "lobbyAssetbundleName"];
+  }
+
+  message VirtualItem {
+    enum EffectExpressionType {
+      UNKNOWN_EFFECT_EXPRESSION_TYPE = 0;
+      THROW_EFFECT                   = 1 [(json_value) = "throw_effect"];
+    }
+
+    enum Unit {
+      UNKNOWN_UNIT   = 0;
+      IDOL           = 1 [(json_value) = "idol"];
+      LIGHT_SOUND    = 2 [(json_value) = "light_sound"];
+      PIAPRO         = 3 [(json_value) = "piapro"];
+      SCHOOL_REFUSAL = 4 [(json_value) = "school_refusal"];
+      STREET         = 5 [(json_value) = "street"];
+      THEME_PARK     = 6 [(json_value) = "theme_park"];
+    }
+
+    enum VirtualItemLabelType {
+      UNKNOWN_VIRTUAL_ITEM_LABEL_TYPE = 0;
+      SPECIAL                         = 1 [(json_value) = "special"];
+    }
+
+    optional int32 id                                     = 1 [(json_name) = "id"];
+    optional string virtual_item_category                 = 2 [(json_name) = "virtualItemCategory"];
+    optional int32 seq                                    = 3 [(json_name) = "seq"];
+    optional int32 priority                               = 4 [(json_name) = "priority"];
+    optional string name                                  = 5 [(json_name) = "name"];
+    optional string assetbundle_name                      = 6 [(json_name) = "assetbundleName"];
+    optional int32 cost_virtual_coin                      = 7 [(json_name) = "costVirtualCoin"];
+    optional int32 cost_jewel                             = 8 [(json_name) = "costJewel"];
+    optional string effect_assetbundle_name               = 9 [(json_name) = "effectAssetbundleName"];
+    optional EffectExpressionType effect_expression_type  = 10 [(json_name) = "effectExpressionType"];
+    optional Unit unit                                    = 11 [(json_name) = "unit"];
+    optional int32 game_character_unit_id                 = 12 [(json_name) = "gameCharacterUnitId"];
+    optional VirtualItemLabelType virtual_item_label_type = 13 [(json_name) = "virtualItemLabelType"];
+  }
+
+  message VirtualLiveInformation {
+    optional int32 virtual_live_id = 1 [(json_name) = "virtualLiveId"];
+    optional string summary        = 2 [(json_name) = "summary"];
+    optional string description    = 3 [(json_name) = "description"];
+  }
+
+  message VirtualLiveBackgroundMusic {
+    optional int32 id                  = 1 [(json_name) = "id"];
+    optional int32 virtual_live_id     = 2 [(json_name) = "virtualLiveId"];
+    optional int32 background_music_id = 3 [(json_name) = "backgroundMusicId"];
+  }
+
+  message VirtualLiveAppeal {
+    optional int32 id                         = 1 [(json_name) = "id"];
+    optional int32 virtual_live_id            = 2 [(json_name) = "virtualLiveId"];
+    optional string virtual_live_stage_status = 3 [(json_name) = "virtualLiveStageStatus"];
+    optional string appeal_text               = 4 [(json_name) = "appealText"];
+  }
+
+  message VirtualLiveBeginnerSchedule {
+    optional int32 id              = 1 [(json_name) = "id"];
+    optional int32 virtual_live_id = 2 [(json_name) = "virtualLiveId"];
+    optional string day_of_week    = 3 [(json_name) = "dayOfWeek"];
+    optional string start_time     = 4 [(json_name) = "startTime"];
+    optional string end_time       = 5 [(json_name) = "endTime"];
+  }
+
+  optional int32 id                                                  = 1 [(json_name) = "id"];
+  optional VirtualLiveType virtual_live_type                         = 2 [(json_name) = "virtualLiveType"];
+  optional string virtual_live_platform                              = 3 [(json_name) = "virtualLivePlatform"];
+  optional int32 seq                                                 = 4 [(json_name) = "seq"];
+  optional string name                                               = 5 [(json_name) = "name"];
+  optional string assetbundle_name                                   = 6 [(json_name) = "assetbundleName"];
+  optional int32 screen_mv_music_vocal_id                            = 7 [(json_name) = "screenMvMusicVocalId"];
+  optional int64 start_at                                            = 8 [(json_name) = "startAt"];
+  optional int64 end_at                                              = 9 [(json_name) = "endAt"];
+  optional int64 ranking_announce_at                                 = 10 [(json_name) = "rankingAnnounceAt"];
+  repeated VirtualLiveSetlist virtual_live_setlists                  = 11 [(json_name) = "virtualLiveSetlists"];
+  repeated VirtualLiveSchedule virtual_live_schedules                = 12 [(json_name) = "virtualLiveSchedules"];
+  repeated VirtualLiveCharacter virtual_live_characters              = 13 [(json_name) = "virtualLiveCharacters"];
+  repeated VirtualLiveReward virtual_live_rewards                    = 14 [(json_name) = "virtualLiveRewards"];
+  optional VirtualLiveWaitingRoom virtual_live_waiting_room          = 15 [(json_name) = "virtualLiveWaitingRoom"];
+  repeated VirtualItem virtual_items                                 = 16 [(json_name) = "virtualItems"];
+  optional VirtualLiveInformation virtual_live_information           = 17 [(json_name) = "virtualLiveInformation"];
+  optional int32 archive_release_condition_id                        = 18 [(json_name) = "archiveReleaseConditionId"];
+  repeated VirtualLiveBackgroundMusic virtual_live_background_musics = 19 [(json_name) = "virtualLiveBackgroundMusics"];
+  optional int32 virtual_live_ticket_id                              = 20 [(json_name) = "virtualLiveTicketId"];
+  repeated VirtualLiveAppeal virtual_live_appeals                    = 21 [(json_name) = "virtualLiveAppeals"];
+  repeated VirtualLiveBeginnerSchedule virtual_live_beginner_schedules = 22
+      [(json_name) = "virtualLiveBeginnerSchedules"];
+}

@@ -1,0 +1,65 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message RuleSlide {
+  option (master_db_file) = "ruleSlides.json";
+  enum RuleSlideType {
+    UNKNOWN_RULE_SLIDE_TYPE         = 0;
+    ANOTHER_VOCAL_SHOP              = 1 [(json_value) = "ANOTHER_VOCAL_SHOP"];
+    AREA_SHOP_SCHOOL                = 2 [(json_value) = "AREA_SHOP_SCHOOL"];
+    AREA_SHOP_SEKAI                 = 3 [(json_value) = "AREA_SHOP_SEKAI"];
+    AUTO_LIVE                       = 4 [(json_value) = "AUTO_LIVE"];
+    BONDS                           = 5 [(json_value) = "BONDS"];
+    CHALLENGE_LIVE                  = 6 [(json_value) = "CHALLENGE_LIVE"];
+    CHALLENGE_LIVE_CHARACTER_ADD    = 7 [(json_value) = "CHALLENGE_LIVE_CHARACTER_ADD"];
+    CHALLENGE_LIVE_CHARACTER_SELECT = 8 [(json_value) = "CHALLENGE_LIVE_CHARACTER_SELECT"];
+    CHANGEROOM_MEMBER               = 9 [(json_value) = "CHANGEROOM_MEMBER"];
+    CHARACTER_RANK                  = 10 [(json_value) = "CHARACTER_RANK"];
+    CHEERFUL_CARNIVAL               = 11 [(json_value) = "CHEERFUL_CARNIVAL"];
+    COLORFUL_SELECT_LIST            = 12 [(json_value) = "COLORFUL_SELECT_LIST"];
+    COSTUME_CHANGE                  = 13 [(json_value) = "COSTUME_CHANGE"];
+    COSTUME_CHANGE_MIKU             = 14 [(json_value) = "COSTUME_CHANGE_MIKU"];
+    COSTUME_SHOP                    = 15 [(json_value) = "COSTUME_SHOP"];
+    CUSTOM_PROFILE                  = 16 [(json_value) = "CUSTOM_PROFILE"];
+    EVENT_DECK                      = 17 [(json_value) = "EVENT_DECK"];
+    EVENT_TOP                       = 18 [(json_value) = "EVENT_TOP"];
+    FREE_LIVE                       = 19 [(json_value) = "FREE_LIVE"];
+    FREE_STAMP                      = 20 [(json_value) = "FREE_STAMP"];
+    FRIEND_LIST                     = 21 [(json_value) = "FRIEND_LIST"];
+    GACHA_BONUS                     = 22 [(json_value) = "GACHA_BONUS"];
+    GACHA_ITEM                      = 23 [(json_value) = "GACHA_ITEM"];
+    GIFT_GACHA                      = 24 [(json_value) = "GIFT_GACHA"];
+    GUILD_VIRTUAL_LIVE_TOP          = 25 [(json_value) = "GUILD_VIRTUAL_LIVE_TOP"];
+    LESSON                          = 26 [(json_value) = "LESSON"];
+    LIVE_BONUS                      = 27 [(json_value) = "LIVE_BONUS"];
+    MASTER_TRAINING                 = 28 [(json_value) = "MASTER_TRAINING"];
+    MISSION                         = 29 [(json_value) = "MISSION"];
+    MULTI_LIVE                      = 30 [(json_value) = "MULTI_LIVE"];
+    MUSIC_SHOP                      = 31 [(json_value) = "MUSIC_SHOP"];
+    MYLIST                          = 32 [(json_value) = "MYLIST"];
+    PIAPRO_BONUS                    = 33 [(json_value) = "PIAPRO_BONUS"];
+    RANK_MATCH                      = 34 [(json_value) = "RANK_MATCH"];
+    SELECT_LIST                     = 35 [(json_value) = "SELECT_LIST"];
+    SKILL_UP                        = 36 [(json_value) = "SKILL_UP"];
+    SPECIAL_TRAINING                = 37 [(json_value) = "SPECIAL_TRAINING"];
+    STAMP_MISSION                   = 38 [(json_value) = "STAMP_MISSION"];
+    STAMP_MISSION_3RD_ANNIV         = 39 [(json_value) = "STAMP_MISSION_3RD_ANNIV"];
+    STAMP_SHOP                      = 40 [(json_value) = "STAMP_SHOP"];
+    STORY_EVENT                     = 41 [(json_value) = "STORY_EVENT"];
+    SUMMARY                         = 42 [(json_value) = "SUMMARY"];
+    VIRTUAL_IN_LIVE                 = 43 [(json_value) = "VIRTUAL_IN_LIVE"];
+    VIRTUAL_LIVE_MESSAGE            = 44 [(json_value) = "VIRTUAL_LIVE_MESSAGE"];
+    VIRTUAL_LIVE_OVERVIEW           = 45 [(json_value) = "VIRTUAL_LIVE_OVERVIEW"];
+    VIRTUAL_WAITING_ROOM            = 46 [(json_value) = "VIRTUAL_WAITING_ROOM"];
+    WAITING_ROOM                    = 47 [(json_value) = "WAITING_ROOM"];
+    WORLD_MAP                       = 48 [(json_value) = "WORLD_MAP"];
+    WORLD_MAP_V2                    = 49 [(json_value) = "WORLD_MAP_V2"];
+  }
+
+  optional int32 id                      = 1 [(json_name) = "id"];
+  optional RuleSlideType rule_slide_type = 2 [(json_name) = "ruleSlideType"];
+  optional string assetbundle_name       = 3 [(json_name) = "assetbundleName"];
+}

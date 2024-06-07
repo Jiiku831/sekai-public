@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message UnitProfile {
+  option (master_db_file) = "unitProfiles.json";
+  enum Unit {
+    UNKNOWN_UNIT   = 0;
+    IDOL           = 1 [(json_value) = "idol"];
+    LIGHT_SOUND    = 2 [(json_value) = "light_sound"];
+    PIAPRO         = 3 [(json_value) = "piapro"];
+    SCHOOL_REFUSAL = 4 [(json_value) = "school_refusal"];
+    STREET         = 5 [(json_value) = "street"];
+    THEME_PARK     = 6 [(json_value) = "theme_park"];
+  }
+
+  optional Unit unit                = 1 [(json_name) = "unit"];
+  optional string unit_name         = 2 [(json_name) = "unitName"];
+  optional string unit_profile_name = 3 [(json_name) = "unitProfileName"];
+  optional int32 seq                = 4 [(json_name) = "seq"];
+  optional string profile_sentence  = 5 [(json_name) = "profileSentence"];
+  optional string color_code        = 6 [(json_name) = "colorCode"];
+}

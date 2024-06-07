@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message CharacterRank {
+  option (master_db_file) = "characterRanks.json";
+  message AchieveResource {
+    optional int32 release_condition_id = 1 [(json_name) = "releaseConditionId"];
+    optional int32 character_id         = 2 [(json_name) = "characterId"];
+    optional int32 character_rank       = 3 [(json_name) = "characterRank"];
+  }
+
+  optional int32 id                          = 1 [(json_name) = "id"];
+  optional int32 character_id                = 2 [(json_name) = "characterId", (primary_key) = true];
+  optional int32 character_rank              = 3 [(json_name) = "characterRank"];
+  optional float power1_bonus_rate           = 4 [(json_name) = "power1BonusRate"];
+  optional float power2_bonus_rate           = 5 [(json_name) = "power2BonusRate"];
+  optional float power3_bonus_rate           = 6 [(json_name) = "power3BonusRate"];
+  repeated AchieveResource achieve_resources = 7 [(json_name) = "characterRankAchieveResources"];
+  repeated int32 reward_resource_box_ids     = 8 [(json_name) = "rewardResourceBoxIds"];
+}

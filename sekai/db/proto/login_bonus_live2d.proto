@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message LoginBonusLive2D {
+  option (master_db_file) = "loginBonusLive2ds.json";
+  enum Unit {
+    UNKNOWN_UNIT   = 0;
+    IDOL           = 1 [(json_value) = "idol"];
+    LIGHT_SOUND    = 2 [(json_value) = "light_sound"];
+    PIAPRO         = 3 [(json_value) = "piapro"];
+    SCHOOL_REFUSAL = 4 [(json_value) = "school_refusal"];
+    STREET         = 5 [(json_value) = "street"];
+    THEME_PARK     = 6 [(json_value) = "theme_park"];
+  }
+
+  optional int32 id                = 1 [(json_name) = "id"];
+  optional int32 character_id      = 2 [(json_name) = "characterId"];
+  optional Unit unit               = 3 [(json_name) = "unit"];
+  optional string serif            = 4 [(json_name) = "serif"];
+  optional string assetbundle_name = 5 [(json_name) = "assetbundleName"];
+  optional string voice            = 6 [(json_name) = "voice"];
+  optional string motion           = 7 [(json_name) = "motion"];
+  optional string expression       = 8 [(json_name) = "expression"];
+  optional int64 published_at      = 9 [(json_name) = "publishedAt"];
+  optional int64 closed_at         = 10 [(json_name) = "closedAt"];
+  optional int32 weight            = 11 [(json_name) = "weight"];
+}

@@ -1,0 +1,34 @@
+load("@rules_cc//cc:defs.bzl", "cc_library", "cc_test")
+
+cc_library(
+    name = "parser",
+    srcs = ["parser.cc"],
+    hdrs = ["parser.h"],
+    deps = [
+        "//sekai:config",
+        "//sekai/db/proto:descriptor_cc_proto",
+        "@abseil-cpp//absl/base:nullability",
+        "@abseil-cpp//absl/container:flat_hash_map",
+        "@abseil-cpp//absl/log",
+        "@abseil-cpp//absl/log:absl_check",
+        "@abseil-cpp//absl/status:status",
+        "@abseil-cpp//absl/status:statusor",
+        "@abseil-cpp//absl/strings:str_format",
+        "@nlohmann_json//:json",
+        "@protobuf",
+    ],
+)
+
+cc_test(
+    name = "parser_test",
+    srcs = ["parser_test.cc"],
+    data = ["@sekai-master-db"],
+    deps = [
+        ":parser",
+        "//sekai:config",
+        "//sekai/db/proto:card_cc_proto",
+        "//testing:test_main",
+        "@abseil-cpp//absl/log",
+        "@googletest//:gtest",
+    ],
+)

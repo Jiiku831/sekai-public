@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message MaterialExchangeSummary {
+  option (master_db_file) = "materialExchangeSummaries.json";
+  enum MaterialExchangeType {
+    UNKNOWN_MATERIAL_EXCHANGE_TYPE = 0;
+    BEGINNER                       = 1 [(json_value) = "beginner"];
+    NORMAL                         = 2 [(json_value) = "normal"];
+  }
+
+  message MaterialExchange {
+
+    message Cost {
+      enum ResourceType {
+        UNKNOWN_RESOURCE_TYPE = 0;
+        MATERIAL              = 1 [(json_value) = "material"];
+      }
+
+      optional int32 material_exchange_id = 1 [(json_name) = "materialExchangeId"];
+      optional int32 cost_group_id        = 2 [(json_name) = "costGroupId"];
+      optional int32 seq                  = 3 [(json_name) = "seq"];
+      optional ResourceType resource_type = 4 [(json_name) = "resourceType"];
+      optional int32 resource_id          = 5 [(json_name) = "resourceId"];
+      optional int32 quantity             = 6 [(json_name) = "quantity"];
+    }
+
+    optional int32 id                           = 1 [(json_name) = "id"];
+    optional int32 material_exchange_summary_id = 2 [(json_name) = "materialExchangeSummaryId"];
+    optional int32 seq                          = 3 [(json_name) = "seq"];
+    optional int32 resource_box_id              = 4 [(json_name) = "resourceBoxId"];
+    optional string refresh_cycle               = 5 [(json_name) = "refreshCycle"];
+    repeated Cost costs                         = 6 [(json_name) = "costs"];
+    optional int32 exchange_limit               = 7 [(json_name) = "exchangeLimit"];
+    optional int64 start_at                     = 8 [(json_name) = "startAt"];
+  }
+
+  optional int32 id                                    = 1 [(json_name) = "id"];
+  optional int32 seq                                   = 2 [(json_name) = "seq"];
+  optional string exchange_category                    = 3 [(json_name) = "exchangeCategory"];
+  optional MaterialExchangeType material_exchange_type = 4 [(json_name) = "materialExchangeType"];
+  optional string name                                 = 5 [(json_name) = "name"];
+  optional string assetbundle_name                     = 6 [(json_name) = "assetbundleName"];
+  optional int64 start_at                              = 7 [(json_name) = "startAt"];
+  repeated MaterialExchange material_exchanges         = 8 [(json_name) = "materialExchanges"];
+  optional int64 end_at                                = 9 [(json_name) = "endAt"];
+  optional int32 notification_remain_hour              = 10 [(json_name) = "notificationRemainHour"];
+}

@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message RankMatchTier {
+  option (master_db_file)                = "rankMatchTiers.json";
+  optional int32 id                      = 1 [(json_name) = "id"];
+  optional int32 rank_match_grade_id     = 2 [(json_name) = "rankMatchGradeId"];
+  optional int32 rank_match_class_id     = 3 [(json_name) = "rankMatchClassId"];
+  optional int32 tier                    = 4 [(json_name) = "tier"];
+  optional int32 total_music_difficulty  = 5 [(json_name) = "totalMusicDifficulty"];
+  optional int32 point                   = 6 [(json_name) = "point"];
+  optional string grade_assetbundle_name = 7 [(json_name) = "gradeAssetbundleName"];
+  optional string tier_assetbundle_name  = 8 [(json_name) = "tierAssetbundleName"];
+}

@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message CustomProfileTextColor {
+  option (master_db_file)    = "customProfileTextColors.json";
+  optional int32 id          = 1 [(json_name) = "id"];
+  optional int32 seq         = 2 [(json_name) = "seq"];
+  optional string color_code = 3 [(json_name) = "colorCode"];
+}

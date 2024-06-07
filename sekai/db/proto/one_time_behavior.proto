@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message OneTimeBehavior {
+  option (master_db_file) = "oneTimeBehaviors.json";
+  enum OneTimeBehaviorType {
+    UNKNOWN_ONE_TIME_BEHAVIOR_TYPE         = 0;
+    CHALLENGE_LIVE_CHARACTER_FORCE_RELEASE = 1 [(json_value) = "challenge_live_character_force_release"];
+    VIRTUAL_LIVE_TUTORIAL                  = 2 [(json_value) = "virtual_live_tutorial"];
+    WORLD_BLOOM_AREA_UNLOCK_SCHOOL_REFUSAL = 3 [(json_value) = "world_bloom_area_unlock_school_refusal"];
+  }
+
+  optional int32 id                                   = 1 [(json_name) = "id"];
+  optional OneTimeBehaviorType one_time_behavior_type = 2 [(json_name) = "oneTimeBehaviorType"];
+  optional int32 release_condition_id                 = 3 [(json_name) = "releaseConditionId"];
+}

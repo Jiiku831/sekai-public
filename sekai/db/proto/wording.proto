@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message Wording {
+  option (master_db_file)     = "wordings.json";
+  optional string wording_key = 1 [(json_name) = "wordingKey"];
+  optional string value       = 2 [(json_name) = "value"];
+}

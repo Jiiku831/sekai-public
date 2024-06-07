@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message VirtualShop {
+  option (master_db_file) = "virtualShops.json";
+
+  message VirtualShopItem {
+    enum VirtualShopItemType {
+      UNKNOWN_VIRTUAL_SHOP_ITEM_TYPE = 0;
+      ACCESSORY                      = 1 [(json_value) = "accessory"];
+      AVATAR_MOTION                  = 2 [(json_value) = "avatar_motion"];
+      BOOST_ITEM                     = 3 [(json_value) = "boost_item"];
+      COORDINATE                     = 4 [(json_value) = "coordinate"];
+      COSTUME                        = 5 [(json_value) = "costume"];
+      PENLIGHT                       = 6 [(json_value) = "penlight"];
+      PREMIUM_VIRTUAL_LIVE_TICKET    = 7 [(json_value) = "premium_virtual_live_ticket"];
+      VIRTUAL_LIVE_TICKET            = 8 [(json_value) = "virtual_live_ticket"];
+    }
+
+    optional int32 id                                   = 1 [(json_name) = "id"];
+    optional int32 virtual_shop_id                      = 2 [(json_name) = "virtualShopId"];
+    optional VirtualShopItemType virtual_shop_item_type = 3 [(json_name) = "virtualShopItemType"];
+    optional int32 seq                                  = 4 [(json_name) = "seq"];
+    optional int32 resource_box_id                      = 5 [(json_name) = "resourceBoxId"];
+    optional int32 cost_virtual_coin                    = 6 [(json_name) = "costVirtualCoin"];
+    optional int32 cost_jewel                           = 7 [(json_name) = "costJewel"];
+    optional int64 start_at                             = 8 [(json_name) = "startAt"];
+    optional int32 cost_paid_jewel                      = 9 [(json_name) = "costPaidJewel"];
+    optional int64 end_at                               = 10 [(json_name) = "endAt"];
+    optional int32 limit_value                          = 11 [(json_name) = "limitValue"];
+  }
+
+  enum VirtualShopType {
+    UNKNOWN_VIRTUAL_SHOP_TYPE = 0;
+    BIRTHDAY                  = 1 [(json_value) = "birthday"];
+    EVENT                     = 2 [(json_value) = "event"];
+    OTHER                     = 3 [(json_value) = "other"];
+    SPECIAL_LIVE              = 4 [(json_value) = "special_live"];
+    VIRTUAL_LIVE_TICKET       = 5 [(json_value) = "virtual_live_ticket"];
+  }
+
+  optional int32 id                           = 1 [(json_name) = "id"];
+  optional int32 seq                          = 2 [(json_name) = "seq"];
+  optional string name                        = 3 [(json_name) = "name"];
+  repeated VirtualShopItem virtual_shop_items = 4 [(json_name) = "virtualShopItems"];
+  optional VirtualShopType virtual_shop_type  = 5 [(json_name) = "virtualShopType"];
+  optional int32 virtual_live_id              = 6 [(json_name) = "virtualLiveId"];
+}

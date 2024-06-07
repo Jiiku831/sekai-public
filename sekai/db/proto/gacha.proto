@@ -1,0 +1,133 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message Gacha {
+  option (master_db_file) = "gachas.json";
+  enum GachaType {
+    UNKNOWN_GACHA_TYPE = 0;
+    BEGINNER           = 1 [(json_value) = "beginner"];
+    CEIL               = 2 [(json_value) = "ceil"];
+    GIFT               = 3 [(json_value) = "gift"];
+    NORMAL             = 4 [(json_value) = "normal"];
+  }
+
+  message GachaCardRarityRate {
+    enum CardRarityType {
+      UNKNOWN_CARD_RARITY_TYPE = 0;
+      RARITY_2                 = 1 [(json_value) = "rarity_2"];
+      RARITY_3                 = 2 [(json_value) = "rarity_3"];
+      RARITY_4                 = 3 [(json_value) = "rarity_4"];
+      RARITY_BIRTHDAY          = 4 [(json_value) = "rarity_birthday"];
+    }
+
+    enum LotteryType {
+      UNKNOWN_LOTTERY_TYPE = 0;
+      CATEGORIZED_WISH     = 1 [(json_value) = "categorized_wish"];
+      NORMAL               = 2 [(json_value) = "normal"];
+    }
+
+    optional int32 id                        = 1 [(json_name) = "id"];
+    optional int32 group_id                  = 2 [(json_name) = "groupId"];
+    optional CardRarityType card_rarity_type = 3 [(json_name) = "cardRarityType"];
+    optional LotteryType lottery_type        = 4 [(json_name) = "lotteryType"];
+    optional float rate                      = 5 [(json_name) = "rate"];
+  }
+
+  message GachaDetail {
+    enum GachaDetailWishType {
+      UNKNOWN_GACHA_DETAIL_WISH_TYPE = 0;
+      FIXED                          = 1 [(json_value) = "fixed"];
+      LIMITED                        = 2 [(json_value) = "limited"];
+      NORMAL                         = 3 [(json_value) = "normal"];
+    }
+
+    optional int32 id                                   = 1 [(json_name) = "id"];
+    optional int32 gacha_id                             = 2 [(json_name) = "gachaId"];
+    optional int32 card_id                              = 3 [(json_name) = "cardId"];
+    optional int32 weight                               = 4 [(json_name) = "weight"];
+    optional bool is_wish                               = 5 [(json_name) = "isWish"];
+    optional GachaDetailWishType gacha_detail_wish_type = 6 [(json_name) = "gachaDetailWishType"];
+    optional int32 fixed_bonus_weight                   = 7 [(json_name) = "fixedBonusWeight"];
+  }
+
+  message GachaBehavior {
+    enum GachaBehaviorType {
+      UNKNOWN_GACHA_BEHAVIOR_TYPE = 0;
+      NORMAL                      = 1 [(json_value) = "normal"];
+      ONCE_A_DAY                  = 2 [(json_value) = "once_a_day"];
+      ONCE_A_WEEK                 = 3 [(json_value) = "once_a_week"];
+      OVER_RARITY_3_ONCE          = 4 [(json_value) = "over_rarity_3_once"];
+      OVER_RARITY_4_ONCE          = 5 [(json_value) = "over_rarity_4_once"];
+    }
+
+    enum CostResourceType {
+      UNKNOWN_COST_RESOURCE_TYPE = 0;
+      GACHA_TICKET               = 1 [(json_value) = "gacha_ticket"];
+      JEWEL                      = 2 [(json_value) = "jewel"];
+      PAID_JEWEL                 = 3 [(json_value) = "paid_jewel"];
+    }
+
+    enum GachaSpinnableType {
+      UNKNOWN_GACHA_SPINNABLE_TYPE = 0;
+      ANY                          = 1 [(json_value) = "any"];
+      COLORFUL_PASS                = 2 [(json_value) = "colorful_pass"];
+    }
+
+    optional int32 id                                = 1 [(json_name) = "id"];
+    optional int32 gacha_id                          = 2 [(json_name) = "gachaId"];
+    optional GachaBehaviorType gacha_behavior_type   = 3 [(json_name) = "gachaBehaviorType"];
+    optional CostResourceType cost_resource_type     = 4 [(json_name) = "costResourceType"];
+    optional int32 cost_resource_quantity            = 5 [(json_name) = "costResourceQuantity"];
+    optional int32 spin_count                        = 6 [(json_name) = "spinCount"];
+    optional int32 execute_limit                     = 7 [(json_name) = "executeLimit"];
+    optional int32 group_id                          = 8 [(json_name) = "groupId"];
+    optional int32 priority                          = 9 [(json_name) = "priority"];
+    optional string resource_category                = 10 [(json_name) = "resourceCategory"];
+    optional GachaSpinnableType gacha_spinnable_type = 11 [(json_name) = "gachaSpinnableType"];
+    optional int32 cost_resource_id                  = 12 [(json_name) = "costResourceId"];
+    optional int32 gacha_extra_id                    = 13 [(json_name) = "gachaExtraId"];
+  }
+
+  message GachaPickup {
+    enum GachaPickupType {
+      UNKNOWN_GACHA_PICKUP_TYPE = 0;
+      NORMAL                    = 1 [(json_value) = "normal"];
+    }
+
+    optional int32 id                          = 1 [(json_name) = "id"];
+    optional int32 gacha_id                    = 2 [(json_name) = "gachaId"];
+    optional int32 card_id                     = 3 [(json_name) = "cardId"];
+    optional GachaPickupType gacha_pickup_type = 4 [(json_name) = "gachaPickupType"];
+  }
+
+  message GachaInformation {
+    optional int32 gacha_id     = 1 [(json_name) = "gachaId"];
+    optional string summary     = 2 [(json_name) = "summary"];
+    optional string description = 3 [(json_name) = "description"];
+  }
+
+  optional int32 id                                    = 1 [(json_name) = "id"];
+  optional GachaType gacha_type                        = 2 [(json_name) = "gachaType"];
+  optional string name                                 = 3 [(json_name) = "name"];
+  optional int32 seq                                   = 4 [(json_name) = "seq"];
+  optional string assetbundle_name                     = 5 [(json_name) = "assetbundleName"];
+  optional int32 gacha_card_rarity_rate_group_id       = 6 [(json_name) = "gachaCardRarityRateGroupId"];
+  optional int64 start_at                              = 7 [(json_name) = "startAt"];
+  optional int64 end_at                                = 8 [(json_name) = "endAt"];
+  optional bool is_show_period                         = 9 [(json_name) = "isShowPeriod"];
+  optional int32 gacha_ceil_item_id                    = 10 [(json_name) = "gachaCeilItemId"];
+  optional int32 wish_select_count                     = 11 [(json_name) = "wishSelectCount"];
+  optional int32 wish_fixed_select_count               = 12 [(json_name) = "wishFixedSelectCount"];
+  optional int32 wish_limited_select_count             = 13 [(json_name) = "wishLimitedSelectCount"];
+  repeated GachaCardRarityRate gacha_card_rarity_rates = 14 [(json_name) = "gachaCardRarityRates"];
+  repeated GachaDetail gacha_details                   = 15 [(json_name) = "gachaDetails"];
+  repeated GachaBehavior gacha_behaviors               = 16 [(json_name) = "gachaBehaviors"];
+  repeated GachaPickup gacha_pickups                   = 17 [(json_name) = "gachaPickups"];
+  optional GachaInformation gacha_information          = 18 [(json_name) = "gachaInformation"];
+  optional int32 drawable_gacha_hour                   = 19 [(json_name) = "drawableGachaHour"];
+  optional int32 gacha_bonus_id                        = 20 [(json_name) = "gachaBonusId"];
+  optional int32 spin_limit                            = 21 [(json_name) = "spinLimit"];
+}

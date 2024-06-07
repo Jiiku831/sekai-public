@@ -1,0 +1,4 @@
+module(
+    name = "indicators",
+    version = "2.3",
+)

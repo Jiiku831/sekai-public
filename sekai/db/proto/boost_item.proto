@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message BoostItem {
+  option (master_db_file)           = "boostItems.json";
+  optional int32 id                 = 1 [(json_name) = "id"];
+  optional int32 seq                = 2 [(json_name) = "seq"];
+  optional string name              = 3 [(json_name) = "name"];
+  optional int32 recovery_value     = 4 [(json_name) = "recoveryValue"];
+  optional string asset_bundle_name = 5 [(json_name) = "assetBundleName"];
+  optional string flavor_text       = 6 [(json_name) = "flavorText"];
+}

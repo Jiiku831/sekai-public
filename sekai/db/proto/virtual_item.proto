@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message VirtualItem {
+  option (master_db_file) = "virtualItems.json";
+  enum EffectExpressionType {
+    UNKNOWN_EFFECT_EXPRESSION_TYPE = 0;
+    THROW_EFFECT                   = 1 [(json_value) = "throw_effect"];
+  }
+
+  enum Unit {
+    UNKNOWN_UNIT   = 0;
+    IDOL           = 1 [(json_value) = "idol"];
+    LIGHT_SOUND    = 2 [(json_value) = "light_sound"];
+    PIAPRO         = 3 [(json_value) = "piapro"];
+    SCHOOL_REFUSAL = 4 [(json_value) = "school_refusal"];
+    STREET         = 5 [(json_value) = "street"];
+    THEME_PARK     = 6 [(json_value) = "theme_park"];
+  }
+
+  optional int32 id                                    = 1 [(json_name) = "id"];
+  optional string virtual_item_category                = 2 [(json_name) = "virtualItemCategory"];
+  optional int32 seq                                   = 3 [(json_name) = "seq"];
+  optional int32 priority                              = 4 [(json_name) = "priority"];
+  optional string name                                 = 5 [(json_name) = "name"];
+  optional string assetbundle_name                     = 6 [(json_name) = "assetbundleName"];
+  optional int32 cost_virtual_coin                     = 7 [(json_name) = "costVirtualCoin"];
+  optional int32 cost_jewel                            = 8 [(json_name) = "costJewel"];
+  optional string effect_assetbundle_name              = 9 [(json_name) = "effectAssetbundleName"];
+  optional EffectExpressionType effect_expression_type = 10 [(json_name) = "effectExpressionType"];
+  optional Unit unit                                   = 11 [(json_name) = "unit"];
+  optional int32 game_character_unit_id                = 12 [(json_name) = "gameCharacterUnitId"];
+}

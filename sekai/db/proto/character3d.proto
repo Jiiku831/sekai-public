@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message Character3D {
+  option (master_db_file) = "character3ds.json";
+  enum CharacterType {
+    UNKNOWN_CHARACTER_TYPE = 0;
+    GAME_CHARACTER         = 1 [(json_value) = "game_character"];
+  }
+
+  enum Unit {
+    UNKNOWN_UNIT   = 0;
+    IDOL           = 1 [(json_value) = "idol"];
+    LIGHT_SOUND    = 2 [(json_value) = "light_sound"];
+    PIAPRO         = 3 [(json_value) = "piapro"];
+    SCHOOL_REFUSAL = 4 [(json_value) = "school_refusal"];
+    STREET         = 5 [(json_value) = "street"];
+    THEME_PARK     = 6 [(json_value) = "theme_park"];
+  }
+
+  optional int32 id                     = 1 [(json_name) = "id"];
+  optional CharacterType character_type = 2 [(json_name) = "characterType"];
+  optional int32 character_id           = 3 [(json_name) = "characterId"];
+  optional Unit unit                    = 4 [(json_name) = "unit"];
+  optional string name                  = 5 [(json_name) = "name"];
+  optional int32 head_costume3d_id      = 6 [(json_name) = "headCostume3dId"];
+  optional int32 hair_costume3d_id      = 7 [(json_name) = "hairCostume3dId"];
+  optional int32 body_costume3d_id      = 8 [(json_name) = "bodyCostume3dId"];
+}

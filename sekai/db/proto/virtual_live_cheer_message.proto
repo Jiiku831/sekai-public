@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message VirtualLiveCheerMessage {
+  option (master_db_file) = "virtualLiveCheerMessages.json";
+  enum VirtualLiveType {
+    UNKNOWN_VIRTUAL_LIVE_TYPE = 0;
+    ARCHIVE                   = 1 [(json_value) = "archive"];
+    BEGINNER                  = 2 [(json_value) = "beginner"];
+    CHEERFUL_CARNIVAL         = 3 [(json_value) = "cheerful_carnival"];
+    NORMAL                    = 4 [(json_value) = "normal"];
+    STREAMING                 = 5 [(json_value) = "streaming"];
+  }
+
+  enum ResourceType {
+    UNKNOWN_RESOURCE_TYPE = 0;
+    JEWEL                 = 1 [(json_value) = "jewel"];
+    VIRTUAL_COIN          = 2 [(json_value) = "virtual_coin"];
+  }
+
+  optional int32 id                                          = 1 [(json_name) = "id"];
+  optional VirtualLiveType virtual_live_type                 = 2 [(json_name) = "virtualLiveType"];
+  optional ResourceType resource_type                        = 3 [(json_name) = "resourceType"];
+  optional int32 from_cost                                   = 4 [(json_name) = "fromCost"];
+  optional int32 to_cost                                     = 5 [(json_name) = "toCost"];
+  optional string assetbundle_name                           = 6 [(json_name) = "assetbundleName"];
+  optional int32 message_length_limit                        = 7 [(json_name) = "messageLengthLimit"];
+  optional float display_sec                                 = 8 [(json_name) = "displaySec"];
+  optional string message_size                               = 9 [(json_name) = "messageSize"];
+  optional string color_code                                 = 10 [(json_name) = "colorCode"];
+  optional int32 virtual_live_cheer_message_display_limit_id = 11
+      [(json_name) = "virtualLiveCheerMessageDisplayLimitId"];
+}

@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+import "sekai/db/proto/enums.proto";
+
+message EventRarityBonusRate {
+  option (master_db_file)                  = "eventRarityBonusRates.json";
+
+  optional int32 id                        = 1 [(json_name) = "id"];
+  optional CardRarityType card_rarity_type = 2 [(json_name) = "cardRarityType"];
+  optional int32 master_rank               = 3 [(json_name) = "masterRank"];
+  optional float bonus_rate                = 4 [(json_name) = "bonusRate"];
+}
