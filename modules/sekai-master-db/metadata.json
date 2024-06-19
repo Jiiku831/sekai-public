@@ -11,7 +11,8 @@
         "github:Sekai-World/sekai-master-db-diff"
     ],
     "versions": [
-        "3.6.5.11.2"
+        "3.6.5.11.2",
+        "3.6.5.35.15"
     ],
     "yanked_versions": {}
 }
