@@ -18,6 +18,7 @@
 #include "sekai/profile.h"
 #include "sekai/proto/profile.pb.h"
 #include "sekai/team.h"
+#include "sekai/team_builder/constraints.h"
 #include "sekai/team_builder/event_team_builder.h"
 #include "sekai/team_builder/max_bonus_team_builder.h"
 #include "sekai/team_builder/naive_team_builder.h"
@@ -222,9 +223,20 @@ void BM_RecommendTeam(benchmark::State& state) {
   RunBenchmark([]() { return std::make_unique<T>(); }, state);
 }
 
-template <auto obj>
-void BM_RecommendTeamNaive(benchmark::State& state) {
-  RunBenchmark([]() { return std::make_unique<NaiveTeamBuilder>(obj); }, state);
+template <typename T>
+void BM_RecommendTeamWithConstraints(benchmark::State& state) {
+  RunBenchmark(
+      []() {
+        auto builder = std::make_unique<T>();
+        Constraints constraints;
+        constraints.SetMinLeadSkill(80);
+        for (int i = 1; i < 12; ++i) {
+          constraints.AddLeadChar(i);
+        }
+        builder->AddConstraints(constraints);
+        return builder;
+      },
+      state);
 }
 
 void BM_RecommendTeamPruneByPower(benchmark::State& state) {
@@ -271,14 +283,16 @@ void BM_RecommendTeamPruneByAll(benchmark::State& state) {
       state);
 }
 
-BENCHMARK(BM_RecommendTeam<NaiveTeamBuilder>)->Name("Naive")->Unit(benchmark::kMillisecond);
-BENCHMARK(BM_RecommendTeamNaive<NaiveTeamBuilder::Objective::kOptimizeBonus>)
+BENCHMARK(BM_RecommendTeam<NaiveTeamBuilder>)
+    ->Name("Naive (Points)")
+    ->Unit(benchmark::kMillisecond);
+BENCHMARK(BM_RecommendTeam<NaiveBonusTeamBuilder>)
     ->Name("Naive (Bonus)")
     ->Unit(benchmark::kMillisecond);
-BENCHMARK(BM_RecommendTeamNaive<NaiveTeamBuilder::Objective::kOptimizePower>)
+BENCHMARK(BM_RecommendTeam<NaivePowerTeamBuilder>)
     ->Name("Naive (Power)")
     ->Unit(benchmark::kMillisecond);
-BENCHMARK(BM_RecommendTeamNaive<NaiveTeamBuilder::Objective::kOptimizeSkill>)
+BENCHMARK(BM_RecommendTeam<NaiveSkillTeamBuilder>)
     ->Name("Naive (Skill)")
     ->Unit(benchmark::kMillisecond);
 BENCHMARK(BM_RecommendTeam<MaxBonusTeamBuilder>)
@@ -295,6 +309,24 @@ BENCHMARK(BM_RecommendTeamPruneByBonus)
     ->Unit(benchmark::kMillisecond);
 BENCHMARK(BM_RecommendTeamPruneByAll)
     ->Name("Partitioned (Event, All)")
+    ->Unit(benchmark::kMillisecond);
+BENCHMARK(BM_RecommendTeamWithConstraints<NaiveTeamBuilder>)
+    ->Name("Naive (Points, Constrained)")
+    ->Unit(benchmark::kMillisecond);
+BENCHMARK(BM_RecommendTeamWithConstraints<NaiveBonusTeamBuilder>)
+    ->Name("Naive (Bonus, Constrained)")
+    ->Unit(benchmark::kMillisecond);
+BENCHMARK(BM_RecommendTeamWithConstraints<NaivePowerTeamBuilder>)
+    ->Name("Naive (Power, Constrained)")
+    ->Unit(benchmark::kMillisecond);
+BENCHMARK(BM_RecommendTeamWithConstraints<NaiveSkillTeamBuilder>)
+    ->Name("Naive (Skill, Constrained)")
+    ->Unit(benchmark::kMillisecond);
+BENCHMARK(BM_RecommendTeamWithConstraints<MaxBonusTeamBuilder>)
+    ->Name("Partitioned (Max Bonus, Constrained)")
+    ->Unit(benchmark::kMillisecond);
+BENCHMARK(BM_RecommendTeamWithConstraints<EventTeamBuilder>)
+    ->Name("Partitioned (Event, Constrained)")
     ->Unit(benchmark::kMillisecond);
 
 }  // namespace
