@@ -72,16 +72,25 @@ bool Constraints::CharacterSetSatisfiesConstraint(Character chars) const {
   return false;
 }
 
-bool Constraints::CharacterIsEligibleForLead(int char_id) const {
-  if (empty_) return true;
-  if (lead_chars_.any() && !lead_chars_.test(char_id)) return false;
-  if (kizuna_pairs_.empty()) return true;
+Character Constraints::GetCharactersEligibleForLead(Character chars_present) const {
+  Character leads;
+  if (empty_ || lead_chars_.none()) {
+    leads.set();
+  }
+  leads |= lead_chars_;
+  leads.reset(0);
+
+  Character leads_from_kizuna;
   for (const Character& kizuna_pair : kizuna_pairs_) {
-    if (kizuna_pair.test(char_id)) {
-      return true;
+    if ((kizuna_pair & chars_present).count() == 2) {
+      leads_from_kizuna |= kizuna_pair;
     }
   }
-  return false;
+  if (!kizuna_pairs_.empty()) {
+    leads &= leads_from_kizuna;
+  }
+
+  return leads;
 }
 
 std::vector<absl::Nonnull<const Card*>> Constraints::FilterCardPool(

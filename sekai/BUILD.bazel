@@ -285,7 +285,6 @@ cc_library(
         "//sekai/db:master_db",
         "//sekai/db/proto:all",
         "//sekai/proto:team_cc_proto",
-        "//sekai/team_builder:constraints",
         "@eigen",
     ],
 )
@@ -316,13 +315,13 @@ cc_test(
         "//data:flat-db",
     ],
     deps = [
+        ":bitset",
         ":card",
         ":profile",
         ":team",
         "//sekai/db:master_db",
         "//sekai/db/proto:all",
         "//sekai/proto:profile_cc_proto",
-        "//sekai/team_builder:constraints",
         "//testing:test_main",
         "//testing:util",
         "@googletest//:gtest",

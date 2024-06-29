@@ -3,6 +3,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include "sekai/array_size.h"
 #include "sekai/bitset.h"
 #include "sekai/db/master_db.h"
 #include "sekai/db/proto/all.h"
@@ -105,43 +106,132 @@ TEST(ConstraintsTest, TestCharacterSetKizunaConstraints) {
   chars.set(3);
 }
 
-TEST(ConstraintsTest, CharacterIsEligibleForLeadWithEmptyConstraint) {
+TEST(ConstraintsTest, GetCharactersEligibleForLeadWithEmptyConstraint) {
+  Character chars_present;
   Constraints constraints;
-  EXPECT_TRUE(constraints.CharacterIsEligibleForLead(3));
-  EXPECT_TRUE(constraints.CharacterIsEligibleForLead(4));
+  Character eligible_leads = constraints.GetCharactersEligibleForLead(chars_present);
+
+  Character expected_leads;
+  expected_leads.set();
+  expected_leads.reset(0);
+  EXPECT_EQ(eligible_leads, expected_leads);
 }
 
-TEST(ConstraintsTest, CharacterIsEligibleForLeadWithLeadConstraint) {
+TEST(ConstraintsTest, GetCharactersEligibleForLeadWithFullLeadsConstraint) {
+  Character chars_present;
+  Constraints constraints;
+  for (int i = 1; i < CharacterArraySize(); ++i) {
+    constraints.AddLeadChar(i);
+  }
+  Character eligible_leads = constraints.GetCharactersEligibleForLead(chars_present);
+
+  Character expected_leads;
+  expected_leads.set();
+  expected_leads.reset(0);
+  EXPECT_EQ(eligible_leads, expected_leads);
+}
+
+TEST(ConstraintsTest, GetCharactersEligibleForLeadWithLeadsConstraint) {
   Constraints constraints(ParseTextProto<TeamConstraints>(R"pb(
     lead_char_ids: 1 lead_char_ids: 2
   )pb"));
-  EXPECT_TRUE(constraints.CharacterIsEligibleForLead(1));
-  EXPECT_TRUE(constraints.CharacterIsEligibleForLead(2));
-  EXPECT_FALSE(constraints.CharacterIsEligibleForLead(4));
+
+  Character chars_present;
+  Character eligible_leads = constraints.GetCharactersEligibleForLead(chars_present);
+
+  Character expected_leads;
+  expected_leads.set(1);
+  expected_leads.set(2);
+  EXPECT_EQ(eligible_leads, expected_leads);
 }
 
-TEST(ConstraintsTest, CharacterIsEligibleForLeadWithKizunaConstraint) {
+TEST(ConstraintsTest, GetCharactersEligibleForLeadWithKizunaConstraint) {
   Constraints constraints(ParseTextProto<TeamConstraints>(R"pb(
     kizuna_pairs {char_1: 1 char_2: 2}
     kizuna_pairs {char_1: 1 char_2: 3}
+    kizuna_pairs {char_1: 1 char_2: 4}
+    kizuna_pairs {char_1: 1 char_2: 5}
   )pb"));
-  EXPECT_TRUE(constraints.CharacterIsEligibleForLead(1));
-  EXPECT_TRUE(constraints.CharacterIsEligibleForLead(2));
-  EXPECT_TRUE(constraints.CharacterIsEligibleForLead(3));
-  EXPECT_FALSE(constraints.CharacterIsEligibleForLead(4));
+  Character chars_present;
+  chars_present.set(1);
+  chars_present.set(2);
+  chars_present.set(3);
+
+  Character eligible_leads = constraints.GetCharactersEligibleForLead(chars_present);
+
+  Character expected_leads;
+  expected_leads.set(1);
+  expected_leads.set(2);
+  expected_leads.set(3);
+
+  EXPECT_EQ(eligible_leads, expected_leads);
 }
 
-TEST(ConstraintsTest, CharacterIsEligibleForLeadWithLeadAndKizunaConstraint) {
+TEST(ConstraintsTest, GetCharactersEligibleForLeadWithLeadAndKizunaConstraint1) {
   Constraints constraints(ParseTextProto<TeamConstraints>(R"pb(
     lead_char_ids: 1
     lead_char_ids: 2
+    lead_char_ids: 4
     kizuna_pairs {char_1: 1 char_2: 2}
     kizuna_pairs {char_1: 1 char_2: 3}
   )pb"));
-  EXPECT_TRUE(constraints.CharacterIsEligibleForLead(1));
-  EXPECT_TRUE(constraints.CharacterIsEligibleForLead(2));
-  EXPECT_FALSE(constraints.CharacterIsEligibleForLead(3));
-  EXPECT_FALSE(constraints.CharacterIsEligibleForLead(4));
+  Character chars_present;
+  chars_present.set(1);
+  chars_present.set(2);
+  chars_present.set(3);
+
+  Character eligible_leads = constraints.GetCharactersEligibleForLead(chars_present);
+
+  Character expected_leads;
+  expected_leads.set(1);
+  expected_leads.set(2);
+
+  EXPECT_EQ(eligible_leads, expected_leads);
+}
+
+TEST(ConstraintsTest, GetCharactersEligibleForLeadWithLeadAndKizunaConstraint2) {
+  Constraints constraints(ParseTextProto<TeamConstraints>(R"pb(
+    lead_char_ids: 1
+    lead_char_ids: 2
+    lead_char_ids: 4
+    kizuna_pairs {char_1: 1 char_2: 2}
+    kizuna_pairs {char_1: 1 char_2: 3}
+    kizuna_pairs {char_1: 2 char_2: 4}
+    kizuna_pairs {char_1: 2 char_2: 5}
+  )pb"));
+  Character chars_present;
+  chars_present.set(1);
+  chars_present.set(2);
+  chars_present.set(3);
+
+  Character eligible_leads = constraints.GetCharactersEligibleForLead(chars_present);
+
+  Character expected_leads;
+  expected_leads.set(1);
+  expected_leads.set(2);
+
+  EXPECT_EQ(eligible_leads, expected_leads);
+}
+
+TEST(ConstraintsTest, GetCharactersEligibleForLeadWithLeadAndKizunaConstraint3) {
+  Constraints constraints(ParseTextProto<TeamConstraints>(R"pb(
+    lead_char_ids: 1
+    lead_char_ids: 2
+    lead_char_ids: 4
+    kizuna_pairs {char_1: 1 char_2: 3}
+    kizuna_pairs {char_1: 2 char_2: 4}
+    kizuna_pairs {char_1: 2 char_2: 5}
+  )pb"));
+  Character chars_present;
+  chars_present.set(1);
+  chars_present.set(3);
+
+  Character eligible_leads = constraints.GetCharactersEligibleForLead(chars_present);
+
+  Character expected_leads;
+  expected_leads.set(1);
+
+  EXPECT_EQ(eligible_leads, expected_leads);
 }
 
 TEST(ConstraintsTest, TestLeadSkillConstraints) {

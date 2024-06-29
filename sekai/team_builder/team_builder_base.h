@@ -21,17 +21,10 @@ class TeamBuilderBase : public TeamBuilder {
       const EventBonus& event_bonus, const Estimator& estimator,
       std::optional<absl::Time> deadline = std::nullopt) = 0;
 
-  struct Stats {
-    uint64_t teams_total = 0;
-    uint64_t teams_considered = 0;
-    uint64_t teams_evaluated = 0;
-    uint64_t cards_pruned = 0;
-  };
-
-  const Stats& stats() const { return stats_; }
+  const TeamBuilder::Stats& stats() const override { return stats_; }
 
  protected:
-  Stats stats_;
+  TeamBuilder::Stats stats_;
   Constraints constraints_;
 };
 

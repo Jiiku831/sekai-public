@@ -164,6 +164,7 @@ std::vector<Team> EventTeamBuilder::RecommendTeamsImpl(std::span<const Card* con
         if (!constraints_.CharacterSetSatisfiesConstraint(chars_present)) {
           return true;
         }
+        Character lead_chars = constraints_.GetCharactersEligibleForLead(chars_present);
 
         // TODO: extract to fn
         bool should_prune = opts_.prune_every_n_steps > 0 && best_ep_ > 0 &&
@@ -214,7 +215,7 @@ std::vector<Team> EventTeamBuilder::RecommendTeamsImpl(std::span<const Card* con
               }
 
               thread_pool.detach_task([this, &char_pools, &profile, &event_bonus, &local_estimator,
-                                       char_ids, extents]() {
+                                       char_ids, extents, lead_chars]() {
                 double local_best_ep = 0;
                 {
                   // Acquire the current best ep at task start time.
@@ -231,8 +232,8 @@ std::vector<Team> EventTeamBuilder::RecommendTeamsImpl(std::span<const Card* con
                         char_pools[char_ids[0]], char_pools[char_ids[1]], char_pools[char_ids[2]],
                         char_pools[char_ids[3]], char_pools[char_ids[4]]},
                     [this, &local_teams_considered, &local_teams_evaluated, &local_best_ep,
-                     &local_best_team, &local_estimator, &profile,
-                     &event_bonus](const std::array<const Card*, 5>& candidate_cards) {
+                     &local_best_team, &local_estimator, &profile, &event_bonus,
+                     lead_chars](const std::array<const Card*, 5>& candidate_cards) {
                       ++local_teams_considered;
                       Team candidate_team{candidate_cards};
                       int power = candidate_team.Power(profile);
@@ -256,7 +257,7 @@ std::vector<Team> EventTeamBuilder::RecommendTeamsImpl(std::span<const Card* con
                       int skill_value;
                       if (!constraints_.empty()) {
                         Team::SkillValueDetail skill_value_detail =
-                            candidate_team.ConstrainedMaxSkillValue(constraints_);
+                            candidate_team.ConstrainedMaxSkillValue(lead_chars);
                         if (!constraints_.LeadSkillSatisfiesConstraint(
                                 skill_value_detail.lead_skill)) {
                           return true;

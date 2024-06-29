@@ -14,6 +14,7 @@
 #include "sekai/combinations.h"
 #include "sekai/team.h"
 #include "sekai/team_builder/pool_utils.h"
+#include "sekai/team_builder/team_builder.h"
 
 namespace sekai {
 namespace {
@@ -36,11 +37,9 @@ std::vector<const Card*> SortCardsByBonusToVector(std::span<const Card* const> p
   return new_pool;
 }
 
-std::vector<Team> RecommendTeamsImplNoConstraints(std::span<const Card* const> pool,
-                                                  const Profile& profile,
-                                                  const EventBonus& event_bonus,
-                                                  const Estimator& estimator,
-                                                  std::optional<absl::Time> deadline) {
+std::vector<Team> RecommendTeamsImplNoConstraints(
+    std::span<const Card* const> pool, const Profile& profile, const EventBonus& event_bonus,
+    const Estimator& estimator, std::optional<absl::Time> deadline, TeamBuilder::Stats& stats) {
   std::vector<const Card*> candidate_cards;
   std::multimap<float, const Card*, std::greater<>> sorted_cards = SortCardsByBonus(pool);
   std::bitset<kCharacterArraySize> chars_present;
@@ -52,22 +51,23 @@ std::vector<Team> RecommendTeamsImplNoConstraints(std::span<const Card* const> p
     chars_present.set(card->character_id());
     attrs_present.set(card->db_attr());
     if (candidate_cards.size() == 5) {
+      ++stats.teams_considered;
+      ++stats.teams_evaluated;
       return {Team{candidate_cards}};
     }
   }
   return {};
 }
 
-std::vector<Team> RecommendTeamsImplWithConstraints(std::span<const Card* const> pool,
-                                                    const Profile& profile,
-                                                    const EventBonus& event_bonus,
-                                                    const Estimator& estimator,
-                                                    std::optional<absl::Time> deadline,
-                                                    const Constraints& constraints) {
+std::vector<Team> RecommendTeamsImplWithConstraints(
+    std::span<const Card* const> pool, const Profile& profile, const EventBonus& event_bonus,
+    const Estimator& estimator, std::optional<absl::Time> deadline, const Constraints& constraints,
+    TeamBuilder::Stats& stats) {
   std::array<std::vector<const Card*>, kCharacterArraySize> char_pools =
       PartitionCardPoolByCharacters(SortCardsByBonusToVector(pool));
   std::optional<Team> best_team;
   std::vector<int> sorted_char_ids = SortCharactersByMaxEventBonus(event_bonus);
+  // TODO: this doesnt work for world link
   // TODO: add variant that search near the first
   Combinations<int, 5>{
       sorted_char_ids,
@@ -79,6 +79,7 @@ std::vector<Team> RecommendTeamsImplWithConstraints(std::span<const Card* const>
         if (!constraints.CharacterSetSatisfiesConstraint(chars_present)) {
           return true;
         }
+        Character lead_chars = constraints.GetCharactersEligibleForLead(chars_present);
 
         std::array<std::span<const Card* const>, 5> current_pool;
         ABSL_CHECK_EQ(static_cast<int>(candidate_chars.size()), 5);
@@ -89,53 +90,40 @@ std::vector<Team> RecommendTeamsImplWithConstraints(std::span<const Card* const>
           }
         }
 
-        std::array<int, 5> current_index = {0, 0, 0, 0, 0};
-        bool at_end = false;
-        do {
-          int index_with_lowest_eb = -1;
-          at_end = true;
+        // Go down the list of candidate cards for each possible lead until
+        // we find a match.
+        for (int i = 0; i < static_cast<int>(candidate_chars.size()); ++i) {
+          int candidate_char = candidate_chars[i];
+          if (!lead_chars.test(candidate_char)) {
+            continue;
+          }
           std::array<const Card*, 5> candidate_cards;
-          float min_drop = std::numeric_limits<float>::infinity();
-          // Fill in candidate cards and choose index to increment.
-          for (int i = 0; i < static_cast<int>(current_pool.size()); ++i) {
-            candidate_cards[i] = current_pool[i][current_index[i]];
-            if (
-                // If the current position can be incremented.
-                current_index[i] + 1 < static_cast<int>(current_pool[i].size()) &&
-                // Then update the index to increment if one of the following is true.
-                (
-                    // This is the first index that can be incremented.
-                    index_with_lowest_eb < 0 ||
-                    // Or, this is the index that will result in the lowest
-                    // eb drop.
-                    current_pool[i][current_index[i]]->event_bonus() -
-                            current_pool[i][current_index[i] + 1]->event_bonus() <
-                        min_drop)) {
-              min_drop = current_pool[i][current_index[i]]->event_bonus() -
-                         current_pool[i][current_index[i] + 1]->event_bonus();
-              index_with_lowest_eb = i;
-              at_end = false;
+          for (int j = 0; j < static_cast<int>(candidate_chars.size()); ++j) {
+            candidate_cards[j] = current_pool[j][0];
+          }
+          std::span<const Card* const> candidate_pool = current_pool[i];
+          for (int j = 0; j < static_cast<int>(candidate_pool.size()); ++j) {
+            candidate_cards[i] = candidate_pool[j];
+
+            Team candidate_team{candidate_cards};
+            ++stats.teams_considered;
+            ++stats.teams_evaluated;
+            bool constraints_satisfied = !constraints.HasLeadSkillConstraint();
+            if (!constraints_satisfied) {
+              Team::SkillValueDetail skill_value =
+                  candidate_team.ConstrainedMaxSkillValue(lead_chars);
+              constraints_satisfied =
+                  constraints.LeadSkillSatisfiesConstraint(skill_value.lead_skill);
+            }
+
+            if (constraints_satisfied) {
+              if (!best_team.has_value() || best_team->EventBonus() < candidate_team.EventBonus()) {
+                best_team = candidate_team;
+              }
+              break;
             }
           }
-
-          Team candidate_team{candidate_cards};
-          bool constraints_satisfied = !constraints.HasLeadSkillConstraint();
-          if (!constraints_satisfied) {
-            Team::SkillValueDetail skill_value =
-                candidate_team.ConstrainedMaxSkillValue(constraints);
-            constraints_satisfied =
-                constraints.LeadSkillSatisfiesConstraint(skill_value.lead_skill);
-          }
-
-          if (constraints_satisfied) {
-            if (!best_team.has_value() || best_team->EventBonus() < candidate_team.EventBonus()) {
-              best_team = candidate_team;
-            }
-            break;
-          }
-
-          ++current_index[index_with_lowest_eb];
-        } while (!at_end);
+        }
 
         return true;
       },
@@ -154,10 +142,10 @@ std::vector<Team> MaxBonusTeamBuilder::RecommendTeamsImpl(std::span<const Card* 
                                                           const Estimator& estimator,
                                                           std::optional<absl::Time> deadline) {
   if (constraints_.empty()) {
-    return RecommendTeamsImplNoConstraints(pool, profile, event_bonus, estimator, deadline);
+    return RecommendTeamsImplNoConstraints(pool, profile, event_bonus, estimator, deadline, stats_);
   }
   return RecommendTeamsImplWithConstraints(pool, profile, event_bonus, estimator, deadline,
-                                           constraints_);
+                                           constraints_, stats_);
 }
 
 }  // namespace sekai

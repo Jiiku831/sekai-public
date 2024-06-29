@@ -3,13 +3,13 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include "sekai/bitset.h"
 #include "sekai/card.h"
 #include "sekai/db/master_db.h"
 #include "sekai/db/proto/all.h"
 #include "sekai/event_bonus.h"
 #include "sekai/profile.h"
 #include "sekai/proto/profile.pb.h"
-#include "sekai/team_builder/constraints.h"
 #include "testing/util.h"
 
 namespace sekai {
@@ -349,12 +349,12 @@ TEST_F(TeamTest, ExampleTeam1ConstrainedMaxSkillValue) {
       CreateCard(profile_, /*card_id=*/224, /*level=*/60),
   };
   Team team = MakeTeam(cards);
-  Constraints constraints;
-  constraints.AddLeadChar(cards[2].character_id());
+  Character eligible_leads;
+  eligible_leads.set(cards[2].character_id());
   EXPECT_EQ(team.SkillValue(), 100 + (105 + 110 + 130 + 110) / 5);
   EXPECT_EQ(team.MaxSkillValue(), 130 + (100 + 105 + 110 + 110) / 5);
 
-  Team::SkillValueDetail skill_value = team.ConstrainedMaxSkillValue(constraints);
+  Team::SkillValueDetail skill_value = team.ConstrainedMaxSkillValue(eligible_leads);
   EXPECT_EQ(skill_value.lead_skill, 110);
   EXPECT_EQ(skill_value.skill_value, 110 + (100 + 105 + 130 + 110) / 5);
 }
@@ -368,13 +368,13 @@ TEST_F(TeamTest, ExampleTeam1ConstrainedMaxSkillValueAlt) {
       CreateCard(profile_, /*card_id=*/224, /*level=*/60),
   };
   Team team = MakeTeam(cards);
-  Constraints constraints;
-  constraints.AddLeadChar(cards[2].character_id());
-  constraints.AddLeadChar(cards[3].character_id());
+  Character eligible_leads;
+  eligible_leads.set(cards[2].character_id());
+  eligible_leads.set(cards[3].character_id());
   EXPECT_EQ(team.SkillValue(), 100 + (105 + 110 + 130 + 110) / 5);
   EXPECT_EQ(team.MaxSkillValue(), 130 + (100 + 105 + 110 + 110) / 5);
 
-  Team::SkillValueDetail skill_value = team.ConstrainedMaxSkillValue(constraints);
+  Team::SkillValueDetail skill_value = team.ConstrainedMaxSkillValue(eligible_leads);
   EXPECT_EQ(skill_value.lead_skill, 130);
   EXPECT_EQ(skill_value.skill_value, 130 + (100 + 105 + 110 + 110) / 5);
 }

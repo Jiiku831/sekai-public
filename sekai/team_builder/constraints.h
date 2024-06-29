@@ -28,7 +28,7 @@ class Constraints {
   bool CharacterSetSatisfiesConstraint(Character chars) const;
 
   // Returns if the character is eligible to be lead.
-  bool CharacterIsEligibleForLead(int char_id) const;
+  Character GetCharactersEligibleForLead(Character chars_present) const;
 
   // Returns a new pool with unwanted rarities removed.
   std::vector<absl::Nonnull<const Card*>> FilterCardPool(

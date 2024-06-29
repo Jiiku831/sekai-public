@@ -13,36 +13,34 @@ namespace sekai {
 namespace {
 
 absl::AnyInvocable<double(const Team&, const Profile&, const EventBonus&, const Estimator&,
-                          const Constraints&) const>
+                          Character) const>
 ObjectiveFn(NaiveTeamBuilder::Objective obj) {
   switch (obj) {
     case NaiveTeamBuilder::Objective::kOptimizePoints:
       return [](const Team& team, const Profile& profile, const EventBonus& event_bonus,
-                const Estimator& estimator, const Constraints& constraints) {
+                const Estimator& estimator, Character lead_chars) {
         int power = team.Power(profile);
         float eb = team.EventBonus(event_bonus);
-        int skill_value = team.ConstrainedMaxSkillValue(constraints).skill_value;
+        int skill_value = team.ConstrainedMaxSkillValue(lead_chars).skill_value;
         return estimator.ExpectedEp(power, eb, skill_value, skill_value);
       };
     case NaiveTeamBuilder::Objective::kOptimizePower:
       return [](const Team& team, const Profile& profile, const EventBonus& event_bonus,
-                const Estimator& estimator, const Constraints& constraints) {
-        return static_cast<double>(team.Power(profile));
-      };
+                const Estimator& estimator,
+                Character lead_chars) { return static_cast<double>(team.Power(profile)); };
     case NaiveTeamBuilder::Objective::kOptimizeBonus:
       return [](const Team& team, const Profile& profile, const EventBonus& event_bonus,
-                const Estimator& estimator, const Constraints& constraints) {
-        return static_cast<double>(team.EventBonus(event_bonus));
-      };
+                const Estimator& estimator,
+                Character lead_chars) { return static_cast<double>(team.EventBonus(event_bonus)); };
     case NaiveTeamBuilder::Objective::kOptimizeSkill:
       return [](const Team& team, const Profile& profile, const EventBonus& event_bonus,
-                const Estimator& estimator, const Constraints& constraints) {
-        return static_cast<double>(team.ConstrainedMaxSkillValue(constraints).skill_value);
+                const Estimator& estimator, Character lead_chars) {
+        return static_cast<double>(team.ConstrainedMaxSkillValue(lead_chars).skill_value);
       };
     default:
       ABSL_CHECK(false) << "unhandled case";
       return [](const Team&, const Profile& profile, const EventBonus& event_bonus,
-                const Estimator& estimator, const Constraints& constraints) { return 0.0; };
+                const Estimator& estimator, Character lead_chars) { return 0.0; };
   }
 }
 
@@ -54,7 +52,7 @@ std::vector<Team> NaiveTeamBuilder::RecommendTeamsImpl(std::span<const Card* con
                                                        const Estimator& estimator,
                                                        std::optional<absl::Time> deadline) {
   absl::AnyInvocable<double(const Team&, const Profile&, const EventBonus&, const Estimator&,
-                            const Constraints&) const>
+                            Character) const>
       objective = ObjectiveFn(obj_);
   std::optional<Team> best_team;
   double best_val = -std::numeric_limits<double>::infinity();
@@ -72,18 +70,18 @@ std::vector<Team> NaiveTeamBuilder::RecommendTeamsImpl(std::span<const Card* con
         if (!constraints_.CharacterSetSatisfiesConstraint(chars_present)) {
           return true;
         }
+        Character lead_chars = constraints_.GetCharactersEligibleForLead(chars_present);
 
         Team candidate_team{candidate_cards};
         if (constraints_.HasLeadSkillConstraint()) {
-          Team::SkillValueDetail skill_value =
-              candidate_team.ConstrainedMaxSkillValue(constraints_);
+          Team::SkillValueDetail skill_value = candidate_team.ConstrainedMaxSkillValue(lead_chars);
           if (!constraints_.LeadSkillSatisfiesConstraint(skill_value.lead_skill)) {
             return true;
           }
         }
         ++stats_.teams_evaluated;
         double candidate_val =
-            objective(candidate_team, profile, event_bonus, estimator, constraints_);
+            objective(candidate_team, profile, event_bonus, estimator, lead_chars);
         if (candidate_val > best_val) {
           best_val = candidate_val;
           best_team = candidate_team;

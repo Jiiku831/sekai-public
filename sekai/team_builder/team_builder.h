@@ -21,6 +21,15 @@ class TeamBuilder {
                                            const Profile& profile, const EventBonus& event_bonus,
                                            const Estimator& estimator,
                                            std::optional<absl::Time> deadline = std::nullopt) = 0;
+
+  struct Stats {
+    uint64_t teams_total = 0;
+    uint64_t teams_considered = 0;
+    uint64_t teams_evaluated = 0;
+    uint64_t cards_pruned = 0;
+  };
+
+  virtual const TeamBuilder::Stats& stats() const = 0;
 };
 
 }  // namespace sekai

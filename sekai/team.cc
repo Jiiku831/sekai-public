@@ -120,7 +120,7 @@ int Team::MaxSkillValue() const {
   return max_skill + (total_skill - max_skill) / 5;
 }
 
-Team::SkillValueDetail Team::ConstrainedMaxSkillValue(const Constraints& constraints) const {
+Team::SkillValueDetail Team::ConstrainedMaxSkillValue(Character eligible_leads) const {
   int total_skill = 0;
   int max_skill = 0;
   bool unit_count_populated = false;
@@ -128,7 +128,7 @@ Team::SkillValueDetail Team::ConstrainedMaxSkillValue(const Constraints& constra
   for (const Card* card : cards_) {
     int skill_value = CardSkillContrib(card, unit_count_populated, unit_count);
     total_skill += skill_value;
-    if (constraints.CharacterIsEligibleForLead(card->character_id())) {
+    if (eligible_leads.test(card->character_id())) {
       max_skill = std::max(skill_value, max_skill);
     }
   }

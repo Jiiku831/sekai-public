@@ -31,6 +31,7 @@ cc_library(
     hdrs = ["max_bonus_team_builder.h"],
     deps = [
         ":pool_utils",
+        ":team_builder",
         ":team_builder_base",
         "//sekai:array_size",
         "//sekai:card",
@@ -142,6 +143,7 @@ cc_test(
     ],
     deps = [
         ":constraints",
+        "//sekai:array_size",
         "//sekai:bitset",
         "//sekai/db:master_db",
         "//sekai/proto:constraints_cc_proto",
