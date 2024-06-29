@@ -9,6 +9,7 @@
 #include "sekai/event_bonus.h"
 #include "sekai/profile.h"
 #include "sekai/proto/profile.pb.h"
+#include "sekai/team_builder/constraints.h"
 #include "testing/util.h"
 
 namespace sekai {
@@ -324,6 +325,58 @@ TEST_F(TeamTest, ExampleTeam1SkillValue) {
   };
   Team team = MakeTeam(cards);
   EXPECT_EQ(team.SkillValue(), 130 + (100 + 105 + 110 + 110) / 5);
+}
+
+TEST_F(TeamTest, ExampleTeam1MaxSkillValue) {
+  std::array cards = {
+      CreateCard(profile_, /*card_id=*/495, /*level=*/60, /*master_rank=*/0, /*skill_level=*/1),
+      CreateCard(profile_, /*card_id=*/535, /*level=*/60, /*master_rank=*/0, /*skill_level=*/2),
+      CreateCard(profile_, /*card_id=*/259, /*level=*/60, /*master_rank=*/0, /*skill_level=*/3),
+      CreateCard(profile_, /*card_id=*/622, /*level=*/60, /*master_rank=*/5, /*skill_level=*/4),
+      CreateCard(profile_, /*card_id=*/224, /*level=*/60),
+  };
+  Team team = MakeTeam(cards);
+  EXPECT_EQ(team.SkillValue(), 100 + (105 + 110 + 130 + 110) / 5);
+  EXPECT_EQ(team.MaxSkillValue(), 130 + (100 + 105 + 110 + 110) / 5);
+}
+
+TEST_F(TeamTest, ExampleTeam1ConstrainedMaxSkillValue) {
+  std::array cards = {
+      CreateCard(profile_, /*card_id=*/495, /*level=*/60, /*master_rank=*/0, /*skill_level=*/1),
+      CreateCard(profile_, /*card_id=*/535, /*level=*/60, /*master_rank=*/0, /*skill_level=*/2),
+      CreateCard(profile_, /*card_id=*/259, /*level=*/60, /*master_rank=*/0, /*skill_level=*/3),
+      CreateCard(profile_, /*card_id=*/622, /*level=*/60, /*master_rank=*/5, /*skill_level=*/4),
+      CreateCard(profile_, /*card_id=*/224, /*level=*/60),
+  };
+  Team team = MakeTeam(cards);
+  Constraints constraints;
+  constraints.AddLeadChar(cards[2].character_id());
+  EXPECT_EQ(team.SkillValue(), 100 + (105 + 110 + 130 + 110) / 5);
+  EXPECT_EQ(team.MaxSkillValue(), 130 + (100 + 105 + 110 + 110) / 5);
+
+  Team::SkillValueDetail skill_value = team.ConstrainedMaxSkillValue(constraints);
+  EXPECT_EQ(skill_value.lead_skill, 110);
+  EXPECT_EQ(skill_value.skill_value, 110 + (100 + 105 + 130 + 110) / 5);
+}
+
+TEST_F(TeamTest, ExampleTeam1ConstrainedMaxSkillValueAlt) {
+  std::array cards = {
+      CreateCard(profile_, /*card_id=*/495, /*level=*/60, /*master_rank=*/0, /*skill_level=*/1),
+      CreateCard(profile_, /*card_id=*/535, /*level=*/60, /*master_rank=*/0, /*skill_level=*/2),
+      CreateCard(profile_, /*card_id=*/259, /*level=*/60, /*master_rank=*/0, /*skill_level=*/3),
+      CreateCard(profile_, /*card_id=*/622, /*level=*/60, /*master_rank=*/5, /*skill_level=*/4),
+      CreateCard(profile_, /*card_id=*/224, /*level=*/60),
+  };
+  Team team = MakeTeam(cards);
+  Constraints constraints;
+  constraints.AddLeadChar(cards[2].character_id());
+  constraints.AddLeadChar(cards[3].character_id());
+  EXPECT_EQ(team.SkillValue(), 100 + (105 + 110 + 130 + 110) / 5);
+  EXPECT_EQ(team.MaxSkillValue(), 130 + (100 + 105 + 110 + 110) / 5);
+
+  Team::SkillValueDetail skill_value = team.ConstrainedMaxSkillValue(constraints);
+  EXPECT_EQ(skill_value.lead_skill, 130);
+  EXPECT_EQ(skill_value.skill_value, 130 + (100 + 105 + 110 + 110) / 5);
 }
 
 }  // namespace

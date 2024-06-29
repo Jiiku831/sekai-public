@@ -11,6 +11,7 @@
 #include "sekai/event_bonus.h"
 #include "sekai/profile.h"
 #include "sekai/proto/team.pb.h"
+#include "sekai/team_builder/constraints.h"
 
 namespace sekai {
 
@@ -35,6 +36,12 @@ class Team {
   int SkillValue() const;
   int MaxSkillValue() const;
   void ReorderTeamForOptimalSkillValue();
+
+  struct SkillValueDetail {
+    int lead_skill;
+    int skill_value;
+  };
+  SkillValueDetail ConstrainedMaxSkillValue(const Constraints& constraints) const;
 
   TeamProto ToProto(const Profile& profile, const class EventBonus& event_bonus,
                     const Estimator& estimator) const;

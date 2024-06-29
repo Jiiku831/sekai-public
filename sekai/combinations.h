@@ -177,4 +177,35 @@ void ForEachInBlock(const std::array<Extent, N>& extents,
   } while (!at_end);
 }
 
+// Warning: copies values
+template <int N, typename T>
+void ForEachInBlock(const std::array<std::span<const T>, N>& values,
+                    absl::AnyInvocable<bool(const std::array<T, N>&) const> loop_body) {
+  std::array<std::size_t, N> indices;
+  for (int i = 0; i < N; ++i) {
+    indices[i] = 0;
+  }
+  bool at_end = false;
+  do {
+    std::array<T, N> value;
+    for (int i = 0; i < N; ++i) {
+      ABSL_CHECK_LT(indices[i], values[i].size());
+      value[i] = values[i][indices[i]];
+    }
+    if (!loop_body(value)) {
+      break;
+    }
+
+    at_end = true;
+    for (int i = 0; i < N; ++i) {
+      ++indices[i];
+      if (indices[i] != values[i].size()) {
+        at_end = false;
+        break;
+      }
+      indices[i] = 0;
+    }
+  } while (!at_end);
+}
+
 }  // namespace sekai

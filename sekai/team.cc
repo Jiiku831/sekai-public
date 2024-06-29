@@ -120,6 +120,24 @@ int Team::MaxSkillValue() const {
   return max_skill + (total_skill - max_skill) / 5;
 }
 
+Team::SkillValueDetail Team::ConstrainedMaxSkillValue(const Constraints& constraints) const {
+  int total_skill = 0;
+  int max_skill = 0;
+  bool unit_count_populated = false;
+  std::array<int, db::Unit_ARRAYSIZE> unit_count{};
+  for (const Card* card : cards_) {
+    int skill_value = CardSkillContrib(card, unit_count_populated, unit_count);
+    total_skill += skill_value;
+    if (constraints.CharacterIsEligibleForLead(card->character_id())) {
+      max_skill = std::max(skill_value, max_skill);
+    }
+  }
+  return {
+      .lead_skill = max_skill,
+      .skill_value = max_skill + (total_skill - max_skill) / 5,
+  };
+}
+
 void Team::ReorderTeamForOptimalSkillValue() {
   int max_skill_index = 0;
   int max_skill = 0;

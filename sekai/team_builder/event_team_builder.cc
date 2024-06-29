@@ -18,10 +18,10 @@
 #include "sekai/config.h"
 #include "sekai/estimator.h"
 #include "sekai/team_builder/card_pruning.h"
+#include "sekai/team_builder/pool_utils.h"
 
 namespace sekai {
 namespace {
-constexpr int kCharacterArraySize = 32;
 
 void UpdateBar(indicators::ProgressBar& bar, uint64_t progress, uint64_t max_progress) {
   bar.set_progress(progress);
@@ -89,18 +89,6 @@ int RemoveLowValCards(std::array<std::vector<const Card*>, kCharacterArraySize>&
   return cards_pruned;
 }
 
-std::vector<int> SortedCharIds(const EventBonus& event_bonus) {
-  std::multimap<float, int, std::greater<>> sorted_ids;
-  for (int char_id : UniqueCharacterIds()) {
-    sorted_ids.emplace(event_bonus.MaxDeckBonusForChar(char_id), char_id);
-  }
-  std::vector<int> ids;
-  for (const auto& [unused, id] : sorted_ids) {
-    ids.push_back(id);
-  }
-  return ids;
-}
-
 uint64_t PrunedProgress(std::span<const int> char_ids,
                         std::span<const std::vector<const Card*>> new_pools,
                         std::span<const std::vector<const Card*>> orig_pools,
@@ -130,11 +118,11 @@ uint64_t PrunedProgress(std::span<const int> char_ids,
 
 }  // namespace
 
-std::vector<Team> EventTeamBuilder::RecommendTeams(std::span<const Card* const> pool,
-                                                   const Profile& profile,
-                                                   const EventBonus& event_bonus,
-                                                   const Estimator& estimator,
-                                                   std::optional<absl::Time> deadline) {
+std::vector<Team> EventTeamBuilder::RecommendTeamsImpl(std::span<const Card* const> pool,
+                                                       const Profile& profile,
+                                                       const EventBonus& event_bonus,
+                                                       const Estimator& estimator,
+                                                       std::optional<absl::Time> deadline) {
   ABSL_CHECK_LE(CharacterArraySize(), kCharacterArraySize);
   BS::thread_pool thread_pool;
 
@@ -147,10 +135,8 @@ std::vector<Team> EventTeamBuilder::RecommendTeams(std::span<const Card* const> 
   }
 
   // Sort cards per char first.
-  std::array<std::vector<const Card*>, kCharacterArraySize> char_pools;
-  for (const Card* card : pool) {
-    char_pools[card->character_id()].push_back(card);
-  }
+  std::array<std::vector<const Card*>, kCharacterArraySize> char_pools =
+      PartitionCardPoolByCharacters(pool);
   std::array<std::vector<const Card*>, kCharacterArraySize> orig_char_pools = char_pools;
 
   std::unique_ptr<indicators::ProgressBar> bar;
@@ -166,11 +152,19 @@ std::vector<Team> EventTeamBuilder::RecommendTeams(std::span<const Card* const> 
   }
 
   int char_combs_evaluated = 0;
-  std::vector<int> sorted_char_ids = SortedCharIds(event_bonus);
+  std::vector<int> sorted_char_ids = SortCharactersByMaxEventBonus(event_bonus);
   // TODO: add variant that search near the first
   Combinations<int, 5>{
       sorted_char_ids,
       [&](std::span<const int> candidate_chars) {
+        Character chars_present;
+        for (int char_id : candidate_chars) {
+          chars_present.set(char_id);
+        }
+        if (!constraints_.CharacterSetSatisfiesConstraint(chars_present)) {
+          return true;
+        }
+
         // TODO: extract to fn
         bool should_prune = opts_.prune_every_n_steps > 0 && best_ep_ > 0 &&
                             char_combs_evaluated % opts_.prune_every_n_steps == 0;
@@ -236,7 +230,7 @@ std::vector<Team> EventTeamBuilder::RecommendTeams(std::span<const Card* const> 
                     std::array<std::span<const Card* const>, 5>{
                         char_pools[char_ids[0]], char_pools[char_ids[1]], char_pools[char_ids[2]],
                         char_pools[char_ids[3]], char_pools[char_ids[4]]},
-                    [&local_teams_considered, &local_teams_evaluated, &local_best_ep,
+                    [this, &local_teams_considered, &local_teams_evaluated, &local_best_ep,
                      &local_best_team, &local_estimator, &profile,
                      &event_bonus](const std::array<const Card*, 5>& candidate_cards) {
                       ++local_teams_considered;
@@ -251,14 +245,26 @@ std::vector<Team> EventTeamBuilder::RecommendTeams(std::span<const Card* const> 
                         return true;
                       }
 
-                      if (entry.lower_bound > local_best_ep) {
+                      if (entry.lower_bound > local_best_ep &&
+                          !constraints_.HasLeadSkillConstraint()) {
                         local_best_ep = entry.lower_bound;
                         local_best_team = candidate_team;
                         return true;
                       }
 
                       ++local_teams_evaluated;
-                      int skill_value = candidate_team.MaxSkillValue();
+                      int skill_value;
+                      if (!constraints_.empty()) {
+                        Team::SkillValueDetail skill_value_detail =
+                            candidate_team.ConstrainedMaxSkillValue(constraints_);
+                        if (!constraints_.LeadSkillSatisfiesConstraint(
+                                skill_value_detail.lead_skill)) {
+                          return true;
+                        }
+                        skill_value = skill_value_detail.skill_value;
+                      } else {
+                        skill_value = candidate_team.MaxSkillValue();
+                      }
                       double candidate_ep =
                           local_estimator.ExpectedEp(power, eb, skill_value, skill_value);
                       if (candidate_ep > local_best_ep) {

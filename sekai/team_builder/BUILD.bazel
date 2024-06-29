@@ -13,11 +13,25 @@ cc_library(
 )
 
 cc_library(
+    name = "constraints",
+    srcs = ["constraints.cc"],
+    hdrs = ["constraints.h"],
+    deps = [
+        "//sekai:bitset",
+        "//sekai:card",
+        "//sekai/proto:constraints_cc_proto",
+        "@abseil-cpp//absl/base:nullability",
+        "@abseil-cpp//absl/log:absl_check",
+    ],
+)
+
+cc_library(
     name = "max_bonus_team_builder",
     srcs = ["max_bonus_team_builder.cc"],
     hdrs = ["max_bonus_team_builder.h"],
     deps = [
-        ":team_builder",
+        ":pool_utils",
+        ":team_builder_base",
         "//sekai:array_size",
         "//sekai:card",
         "//sekai:combinations",
@@ -36,7 +50,8 @@ cc_library(
     hdrs = ["event_team_builder.h"],
     deps = [
         ":card_pruning",
-        ":team_builder",
+        ":pool_utils",
+        ":team_builder_base",
         "//sekai:array_size",
         "//sekai:card",
         "//sekai:combinations",
@@ -58,7 +73,7 @@ cc_library(
     srcs = ["naive_team_builder.cc"],
     hdrs = ["naive_team_builder.h"],
     deps = [
-        ":team_builder",
+        ":team_builder_base",
         "//sekai:array_size",
         "//sekai:bitset",
         "//sekai:card",
@@ -69,6 +84,31 @@ cc_library(
         "//sekai:team",
         "@abseil-cpp//absl/log:absl_check",
         "@abseil-cpp//absl/time",
+    ],
+)
+
+cc_library(
+    name = "pool_utils",
+    srcs = ["pool_utils.cc"],
+    hdrs = ["pool_utils.h"],
+    deps = [
+        "//sekai:array_size",
+        "//sekai:card",
+    ],
+)
+
+cc_test(
+    name = "pool_utils_test",
+    srcs = ["pool_utils_test.cc"],
+    data = [
+        "//data:flat-db",
+    ],
+    deps = [
+        ":pool_utils",
+        "//sekai:array_size",
+        "//sekai/db:master_db",
+        "//testing:test_main",
+        "@googletest//:gtest",
     ],
 )
 
@@ -85,6 +125,57 @@ cc_library(
     ],
 )
 
+cc_library(
+    name = "team_builder_base",
+    hdrs = ["team_builder_base.h"],
+    deps = [
+        ":constraints",
+        ":team_builder",
+    ],
+)
+
+cc_test(
+    name = "constraints_test",
+    srcs = ["constraints_test.cc"],
+    data = [
+        "//data:flat-db",
+    ],
+    deps = [
+        ":constraints",
+        "//sekai:bitset",
+        "//sekai/db:master_db",
+        "//sekai/proto:constraints_cc_proto",
+        "//testing:test_main",
+        "//testing:util",
+        "@googletest//:gtest",
+    ],
+)
+
+cc_test(
+    name = "constraint_correctness_test",
+    srcs = ["constraint_correctness_test.cc"],
+    data = [
+        "//data:flat-db",
+    ],
+    deps = [
+        ":constraints",
+        ":event_team_builder",
+        ":max_bonus_team_builder",
+        ":naive_team_builder",
+        "//sekai:card",
+        "//sekai:estimator",
+        "//sekai:profile",
+        "//sekai:team",
+        "//sekai/db:master_db",
+        "//sekai/proto:constraints_cc_proto",
+        "//sekai/proto:event_id_cc_proto",
+        "//sekai/proto:profile_cc_proto",
+        "//testing:test_main",
+        "//testing:util",
+        "@googletest//:gtest",
+    ],
+)
+
 cc_test(
     name = "team_builder_benchmark",
     srcs = ["team_builder_benchmark.cc"],
@@ -95,6 +186,7 @@ cc_test(
         ":event_team_builder",
         ":max_bonus_team_builder",
         ":naive_team_builder",
+        ":team_builder_base",
         "//sekai:card",
         "//sekai:estimator",
         "//sekai:event_bonus",

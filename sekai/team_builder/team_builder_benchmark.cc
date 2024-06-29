@@ -21,7 +21,7 @@
 #include "sekai/team_builder/event_team_builder.h"
 #include "sekai/team_builder/max_bonus_team_builder.h"
 #include "sekai/team_builder/naive_team_builder.h"
-#include "sekai/team_builder/team_builder.h"
+#include "sekai/team_builder/team_builder_base.h"
 #include "testing/util.h"
 
 namespace sekai {
@@ -191,7 +191,7 @@ class TeamReporter {
 };
 TeamReporter kTeamReporter;
 
-void RunBenchmark(absl::AnyInvocable<std::unique_ptr<TeamBuilder>() const> make_builder,
+void RunBenchmark(absl::AnyInvocable<std::unique_ptr<TeamBuilderBase>() const> make_builder,
                   benchmark::State& state) {
   Profile profile{TestProfile()};
   EventBonus event_bonus = GetEventBonus();
@@ -200,7 +200,7 @@ void RunBenchmark(absl::AnyInvocable<std::unique_ptr<TeamBuilder>() const> make_
   std::vector<const Card*> pool = MakePool(cards);
   TeamProto best_team;
   for (auto _ : state) {
-    std::unique_ptr<TeamBuilder> builder = make_builder();
+    std::unique_ptr<TeamBuilderBase> builder = make_builder();
     std::vector<Team> teams = builder->RecommendTeams(pool, profile, event_bonus, estimator);
     state.PauseTiming();
     state.counters["Considered"] = builder->stats().teams_considered;

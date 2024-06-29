@@ -68,7 +68,7 @@ int main(int argc, char** argv) {
     // 05 - Minori   06 - Haruka  07 - Airi    08 - Shizuku
     // 09 - Kohane   10 - An      11 - Akito   12 - Toya
     // 13 - Tsukasa  14 - Emu     15 - Nene    16 - Rui
-    // 17 - Kanade   18 - Mafuyu  19 - Ena     20 - Mizuku
+    // 17 - Kanade   18 - Mafuyu  19 - Ena     20 - Mizuki
     // 21 - Miku     22 - Rin     23 - Len     24 - Luka
     // 25 - MEIKO    26 - KAITO
     SimpleEventBonus simple_event_bonus = sekai::ParseTextProto<SimpleEventBonus>(R"pb(

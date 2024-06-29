@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package sekai;
+
+import "sekai/db/proto/enums.proto";
+
+message TeamConstraints {
+  // The character IDs of acceptable leads. If empty, any lead is acceptable.
+  repeated int32 lead_char_ids = 1;
+
+  // The list of desired kizuna pairs for lead/sublead positions. If empty, any
+  // pairs are acceptable.
+  message KizunaPair {
+    int32 char_1 = 1;
+    int32 char_2 = 2;
+  }
+  repeated KizunaPair kizuna_pairs = 2;
+
+  // The minimum desired lead skill value. If unspecified, any lead skill value is acceptable.
+  int32 min_lead_skill = 3;
+
+  // The list of card rarities to exclude from consideration. If empty, any card is considered.
+  repeated db.CardRarityType exclude_rarities = 4;
+}

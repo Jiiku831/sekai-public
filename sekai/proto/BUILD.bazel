@@ -26,6 +26,19 @@ cc_proto_library(
 )
 
 proto_library(
+    name = "constraints_proto",
+    srcs = ["constraints.proto"],
+    deps = [
+        "//sekai/db/proto:enums_proto",
+    ],
+)
+
+cc_proto_library(
+    name = "constraints_cc_proto",
+    deps = [":constraints_proto"],
+)
+
+proto_library(
     name = "event_bonus_proto",
     srcs = ["event_bonus.proto"],
     deps = ["//sekai/db/proto:enums_proto"],
