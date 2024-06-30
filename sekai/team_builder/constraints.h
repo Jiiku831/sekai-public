@@ -38,6 +38,9 @@ class Constraints {
 
   bool HasLeadSkillConstraint() const { return min_lead_skill_ > 0; }
 
+  int min_lead_skill() const { return min_lead_skill_; }
+  std::span<const Character> kizuna_pairs() const { return kizuna_pairs_; }
+
  private:
   bool empty_ = true;
   Character lead_chars_;

@@ -285,6 +285,7 @@ cc_library(
         "//sekai/db:master_db",
         "//sekai/db/proto:all",
         "//sekai/proto:team_cc_proto",
+        "//sekai/team_builder:constraints",
         "@eigen",
     ],
 )

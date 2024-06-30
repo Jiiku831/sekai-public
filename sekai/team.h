@@ -11,6 +11,7 @@
 #include "sekai/event_bonus.h"
 #include "sekai/profile.h"
 #include "sekai/proto/team.pb.h"
+#include "sekai/team_builder/constraints.h"
 
 namespace sekai {
 
@@ -27,6 +28,7 @@ class Team {
 
   int Power(const Profile& profile) const;
   Eigen::Vector4i PowerDetailed(const Profile& profile) const;
+  int MinPowerContrib(const Profile& profile) const;
 
   float EventBonus() const { return event_bonus_base_; }
   float EventBonus(const class EventBonus& event_bonus) const;
@@ -35,11 +37,15 @@ class Team {
   int SkillValue() const;
   int MaxSkillValue() const;
   void ReorderTeamForOptimalSkillValue();
+  void ReorderTeamForOptimalSkillValue(const Constraints& constraints);
+  void ReorderTeamForOptimalSkillValue(Character eligible_leads);
+  void ReorderTeamForKizuna(std::span<const Character> kizuna_pairs);
 
   struct SkillValueDetail {
     int lead_skill;
     int skill_value;
   };
+  SkillValueDetail ConstrainedMaxSkillValue(const Constraints& constraints) const;
   SkillValueDetail ConstrainedMaxSkillValue(Character eligible_leads) const;
 
   TeamProto ToProto(const Profile& profile, const class EventBonus& event_bonus,
@@ -60,6 +66,7 @@ class Team {
   bool attr_match_ = false;
   bool primary_units_match_ = false;
   bool secondary_units_match_ = false;
+  Character chars_present_;
 };
 
 }  // namespace sekai

@@ -192,6 +192,18 @@ class TeamTest : public ::testing::Test {
   Profile alt_profile_{AltTestProfile()};
 };
 
+TEST_F(TeamTest, ExampleTeam1MinPowerContrib) {
+  std::array cards = {
+      CreateCard(alt_profile_, /*card_id=*/404, /*level=*/60, /*master_rank=*/5),
+      CreateCard(alt_profile_, /*card_id=*/139, /*level=*/60),
+      CreateCard(alt_profile_, /*card_id=*/115, /*level=*/60),
+      CreateCard(alt_profile_, /*card_id=*/511, /*level=*/60),
+      CreateCard(alt_profile_, /*card_id=*/787, /*level=*/60),
+  };
+  Team team = MakeTeam(cards);
+  EXPECT_EQ(team.MinPowerContrib(alt_profile_), 53006);
+}
+
 TEST_F(TeamTest, ExampleTeam1Power) {
   std::array cards = {
       CreateCard(alt_profile_, /*card_id=*/404, /*level=*/60, /*master_rank=*/5),
@@ -377,6 +389,73 @@ TEST_F(TeamTest, ExampleTeam1ConstrainedMaxSkillValueAlt) {
   Team::SkillValueDetail skill_value = team.ConstrainedMaxSkillValue(eligible_leads);
   EXPECT_EQ(skill_value.lead_skill, 130);
   EXPECT_EQ(skill_value.skill_value, 130 + (100 + 105 + 110 + 110) / 5);
+}
+
+TEST_F(TeamTest, ExampleTeam1ReorderTeamWithConstraint) {
+  std::array cards = {
+      CreateCard(profile_, /*card_id=*/495, /*level=*/60, /*master_rank=*/0, /*skill_level=*/1),
+      CreateCard(profile_, /*card_id=*/535, /*level=*/60, /*master_rank=*/0, /*skill_level=*/2),
+      CreateCard(profile_, /*card_id=*/259, /*level=*/60, /*master_rank=*/0, /*skill_level=*/3),
+      CreateCard(profile_, /*card_id=*/622, /*level=*/60, /*master_rank=*/5, /*skill_level=*/4),
+      CreateCard(profile_, /*card_id=*/224, /*level=*/60),
+  };
+  Team team = MakeTeam(cards);
+  Constraints constraints;
+  constraints.AddLeadChar(cards[2].character_id());
+  team.ReorderTeamForOptimalSkillValue(constraints);
+  EXPECT_EQ(team.cards()[0], &cards[2]);
+}
+
+TEST_F(TeamTest, ExampleTeam1ReorderTeamWithConstraintAlt) {
+  std::array cards = {
+      CreateCard(profile_, /*card_id=*/495, /*level=*/60, /*master_rank=*/0, /*skill_level=*/1),
+      CreateCard(profile_, /*card_id=*/535, /*level=*/60, /*master_rank=*/0, /*skill_level=*/2),
+      CreateCard(profile_, /*card_id=*/259, /*level=*/60, /*master_rank=*/0, /*skill_level=*/3),
+      CreateCard(profile_, /*card_id=*/622, /*level=*/60, /*master_rank=*/5, /*skill_level=*/4),
+      CreateCard(profile_, /*card_id=*/224, /*level=*/60),
+  };
+  Team team = MakeTeam(cards);
+  Constraints constraints;
+  constraints.AddLeadChar(cards[2].character_id());
+  constraints.AddLeadChar(cards[3].character_id());
+  team.ReorderTeamForOptimalSkillValue(constraints);
+  EXPECT_EQ(team.cards()[0], &cards[3]);
+}
+
+TEST_F(TeamTest, ExampleTeam1ReorderTeamWithKizunaConstraint) {
+  std::array cards = {
+      CreateCard(profile_, /*card_id=*/495, /*level=*/60, /*master_rank=*/0, /*skill_level=*/1),
+      CreateCard(profile_, /*card_id=*/535, /*level=*/60, /*master_rank=*/0, /*skill_level=*/2),
+      CreateCard(profile_, /*card_id=*/259, /*level=*/60, /*master_rank=*/0, /*skill_level=*/3),
+      CreateCard(profile_, /*card_id=*/622, /*level=*/60, /*master_rank=*/5, /*skill_level=*/4),
+      CreateCard(profile_, /*card_id=*/224, /*level=*/60),
+  };
+  Team team = MakeTeam(cards);
+  Constraints constraints;
+  constraints.AddLeadChar(cards[2].character_id());
+  constraints.AddKizunaPair({cards[2].character_id(), cards[4].character_id()});
+  team.ReorderTeamForOptimalSkillValue(constraints);
+  EXPECT_EQ(team.cards()[0], &cards[2]);
+  EXPECT_EQ(team.cards()[1], &cards[4]);
+}
+
+TEST_F(TeamTest, ExampleTeam1ReorderTeamWithKizunaConstraintAlt) {
+  std::array cards = {
+      CreateCard(profile_, /*card_id=*/495, /*level=*/60, /*master_rank=*/0, /*skill_level=*/1),
+      CreateCard(profile_, /*card_id=*/535, /*level=*/60, /*master_rank=*/0, /*skill_level=*/2),
+      CreateCard(profile_, /*card_id=*/259, /*level=*/60, /*master_rank=*/0, /*skill_level=*/3),
+      CreateCard(profile_, /*card_id=*/622, /*level=*/60, /*master_rank=*/5, /*skill_level=*/4),
+      CreateCard(profile_, /*card_id=*/224, /*level=*/60),
+  };
+  Team team = MakeTeam(cards);
+  Constraints constraints;
+  constraints.AddLeadChar(cards[2].character_id());
+  constraints.AddKizunaPair({cards[2].character_id(), cards[4].character_id()});
+  constraints.AddLeadChar(cards[3].character_id());
+  constraints.AddKizunaPair({cards[3].character_id(), cards[4].character_id()});
+  team.ReorderTeamForOptimalSkillValue(constraints);
+  EXPECT_EQ(team.cards()[0], &cards[3]);
+  EXPECT_EQ(team.cards()[1], &cards[4]);
 }
 
 }  // namespace
