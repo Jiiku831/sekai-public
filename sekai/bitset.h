@@ -8,6 +8,7 @@
 #include "absl/strings/str_format.h"
 #include "absl/strings/str_join.h"
 #include "sekai/db/proto/enums.pb.h"
+#include "sekai/db/proto/skill.pb.h"
 
 namespace sekai {
 
@@ -119,13 +120,14 @@ class ProtoEnumBitset {
 #undef BITSET_FORWARD_COPYING_BINARY_OP
 #undef BITSET_FORWARD_COPYING_SHIFT_OP
 
-#define DECLARE_BITSET(name) \
-  using name = ProtoEnumBitset<db::name, db::name##_ARRAYSIZE, db::name##_descriptor>;
+#define DECLARE_BITSET(bitset_name, name) \
+  using bitset_name = ProtoEnumBitset<name, name##_ARRAYSIZE, name##_descriptor>;
 
-DECLARE_BITSET(Attr)
-DECLARE_BITSET(CardParameterType)
-DECLARE_BITSET(CardRarityType)
-DECLARE_BITSET(Unit)
+DECLARE_BITSET(Attr, db::Attr)
+DECLARE_BITSET(CardParameterType, db::CardParameterType)
+DECLARE_BITSET(CardRarityType, db::CardRarityType)
+DECLARE_BITSET(Unit, db::Unit)
+DECLARE_BITSET(SkillEffectType, db::SkillEffect::Type)
 
 #undef DECLARE_BITSET
 

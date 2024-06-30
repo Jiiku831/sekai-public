@@ -10,6 +10,14 @@ message CardProto {
   optional db.Card db_card = 2;
   optional CardState state = 3;
 
+  enum SkillState {
+    UNKNOWN_SKILL_STATE = 0;
+    PRIMARY_SKILL_ONLY  = 1;
+    USE_PRIMARY_SKILL   = 2;
+    USE_SECONDARY_SKILL = 3;
+  }
+  optional SkillState skill_state = 7;
+
   // Only makes sense in a team
   optional int32 team_power_contrib = 4;
   optional float team_bonus_contrib = 5;

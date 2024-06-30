@@ -10,7 +10,10 @@
 #include "sekai/db/master_db.h"
 #include "sekai/db/proto/all.h"
 #include "sekai/event_bonus.h"
+#include "sekai/profile.h"
 #include "sekai/proto/card_state.pb.h"
+#include "sekai/proto/profile.pb.h"
+#include "sekai/unit_count.h"
 #include "testing/util.h"
 
 namespace sekai {
@@ -18,6 +21,78 @@ namespace {
 
 using ::sekai::db::MasterDb;
 using ::testing::ParseTextProto;
+
+ProfileProto TestProfile() {
+  // clang-format off
+  return ParseTextProto<ProfileProto>(R"pb(
+    area_item_levels: [
+      # Offset (ignored)
+      0,
+      # LN chars
+      15, 15, 15, 15,
+      # MMJ chars
+      10, 10, 10, 10,
+      # VBS chars
+      10, 10, 10, 10,
+      # WXS chars
+      10, 10, 10, 10,
+      # 25ji chars
+      10, 10, 10, 10,
+      # Miku items
+      15, 15, 15, 15, 15,
+      # Rin item
+      15,
+      # Len item
+      15,
+      # Luka item
+      15,
+      # KAITO item
+      15,
+      # MEIKO item
+      15,
+      # LN unit
+      15, 15,
+      # MMJ unit
+      10, 10,
+      # VBS unit
+      10, 10,
+      # WXS unit
+      10, 10,
+      # 25ji unit
+      10, 10,
+      # VS unit
+      15, 15, 15, 15, 15,
+      # Cool plant (miyajo first)
+      9, 9,
+      # Cute plant
+      15, 15,
+      # Pure plant
+      15, 15,
+      # Happy plant
+      15, 10,
+      # Mysterious plant
+      9, 8
+    ]
+    character_ranks: [
+      # Offset (ignored)
+      0,
+      # LN
+      55, 73, 54, 53,
+      # MMJ
+      44, 47, 44, 41,
+      # VBS
+      47, 41, 43, 41,
+      # WXS
+      43, 43, 42, 41,
+      # 25ji
+      45, 42, 44, 46,
+      # VS
+      109, 52, 52, 54, 53, 50
+    ]
+    bonus_power: 270
+  )pb");
+  // clang-format on
+}
 
 TEST(CardTest, TestCard1Power) {
   const db::Card& card1 = MasterDb::FindFirst<db::Card>(1);
@@ -56,7 +131,7 @@ TEST(CardTest, TestCard1Skill) {
   for (int i = 1; i <= 4; ++i) {
     state.set_skill_level(i);
     Card card{card1, state};
-    EXPECT_EQ(card.raw_skill_value(), expected[i - 1]);
+    EXPECT_EQ(card.MaxSkillValue(), expected[i - 1]);
   }
 }
 
@@ -67,7 +142,7 @@ TEST(CardTest, TestCard289SkillConditionLife) {
   for (int i = 1; i <= 4; ++i) {
     state.set_skill_level(i);
     Card card{card1, state};
-    EXPECT_EQ(card.raw_skill_value(), expected[i - 1]);
+    EXPECT_EQ(card.MaxSkillValue(), expected[i - 1]);
   }
 }
 
@@ -78,18 +153,18 @@ TEST(CardTest, TestCard290SkillKeep) {
   for (int i = 1; i <= 4; ++i) {
     state.set_skill_level(i);
     Card card{card1, state};
-    EXPECT_EQ(card.raw_skill_value(), expected[i - 1]);
+    EXPECT_EQ(card.MaxSkillValue(), expected[i - 1]);
   }
 }
 
 TEST(CardTest, TestCard707SkillUnit) {
   const db::Card& card1 = MasterDb::FindFirst<db::Card>(707);
-  std::array expected = {80, 85, 90, 100};
+  std::array expected = {130, 135, 140, 150};
   CardState state;
   for (int i = 1; i <= 4; ++i) {
     state.set_skill_level(i);
     Card card{card1, state};
-    EXPECT_EQ(card.raw_skill_value(), expected[i - 1]);
+    EXPECT_EQ(card.MaxSkillValue(), expected[i - 1]);
   }
 }
 
@@ -101,17 +176,15 @@ TEST(CardTest, TestCard707SkillUnitBonus) {
 
   std::array expected = {100, 110, 120, 130, 150};
   for (int i = 0; i < 5; ++i) {
-    bool unit_count_populated = false;
-    std::array<int, db::Unit_ARRAYSIZE> unit_count{};
     std::vector<const Card*> cards;
-
     for (int j = 0; j < 5; j++) {
       cards.push_back((j <= i) ? &card : &card_no_match);
     }
-    EXPECT_EQ(card.SkillValue(UnitCount{unit_count_populated, unit_count, cards}), expected[i]);
-    EXPECT_TRUE(unit_count_populated);
-    EXPECT_EQ(unit_count[db::UNIT_WXS], i + 1);
-    EXPECT_EQ(unit_count[db::UNIT_LN], 4 - i);
+
+    UnitCount unit_count(cards);
+    EXPECT_EQ(card.SkillValue(unit_count), expected[i]);
+    EXPECT_EQ(unit_count.CharacterCount(db::UNIT_WXS), i + 1);
+    EXPECT_EQ(unit_count.CharacterCount(db::UNIT_LN), 4 - i);
   }
 }
 
@@ -218,6 +291,112 @@ TEST(CardTest, TestIsUnitRegularUnit) {
   EXPECT_FALSE(card784.IsUnit(db::UNIT_LN));
   EXPECT_FALSE(card784.IsUnit(db::UNIT_MMJ));
   EXPECT_TRUE(card784.IsUnit(db::UNIT_VS));
+}
+
+TEST(CardTest, SecondarySkillWithUnitCountPrimary) {
+  CardState state;
+  state.set_skill_level(4);
+  state.set_special_training(true);
+
+  Card card_special{MasterDb::FindFirst<db::Card>(950), state};
+  Card card_wxs{MasterDb::FindFirst<db::Card>(707), state};
+  Card card_ln{MasterDb::FindFirst<db::Card>(622), state};
+  Card card_vbs{MasterDb::FindFirst<db::Card>(600), state};
+
+  std::vector<const Card*> cards = {
+      &card_special, &card_wxs, &card_wxs, &card_vbs, &card_ln,
+  };
+  UnitCount unit_count(cards);
+  EXPECT_EQ(card_special.SkillValue(unit_count), 150);
+  EXPECT_EQ(card_special.MaxSkillValue(), 160);
+
+  ProfileProto profile_proto = TestProfile();
+  profile_proto.set_character_ranks(25, 82);
+  Profile profile(profile_proto);
+  card_special.ApplyProfilePowerBonus(profile);
+  unit_count = UnitCount(cards);
+  EXPECT_EQ(card_special.SkillValue(unit_count), 151);
+  EXPECT_EQ(card_special.MaxSkillValue(), 160);
+}
+
+TEST(CardTest, SecondarySkillWithUnitCountPrimaryNoSpecialTraining) {
+  CardState state;
+  state.set_skill_level(4);
+  state.set_special_training(false);
+
+  Card card_special{MasterDb::FindFirst<db::Card>(950), state};
+  Card card_wxs{MasterDb::FindFirst<db::Card>(707), state};
+  Card card_ln{MasterDb::FindFirst<db::Card>(622), state};
+  Card card_vbs{MasterDb::FindFirst<db::Card>(600), state};
+
+  std::vector<const Card*> cards = {
+      &card_special, &card_wxs, &card_wxs, &card_vbs, &card_ln,
+  };
+  UnitCount unit_count(cards);
+  EXPECT_EQ(card_special.SkillValue(unit_count), 150);
+  EXPECT_EQ(card_special.MaxSkillValue(), 150);
+
+  ProfileProto profile_proto = TestProfile();
+  profile_proto.set_character_ranks(25, 82);
+  Profile profile(profile_proto);
+  card_special.ApplyProfilePowerBonus(profile);
+  unit_count = UnitCount(cards);
+  EXPECT_EQ(card_special.SkillValue(unit_count), 150);
+  EXPECT_EQ(card_special.MaxSkillValue(), 150);
+}
+
+TEST(CardTest, SecondarySkillWithReferenceBoostPrimary) {
+  CardState state;
+  state.set_skill_level(4);
+  state.set_special_training(true);
+
+  Card card_special{MasterDb::FindFirst<db::Card>(949), state};
+  Card card_1{MasterDb::FindFirst<db::Card>(4), state};    // 100%
+  Card card_2{MasterDb::FindFirst<db::Card>(88), state};   // 120%
+  Card card_3{MasterDb::FindFirst<db::Card>(622), state};  // 150%
+  Card card_4{MasterDb::FindFirst<db::Card>(802), state};  // 100%
+
+  std::vector<const Card*> cards = {
+      &card_special, &card_1, &card_2, &card_3, &card_4,
+  };
+  UnitCount unit_count(cards);
+  EXPECT_FLOAT_EQ(card_special.SkillValue(unit_count), 80 + 57.5);
+  EXPECT_EQ(card_special.MaxSkillValue(), 160);
+
+  ProfileProto profile_proto = TestProfile();
+  profile_proto.set_character_ranks(17, 56);
+  Profile profile(profile_proto);
+  card_special.ApplyProfilePowerBonus(profile);
+  unit_count = UnitCount(cards);
+  EXPECT_EQ(card_special.SkillValue(unit_count), 80 + 58);
+  EXPECT_EQ(card_special.MaxSkillValue(), 160);
+}
+
+TEST(CardTest, SecondarySkillWithReferenceBoostPrimaryNoSpecialTraining) {
+  CardState state;
+  state.set_skill_level(4);
+  state.set_special_training(false);
+
+  Card card_special{MasterDb::FindFirst<db::Card>(949), state};
+  Card card_1{MasterDb::FindFirst<db::Card>(4), state};    // 100%
+  Card card_2{MasterDb::FindFirst<db::Card>(88), state};   // 120%
+  Card card_3{MasterDb::FindFirst<db::Card>(622), state};  // 150%
+  Card card_4{MasterDb::FindFirst<db::Card>(802), state};  // 100%
+
+  std::vector<const Card*> cards = {
+      &card_special, &card_1, &card_2, &card_3, &card_4,
+  };
+  UnitCount unit_count(cards);
+  EXPECT_FLOAT_EQ(card_special.SkillValue(unit_count), 80 + 57.5);
+  EXPECT_EQ(card_special.MaxSkillValue(), 150);
+
+  ProfileProto profile_proto = TestProfile();
+  profile_proto.set_character_ranks(17, 56);
+  Profile profile(profile_proto);
+  card_special.ApplyProfilePowerBonus(profile);
+  unit_count = UnitCount(cards);
+  EXPECT_FLOAT_EQ(card_special.SkillValue(unit_count), 80 + 57.5);
+  EXPECT_EQ(card_special.MaxSkillValue(), 150);
 }
 
 }  // namespace

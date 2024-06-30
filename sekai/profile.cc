@@ -80,6 +80,7 @@ Profile::Profile()
     : attr_bonus_(),
       char_bonus_(CharacterArraySize()),
       cr_bonus_(CharacterArraySize()),
+      character_rank_(CharacterArraySize()),
       unit_bonus_() {}
 
 Profile::Profile(const ProfileProto& profile) : Profile() {
@@ -90,6 +91,16 @@ Profile::Profile(const ProfileProto& profile) : Profile() {
   for (auto& [unused_id, card] : cards_) {
     card.ApplyProfilePowerBonus(*this);
   }
+
+  for (int char_id : UniqueCharacterIds()) {
+    ABSL_CHECK_LT(char_id, static_cast<int>(profile.character_ranks_size()));
+    character_rank_[char_id] = profile.character_ranks(char_id);
+  }
+}
+
+int Profile::character_rank(int char_id) const {
+  ABSL_CHECK_LT(char_id, static_cast<int>(character_rank_.size()));
+  return character_rank_[char_id];
 }
 
 void Profile::LoadCardsFromCsv(std::filesystem::path path) {

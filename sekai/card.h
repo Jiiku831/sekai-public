@@ -5,11 +5,15 @@
 #include <Eigen/Eigen>
 
 #include "sekai/bitset.h"
+#include "sekai/card_base.h"
+#include "sekai/config.h"
 #include "sekai/db/proto/all.h"
 #include "sekai/event_bonus.h"
 #include "sekai/profile_bonus.h"
 #include "sekai/proto/card.pb.h"
 #include "sekai/proto/card_state.pb.h"
+#include "sekai/skill.h"
+#include "sekai/unit_count_base.h"
 
 namespace sekai {
 
@@ -17,35 +21,18 @@ int MaxLevelForRarity(db::CardRarityType rarity);
 bool TrainableCard(db::CardRarityType rarity);
 CardState CreateMaxCardState(int card_id);
 
-class Card;
-
-struct UnitCount {
-  bool& unit_count_populated;
-  std::array<int, db::Unit_ARRAYSIZE>& unit_count;
-  std::span<const Card* const> cards;
-
-  int operator()(db::Unit unit);
-};
-
-class Card {
+class Card : public CardBase {
  public:
   Card(const db::Card& card, const CardState& state);
 
   int card_id() const { return card_id_; }
   int character_id() const { return character_id_; }
 
-  int SkillValue(UnitCount unit_count) const;
-  int raw_skill_value() const { return skill_value_; }
-
-  db::Attr db_attr() const { return db_attr_; }
-  db::Unit db_primary_unit() const { return db_primary_unit_; }
-  db::Unit db_secondary_unit() const { return db_secondary_unit_; }
-
-  const Attr& attr() const { return attr_; }
-  const Unit& primary_unit() const { return primary_unit_; }
-  const Unit& secondary_unit() const { return secondary_unit_; }
-  bool has_subunit() const { return has_subunit_; }
-  bool IsUnit(db::Unit unit) const;
+  float SkillValue(UnitCountBase& unit_count) const;
+  float MaxSkillValue() const;
+  float ReferenceBoostCappedMaxSkillValue() const {
+    return std::min(kReferenceScoreBoostCap, MaxSkillValue());
+  }
 
   void ApplyEventBonus(const EventBonus& event_bonus, const SupportUnitEventBonus& support_bonus);
   void ApplyEventBonus(const EventBonus& event_bonus) {
@@ -71,40 +58,27 @@ class Card {
 
   db::CardRarityType db_rarity() const { return db_rarity_; }
 
-  CardProto ToProto() const;
+  CardProto ToProto(UnitCountBase& unit_count) const;
 
  private:
-  // Card attributes
-  const db::Card& db_card_;
-  CardState state_;
-  int card_id_ = 0;
-  int character_id_ = 0;
-  bool has_subunit_ = false;
-  Attr attr_;
-  db::Attr db_attr_ = db::ATTR_UNKNOWN;
-  Unit primary_unit_;
-  Unit secondary_unit_;
-  db::Unit char_unit_ = db::UNIT_NONE;
-  db::Unit db_primary_unit_ = db::UNIT_NONE;
-  db::Unit support_unit_ = db::UNIT_NONE;
-  db::Unit db_secondary_unit_ = db::UNIT_NONE;
-  CardRarityType rarity_;
-  db::CardRarityType db_rarity_ = db::RARITY_UNKNOWN;
-
   // Card state
-  Eigen::Vector3i power_vec_{0, 0, 0};
-  int power_ = 0;
-  int skill_value_ = 0;
-  Unit skill_enhance_unit_;
-  db::Unit db_skill_enhance_unit_ = db::UNIT_NONE;
-  int skill_enhance_value_;
+  CardState state_;
   int master_rank_ = 0;
   int skill_level_ = 1;
+
+  // Derived stats (power, skill, bonus) from card state
+  Eigen::Vector3i power_vec_{0, 0, 0};
+  int power_ = 0;
+
+  Skill skill_;
+  Skill secondary_skill_;
+  bool has_secondary_skill_ = false;
 
   float GetBonus(const EventBonus& event_bonus) const;
   float event_bonus_ = 0;
   float support_bonus_ = 0;
 
+  // Power bonus
   int cr_power_bonus_ = 0;
   // Index: (Attr, Primary Unit, Secondary Unit)
   std::array<std::array<std::array<int, 2>, 2>, 2> area_item_bonus_{};

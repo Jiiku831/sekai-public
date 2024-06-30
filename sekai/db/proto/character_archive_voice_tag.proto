@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message CharacterArchiveVoiceTag {
+  option (master_db_file) = "characterArchiveVoiceTags.json";
+  enum CharacterArchiveVoiceTagType {
+    UNKNOWN_CHARACTER_ARCHIVE_VOICE_TAG_TYPE = 0;
+    BIRTHDAY                                 = 1 [(json_value) = "birthday"];
+    LIVE_CUTIN                               = 2 [(json_value) = "live_cutin"];
+    LIVE_RESULT                              = 3 [(json_value) = "live_result"];
+    NORMAL                                   = 4 [(json_value) = "normal"];
+    SEASON                                   = 5 [(json_value) = "season"];
+  }
+
+  optional int32 id                                                      = 1 [(json_name) = "id"];
+  optional int32 seq                                                     = 2 [(json_name) = "seq"];
+  optional CharacterArchiveVoiceTagType character_archive_voice_tag_type = 3
+      [(json_name) = "characterArchiveVoiceTagType"];
+  optional string name = 4 [(json_name) = "name"];
+}

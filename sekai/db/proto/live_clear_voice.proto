@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message LiveClearVoice {
+  option (master_db_file) = "liveClearVoices.json";
+  enum LiveClearVoiceType {
+    UNKNOWN_LIVE_CLEAR_VOICE_TYPE = 0;
+    FULL_COMBO                    = 1 [(json_value) = "full_combo"];
+    FULL_PERFECT                  = 2 [(json_value) = "full_perfect"];
+    OVER_RANK_C                   = 3 [(json_value) = "over_rank_c"];
+    RANK_D                        = 4 [(json_value) = "rank_d"];
+  }
+
+  optional int32 id                                 = 1 [(json_name) = "id"];
+  optional int32 game_character_unit_id             = 2 [(json_name) = "gameCharacterUnitId"];
+  optional bool is_next_grade                       = 3 [(json_name) = "isNextGrade"];
+  optional LiveClearVoiceType live_clear_voice_type = 4 [(json_name) = "liveClearVoiceType"];
+  optional string voice_file_name                   = 5 [(json_name) = "voiceFileName"];
+}

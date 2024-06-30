@@ -2,8 +2,8 @@ syntax = "proto3";
 
 package sekai.db;
 
-import "sekai/db/proto/enums.proto";
 import "sekai/db/proto/descriptor.proto";
+import "sekai/db/proto/enums.proto";
 
 message Skill {
   option (master_db_file)                 = "skills.json";
@@ -19,6 +19,7 @@ enum ActivateEffectValueType {
   UNKNOWN_ACTIVATE_EFFECT_VALUE_TYPE = 0;
   ACTIVATE_EFFECT_FIXED              = 1 [(json_value) = "fixed"];
   ACTIVATE_EFFECT_RATE               = 2 [(json_value) = "rate"];
+  ACTIVATE_REFERENCE_RATE            = 3 [(json_value) = "reference_rate"];
 }
 
 message SkillEnhance {
@@ -42,12 +43,15 @@ message SkillEnhance {
 
 message SkillEffect {
   enum Type {
-    UNKNOWN_EFFECT_TYPE     = 0;
-    JUDGMENT_UP             = 1 [(json_value) = "judgment_up"];
-    LIFE_RECOVERY           = 2 [(json_value) = "life_recovery"];
-    SCORE_UP                = 3 [(json_value) = "score_up"];
-    SCORE_UP_CONDITION_LIFE = 4 [(json_value) = "score_up_condition_life"];
-    SCORE_UP_KEEP           = 5 [(json_value) = "score_up_keep"];
+    UNKNOWN_EFFECT_TYPE                  = 0;
+    JUDGMENT_UP                          = 1 [(json_value) = "judgment_up"];
+    LIFE_RECOVERY                        = 2 [(json_value) = "life_recovery"];
+    SCORE_UP                             = 3 [(json_value) = "score_up"];
+    SCORE_UP_CONDITION_LIFE              = 4 [(json_value) = "score_up_condition_life"];
+    SCORE_UP_KEEP                        = 5 [(json_value) = "score_up_keep"];
+    SCORE_UP_UNIT_COUNT                  = 6 [(json_value) = "score_up_unit_count"];
+    SCORE_UP_CHARACTER_RANK              = 7 [(json_value) = "score_up_character_rank"];
+    OTHER_MEMBER_SCORE_UP_REFERENCE_RATE = 8 [(json_value) = "other_member_score_up_reference_rate"];
   }
   enum ActivateNotesJudgmentType {
     UNKNOWN_ACTIVATE_NOTES_JUDGMENT_TYPE = 0;
@@ -62,8 +66,8 @@ message SkillEffect {
     optional float activate_effect_duration                     = 3 [(json_name) = "activateEffectDuration"];
     optional ActivateEffectValueType activate_effect_value_type = 4 [(json_name) = "activateEffectValueType"];
     optional int32 activate_effect_value                        = 5 [(json_name) = "activateEffectValue"];
+    optional int32 activate_effect_value2                       = 6 [(json_name) = "activateEffectValue2"];
   }
-
   enum ConditionType {
     UNKNOWN_CONDITION_TYPE = 0;
     EQUALS_OR_OVER         = 1 [(json_value) = "equals_or_over"];
@@ -75,4 +79,6 @@ message SkillEffect {
   optional int32 activate_life                                    = 5 [(json_name) = "activateLife"];
   optional ConditionType condition_type                           = 6 [(json_name) = "conditionType"];
   optional SkillEnhance skill_enhance                             = 7 [(json_name) = "skillEnhance"];
+  optional int32 activate_character_rank                          = 8 [(json_name) = "activateCharacterRank"];
+  optional int32 activate_unit_count                              = 9 [(json_name) = "activateUnitCount"];
 }

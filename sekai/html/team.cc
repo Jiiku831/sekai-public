@@ -10,14 +10,16 @@
 namespace sekai::html {
 
 CTML::Node Team(const TeamProto& team) {
-  CTML::Node node{"div.team"};
+  CTML::Node row{"tr"};
   for (const CardProto& card : team.cards()) {
-    node.AppendChild(Card(card));
+    row.AppendChild(CTML::Node("td").AppendChild(Card(card)));
   }
-  node.AppendChild(CTML::Node(
+  row.AppendChild(CTML::Node("td").AppendChild(CTML::Node(
       "pre.team-details",
-      absl::StrFormat("power:       %d\nevent bonus: %.2f%%\nskill_value: +%d%%\nexpected ep: %d",
-                      team.power(), team.event_bonus(), team.skill_value(), team.expected_ep())));
+      absl::StrFormat("power        %d\nevent bonus  %.2f%%\nskill_value  +%d%%\nexpected ep  %d",
+                      team.power(), team.event_bonus(), team.skill_value(), team.expected_ep()))));
+  CTML::Node node{"table.team"};
+  node.AppendChild(row);
   return node;
 }
 

@@ -1,5 +1,5 @@
 module(name="sekai-public", version="1.0")
-bazel_dep(name="abseil-cpp", version="20230802.0")
+bazel_dep(name="abseil-cpp", version="20240116.2")
 bazel_dep(name="abseil-py", version="1.4.0")
 bazel_dep(name="bs-thread-pool", version="4.1.0")
 bazel_dep(name="ctml", version="2.0.0.1")
@@ -15,7 +15,7 @@ bazel_dep(name="rules_cc", version="0.0.9")
 bazel_dep(name="rules_pkg", version="0.7.0")
 bazel_dep(name="rules_proto", version="6.0.0-rc1")
 bazel_dep(name="rules_python", version="0.27.1")
-bazel_dep(name="sekai-master-db", version="3.6.5.41.30")
+bazel_dep(name="sekai-master-db", version="3.7.0.11.3")
 bazel_dep(name="zstd", version="1.5.5")
 
 # https://github.com/GZGavinZhao/gzgz_rules_sass

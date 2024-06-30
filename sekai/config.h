@@ -16,6 +16,8 @@ inline constexpr int kMaxEventBonus = 750;
 inline constexpr int kMinSkillValue = 20 + (20 / 5) * 4;
 inline constexpr int kMaxSkillValue = 150 + (150 / 5) * 4;
 
+inline constexpr float kReferenceScoreBoostCap = 140.0;
+
 std::string_view CppVersion();
 const std::filesystem::path& SekaiBestRoot();
 const std::filesystem::path& MasterDbRoot();

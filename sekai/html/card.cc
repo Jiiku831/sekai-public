@@ -5,6 +5,7 @@
 #include <ctml.hpp>
 
 #include "absl/log/absl_check.h"
+#include "absl/strings/ascii.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/str_format.h"
 #include "sekai/db/proto/all.h"
@@ -79,7 +80,7 @@ std::string RarityIconUrl(db::CardRarityType rarity, bool trained) {
 }
 
 constexpr std::string_view kThumbnailPrefix =
-    "https://storage.sekai.best/sekai-assets/thumbnail/chara_rip/";
+    "https://storage.sekai.best/sekai-jp-assets/thumbnail/chara_rip/";
 constexpr std::string_view kThumbnailUntrainedSuffix = "_normal.webp";
 constexpr std::string_view kThumbnailTrainedSuffix = "_after_training.webp";
 
@@ -126,34 +127,46 @@ CTML::Node Card(const db::Card& card, bool trained) {
 }
 
 CTML::Node Card(const CardProto& card) {
+  bool use_trained_thumbnail = card.state().special_training();
+  if (card.skill_state() == CardProto::USE_PRIMARY_SKILL) {
+    use_trained_thumbnail = false;
+  }
   CTML::Node table{"table.card"};
   table.AppendChild(CTML::Node("tr").AppendChild(
-      CTML::Node("td.card-svg-td")
-          .SetAttribute("colspan", "2")
-          .AppendChild(Card(card.db_card(), card.state().special_training()))));
-  table.AppendChild(CTML::Node("tr")
-                        .AppendChild(CTML::Node("td", "level"))
-                        .AppendChild(CTML::Node("td", std::to_string(card.state().level()))));
-  table.AppendChild(CTML::Node("tr")
-                        .AppendChild(CTML::Node("td", "MR"))
-                        .AppendChild(CTML::Node("td", std::to_string(card.state().master_rank()))));
-  table.AppendChild(CTML::Node("tr")
-                        .AppendChild(CTML::Node("td", "SL"))
-                        .AppendChild(CTML::Node("td", std::to_string(card.state().skill_level()))));
+      CTML::Node("td.card-svg-td").AppendChild(Card(card.db_card(), use_trained_thumbnail))));
+  std::string w_skill_string = "n/a";
+  switch (card.skill_state()) {
+    case CardProto::PRIMARY_SKILL_ONLY:
+      w_skill_string = "n/a";
+      break;
+    case CardProto::USE_PRIMARY_SKILL:
+      w_skill_string = "before";
+      break;
+    case CardProto::USE_SECONDARY_SKILL:
+      w_skill_string = "after";
+      break;
+    default:
+      w_skill_string = "??";
+      break;
+  }
+  std::string detail_string =
+      absl::StrFormat(R"(
+Lv %-2d/MR %d/SL %d
+---------------
+Power    %6d
+Bonus    %6.2f
+Skill    %5.0f%%
+W Skill  %6s)",
+                      // Trained  %6s
+                      // Stories  %6d)",
+                      card.state().level(), card.state().master_rank(), card.state().skill_level(),
+                      card.team_power_contrib(), card.team_bonus_contrib(),
+                      card.team_skill_contrib(), w_skill_string);
+  // card.state().special_training() ? "yes" : "no",
+  // card.state().card_episodes_read_size());
+  absl::StripAsciiWhitespace(&detail_string);
   table.AppendChild(
-      CTML::Node("tr")
-          .AppendChild(CTML::Node("td", "stories"))
-          .AppendChild(CTML::Node("td", std::to_string(card.state().card_episodes_read_size()))));
-  table.AppendChild(CTML::Node("tr")
-                        .AppendChild(CTML::Node("td", "power"))
-                        .AppendChild(CTML::Node("td", std::to_string(card.team_power_contrib()))));
-  table.AppendChild(
-      CTML::Node("tr")
-          .AppendChild(CTML::Node("td", "bonus"))
-          .AppendChild(CTML::Node("td", absl::StrFormat("%.1f%%", card.team_bonus_contrib()))));
-  table.AppendChild(CTML::Node("tr")
-                        .AppendChild(CTML::Node("td", "skill"))
-                        .AppendChild(CTML::Node("td", std::to_string(card.team_skill_contrib()))));
+      CTML::Node("tr").AppendChild(CTML::Node("td").AppendChild(CTML::Node("pre", detail_string))));
   return table;
 }
 

@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message MaterialAutoExchangeMusicVocal {
+  option (master_db_file)       = "materialAutoExchangeMusicVocals.json";
+  optional int32 id             = 1 [(json_name) = "id"];
+  optional int32 material_id    = 2 [(json_name) = "materialId"];
+  optional int32 music_vocal_id = 3 [(json_name) = "musicVocalId"];
+  optional int64 obtain_at      = 4 [(json_name) = "obtainAt"];
+}

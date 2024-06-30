@@ -11,6 +11,8 @@
 #include "sekai/profile_bonus.h"
 #include "sekai/proto/card.pb.h"
 #include "sekai/proto/card_state.pb.h"
+#include "sekai/skill.h"
+#include "sekai/unit_count_base.h"
 
 namespace sekai {
 
@@ -22,21 +24,6 @@ template <typename T>
 Eigen::Vector3i GetBonusPower(const T& msg) {
   return Eigen::Vector3i(msg.power1_bonus_fixed(), msg.power2_bonus_fixed(),
                          msg.power3_bonus_fixed());
-}
-
-int GetMaxSkill(const db::Skill& skill, int skill_level) {
-  int skill_value = 0;
-  for (const db::SkillEffect& effect : skill.skill_effects()) {
-    auto type = effect.skill_effect_type();
-    if (type != db::SkillEffect::SCORE_UP && type != db::SkillEffect::SCORE_UP_CONDITION_LIFE &&
-        type != db::SkillEffect::SCORE_UP_KEEP)
-      continue;
-    for (const db::SkillEffect::Details& details : effect.skill_effect_details()) {
-      if (details.level() != skill_level) continue;
-      skill_value = std::max(details.activate_effect_value(), skill_value);
-    }
-  }
-  return skill_value;
 }
 
 Eigen::Vector3i GetBasePower(const db::Card& card, int level) {
@@ -127,64 +114,33 @@ bool TrainableCard(db::CardRarityType rarity) {
   return rarity == db::RARITY_3 || rarity == db::RARITY_4;
 }
 
-int UnitCount::operator()(db::Unit unit) {
-  if (!unit_count_populated) {
-    unit_count_populated = true;
-    for (const Card* card : cards) {
-      ++unit_count[card->db_primary_unit()];
-    }
-  }
-  return unit_count[unit];
-}
-
-Card::Card(const db::Card& card, const CardState& state) : db_card_(card), state_(state) {
-  card_id_ = card.id();
-  attr_.set(card.attr());
-  db_attr_ = card.attr();
-  character_id_ = card.character_id();
-  support_unit_ = card.support_unit();
-  char_unit_ = LookupCharacterUnit(card.character_id());
-  if (support_unit_ != db::UNIT_NONE) {
-    primary_unit_.set(support_unit_);
-    db_primary_unit_ = support_unit_;
-    secondary_unit_.set(char_unit_);
-    db_secondary_unit_ = char_unit_;
-    has_subunit_ = true;
-  } else {
-    primary_unit_.set(char_unit_);
-    db_primary_unit_ = char_unit_;
-    secondary_unit_.set(char_unit_);
-    db_secondary_unit_ = char_unit_;
-  }
-  db_rarity_ = card.card_rarity_type();
-  rarity_.set(card.card_rarity_type());
-
+Card::Card(const db::Card& card, const CardState& state) : CardBase(card), state_(state) {
   // Card state
-  power_vec_ = GetCardPower(card, state);
-  power_ = power_vec_.sum();
-  const db::Skill& skill = MasterDb::Get().Get<db::Skill>().FindFirst(card.skill_id());
-  skill_value_ = GetMaxSkill(skill, state.has_skill_level() ? state.skill_level() : 1);
-  if (!skill.skill_effects().empty() &&
-      skill.skill_effects(0).skill_enhance().skill_enhance_type() ==
-          db::SkillEnhance::SUB_UNIT_SCORE_UP) {
-    db_skill_enhance_unit_ =
-        skill.skill_effects(0).skill_enhance().skill_enhance_condition().unit();
-    skill_enhance_unit_ = Unit(db_skill_enhance_unit_);
-    skill_enhance_value_ = skill.skill_effects(0).skill_enhance().activate_effect_value();
-  }
   if (state.has_master_rank()) {
     master_rank_ = state.master_rank();
   }
+  ABSL_CHECK_GE(master_rank_, 0);
+  ABSL_CHECK_LE(master_rank_, 5);
   if (state.has_skill_level()) {
     skill_level_ = state.skill_level();
   }
-}
+  ABSL_CHECK_GE(skill_level_, 1);
+  ABSL_CHECK_LE(skill_level_, 4);
 
-int Card::SkillValue(UnitCount unit_count) const {
-  if (db_skill_enhance_unit_ == db::UNIT_NONE) return skill_value_;
-  int count = unit_count(db_skill_enhance_unit_);
-  int factor = count == 5 ? 5 : count - 1;
-  return skill_value_ + factor * skill_enhance_value_;
+  power_vec_ = GetCardPower(card, state);
+  power_ = power_vec_.sum();
+  const db::Skill& skill = MasterDb::Get().Get<db::Skill>().FindFirst(card.skill_id());
+  skill_ = Skill(skill, skill_level_);
+  if (card.has_special_training_skill_id() && state.special_training()) {
+    has_secondary_skill_ = true;
+    const db::Skill& secondary_skill =
+        MasterDb::Get().Get<db::Skill>().FindFirst(card.special_training_skill_id());
+    secondary_skill_ = Skill(secondary_skill, skill_level_);
+  }
+  skill_.SetCardMaxSkillValue(MaxSkillValue());
+  if (has_secondary_skill_) {
+    secondary_skill_.SetCardMaxSkillValue(MaxSkillValue());
+  }
 }
 
 float Card::GetBonus(const EventBonus& event_bonus) const {
@@ -201,6 +157,9 @@ void Card::ApplyEventBonus(const EventBonus& event_bonus,
 }
 
 void Card::ApplyProfilePowerBonus(const ProfileBonus& profile) {
+  skill_.ApplyCharacterRank(profile.character_rank(character_id_));
+  secondary_skill_.ApplyCharacterRank(profile.character_rank(character_id_));
+
   float char_power_factor = profile.char_bonus()[character_id_].rate / 100;
   float cr_power_factor = profile.cr_bonus()[character_id_].rate / 100;
   cr_power_bonus_ = (power_vec_.cast<float>() * cr_power_factor).cast<int>().sum();
@@ -225,11 +184,20 @@ void Card::ApplyProfilePowerBonus(const ProfileBonus& profile) {
   }
 }
 
-CardProto Card::ToProto() const {
+CardProto Card::ToProto(UnitCountBase& unit_count) const {
   CardProto proto;
   proto.set_card_id(card_id_);
   *proto.mutable_db_card() = db_card_;
   *proto.mutable_state() = state_;
+  if (has_secondary_skill_) {
+    if (secondary_skill_.SkillValue(unit_count) >= skill_.SkillValue(unit_count)) {
+      proto.set_skill_state(CardProto::USE_SECONDARY_SKILL);
+    } else {
+      proto.set_skill_state(CardProto::USE_PRIMARY_SKILL);
+    }
+  } else {
+    proto.set_skill_state(CardProto::PRIMARY_SKILL_ONLY);
+  }
   return proto;
 }
 
@@ -248,8 +216,18 @@ CardState CreateMaxCardState(int card_id) {
   return state;
 }
 
-bool Card::IsUnit(db::Unit unit) const {
-  return db_primary_unit_ == unit || db_secondary_unit_ == unit;
+float Card::SkillValue(UnitCountBase& unit_count) const {
+  if (has_secondary_skill_) {
+    return std::max(skill_.SkillValue(unit_count), secondary_skill_.SkillValue(unit_count));
+  }
+  return skill_.SkillValue(unit_count);
+}
+
+float Card::MaxSkillValue() const {
+  if (has_secondary_skill_) {
+    return std::max(skill_.MaxSkillValue(), secondary_skill_.MaxSkillValue());
+  }
+  return skill_.MaxSkillValue();
 }
 
 }  // namespace sekai

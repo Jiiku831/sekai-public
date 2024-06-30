@@ -6,27 +6,10 @@ echo "Root: $root"
 
 bazelisk build :generate_proto
 
-for file in $root/data/master-db/*.json; do
+RUNFILES_DIR="$(bazelisk info bazel-bin)/sekai/db/proto/tools/generate_proto.runfiles"
+
+for file in $RUNFILES_DIR/sekai-master-db~/*.json; do
     echo "processing: $file"
-    skip_files=(
-      areaItems.json
-      areaItemLevels.json
-      assetList.json
-      cards.json
-      cardEpisodes.json
-      characterRanks.json
-      events.json
-      eventCards.json
-      eventDeckBonuses.json
-      eventRarityBonusRates.json
-      gameCharacters.json
-      gameCharacterUnits.json
-      masterLessons.json
-      skills.json
-      worldBlooms.json
-      worldBloomDifferentAttributeBonuses.json
-      worldBloomSupportDeckBonus.json
-    )
     should_skip=0
     for skip_file in "${skip_files[@]}"; do
       if [[ "$(basename $file)" = "$skip_file" ]]; then
@@ -35,10 +18,27 @@ for file in $root/data/master-db/*.json; do
       fi
     done
     if (( should_skip )); then
-      echo "skipping..."
+      echo "skipping $(basename $file)..."
       continue
     fi
+
+    should_reprocess=0
+    reprocess_files=(
+      skills.json
+    )
+    reprocess_args=""
+    for reprocess_file in "${reprocess_files[@]}"; do
+      if [[ "$(basename $file)" = "$reprocess_file" ]]; then
+          reprocess_args="--overwrite"
+          break
+      fi
+    done
+    # if [[ -z "$reprocess_args" ]]; then
+    #   echo "skipping $(basename $file)..."
+    #   continue
+    # fi
     "$(bazelisk info bazel-bin)/sekai/db/proto/tools/generate_proto" \
-        --overwrite --input="$file" \
-        --output_dir="$root/sekai/db/proto" || exit 1
+        --input="$file" \
+        --output_dir="$root/sekai/db/proto" \
+        "$reprocess_args" || exit 1
 done

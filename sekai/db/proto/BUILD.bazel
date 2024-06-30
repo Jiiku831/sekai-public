@@ -40,6 +40,17 @@ cc_proto_library(
 )
 
 proto_library(
+    name = "ad_reward_proto",
+    srcs = ["ad_reward.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "ad_reward_cc_proto",
+    deps = [":ad_reward_proto"],
+)
+
+proto_library(
     name = "another3dmv_cut_in_proto",
     srcs = ["another3dmv_cut_in.proto"],
     deps = [":descriptor_proto"],
@@ -552,6 +563,28 @@ proto_library(
 cc_proto_library(
     name = "character3d_cc_proto",
     deps = [":character3d_proto"],
+)
+
+proto_library(
+    name = "character_archive_voice_proto",
+    srcs = ["character_archive_voice.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "character_archive_voice_cc_proto",
+    deps = [":character_archive_voice_proto"],
+)
+
+proto_library(
+    name = "character_archive_voice_tag_proto",
+    srcs = ["character_archive_voice_tag.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "character_archive_voice_tag_cc_proto",
+    deps = [":character_archive_voice_tag_proto"],
 )
 
 proto_library(
@@ -1097,6 +1130,17 @@ cc_proto_library(
 )
 
 proto_library(
+    name = "event_mission_selectable_reward_proto",
+    srcs = ["event_mission_selectable_reward.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "event_mission_selectable_reward_cc_proto",
+    deps = [":event_mission_selectable_reward_proto"],
+)
+
+proto_library(
     name = "event_music_proto",
     srcs = ["event_music.proto"],
     deps = [":descriptor_proto"],
@@ -1494,6 +1538,17 @@ cc_proto_library(
 )
 
 proto_library(
+    name = "live_clear_voice_proto",
+    srcs = ["live_clear_voice.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "live_clear_voice_cc_proto",
+    deps = [":live_clear_voice_proto"],
+)
+
+proto_library(
     name = "live_mission_pass_proto",
     srcs = ["live_mission_pass.proto"],
     deps = [":descriptor_proto"],
@@ -1626,6 +1681,17 @@ proto_library(
 cc_proto_library(
     name = "material_cc_proto",
     deps = [":material_proto"],
+)
+
+proto_library(
+    name = "material_auto_exchange_music_vocal_proto",
+    srcs = ["material_auto_exchange_music_vocal.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "material_auto_exchange_music_vocal_cc_proto",
+    deps = [":material_auto_exchange_music_vocal_proto"],
 )
 
 proto_library(

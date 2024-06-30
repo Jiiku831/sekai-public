@@ -16,6 +16,7 @@
 #include "sekai/proto/card.pb.h"
 #include "sekai/proto/team.pb.h"
 #include "sekai/team_builder/constraints.h"
+#include "sekai/unit_count.h"
 
 namespace sekai {
 
@@ -41,9 +42,8 @@ int Team::CardPowerContrib(const Card* card) const {
 
 float Team::CardBonusContrib(const Card* card) const { return card->event_bonus(); }
 
-int Team::CardSkillContrib(const Card* card, bool& unit_count_populated,
-                           std::array<int, db::Unit_ARRAYSIZE>& unit_count) const {
-  return card->SkillValue(UnitCount{unit_count_populated, unit_count, cards_});
+float Team::CardSkillContrib(const Card* card, UnitCount& unit_count) const {
+  return card->SkillValue(unit_count);
 }
 
 int Team::Power(const Profile& profile) const {
@@ -108,25 +108,23 @@ float Team::MinBonusContrib() const {
   //     cards_ | std::views::transform(CardBonusContrib));
 }
 
-int Team::SkillValue() const {
-  int skill_value = 0;
+float Team::SkillValue() const {
+  float skill_value = 0;
   int skill_factor = 1;
-  bool unit_count_populated = false;
-  std::array<int, db::Unit_ARRAYSIZE> unit_count{};
+  UnitCount unit_count(cards_);
   for (const Card* card : cards_) {
-    skill_value += CardSkillContrib(card, unit_count_populated, unit_count) / skill_factor;
+    skill_value += CardSkillContrib(card, unit_count) / skill_factor;
     skill_factor = 5;
   }
   return skill_value;
 }
 
-int Team::MaxSkillValue() const {
-  int total_skill = 0;
-  int max_skill = 0;
-  bool unit_count_populated = false;
-  std::array<int, db::Unit_ARRAYSIZE> unit_count{};
+float Team::MaxSkillValue() const {
+  float total_skill = 0;
+  float max_skill = 0;
+  UnitCount unit_count(cards_);
   for (const Card* card : cards_) {
-    int skill_value = CardSkillContrib(card, unit_count_populated, unit_count);
+    float skill_value = CardSkillContrib(card, unit_count);
     max_skill = std::max(skill_value, max_skill);
     total_skill += skill_value;
   }
@@ -134,12 +132,11 @@ int Team::MaxSkillValue() const {
 }
 
 Team::SkillValueDetail Team::ConstrainedMaxSkillValue(Character eligible_leads) const {
-  int total_skill = 0;
-  int max_skill = 0;
-  bool unit_count_populated = false;
-  std::array<int, db::Unit_ARRAYSIZE> unit_count{};
+  float total_skill = 0;
+  float max_skill = 0;
+  UnitCount unit_count(cards_);
   for (const Card* card : cards_) {
-    int skill_value = CardSkillContrib(card, unit_count_populated, unit_count);
+    float skill_value = CardSkillContrib(card, unit_count);
     total_skill += skill_value;
     if (eligible_leads.test(card->character_id())) {
       max_skill = std::max(skill_value, max_skill);
@@ -170,11 +167,10 @@ void Team::ReorderTeamForOptimalSkillValue(const Constraints& constraints) {
 
 void Team::ReorderTeamForOptimalSkillValue(Character eligible_leads) {
   int max_skill_index = 0;
-  int max_skill = 0;
-  bool unit_count_populated = false;
-  std::array<int, db::Unit_ARRAYSIZE> unit_count{};
+  float max_skill = 0;
+  UnitCount unit_count(cards_);
   for (std::size_t i = 0; i < cards_.size(); ++i) {
-    int skill_value = CardSkillContrib(cards_[i], unit_count_populated, unit_count);
+    float skill_value = CardSkillContrib(cards_[i], unit_count);
     if (skill_value > max_skill && eligible_leads.test(cards_[i]->character_id())) {
       max_skill_index = i;
       max_skill = skill_value;
@@ -202,14 +198,13 @@ void Team::ReorderTeamForKizuna(std::span<const Character> kizuna_pairs) {
 TeamProto Team::ToProto(const Profile& profile, const class EventBonus& event_bonus,
                         const Estimator& estimator) const {
   TeamProto team;
-  bool unit_count_populated = false;
-  std::array<int, db::Unit_ARRAYSIZE> unit_count{};
+  UnitCount unit_count(cards_);
   for (const Card* card : cards_) {
     CardProto* card_proto = team.add_cards();
-    *card_proto = card->ToProto();
+    *card_proto = card->ToProto(unit_count);
     card_proto->set_team_power_contrib(CardPowerContrib(card));
     card_proto->set_team_bonus_contrib(CardBonusContrib(card));
-    card_proto->set_team_skill_contrib(CardSkillContrib(card, unit_count_populated, unit_count));
+    card_proto->set_team_skill_contrib(CardSkillContrib(card, unit_count));
   }
   team.set_power(Power(profile));
   team.set_event_bonus(EventBonus(event_bonus));

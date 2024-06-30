@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message CharacterArchiveVoice {
+  option (master_db_file) = "characterArchiveVoices.json";
+  enum CharacterArchiveVoiceType {
+    UNKNOWN_CHARACTER_ARCHIVE_VOICE_TYPE = 0;
+    COLLECT_CARD                         = 1 [(json_value) = "collect_card"];
+    COMMENT_LIVE_TOP                     = 2 [(json_value) = "comment_live_top"];
+    COMMENT_LOGIN_BONUS                  = 3 [(json_value) = "comment_login_bonus"];
+    LIVE_CUTIN_NORMAL                    = 4 [(json_value) = "live_cutin_normal"];
+    LIVE_CUTIN_PAIR                      = 5 [(json_value) = "live_cutin_pair"];
+    LIVE_RESULT                          = 6 [(json_value) = "live_result"];
+    PRACTICE                             = 7 [(json_value) = "practice"];
+  }
+
+  enum Unit {
+    UNKNOWN_UNIT   = 0;
+    IDOL           = 1 [(json_value) = "idol"];
+    LIGHT_SOUND    = 2 [(json_value) = "light_sound"];
+    PIAPRO         = 3 [(json_value) = "piapro"];
+    SCHOOL_REFUSAL = 4 [(json_value) = "school_refusal"];
+    STREET         = 5 [(json_value) = "street"];
+    THEME_PARK     = 6 [(json_value) = "theme_park"];
+  }
+
+  optional int32 id                                               = 1 [(json_name) = "id"];
+  optional int32 group_id                                         = 2 [(json_name) = "groupId"];
+  optional int32 game_character_id                                = 3 [(json_name) = "gameCharacterId"];
+  optional CharacterArchiveVoiceType character_archive_voice_type = 4 [(json_name) = "characterArchiveVoiceType"];
+  optional string display_phrase                                  = 5 [(json_name) = "displayPhrase"];
+  optional int32 character_archive_voice_tag_id                   = 6 [(json_name) = "characterArchiveVoiceTagId"];
+  optional string asset_name                                      = 7 [(json_name) = "assetName"];
+  optional int64 display_start_at                                 = 8 [(json_name) = "displayStartAt"];
+  optional Unit unit                                              = 9 [(json_name) = "unit"];
+  optional string display_phrase2                                 = 10 [(json_name) = "displayPhrase2"];
+  optional int32 external_id                                      = 11 [(json_name) = "externalId"];
+  optional bool is_next_grade                                     = 12 [(json_name) = "isNextGrade"];
+}

@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message AdReward {
+  option (master_db_file) = "adRewards.json";
+  enum AdRewardPlayType {
+    UNKNOWN_AD_REWARD_PLAY_TYPE = 0;
+    BILLING_SHOP_FOR_JEWEL      = 1 [(json_value) = "billing_shop_for_jewel"];
+    BOOST                       = 2 [(json_value) = "boost"];
+    EVENT_EXCHANGE              = 3 [(json_value) = "event_exchange"];
+    LIVE_MISSION                = 4 [(json_value) = "live_mission"];
+    MUSIC_SHOP                  = 5 [(json_value) = "music_shop"];
+    PRESENT_BOX                 = 6 [(json_value) = "present_box"];
+  }
+
+  optional int32 id                             = 1 [(json_name) = "id"];
+  optional AdRewardPlayType ad_reward_play_type = 2 [(json_name) = "adRewardPlayType"];
+  optional int32 resource_box_id                = 3 [(json_name) = "resourceBoxId"];
+  optional int32 daily_limit_count              = 4 [(json_name) = "dailyLimitCount"];
+  optional bool display_flg                     = 5 [(json_name) = "displayFlg"];
+  optional int64 start_at                       = 6 [(json_name) = "startAt"];
+  optional int64 end_at                         = 7 [(json_name) = "endAt"];
+  optional int32 live_bonus_count               = 8 [(json_name) = "liveBonusCount"];
+}

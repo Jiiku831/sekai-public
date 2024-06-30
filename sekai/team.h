@@ -12,6 +12,7 @@
 #include "sekai/profile.h"
 #include "sekai/proto/team.pb.h"
 #include "sekai/team_builder/constraints.h"
+#include "sekai/unit_count.h"
 
 namespace sekai {
 
@@ -34,16 +35,16 @@ class Team {
   float EventBonus(const class EventBonus& event_bonus) const;
   float MinBonusContrib() const;
 
-  int SkillValue() const;
-  int MaxSkillValue() const;
+  float SkillValue() const;
+  float MaxSkillValue() const;
   void ReorderTeamForOptimalSkillValue();
   void ReorderTeamForOptimalSkillValue(const Constraints& constraints);
   void ReorderTeamForOptimalSkillValue(Character eligible_leads);
   void ReorderTeamForKizuna(std::span<const Character> kizuna_pairs);
 
   struct SkillValueDetail {
-    int lead_skill;
-    int skill_value;
+    float lead_skill;
+    float skill_value;
   };
   SkillValueDetail ConstrainedMaxSkillValue(const Constraints& constraints) const;
   SkillValueDetail ConstrainedMaxSkillValue(Character eligible_leads) const;
@@ -54,8 +55,7 @@ class Team {
  private:
   int CardPowerContrib(const Card* card) const;
   float CardBonusContrib(const Card* card) const;
-  int CardSkillContrib(const Card* card, bool& unit_count_populated,
-                       std::array<int, db::Unit_ARRAYSIZE>& unit_count) const;
+  float CardSkillContrib(const Card* card, UnitCount& unit_count) const;
 
   std::vector<const Card*> cards_;
   Attr attrs_;

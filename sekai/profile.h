@@ -31,6 +31,7 @@ class Profile : public ProfileBonus {
   std::span<const BonusRate> cr_bonus() const override { return cr_bonus_; }
   std::span<const BonusRate> unit_bonus() const override { return unit_bonus_; }
   int bonus_power() const override { return bonus_power_; }
+  int character_rank(int char_id) const override;
   std::vector<const Card*> CardPtrs() const {
     // TODO: just change team builder to use ref.
     std::vector<const Card*> out;
@@ -46,6 +47,7 @@ class Profile : public ProfileBonus {
   std::array<BonusRate, db::Attr_ARRAYSIZE> attr_bonus_;
   std::vector<BonusRate> char_bonus_;
   std::vector<BonusRate> cr_bonus_;
+  std::vector<int> character_rank_;
   std::array<BonusRate, db::Unit_ARRAYSIZE> unit_bonus_;
   int bonus_power_ = 0;
   absl::flat_hash_map<int, Card> cards_;

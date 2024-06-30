@@ -56,4 +56,6 @@ message Card {
       [(json_name) = "masterLessonAchieveResources"];
   repeated SpecialTrainingCost special_training_costs = 20 [(json_name) = "specialTrainingCosts"];
   optional ArchiveDisplayType archive_display_type    = 21 [(json_name) = "archiveDisplayType"];
+  optional int32 special_training_skill_id            = 22 [(json_name) = "specialTrainingSkillId"];
+  optional string special_training_skill_name         = 23 [(json_name) = "specialTrainingSkillName"];
 }
