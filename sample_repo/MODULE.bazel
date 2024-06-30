@@ -4,8 +4,8 @@ bazel_dep(name="rules_cc", version="0.0.9")
 bazel_dep(name="sekai-master-db", version="3.6.5.41.30")
 bazel_dep(name="sekai-public")
 
-local_path_override(
-  module_name="sekai-public",
-  # Update this path to point to your local sekai-public repo.
-  path="/path/to/sekai-public",
+archive_override(
+  module_name = "sekai-public",
+  strip_prefix = "sekai-public-main",
+  urls = "https://github.com/Jiiku831/sekai-public/archive/refs/heads/main.zip",
 )
