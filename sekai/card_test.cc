@@ -196,5 +196,29 @@ TEST(CardTest, TestEvent117Bonus) {
   EXPECT_EQ(card784.support_bonus(), 0);
 }
 
+TEST(CardTest, TestIsUnitRegularUnit) {
+  CardState state;
+  state.set_master_rank(5);
+  state.set_skill_level(4);
+
+  // Sbibo
+  Card card809{MasterDb::FindFirst<db::Card>(809), state};
+  EXPECT_TRUE(card809.IsUnit(db::UNIT_LN));
+  EXPECT_FALSE(card809.IsUnit(db::UNIT_MMJ));
+  EXPECT_FALSE(card809.IsUnit(db::UNIT_VS));
+
+  // LN MEIKO
+  Card card844{MasterDb::FindFirst<db::Card>(844), state};
+  EXPECT_TRUE(card844.IsUnit(db::UNIT_LN));
+  EXPECT_FALSE(card844.IsUnit(db::UNIT_MMJ));
+  EXPECT_TRUE(card844.IsUnit(db::UNIT_VS));
+
+  // Subunitless MEIKO
+  Card card784{MasterDb::FindFirst<db::Card>(784), state};
+  EXPECT_FALSE(card784.IsUnit(db::UNIT_LN));
+  EXPECT_FALSE(card784.IsUnit(db::UNIT_MMJ));
+  EXPECT_TRUE(card784.IsUnit(db::UNIT_VS));
+}
+
 }  // namespace
 }  // namespace sekai

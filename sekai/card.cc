@@ -248,4 +248,8 @@ CardState CreateMaxCardState(int card_id) {
   return state;
 }
 
+bool Card::IsUnit(db::Unit unit) const {
+  return db_primary_unit_ == unit || db_secondary_unit_ == unit;
+}
+
 }  // namespace sekai

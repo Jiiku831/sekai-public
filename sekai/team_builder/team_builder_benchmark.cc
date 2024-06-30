@@ -21,6 +21,7 @@
 #include "sekai/team_builder/constraints.h"
 #include "sekai/team_builder/event_team_builder.h"
 #include "sekai/team_builder/max_bonus_team_builder.h"
+#include "sekai/team_builder/max_power_team_builder.h"
 #include "sekai/team_builder/naive_team_builder.h"
 #include "sekai/team_builder/team_builder_base.h"
 #include "testing/util.h"
@@ -298,6 +299,9 @@ BENCHMARK(BM_RecommendTeam<NaiveSkillTeamBuilder>)
 BENCHMARK(BM_RecommendTeam<MaxBonusTeamBuilder>)
     ->Name("Partitioned (Max Bonus)")
     ->Unit(benchmark::kMillisecond);
+BENCHMARK(BM_RecommendTeam<MaxPowerTeamBuilder>)
+    ->Name("Partitioned (Max Power)")
+    ->Unit(benchmark::kMillisecond);
 BENCHMARK(BM_RecommendTeam<EventTeamBuilder>)
     ->Name("Partitioned (Event)")
     ->Unit(benchmark::kMillisecond);
@@ -324,6 +328,9 @@ BENCHMARK(BM_RecommendTeamWithConstraints<NaiveSkillTeamBuilder>)
     ->Unit(benchmark::kMillisecond);
 BENCHMARK(BM_RecommendTeamWithConstraints<MaxBonusTeamBuilder>)
     ->Name("Partitioned (Max Bonus, Constrained)")
+    ->Unit(benchmark::kMillisecond);
+BENCHMARK(BM_RecommendTeamWithConstraints<MaxPowerTeamBuilder>)
+    ->Name("Partitioned (Max Power, Constrained)")
     ->Unit(benchmark::kMillisecond);
 BENCHMARK(BM_RecommendTeamWithConstraints<EventTeamBuilder>)
     ->Name("Partitioned (Event, Constrained)")

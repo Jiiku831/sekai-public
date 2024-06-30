@@ -30,6 +30,8 @@ cc_library(
     srcs = ["max_bonus_team_builder.cc"],
     hdrs = ["max_bonus_team_builder.h"],
     deps = [
+        ":greedy_team_builder",
+        ":optimization_objective",
         ":pool_utils",
         ":team_builder",
         ":team_builder_base",
@@ -41,6 +43,45 @@ cc_library(
         "//sekai:profile",
         "//sekai:team",
         "@abseil-cpp//absl/log:absl_check",
+        "@abseil-cpp//absl/time",
+    ],
+)
+
+cc_library(
+    name = "max_power_team_builder",
+    srcs = ["max_power_team_builder.cc"],
+    hdrs = ["max_power_team_builder.h"],
+    deps = [
+        ":greedy_team_builder",
+        ":optimization_objective",
+        ":pool_utils",
+        ":team_builder_base",
+        "//sekai:array_size",
+        "//sekai:card",
+        "//sekai:combinations",
+        "//sekai:estimator",
+        "//sekai:event_bonus",
+        "//sekai:profile",
+        "//sekai:team",
+        "@abseil-cpp//absl/log:absl_check",
+        "@abseil-cpp//absl/time",
+    ],
+)
+
+cc_library(
+    name = "greedy_team_builder",
+    srcs = ["greedy_team_builder.cc"],
+    hdrs = ["greedy_team_builder.h"],
+    deps = [
+        ":optimization_objective",
+        ":pool_utils",
+        ":team_builder_base",
+        "//sekai:card",
+        "//sekai:combinations",
+        "//sekai:estimator",
+        "//sekai:event_bonus",
+        "//sekai:profile",
+        "//sekai:team",
         "@abseil-cpp//absl/time",
     ],
 )
@@ -74,6 +115,7 @@ cc_library(
     srcs = ["naive_team_builder.cc"],
     hdrs = ["naive_team_builder.h"],
     deps = [
+        ":optimization_objective",
         ":team_builder_base",
         "//sekai:array_size",
         "//sekai:bitset",
@@ -95,6 +137,7 @@ cc_library(
     deps = [
         "//sekai:array_size",
         "//sekai:card",
+        "//sekai/db/proto:all",
     ],
 )
 
@@ -107,7 +150,11 @@ cc_test(
     deps = [
         ":pool_utils",
         "//sekai:array_size",
+        "//sekai:card",
+        "//sekai:event_bonus",
+        "//sekai:profile",
         "//sekai/db:master_db",
+        "//sekai/proto:event_id_cc_proto",
         "//testing:test_main",
         "@googletest//:gtest",
     ],
@@ -123,6 +170,21 @@ cc_library(
         "//sekai:profile",
         "//sekai:team",
         "@abseil-cpp//absl/time",
+    ],
+)
+
+cc_library(
+    name = "optimization_objective",
+    srcs = ["optimization_objective.cc"],
+    hdrs = ["optimization_objective.h"],
+    deps = [
+        "//sekai:bitset",
+        "//sekai:card",
+        "//sekai:estimator",
+        "//sekai:event_bonus",
+        "//sekai:profile",
+        "//sekai:team",
+        "@abseil-cpp//absl/functional:any_invocable",
     ],
 )
 
@@ -163,6 +225,7 @@ cc_test(
         ":constraints",
         ":event_team_builder",
         ":max_bonus_team_builder",
+        ":max_power_team_builder",
         ":naive_team_builder",
         "//sekai:card",
         "//sekai:estimator",
@@ -187,6 +250,7 @@ cc_test(
     deps = [
         ":event_team_builder",
         ":max_bonus_team_builder",
+        ":max_power_team_builder",
         ":naive_team_builder",
         ":team_builder_base",
         "//sekai:card",

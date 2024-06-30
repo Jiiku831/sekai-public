@@ -27,6 +27,13 @@ class TeamBuilder {
     uint64_t teams_considered = 0;
     uint64_t teams_evaluated = 0;
     uint64_t cards_pruned = 0;
+
+    void operator+=(const Stats& other) {
+      teams_total += other.teams_total;
+      teams_considered += other.teams_considered;
+      teams_evaluated += other.teams_evaluated;
+      cards_pruned += other.cards_pruned;
+    }
   };
 
   virtual const TeamBuilder::Stats& stats() const = 0;

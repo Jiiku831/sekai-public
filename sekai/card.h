@@ -45,6 +45,7 @@ class Card {
   const Unit& primary_unit() const { return primary_unit_; }
   const Unit& secondary_unit() const { return secondary_unit_; }
   bool has_subunit() const { return has_subunit_; }
+  bool IsUnit(db::Unit unit) const;
 
   void ApplyEventBonus(const EventBonus& event_bonus, const SupportUnitEventBonus& support_bonus);
   void ApplyEventBonus(const EventBonus& event_bonus) {

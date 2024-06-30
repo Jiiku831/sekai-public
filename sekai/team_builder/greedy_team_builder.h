@@ -15,32 +15,18 @@
 
 namespace sekai {
 
-class NaiveTeamBuilder : public TeamBuilderBase {
+// Returns the first feasible team.
+class GreedyTeamBuilder : public TeamBuilderBase {
  public:
-  explicit NaiveTeamBuilder(OptimizationObjective obj = OptimizationObjective::kOptimizePoints)
-      : obj_(obj) {}
+  GreedyTeamBuilder(OptimizationObjective obj) : obj_(obj) {}
 
+  // Assumes that the pool is already sorted.
   std::vector<Team> RecommendTeamsImpl(std::span<const Card* const> pool, const Profile& profile,
                                        const EventBonus& event_bonus, const Estimator& estimator,
                                        std::optional<absl::Time> deadline = std::nullopt) override;
 
- protected:
+ private:
   OptimizationObjective obj_;
-};
-
-class NaivePowerTeamBuilder : public NaiveTeamBuilder {
- public:
-  explicit NaivePowerTeamBuilder() : NaiveTeamBuilder(OptimizationObjective::kOptimizePower) {}
-};
-
-class NaiveBonusTeamBuilder : public NaiveTeamBuilder {
- public:
-  explicit NaiveBonusTeamBuilder() : NaiveTeamBuilder(OptimizationObjective::kOptimizeBonus) {}
-};
-
-class NaiveSkillTeamBuilder : public NaiveTeamBuilder {
- public:
-  explicit NaiveSkillTeamBuilder() : NaiveTeamBuilder(OptimizationObjective::kOptimizeSkill) {}
 };
 
 }  // namespace sekai
