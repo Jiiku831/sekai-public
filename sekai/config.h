@@ -14,7 +14,7 @@ inline constexpr int kSkillLevelArraySize = kSkillLevelMax + 1;
 inline constexpr int kMaxPower = 400'000;
 inline constexpr int kMaxEventBonus = 750;
 inline constexpr int kMinSkillValue = 20 + (20 / 5) * 4;
-inline constexpr int kMaxSkillValue = 150 + (150 / 5) * 4;
+inline constexpr int kMaxSkillValue = 160 + (160 / 5) * 4;
 
 inline constexpr float kReferenceScoreBoostCap = 140.0;
 
