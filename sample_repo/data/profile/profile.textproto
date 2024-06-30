@@ -1,0 +1,67 @@
+# proto-file: sekai/proto/profile.proto
+# proto-message: ProfileProto
+area_item_levels: [
+  # Offset (ignored)
+  0,
+  # LN chars
+  0, 0, 0, 0,
+  # MMJ chars
+  0, 0, 0, 0,
+  # VBS chars
+  0, 0, 0, 0,
+  # WXS chars
+  0, 0, 0, 0,
+  # 25ji chars
+  0, 0, 0, 0,
+  # Miku items
+  0, 0, 0, 0, 0,
+  # Rin item
+  0,
+  # Len item
+  0,
+  # Luka item
+  0,
+  # KAITO item
+  0,
+  # MEIKO item
+  0,
+  # LN unit
+  0, 0,
+  # MMJ unit
+  0, 0,
+  # VBS unit
+  0, 0,
+  # WXS unit
+  0, 0,
+  # 25ji unit
+  0, 0,
+  # VS unit
+  0, 0, 0, 0, 0,
+  # Cool plant (miyajo first)
+  0, 0,
+  # Cute plant
+  0, 0,
+  # Pure plant
+  0, 0,
+  # Happy plant
+  0, 0,
+  # Mysterious plant
+  0, 0
+]
+character_ranks: [
+  # Offset (ignored)
+  0,
+  # LN
+  0, 0, 0, 0,
+  # MMJ
+  0, 0, 0, 0,
+  # VBS
+  0, 0, 0, 0,
+  # WXS
+  0, 0, 0, 0,
+  # 25ji
+  0, 0, 0, 0,
+  # VS
+  0, 0, 0, 0, 0, 0
+]
+bonus_power: 0

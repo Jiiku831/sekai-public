@@ -1,0 +1,12 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+
+cc_binary(
+    name = "build_event_team_main",
+    data = [
+        "//data:flat-db",
+        "//data:profile",
+    ],
+    deps = [
+        "@sekai-public//:build_event_team_lib",
+    ],
+)
