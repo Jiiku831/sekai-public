@@ -29,13 +29,13 @@ filegroup(
 )
 
 filegroup(
-    name = "profile/profile",
-    srcs = ["profile/profile.textproto"],
+    name = "profile/constraints",
+    srcs = ["profile/constraints.textproto"],
 )
 
 filegroup(
-    name = "profile/constraints",
-    srcs = ["profile/constraints.textproto"],
+    name = "profile/profile",
+    srcs = ["profile/profile.textproto"],
 )
 
 filegroup(

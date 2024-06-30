@@ -90,17 +90,17 @@ int main(int argc, char** argv) {
     // 21 - Miku     22 - Rin     23 - Len     24 - Luka
     // 25 - MEIKO    26 - KAITO
     SimpleEventBonus simple_event_bonus = sekai::ParseTextProto<SimpleEventBonus>(R"pb(
-      attr: ATTR_PURE
-      chars {char_id: 17}
-      chars {char_id: 18}
-      chars {char_id: 19}
-      chars {char_id: 20}
-      chars {char_id: 21 unit: UNIT_25}
-      chars {char_id: 22 unit: UNIT_25}
-      chars {char_id: 23 unit: UNIT_25}
-      chars {char_id: 24 unit: UNIT_25}
-      chars {char_id: 25 unit: UNIT_25}
-      chars {char_id: 26 unit: UNIT_25}
+      attr: ATTR_MYST
+      chars {char_id: 9}
+      chars {char_id: 10}
+      chars {char_id: 11}
+      chars {char_id: 12}
+      chars {char_id: 21 unit: UNIT_VBS}
+      chars {char_id: 22 unit: UNIT_VBS}
+      chars {char_id: 23 unit: UNIT_VBS}
+      chars {char_id: 24 unit: UNIT_VBS}
+      chars {char_id: 25 unit: UNIT_VBS}
+      chars {char_id: 26 unit: UNIT_VBS}
     )pb");
     event_bonus = EventBonus(simple_event_bonus);
   }
