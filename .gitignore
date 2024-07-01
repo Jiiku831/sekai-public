@@ -1,3 +1,6 @@
 bazel-*
 compile_commands.json
 reports/*.html
+
+# Intentionally ignore Bazel lockfile
+MODULE.bazel.lock

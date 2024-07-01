@@ -265,7 +265,7 @@ TEST(CardTest, TestEvent117Bonus) {
   // Subunitless MEIKO cool BD
   Card card784{MasterDb::FindFirst<db::Card>(784), state};
   card784.ApplyEventBonus(event_bonus);
-  EXPECT_EQ(card784.event_bonus(), 15 + 15);
+  EXPECT_EQ(card784.event_bonus(), 25 + 15);
   EXPECT_EQ(card784.support_bonus(), 0);
 }
 

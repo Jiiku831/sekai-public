@@ -260,17 +260,17 @@ deck_bonus {
   attr_bonus {
     attr: ATTR_COOL
     unit_bonus {unit: UNIT_LN rate: 25}
-    unit_bonus {unit: UNIT_VS rate: 15}
+    unit_bonus {unit: UNIT_VS rate: 25}
   }
   attr_bonus {
     attr: ATTR_CUTE
     unit_bonus {unit: UNIT_LN rate: 25}
-    unit_bonus {unit: UNIT_VS rate: 15}
+    unit_bonus {unit: UNIT_VS rate: 25}
   }
   attr_bonus {
     attr: ATTR_HAPPY
     unit_bonus {unit: UNIT_LN rate: 25}
-    unit_bonus {unit: UNIT_VS rate: 15}
+    unit_bonus {unit: UNIT_VS rate: 25}
   }
   attr_bonus {
     attr: ATTR_MYST
@@ -279,12 +279,12 @@ deck_bonus {
     unit_bonus {unit: UNIT_VBS rate: 25}
     unit_bonus {unit: UNIT_WXS rate: 25}
     unit_bonus {unit: UNIT_25 rate: 25}
-    unit_bonus {unit: UNIT_VS rate: 40}
+    unit_bonus {unit: UNIT_VS rate: 50}
   }
   attr_bonus {
     attr: ATTR_PURE
     unit_bonus {unit: UNIT_LN rate: 25}
-    unit_bonus {unit: UNIT_VS rate: 15}
+    unit_bonus {unit: UNIT_VS rate: 25}
   }
 }
 deck_bonus {

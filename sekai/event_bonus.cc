@@ -15,7 +15,7 @@ using ::sekai::db::MasterDb;
 
 constexpr float kDefaultBonusRate = 25;
 constexpr float kDefaultCardBonusRate = 20;
-constexpr float kSubunitlessOffset = 10;
+constexpr float kSubunitlessOffset = 0;
 
 void PopulateAttrBonus(db::Attr attr, float rate, EventBonus::DeckBonusType& deck_bonus) {
   for (int char_id = 1; char_id < static_cast<int64_t>(deck_bonus.size()); ++char_id) {
