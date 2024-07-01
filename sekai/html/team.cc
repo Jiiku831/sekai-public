@@ -16,8 +16,9 @@ CTML::Node Team(const TeamProto& team) {
   }
   row.AppendChild(CTML::Node("td").AppendChild(CTML::Node(
       "pre.team-details",
-      absl::StrFormat("power        %d\nevent bonus  %.2f%%\nskill_value  +%d%%\nexpected ep  %d",
-                      team.power(), team.event_bonus(), team.skill_value(), team.expected_ep()))));
+      absl::StrFormat(
+          "Power        %6d\nEvent Bonus  %5.1f%%\nSkill Value  %5.1f%%\nExpected EP  %6d",
+          team.power(), team.event_bonus(), team.skill_value(), team.expected_ep()))));
   CTML::Node node{"table.team"};
   node.AppendChild(row);
   return node;

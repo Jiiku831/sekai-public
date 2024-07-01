@@ -154,7 +154,7 @@ CTML::Node Card(const CardProto& card) {
 Lv %-2d/MR %d/SL %d
 ---------------
 Power    %6d
-Bonus    %6.2f
+Bonus    %5.1f%%
 Skill    %5.0f%%
 W Skill  %6s)",
                       // Trained  %6s
