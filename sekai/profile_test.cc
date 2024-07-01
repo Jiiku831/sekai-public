@@ -5,6 +5,8 @@
 
 #include "absl/log/log.h"
 #include "sekai/config.h"
+#include "sekai/proto_util.h"
+#include "sekai/unit_count.h"
 #include "testing/util.h"
 
 namespace sekai {
@@ -203,6 +205,24 @@ TEST(ProfileTest, LoadCardsFromCsv) {
   Profile profile(TestProfile());
   profile.LoadCardsFromCsv(SekaiRunfilesRoot() / "data/profile/cards.csv");
   EXPECT_THAT(profile.CardPtrs(), IsEmpty());
+}
+
+TEST(ProfileTest, ApplySkillCharacterRanks) {
+  auto profile_proto = ParseTextProto<ProfileProto>(R"pb(
+    cards: {
+      key: 950
+      value: {level: 60 master_rank: 5 skill_level: 4 special_training: true}
+    }
+  )pb");
+  profile_proto.MergeFrom(TestProfile());
+  profile_proto.set_character_ranks(25, 120);
+  Profile profile(profile_proto);
+  const Card* card = profile.GetCard(950);
+  ASSERT_NE(card, nullptr);
+
+  std::vector<const Card*> cards = {card};
+  UnitCount unit_count{cards};
+  EXPECT_FLOAT_EQ(card->SkillValue(unit_count), 160);
 }
 
 }  // namespace

@@ -266,6 +266,7 @@ cc_test(
     ],
     deps = [
         ":profile",
+        ":unit_count",
         "//sekai/db/proto:all",
         "//testing:test_main",
         "//testing:util",

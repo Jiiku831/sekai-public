@@ -87,14 +87,14 @@ Profile::Profile(const ProfileProto& profile) : Profile() {
   bonus_power_ = profile.bonus_power();
   LoadAreaItemBonus(profile, attr_bonus_, char_bonus_, unit_bonus_);
   LoadCharacterRankBonus(profile, cr_bonus_);
-  LoadCards(profile, cards_);
-  for (auto& [unused_id, card] : cards_) {
-    card.ApplyProfilePowerBonus(*this);
-  }
-
   for (int char_id : UniqueCharacterIds()) {
     ABSL_CHECK_LT(char_id, static_cast<int>(profile.character_ranks_size()));
     character_rank_[char_id] = profile.character_ranks(char_id);
+  }
+
+  LoadCards(profile, cards_);
+  for (auto& [unused_id, card] : cards_) {
+    card.ApplyProfilePowerBonus(*this);
   }
 }
 
