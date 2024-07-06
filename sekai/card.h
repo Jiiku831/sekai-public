@@ -34,9 +34,13 @@ class Card : public CardBase {
     return std::min(kReferenceScoreBoostCap, MaxSkillValue());
   }
 
-  void ApplyEventBonus(const EventBonus& event_bonus, const SupportUnitEventBonus& support_bonus);
+  void ApplyEventBonus(const EventBonus& event_bonus, const EventBonus& support_bonus);
   void ApplyEventBonus(const EventBonus& event_bonus) {
-    ApplyEventBonus(event_bonus, SupportUnitEventBonus{});
+    if (event_bonus.SupportUnitBonus() != nullptr) {
+      ApplyEventBonus(event_bonus, *event_bonus.SupportUnitBonus());
+    } else {
+      ApplyEventBonus(event_bonus, SupportUnitEventBonus{});
+    }
   }
 
   void ApplyProfilePowerBonus(const ProfileBonus& profile);

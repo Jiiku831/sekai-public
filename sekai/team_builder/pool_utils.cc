@@ -24,6 +24,12 @@ struct GreaterCardByBonus {
   }
 };
 
+struct GreaterCardBySupportBonus {
+  bool operator()(const Card* lhs, const Card* rhs) {
+    return lhs->support_bonus() > rhs->support_bonus();
+  }
+};
+
 struct GreaterCardByPower {
   bool attr_match;
   bool primary_unit_match;
@@ -96,6 +102,18 @@ std::vector<const Card*> FilterCardsByAttr(db::Attr attr, std::span<const Card* 
       new_pool.push_back(card);
     }
   }
+  return new_pool;
+}
+
+std::vector<const Card*> GetSortedSupportPool(std::span<const Card* const> pool) {
+  std::vector<const Card*> new_pool;
+  new_pool.reserve(pool.size());
+  for (const Card* card : pool) {
+    if (card->support_bonus() > 0) {
+      new_pool.push_back(card);
+    }
+  }
+  std::stable_sort(new_pool.begin(), new_pool.end(), GreaterCardBySupportBonus{});
   return new_pool;
 }
 

@@ -144,14 +144,11 @@ Card::Card(const db::Card& card, const CardState& state) : CardBase(card), state
 }
 
 float Card::GetBonus(const EventBonus& event_bonus) const {
-  return event_bonus.card_bonus(card_id_) +
-         event_bonus.deck_bonus(character_id_, db_attr_, db_primary_unit_) +
-         event_bonus.master_rank_bonus(db_rarity_, master_rank_) +
-         event_bonus.skill_level_bonus(db_rarity_, skill_level_);
+  return event_bonus.GetBonus(card_id_, character_id_, db_attr_, db_primary_unit_, db_rarity_,
+                              master_rank_, skill_level_);
 }
 
-void Card::ApplyEventBonus(const EventBonus& event_bonus,
-                           const SupportUnitEventBonus& support_bonus) {
+void Card::ApplyEventBonus(const EventBonus& event_bonus, const EventBonus& support_bonus) {
   event_bonus_ = GetBonus(event_bonus);
   support_bonus_ = GetBonus(support_bonus);
 }

@@ -236,6 +236,10 @@ std::vector<Team> EventTeamBuilder::RecommendTeamsImpl(std::span<const Card* con
                      lead_chars](const std::array<const Card*, 5>& candidate_cards) {
                       ++local_teams_considered;
                       Team candidate_team{candidate_cards};
+                      if (!support_pool_.empty()) {
+                        candidate_team.FillSupportCards(support_pool_);
+                      }
+
                       int power = candidate_team.Power(profile);
                       float eb = candidate_team.EventBonus(event_bonus);
 

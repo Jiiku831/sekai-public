@@ -221,7 +221,10 @@ cc_test(
         "//data:flat-db",
     ],
     deps = [
+        ":card",
         ":event_bonus",
+        "//sekai/db:master_db",
+        "//sekai/proto:card_state_cc_proto",
         "//sekai/proto:event_bonus_cc_proto",
         "//testing:test_main",
         "//testing:util",

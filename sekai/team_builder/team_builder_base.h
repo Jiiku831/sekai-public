@@ -1,6 +1,7 @@
 #pragma once
 
 #include "sekai/team_builder/constraints.h"
+#include "sekai/team_builder/pool_utils.h"
 #include "sekai/team_builder/team_builder.h"
 
 namespace sekai {
@@ -12,6 +13,7 @@ class TeamBuilderBase : public TeamBuilder {
   std::vector<Team> RecommendTeams(std::span<const Card* const> pool, const Profile& profile,
                                    const EventBonus& event_bonus, const Estimator& estimator,
                                    std::optional<absl::Time> deadline = std::nullopt) override {
+    support_pool_ = GetSortedSupportPool(pool);
     return RecommendTeamsImpl(constraints_.FilterCardPool(pool), profile, event_bonus, estimator,
                               deadline);
   }
@@ -28,6 +30,7 @@ class TeamBuilderBase : public TeamBuilder {
  protected:
   TeamBuilder::Stats stats_;
   Constraints constraints_;
+  std::vector<const Card*> support_pool_;
 };
 
 }  // namespace sekai

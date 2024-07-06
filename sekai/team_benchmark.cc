@@ -148,7 +148,7 @@ void BM_TeamComputeEventBonusNoDiffAttr(benchmark::State& state) {
       CreateCard(profile, /*card_id=*/511, /*level=*/60),
       CreateCard(profile, /*card_id=*/787, /*level=*/60),
   };
-  auto event_id = ParseTextProto<EventId>(R"pb(event_id: 112 chapter_id: 1)pb");
+  auto event_id = ParseTextProto<EventId>(R"pb(event_id: 113)pb");
   EventBonus bonus(event_id);
   for (Card& card : cards) {
     card.ApplyEventBonus(bonus);
@@ -156,7 +156,7 @@ void BM_TeamComputeEventBonusNoDiffAttr(benchmark::State& state) {
   auto card_ptrs = MakeCardPtrs(cards);
   for (auto _ : state) {
     Team team{card_ptrs};
-    benchmark::DoNotOptimize(team.EventBonus());
+    benchmark::DoNotOptimize(team.EventBonus(bonus));
   }
 }
 

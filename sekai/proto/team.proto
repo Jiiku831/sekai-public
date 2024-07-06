@@ -5,10 +5,13 @@ package sekai;
 import "sekai/proto/card.proto";
 
 message TeamProto {
-  repeated CardProto cards      = 1;
-  optional int32 power          = 2;
-  optional float event_bonus    = 3;
-  optional float skill_value    = 4;
-  optional int32 expected_ep    = 5;
-  repeated int32 power_detailed = 6;
+  repeated CardProto cards         = 1;
+  optional int32 power             = 2;
+  optional float event_bonus       = 3;
+  optional float skill_value       = 4;
+  optional int32 expected_ep       = 5;
+  repeated int32 power_detailed    = 6;
+  repeated CardProto support_cards = 7;
+  optional float main_bonus        = 8;
+  optional float support_bonus     = 9;
 }

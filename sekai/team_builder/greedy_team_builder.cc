@@ -21,8 +21,9 @@ namespace sekai {
 namespace {
 
 std::vector<Team> RecommendTeamsImplNoConstraints(
-    std::span<const Card* const> sorted_pool, const Profile& profile, const EventBonus& event_bonus,
-    const Estimator& estimator, std::optional<absl::Time> deadline, TeamBuilder::Stats& stats) {
+    std::span<const Card* const> sorted_pool, std::span<const Card* const> support_pool,
+    const Profile& profile, const EventBonus& event_bonus, const Estimator& estimator,
+    std::optional<absl::Time> deadline, TeamBuilder::Stats& stats) {
   std::vector<const Card*> candidate_cards;
   std::bitset<kCharacterArraySize> chars_present;
   Attr attrs_present;
@@ -34,16 +35,21 @@ std::vector<Team> RecommendTeamsImplNoConstraints(
     if (candidate_cards.size() == 5) {
       ++stats.teams_considered;
       ++stats.teams_evaluated;
-      return {Team{candidate_cards}};
+      Team team{candidate_cards};
+      if (!support_pool.empty()) {
+        team.FillSupportCards(support_pool);
+      }
+      return {team};
     }
   }
   return {};
 }
 
 std::vector<Team> RecommendTeamsImplWithConstraints(
-    std::span<const Card* const> sorted_pool, const Profile& profile, const EventBonus& event_bonus,
-    const Estimator& estimator, std::optional<absl::Time> deadline, const Constraints& constraints,
-    OptimizationObjective obj, TeamBuilder::Stats& stats) {
+    std::span<const Card* const> sorted_pool, std::span<const Card* const> support_pool,
+    const Profile& profile, const EventBonus& event_bonus, const Estimator& estimator,
+    std::optional<absl::Time> deadline, const Constraints& constraints, OptimizationObjective obj,
+    TeamBuilder::Stats& stats) {
   ObjectiveFunction obj_fn = GetObjectiveFunction(obj);
   std::array<std::vector<const Card*>, kCharacterArraySize> char_pools =
       PartitionCardPoolByCharacters(sorted_pool);
@@ -96,6 +102,9 @@ std::vector<Team> RecommendTeamsImplWithConstraints(
             }
 
             if (constraints_satisfied) {
+              if (!support_pool.empty()) {
+                candidate_team.FillSupportCards(support_pool);
+              }
               if (!best_team.has_value() ||
                   obj_fn(*best_team, profile, event_bonus, estimator, lead_chars) <
                       obj_fn(candidate_team, profile, event_bonus, estimator, lead_chars)) {
@@ -123,10 +132,11 @@ std::vector<Team> GreedyTeamBuilder::RecommendTeamsImpl(std::span<const Card* co
                                                         const Estimator& estimator,
                                                         std::optional<absl::Time> deadline) {
   if (constraints_.empty()) {
-    return RecommendTeamsImplNoConstraints(pool, profile, event_bonus, estimator, deadline, stats_);
+    return RecommendTeamsImplNoConstraints(pool, support_pool_, profile, event_bonus, estimator,
+                                           deadline, stats_);
   }
-  return RecommendTeamsImplWithConstraints(pool, profile, event_bonus, estimator, deadline,
-                                           constraints_, obj_, stats_);
+  return RecommendTeamsImplWithConstraints(pool, support_pool_, profile, event_bonus, estimator,
+                                           deadline, constraints_, obj_, stats_);
 }
 
 }  // namespace sekai

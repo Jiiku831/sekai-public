@@ -18,6 +18,8 @@ inline constexpr int kMaxSkillValue = 160 + (160 / 5) * 4;
 
 inline constexpr float kReferenceScoreBoostCap = 140.0;
 
+inline constexpr std::size_t kSupportTeamSize = 12;
+
 std::string_view CppVersion();
 const std::filesystem::path& SekaiBestRoot();
 const std::filesystem::path& MasterDbRoot();

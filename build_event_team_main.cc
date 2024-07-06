@@ -31,11 +31,14 @@
 #include "sekai/team_builder/optimization_objective.h"
 #include "sekai/team_builder/simulated_annealing_team_builder.h"
 
-ABSL_FLAG(int, event_id, 0, "event_id");
+ABSL_FLAG(int, event_id, 0, "event id");
+ABSL_FLAG(int, chapter_id, 0, "chapter id");
 ABSL_FLAG(std::string, output, "", "output path");
 ABSL_FLAG(std::optional<int>, max_skill, std::nullopt, "max skill of any team");
 ABSL_FLAG(bool, use_simulated_annealing, false,
           "whether or not to use simulated annealing. note this method is non-exact");
+
+constexpr std::string_view kBestTeamTitle = "Best Team";
 
 using namespace sekai;
 
@@ -100,14 +103,16 @@ struct BestTeams {
 
 BestTeams GetBestTeamsSimulatedAnnealing(std::span<const Card* const> cards, const Profile& profile,
                                          const EventBonus& event_bonus, const Estimator& estimator,
-                                         const Constraints& constraints) {
+                                         const Constraints& constraints, bool compute_max) {
   BestTeams teams;
-  teams.max_bonus_team = GetMaxTeamSimulatedAnnealingOptional(
-      OptimizationObjective::kOptimizeBonus, cards, profile, event_bonus, estimator, constraints);
-  teams.max_power_team = GetMaxTeamSimulatedAnnealingOptional(
-      OptimizationObjective::kOptimizePower, cards, profile, event_bonus, estimator, constraints);
-  teams.max_skill_team = GetMaxTeamSimulatedAnnealingOptional(
-      OptimizationObjective::kOptimizeSkill, cards, profile, event_bonus, estimator, constraints);
+  if (compute_max) {
+    teams.max_bonus_team = GetMaxTeamSimulatedAnnealingOptional(
+        OptimizationObjective::kOptimizeBonus, cards, profile, event_bonus, estimator, constraints);
+    teams.max_power_team = GetMaxTeamSimulatedAnnealingOptional(
+        OptimizationObjective::kOptimizePower, cards, profile, event_bonus, estimator, constraints);
+    teams.max_skill_team = GetMaxTeamSimulatedAnnealingOptional(
+        OptimizationObjective::kOptimizeSkill, cards, profile, event_bonus, estimator, constraints);
+  }
   teams.recommended_teams = GetMaxTeamSimulatedAnnealing(
       OptimizationObjective::kOptimizePoints, cards, profile, event_bonus, estimator, constraints);
   return teams;
@@ -158,19 +163,101 @@ BestTeams GetBestTeamsExhaustive(std::span<const Card* const> cards, const Profi
   return teams;
 }
 
+std::vector<std::pair<std::string, TeamProto>> BuildEventTeamProtos(const EventBonus& event_bonus,
+                                                                    const Estimator& estimator,
+                                                                    bool compute_max) {
+  Constraints constraints = LoadConstraints();
+  Profile profile = LoadProfile();
+  profile.ApplyEventBonus(event_bonus);
+
+  std::vector<const Card*> cards = profile.CardPtrs();
+  std::cout << "Pool size: " << cards.size() << std::endl;
+
+  BestTeams teams =
+      absl::GetFlag(FLAGS_use_simulated_annealing)
+          ? GetBestTeamsSimulatedAnnealing(cards, profile, event_bonus, estimator, constraints,
+                                           compute_max)
+          : GetBestTeamsExhaustive(cards, profile, event_bonus, estimator, constraints);
+
+  std::vector<std::pair<std::string, TeamProto>> team_protos;
+  for (Team& team : teams.recommended_teams) {
+    team.ReorderTeamForOptimalSkillValue(constraints);
+    team_protos.emplace_back(kBestTeamTitle, team.ToProto(profile, event_bonus, estimator));
+    // NOTE: need to change return type if we want multiple recommended teams.
+    break;
+  }
+  if (teams.max_bonus_team.has_value()) {
+    teams.max_bonus_team->ReorderTeamForOptimalSkillValue(constraints);
+    team_protos.emplace_back("Max Bonus",
+                             teams.max_bonus_team->ToProto(profile, event_bonus, estimator));
+  }
+  if (teams.max_power_team.has_value()) {
+    teams.max_power_team->ReorderTeamForOptimalSkillValue(constraints);
+    team_protos.emplace_back("Max Power",
+                             teams.max_power_team->ToProto(profile, event_bonus, estimator));
+  }
+  if (teams.max_skill_team.has_value()) {
+    teams.max_skill_team->ReorderTeamForOptimalSkillValue(constraints);
+    team_protos.emplace_back("Max Skill",
+                             teams.max_skill_team->ToProto(profile, event_bonus, estimator));
+  }
+  return team_protos;
+}
+
+std::vector<std::pair<std::string, TeamProto>> BuildAllWorldBloomTeams() {
+  std::vector<std::pair<std::string, TeamProto>> teams;
+  Estimator estimator = RandomExEstimator(Estimator::Mode::kMulti);
+  for (int i = 1; i <= 4; ++i) {
+    EventId event_id;
+    event_id.set_event_id(absl::GetFlag(FLAGS_event_id));
+    event_id.set_chapter_id(i);
+    EventBonus event_bonus{event_id};
+
+    absl::Nullable<const db::WorldBloom*> world_bloom = nullptr;
+    for (const auto* cand : db::MasterDb::FindAll<db::WorldBloom>(event_id.event_id())) {
+      if (cand->chapter_no() == i) {
+        world_bloom = cand;
+        break;
+      }
+    }
+    ABSL_CHECK_NE(world_bloom, nullptr);
+
+    std::vector<std::pair<std::string, TeamProto>> chapter_teams =
+        BuildEventTeamProtos(event_bonus, estimator, /*compute_max=*/false);
+    auto chapter_char =
+        db::MasterDb::FindFirst<db::GameCharacter>(world_bloom->game_character_id());
+    std::string title = absl::StrCat("Chapter ", chapter_char.given_name());
+    TeamProto team_proto;
+    if (!chapter_teams.empty() && chapter_teams.front().first == kBestTeamTitle) {
+      team_proto = chapter_teams.front().second;
+    }
+    teams.emplace_back(title, team_proto);
+  }
+  return teams;
+}
+
 int main(int argc, char** argv) {
   Init(argc, argv);
 
   ABSL_CHECK(!absl::GetFlag(FLAGS_output).empty());
 
   EventBonus event_bonus;
+  bool is_wl_no_chapter_id = false;
   Estimator estimator = RandomExEstimator(Estimator::Mode::kMulti);
   if (absl::GetFlag(FLAGS_event_id) > 0) {
+    EventId event_id;
+    event_id.set_event_id(absl::GetFlag(FLAGS_event_id));
+    if (absl::GetFlag(FLAGS_chapter_id) > 0) {
+      event_id.set_chapter_id(absl::GetFlag(FLAGS_chapter_id));
+    }
+    event_bonus = EventBonus(event_id);
     const db::Event& event = db::MasterDb::FindFirst<db::Event>(absl::GetFlag(FLAGS_event_id));
-    event_bonus = EventBonus(event);
     estimator = RandomExEstimator(event.event_type() == db::Event::CHEERFUL_CARNIVAL
                                       ? Estimator::Mode::kCheerful
                                       : Estimator::Mode::kMulti);
+    if (event.event_type() == db::Event::WORLD_BLOOM && absl::GetFlag(FLAGS_chapter_id) <= 0) {
+      is_wl_no_chapter_id = true;
+    }
   } else {
     //  1 - Ichika    2 - Saki     3 - Honami   4 - Shiho
     //  5 - Minori    6 - Haruka   7 - Airi     8 - Shizuku
@@ -194,38 +281,14 @@ int main(int argc, char** argv) {
     )pb");
     event_bonus = EventBonus(simple_event_bonus);
   }
-  Constraints constraints = LoadConstraints();
-  Profile profile = LoadProfile();
-  profile.ApplyEventBonus(event_bonus);
-
-  std::vector<const Card*> cards = profile.CardPtrs();
-  std::cout << "Pool size: " << cards.size() << std::endl;
-
-  BestTeams teams =
-      absl::GetFlag(FLAGS_use_simulated_annealing)
-          ? GetBestTeamsSimulatedAnnealing(cards, profile, event_bonus, estimator, constraints)
-          : GetBestTeamsExhaustive(cards, profile, event_bonus, estimator, constraints);
+  std::vector<std::pair<std::string, TeamProto>> teams =
+      is_wl_no_chapter_id ? BuildAllWorldBloomTeams()
+                          : BuildEventTeamProtos(event_bonus, estimator, /*compute_max=*/true);
 
   CTML::Node root("div");
-  root.AppendChild(CTML::Node("h3", "Best Teams"));
-  for (Team& team : teams.recommended_teams) {
-    team.ReorderTeamForOptimalSkillValue(constraints);
-    root.AppendChild(html::Team(team.ToProto(profile, event_bonus, estimator)));
-  }
-  if (teams.max_bonus_team.has_value()) {
-    root.AppendChild(CTML::Node("h3", "Max Bonus"));
-    teams.max_bonus_team->ReorderTeamForOptimalSkillValue(constraints);
-    root.AppendChild(html::Team(teams.max_bonus_team->ToProto(profile, event_bonus, estimator)));
-  }
-  if (teams.max_power_team.has_value()) {
-    root.AppendChild(CTML::Node("h3", "Max Power"));
-    teams.max_power_team->ReorderTeamForOptimalSkillValue(constraints);
-    root.AppendChild(html::Team(teams.max_power_team->ToProto(profile, event_bonus, estimator)));
-  }
-  if (teams.max_skill_team.has_value()) {
-    root.AppendChild(CTML::Node("h3", "Max Skill"));
-    teams.max_skill_team->ReorderTeamForOptimalSkillValue(constraints);
-    root.AppendChild(html::Team(teams.max_skill_team->ToProto(profile, event_bonus, estimator)));
+  for (const auto& [title, team] : teams) {
+    root.AppendChild(CTML::Node("h3", title));
+    root.AppendChild(html::Team(team));
   }
   std::ofstream fout(absl::GetFlag(FLAGS_output));
   fout << html::CreateReport(root);

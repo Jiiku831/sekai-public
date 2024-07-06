@@ -304,8 +304,7 @@ TEST_F(TeamTest, ExampleTeam1EventBonus) {
     card.ApplyEventBonus(bonus);
   }
   Team team = MakeTeam(cards);
-  EXPECT_FLOAT_EQ(team.EventBonus(), 295);
-  EXPECT_FLOAT_EQ(team.EventBonus(), team.EventBonus(bonus));
+  EXPECT_FLOAT_EQ(team.EventBonus(bonus), 295);
 }
 
 TEST_F(TeamTest, ExampleTeam2EventBonus) {
@@ -323,8 +322,54 @@ TEST_F(TeamTest, ExampleTeam2EventBonus) {
     card.ApplyEventBonus(bonus);
   }
   Team team = MakeTeam(cards);
-  EXPECT_FLOAT_EQ(team.EventBonus(), 310 - 125);
   EXPECT_FLOAT_EQ(team.EventBonus(bonus), 310);
+}
+
+TEST_F(TeamTest, FillSupportUnit) {
+  std::array cards = {
+      CreateCard(profile_, /*card_id=*/404, /*level=*/60, /*master_rank=*/5),
+      CreateCard(profile_, /*card_id=*/219, /*level=*/60),
+      CreateCard(profile_, /*card_id=*/239, /*level=*/60),
+      CreateCard(profile_, /*card_id=*/115, /*level=*/60),
+      CreateCard(profile_, /*card_id=*/787, /*level=*/60),
+  };
+  std::array support_pool = {
+      cards[0],
+      cards[1],
+      cards[2],
+      cards[3],
+      cards[4],
+      CreateCard(profile_, /*card_id=*/69, /*level=*/10),   // 6%
+      CreateCard(profile_, /*card_id=*/70, /*level=*/10),   // 7%
+      CreateCard(profile_, /*card_id=*/71, /*level=*/10),   // 8%
+      CreateCard(profile_, /*card_id=*/114, /*level=*/10),  // 15%
+      CreateCard(profile_, /*card_id=*/127, /*level=*/10),  // 8%
+      CreateCard(profile_, /*card_id=*/176, /*level=*/10),  // 15%
+      CreateCard(profile_, /*card_id=*/196, /*level=*/10),  // 15%
+      CreateCard(profile_, /*card_id=*/206, /*level=*/10),  // 7%
+      CreateCard(profile_, /*card_id=*/239, /*level=*/10),  // 15%
+      CreateCard(profile_, /*card_id=*/278, /*level=*/10),  // 7%
+      CreateCard(profile_, /*card_id=*/284, /*level=*/10),  // 15%
+      CreateCard(profile_, /*card_id=*/311, /*level=*/10),  // 7%
+      CreateCard(profile_, /*card_id=*/324, /*level=*/10),  // 15%
+  };
+  std::vector<const Card*> support_ptrs;
+  for (const Card& card : support_pool) {
+    support_ptrs.push_back(&card);
+  }
+  auto event_id = ParseTextProto<EventId>(R"pb(event_id: 112 chapter_id: 1)pb");
+  EventBonus bonus(event_id);
+  EventBonusProto bonus_proto = bonus.ToProto();
+  for (Card& card : cards) {
+    card.ApplyEventBonus(bonus);
+  }
+  for (Card& card : support_pool) {
+    card.ApplyEventBonus(bonus);
+  }
+  Team team = MakeTeam(cards);
+  EXPECT_FLOAT_EQ(team.EventBonus(bonus), 310);
+  team.FillSupportCards(support_ptrs);
+  EXPECT_FLOAT_EQ(team.EventBonus(bonus), 310 + 6 + 7 + 8 + 15 + 8 + 15 + 15 + 7 + 15 + 7 + 15 + 7);
 }
 
 TEST_F(TeamTest, ExampleTeam1SkillValue) {

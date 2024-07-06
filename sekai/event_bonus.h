@@ -1,5 +1,7 @@
 #pragma once
 
+#include "absl/base/nullability.h"
+#include "sekai/bitset.h"
 #include "sekai/config.h"
 #include "sekai/db/proto/all.h"
 #include "sekai/proto/event_bonus.pb.h"
@@ -35,6 +37,14 @@ class EventBonus {
   using DeckBonusType =
       std::vector<std::array<std::array<float, db::Unit_ARRAYSIZE>, db::Attr_ARRAYSIZE>>;
 
+  absl::Nullable<const EventBonus*> SupportUnitBonus() const { return support_bonus_.get(); }
+
+  virtual float GetBonus(int card_id, int character_id, db::Attr attr, db::Unit unit,
+                         db::CardRarityType rarity, int master_rank, int skill_level) const {
+    return card_bonus(card_id) + deck_bonus(character_id, attr, unit) +
+           master_rank_bonus(rarity, master_rank) + skill_level_bonus(rarity, skill_level);
+  }
+
  protected:
   std::vector<float> card_bonus_;
   DeckBonusType deck_bonus_;
@@ -44,6 +54,8 @@ class EventBonus {
       skill_level_bonus_;
   std::array<float, db::Attr_ARRAYSIZE> diff_attr_bonus_;
   bool has_diff_attr_bonus_ = false;
+
+  std::unique_ptr<EventBonus> support_bonus_ = nullptr;
 };
 
 class SupportUnitEventBonus : public EventBonus {
@@ -51,6 +63,19 @@ class SupportUnitEventBonus : public EventBonus {
   SupportUnitEventBonus();
   explicit SupportUnitEventBonus(const EventId& event_id);
   explicit SupportUnitEventBonus(const SimpleEventBonus& event_bonus);
+
+  float GetBonus(int card_id, int character_id, db::Attr attr, db::Unit unit,
+                 db::CardRarityType rarity, int master_rank, int skill_level) const override {
+    if (!chapter_unit_.test(unit)) {
+      return 0;
+    }
+    return card_bonus(card_id) + deck_bonus(character_id, attr, unit) +
+           master_rank_bonus(rarity, master_rank) + skill_level_bonus(rarity, skill_level);
+  }
+
+ private:
+  int chapter_char_ = 0;
+  Unit chapter_unit_;
 };
 
 }  // namespace sekai

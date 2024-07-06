@@ -281,7 +281,7 @@ TEST(FilterCardsByAttrTest, FiltersByAttrCute) {
   EXPECT_THAT(filtered_pool, ElementsAreArray(expected_pool));
 }
 
-TEST(FilterCardsByAttrTest, FiltersByAttrPur) {
+TEST(FilterCardsByAttrTest, FiltersByAttrPuree) {
   CardState state;
   state.set_master_rank(0);
   state.set_skill_level(1);
@@ -305,6 +305,43 @@ TEST(FilterCardsByAttrTest, FiltersByAttrPur) {
   }
 
   std::vector<const Card*> filtered_pool = FilterCardsByAttr(db::ATTR_PURE, GetCardPtrs(cards));
+  EXPECT_THAT(filtered_pool, ElementsAreArray(expected_pool));
+}
+
+TEST(GetSortedSupportPoolTest, FiltersIneligibleAndSortsBySupportBonus) {
+  CardState state;
+  state.set_master_rank(0);
+  state.set_skill_level(1);
+
+  std::vector<Card> cards = {
+      {MasterDb::FindFirst<db::Card>(74), state},   // 0 - Ena 2* - 2%
+      {MasterDb::FindFirst<db::Card>(69), state},   // 1 - Mafuyu 1* - 6%
+      {MasterDb::FindFirst<db::Card>(71), state},   // 2 - Mafuyu 3* - 8%
+      {MasterDb::FindFirst<db::Card>(73), state},   // 3 - Ena 1* - 1%
+      {MasterDb::FindFirst<db::Card>(70), state},   // 4 - Mafuyu 2* - 7%
+      {MasterDb::FindFirst<db::Card>(75), state},   // 5 - Ena 3* - 3%
+      {MasterDb::FindFirst<db::Card>(198), state},  // 6 - LN Miku 4* - X
+      {MasterDb::FindFirst<db::Card>(152), state},  // 7 - Ena 4* - 10%
+      {MasterDb::FindFirst<db::Card>(114), state},  // 8 - Mafuyu 4* - 15%
+      {MasterDb::FindFirst<db::Card>(116), state},  // 9 - 25 Miku 4* - 10%
+  };
+
+  EventId event_id;
+  event_id.set_event_id(112);
+  event_id.set_chapter_id(1);
+  EventBonus event_bonus(event_id);
+  for (Card& card : cards) {
+    card.ApplyEventBonus(event_bonus);
+  }
+
+  std::vector<int> expected_order = {8, 7, 9, 2, 4, 1, 5, 0, 3};
+
+  std::vector<const Card*> expected_pool;
+  for (int index : expected_order) {
+    expected_pool.push_back(&cards[index]);
+  }
+
+  std::vector<const Card*> filtered_pool = GetSortedSupportPool(GetCardPtrs(cards));
   EXPECT_THAT(filtered_pool, ElementsAreArray(expected_pool));
 }
 

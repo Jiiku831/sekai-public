@@ -170,4 +170,17 @@ W Skill  %6s)",
   return table;
 }
 
+CTML::Node SupportCard(const CardProto& card) {
+  bool use_trained_thumbnail = card.state().special_training();
+  CTML::Node table{"table.card.support-card"};
+  table.AppendChild(CTML::Node("tr").AppendChild(
+      CTML::Node("td.card-svg-td").AppendChild(Card(card.db_card(), use_trained_thumbnail))));
+  std::string detail_string =
+      absl::StrFormat("MR%d/SL%d\n%.1f%%", card.state().master_rank(), card.state().skill_level(),
+                      card.team_bonus_contrib());
+  table.AppendChild(
+      CTML::Node("tr").AppendChild(CTML::Node("td").AppendChild(CTML::Node("pre", detail_string))));
+  return table;
+}
+
 }  // namespace sekai::html

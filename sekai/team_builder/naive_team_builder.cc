@@ -43,6 +43,9 @@ std::vector<Team> NaiveTeamBuilder::RecommendTeamsImpl(std::span<const Card* con
             return true;
           }
         }
+        if (!support_pool_.empty()) {
+          candidate_team.FillSupportCards(support_pool_);
+        }
         ++stats_.teams_evaluated;
         double candidate_val =
             objective(candidate_team, profile, event_bonus, estimator, lead_chars);

@@ -25,8 +25,9 @@ namespace {
 
 constexpr int kTeamSize = 5;
 
-std::optional<Team> GetRandomTeam(std::span<const Card* const> pool, const Constraints& constraints,
-                                  std::mt19937& g) {
+std::optional<Team> GetRandomTeam(std::span<const Card* const> pool,
+                                  std::span<const Card* const> support_pool,
+                                  const Constraints& constraints, std::mt19937& g) {
   std::array<std::vector<const Card*>, kCharacterArraySize> char_pools =
       PartitionCardPoolByCharacters(pool);
 
@@ -80,6 +81,9 @@ std::optional<Team> GetRandomTeam(std::span<const Card* const> pool, const Const
             }
 
             if (constraints_satisfied) {
+              if (!support_pool.empty()) {
+                candidate_team.FillSupportCards(support_pool);
+              }
               team = candidate_team;
               return false;
             }
@@ -119,7 +123,7 @@ std::vector<Team> SimulatedAnnealingTeamBuilder::RecommendTeamsImpl(
 
   SimpleNeighbors neighbors_gen(shuffled_pool, constraints_);
   ObjectiveFunction objective = GetObjectiveFunction(obj_);
-  std::optional<Team> best_team = GetRandomTeam(shuffled_pool, constraints_, g);
+  std::optional<Team> best_team = GetRandomTeam(shuffled_pool, support_pool_, constraints_, g);
 
   if (!best_team.has_value()) {
     return {};
@@ -144,6 +148,9 @@ std::vector<Team> SimulatedAnnealingTeamBuilder::RecommendTeamsImpl(
     std::optional<Team> new_team = neighbors_gen.GetRandomNeighbor(current_team, g);
     if (new_team.has_value()) {
       ++stats_.teams_evaluated;
+      if (!support_pool_.empty()) {
+        new_team->FillSupportCards(support_pool_);
+      }
       float new_val =
           objective(*new_team, profile, event_bonus, estimator,
                     constraints_.GetCharactersEligibleForLead(new_team->chars_present()));

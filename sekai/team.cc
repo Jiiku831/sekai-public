@@ -7,8 +7,10 @@
 
 #include <Eigen/Eigen>
 
+#include "sekai/array_size.h"
 #include "sekai/bitset.h"
 #include "sekai/card.h"
+#include "sekai/config.h"
 #include "sekai/db/master_db.h"
 #include "sekai/db/proto/all.h"
 #include "sekai/event_bonus.h"
@@ -94,9 +96,9 @@ int Team::MinPowerContrib(const Profile& profile) const {
 
 float Team::EventBonus(const class EventBonus& event_bonus) const {
   if (!event_bonus.has_diff_attr_bonus()) {
-    return event_bonus_base_;
+    return EventBonus();
   }
-  return event_bonus_base_ + event_bonus.diff_attr_bonus(attrs_count_);
+  return EventBonus() + event_bonus.diff_attr_bonus(attrs_count_);
 }
 
 float Team::MinBonusContrib() const {
@@ -213,6 +215,13 @@ TeamProto Team::ToProto(const Profile& profile, const class EventBonus& event_bo
     card_proto->set_team_bonus_contrib(CardBonusContrib(card));
     card_proto->set_team_skill_contrib(CardSkillContrib(card, unit_count));
   }
+  float support_bonus = 0;
+  for (const Card* card : support_cards_) {
+    CardProto* card_proto = team.add_support_cards();
+    *card_proto = card->ToProto(unit_count);
+    card_proto->set_team_bonus_contrib(card->support_bonus());
+    support_bonus += card->support_bonus();
+  }
   team.set_power(Power(profile));
   team.set_event_bonus(EventBonus(event_bonus));
   team.set_skill_value(SkillValue());
@@ -220,7 +229,28 @@ TeamProto Team::ToProto(const Profile& profile, const class EventBonus& event_bo
                                             team.skill_value()));
   Eigen::Vector4i power_detailed = PowerDetailed(profile);
   *team.mutable_power_detailed() = {power_detailed.begin(), power_detailed.end()};
+  if (!support_cards_.empty()) {
+    team.set_support_bonus(support_bonus);
+    team.set_main_bonus(team.event_bonus() - support_bonus);
+  }
   return team;
+}
+
+void Team::FillSupportCards(std::span<const Card* const> sorted_pool) {
+  std::bitset<kCardArraySize> cards_present;
+  support_cards_.clear();
+  support_bonus_base_ = 0;
+  for (const Card* card : cards_) {
+    cards_present.set(card->card_id());
+  }
+  for (std::size_t i = 0; i < sorted_pool.size() && support_cards_.size() < kSupportTeamSize; ++i) {
+    const Card* candidate_card = sorted_pool[i];
+    if (cards_present.test(candidate_card->card_id())) {
+      continue;
+    }
+    support_cards_.push_back(candidate_card);
+    support_bonus_base_ += candidate_card->support_bonus();
+  }
 }
 
 }  // namespace sekai

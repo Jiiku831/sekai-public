@@ -248,6 +248,7 @@ cc_library(
     hdrs = ["team_builder_base.h"],
     deps = [
         ":constraints",
+        ":pool_utils",
         ":team_builder",
     ],
 )

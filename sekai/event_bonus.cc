@@ -80,9 +80,16 @@ EventBonus::EventBonus()
       diff_attr_bonus_() {}
 
 EventBonus::EventBonus(const EventId& event_id)
-    : EventBonus(MasterDb::FindFirst<db::Event>(event_id.event_id())) {}
+    : EventBonus(MasterDb::FindFirst<db::Event>(event_id.event_id())) {
+  if (event_id.has_chapter_id()) {
+    support_bonus_ = std::unique_ptr<EventBonus>(new SupportUnitEventBonus{event_id});
+  }
+}
 
 EventBonus::EventBonus(const SimpleEventBonus& event_bonus) : EventBonus() {
+  if (event_bonus.has_chapter_char_id()) {
+    support_bonus_ = std::unique_ptr<EventBonus>(new SupportUnitEventBonus{event_bonus});
+  }
   if (event_bonus.attr() != db::ATTR_UNKNOWN) {
     PopulateAttrBonus(event_bonus.attr(), kDefaultBonusRate, deck_bonus_);
   }
@@ -270,13 +277,14 @@ SupportUnitEventBonus::SupportUnitEventBonus(const EventId& event_id) : SupportU
     }
   }
 
-  int chapter_char_id = world_bloom->game_character_id();
-  ABSL_CHECK_LT(chapter_char_id, static_cast<int64_t>(deck_bonus_.size()));
-  db::Unit unit = LookupCharacterUnit(chapter_char_id);
+  chapter_char_ = world_bloom->game_character_id();
+  ABSL_CHECK_LT(chapter_char_, static_cast<int64_t>(deck_bonus_.size()));
+  db::Unit unit = LookupCharacterUnit(chapter_char_);
+  chapter_unit_.set(unit);
   // Index: (Id, Attr, Unit)
   for (auto attr : EnumValues<db::Attr, db::Attr_descriptor>()) {
     if (attr == db::ATTR_UNKNOWN) continue;
-    deck_bonus_[chapter_char_id][attr][unit] = baseline_char_bonus;
+    deck_bonus_[chapter_char_][attr][unit] = baseline_char_bonus;
   }
 }
 
@@ -327,13 +335,14 @@ SupportUnitEventBonus::SupportUnitEventBonus(const SimpleEventBonus& event_bonus
     }
   }
 
-  int chapter_char_id = event_bonus.chapter_char_id();
-  ABSL_CHECK_LT(chapter_char_id, static_cast<int64_t>(deck_bonus_.size()));
-  db::Unit unit = LookupCharacterUnit(chapter_char_id);
+  chapter_char_ = event_bonus.chapter_char_id();
+  ABSL_CHECK_LT(chapter_char_, static_cast<int64_t>(deck_bonus_.size()));
+  db::Unit unit = LookupCharacterUnit(chapter_char_);
+  chapter_unit_.set(unit);
   // Index: (Id, Attr, Unit)
   for (auto attr : EnumValues<db::Attr, db::Attr_descriptor>()) {
     if (attr == db::ATTR_UNKNOWN) continue;
-    deck_bonus_[chapter_char_id][attr][unit] = baseline_char_bonus;
+    deck_bonus_[chapter_char_][attr][unit] = baseline_char_bonus;
   }
 }
 

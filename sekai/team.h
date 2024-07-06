@@ -31,7 +31,6 @@ class Team {
   Eigen::Vector4i PowerDetailed(const Profile& profile) const;
   int MinPowerContrib(const Profile& profile) const;
 
-  float EventBonus() const { return event_bonus_base_; }
   float EventBonus(const class EventBonus& event_bonus) const;
   float MinBonusContrib() const;
 
@@ -55,17 +54,22 @@ class Team {
   TeamProto ToProto(const Profile& profile, const class EventBonus& event_bonus,
                     const Estimator& estimator) const;
 
+  void FillSupportCards(std::span<const Card* const> sorted_pool);
+
  private:
   int CardPowerContrib(const Card* card) const;
   float CardBonusContrib(const Card* card) const;
   float CardSkillContrib(const Card* card, UnitCount& unit_count) const;
+  float EventBonus() const { return event_bonus_base_ + support_bonus_base_; }
 
   std::vector<const Card*> cards_;
+  std::vector<const Card*> support_cards_;
   Attr attrs_;
   int attrs_count_;
   Unit primary_units_;
   Unit secondary_units_;
   float event_bonus_base_ = 0;
+  float support_bonus_base_ = 0;
   bool attr_match_ = false;
   bool primary_units_match_ = false;
   bool secondary_units_match_ = false;
