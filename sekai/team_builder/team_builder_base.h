@@ -23,6 +23,8 @@ class TeamBuilderBase : public TeamBuilder {
 
   const TeamBuilder::Stats& stats() const override { return stats_; }
 
+  const Constraints& constraints() const { return constraints_; }
+
  protected:
   TeamBuilder::Stats stats_;
   Constraints constraints_;

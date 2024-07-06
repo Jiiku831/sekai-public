@@ -29,6 +29,7 @@ void Constraints::AddLeadChar(int char_id) {
   ABSL_CHECK_GT(char_id, 0) << "invalid char_id";
   ABSL_CHECK_LT(char_id, static_cast<int>(lead_chars_.size())) << "invalid char_id";
   lead_chars_.set(char_id);
+  lead_chars_vector_.push_back(char_id);
   UpdateEmpty();
 }
 
@@ -42,6 +43,7 @@ void Constraints::AddKizunaPair(std::pair<int, int> chars) {
   kizuna_pair.set(chars.first);
   kizuna_pair.set(chars.second);
   kizuna_pairs_.push_back(kizuna_pair);
+  kizuna_std_pairs_.push_back(chars);
   UpdateEmpty();
 }
 

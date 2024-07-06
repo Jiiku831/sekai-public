@@ -7,7 +7,6 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "gmock/gmock.h"
 #include "sekai/array_size.h"
 #include "sekai/card.h"
 #include "sekai/db/master_db.h"

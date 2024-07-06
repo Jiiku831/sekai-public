@@ -28,10 +28,14 @@
 #include "sekai/team_builder/event_team_builder.h"
 #include "sekai/team_builder/max_bonus_team_builder.h"
 #include "sekai/team_builder/max_power_team_builder.h"
+#include "sekai/team_builder/optimization_objective.h"
+#include "sekai/team_builder/simulated_annealing_team_builder.h"
 
 ABSL_FLAG(int, event_id, 0, "event_id");
 ABSL_FLAG(std::string, output, "", "output path");
 ABSL_FLAG(std::optional<int>, max_skill, std::nullopt, "max skill of any team");
+ABSL_FLAG(bool, use_simulated_annealing, false,
+          "whether or not to use simulated annealing. note this method is non-exact");
 
 using namespace sekai;
 
@@ -66,6 +70,92 @@ std::optional<Team> GetMaxPowerTeam(std::span<const Card* const> cards, const Pr
   std::vector<Team> teams = builder.RecommendTeams(cards, profile, event_bonus, estimator);
   if (teams.empty()) return std::nullopt;
   return teams.front();
+}
+
+std::vector<Team> GetMaxTeamSimulatedAnnealing(
+    OptimizationObjective obj, std::span<const Card* const> cards, const Profile& profile,
+    const EventBonus& event_bonus, const Estimator& estimator, const Constraints& constraints) {
+  SimulatedAnnealingTeamBuilder builder(obj);
+  builder.AddConstraints(constraints);
+  return builder.RecommendTeams(cards, profile, event_bonus, estimator);
+}
+
+std::optional<Team> GetMaxTeamSimulatedAnnealingOptional(
+    OptimizationObjective obj, std::span<const Card* const> cards, const Profile& profile,
+    const EventBonus& event_bonus, const Estimator& estimator, const Constraints& constraints) {
+  std::vector<Team> teams =
+      GetMaxTeamSimulatedAnnealing(obj, cards, profile, event_bonus, estimator, constraints);
+  if (teams.empty()) {
+    return std::nullopt;
+  }
+  return teams.front();
+}
+
+struct BestTeams {
+  std::optional<Team> max_bonus_team;
+  std::optional<Team> max_power_team;
+  std::optional<Team> max_skill_team;
+  std::vector<Team> recommended_teams;
+};
+
+BestTeams GetBestTeamsSimulatedAnnealing(std::span<const Card* const> cards, const Profile& profile,
+                                         const EventBonus& event_bonus, const Estimator& estimator,
+                                         const Constraints& constraints) {
+  BestTeams teams;
+  teams.max_bonus_team = GetMaxTeamSimulatedAnnealingOptional(
+      OptimizationObjective::kOptimizeBonus, cards, profile, event_bonus, estimator, constraints);
+  teams.max_power_team = GetMaxTeamSimulatedAnnealingOptional(
+      OptimizationObjective::kOptimizePower, cards, profile, event_bonus, estimator, constraints);
+  teams.max_skill_team = GetMaxTeamSimulatedAnnealingOptional(
+      OptimizationObjective::kOptimizeSkill, cards, profile, event_bonus, estimator, constraints);
+  teams.recommended_teams = GetMaxTeamSimulatedAnnealing(
+      OptimizationObjective::kOptimizePoints, cards, profile, event_bonus, estimator, constraints);
+  return teams;
+}
+
+BestTeams GetBestTeamsExhaustive(std::span<const Card* const> cards, const Profile& profile,
+                                 const EventBonus& event_bonus, const Estimator& estimator,
+                                 const Constraints& constraints) {
+  BestTeams teams;
+  EventTeamBuilder::Options options{
+      .enable_progress = true,
+      .prune_every_n_steps = 1000,
+  };
+  if (absl::GetFlag(FLAGS_max_skill).has_value()) {
+    options.max_skill = *absl::GetFlag(FLAGS_max_skill);
+  }
+  teams.max_power_team = GetMaxPowerTeam(cards, profile, event_bonus, estimator, constraints);
+  if (teams.max_power_team.has_value()) {
+    options.max_power = teams.max_power_team->Power(profile);
+    options.min_power_in_max_power_team = teams.max_power_team->MinPowerContrib(profile);
+    int skill_value = teams.max_power_team->ConstrainedMaxSkillValue(constraints).skill_value;
+    options.min_ep =
+        std::max(static_cast<int>(estimator.ExpectedEp(
+                     teams.max_power_team->Power(profile),
+                     teams.max_power_team->EventBonus(event_bonus), skill_value, skill_value)),
+                 options.min_ep);
+  }
+  teams.max_bonus_team = GetMaxBonusTeam(cards, profile, event_bonus, estimator, constraints);
+  if (teams.max_bonus_team.has_value()) {
+    options.max_bonus = teams.max_bonus_team->EventBonus(event_bonus);
+    options.min_bonus_in_max_bonus_team = teams.max_bonus_team->MinBonusContrib();
+    int skill_value = teams.max_bonus_team->ConstrainedMaxSkillValue(constraints).skill_value;
+    options.min_ep = std::max(
+        static_cast<int>(estimator.ExpectedEp(teams.max_bonus_team->Power(profile),
+                                              options.max_bonus, skill_value, skill_value)),
+        options.min_ep);
+  }
+
+  EventTeamBuilder builder{options};
+  builder.AddConstraints(constraints);
+  absl::Time start_time = absl::Now();
+  teams.recommended_teams = builder.RecommendTeams(cards, profile, event_bonus, estimator);
+  absl::Duration duration = absl::Now() - start_time;
+  std::cout << "Cards pruned: " << builder.stats().cards_pruned << std::endl;
+  std::cout << absl::StrFormat("Evaluated %llu out of %llu teams in %s\n",
+                               builder.stats().teams_evaluated, builder.stats().teams_considered,
+                               absl::FormatDuration(duration));
+  return teams;
 }
 
 int main(int argc, char** argv) {
@@ -111,62 +201,31 @@ int main(int argc, char** argv) {
   std::vector<const Card*> cards = profile.CardPtrs();
   std::cout << "Pool size: " << cards.size() << std::endl;
 
-  EventTeamBuilder::Options options{
-      .enable_progress = true,
-      .prune_every_n_steps = 1000,
-  };
-  if (absl::GetFlag(FLAGS_max_skill).has_value()) {
-    options.max_skill = *absl::GetFlag(FLAGS_max_skill);
-  }
-  std::optional<Team> max_power_team =
-      GetMaxPowerTeam(cards, profile, event_bonus, estimator, constraints);
-  if (max_power_team.has_value()) {
-    options.max_power = max_power_team->Power(profile);
-    options.min_power_in_max_power_team = max_power_team->MinPowerContrib(profile);
-    int skill_value = max_power_team->ConstrainedMaxSkillValue(constraints).skill_value;
-    options.min_ep =
-        std::max(static_cast<int>(estimator.ExpectedEp(max_power_team->Power(profile),
-                                                       max_power_team->EventBonus(event_bonus),
-                                                       skill_value, skill_value)),
-                 options.min_ep);
-  }
-  std::optional<Team> max_bonus_team =
-      GetMaxBonusTeam(cards, profile, event_bonus, estimator, constraints);
-  if (max_bonus_team.has_value()) {
-    options.max_bonus = max_bonus_team->EventBonus(event_bonus);
-    options.min_bonus_in_max_bonus_team = max_bonus_team->MinBonusContrib();
-    int skill_value = max_bonus_team->ConstrainedMaxSkillValue(constraints).skill_value;
-    options.min_ep =
-        std::max(static_cast<int>(estimator.ExpectedEp(
-                     max_bonus_team->Power(profile), options.max_bonus, skill_value, skill_value)),
-                 options.min_ep);
-  }
-
-  EventTeamBuilder builder{options};
-  builder.AddConstraints(constraints);
-  absl::Time start_time = absl::Now();
-  std::vector<Team> teams = builder.RecommendTeams(cards, profile, event_bonus, estimator);
-  absl::Duration duration = absl::Now() - start_time;
-  std::cout << "Cards pruned: " << builder.stats().cards_pruned << std::endl;
-  std::cout << absl::StrFormat("Evaluated %llu out of %llu teams in %s\n",
-                               builder.stats().teams_evaluated, builder.stats().teams_considered,
-                               absl::FormatDuration(duration));
+  BestTeams teams =
+      absl::GetFlag(FLAGS_use_simulated_annealing)
+          ? GetBestTeamsSimulatedAnnealing(cards, profile, event_bonus, estimator, constraints)
+          : GetBestTeamsExhaustive(cards, profile, event_bonus, estimator, constraints);
 
   CTML::Node root("div");
-  if (max_bonus_team.has_value()) {
-    root.AppendChild(CTML::Node("h3", "Max Bonus"));
-    max_bonus_team->ReorderTeamForOptimalSkillValue(constraints);
-    root.AppendChild(html::Team(max_bonus_team->ToProto(profile, event_bonus, estimator)));
-  }
-  if (max_power_team.has_value()) {
-    root.AppendChild(CTML::Node("h3", "Max Power"));
-    max_power_team->ReorderTeamForOptimalSkillValue(constraints);
-    root.AppendChild(html::Team(max_power_team->ToProto(profile, event_bonus, estimator)));
-  }
   root.AppendChild(CTML::Node("h3", "Best Teams"));
-  for (Team& team : teams) {
+  for (Team& team : teams.recommended_teams) {
     team.ReorderTeamForOptimalSkillValue(constraints);
     root.AppendChild(html::Team(team.ToProto(profile, event_bonus, estimator)));
+  }
+  if (teams.max_bonus_team.has_value()) {
+    root.AppendChild(CTML::Node("h3", "Max Bonus"));
+    teams.max_bonus_team->ReorderTeamForOptimalSkillValue(constraints);
+    root.AppendChild(html::Team(teams.max_bonus_team->ToProto(profile, event_bonus, estimator)));
+  }
+  if (teams.max_power_team.has_value()) {
+    root.AppendChild(CTML::Node("h3", "Max Power"));
+    teams.max_power_team->ReorderTeamForOptimalSkillValue(constraints);
+    root.AppendChild(html::Team(teams.max_power_team->ToProto(profile, event_bonus, estimator)));
+  }
+  if (teams.max_skill_team.has_value()) {
+    root.AppendChild(CTML::Node("h3", "Max Skill"));
+    teams.max_skill_team->ReorderTeamForOptimalSkillValue(constraints);
+    root.AppendChild(html::Team(teams.max_skill_team->ToProto(profile, event_bonus, estimator)));
   }
   std::ofstream fout(absl::GetFlag(FLAGS_output));
   fout << html::CreateReport(root);

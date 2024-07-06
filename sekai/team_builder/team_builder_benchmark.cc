@@ -23,6 +23,7 @@
 #include "sekai/team_builder/max_bonus_team_builder.h"
 #include "sekai/team_builder/max_power_team_builder.h"
 #include "sekai/team_builder/naive_team_builder.h"
+#include "sekai/team_builder/simulated_annealing_team_builder.h"
 #include "sekai/team_builder/team_builder_base.h"
 #include "testing/util.h"
 
@@ -152,25 +153,6 @@ bool ValidateTeam(const Team& team) {
   return true;
 }
 
-std::pair<Team*, int> ExtractBestEp(std::span<Team> teams, const Profile& profile,
-                                    const EventBonus& event_bonus, const Estimator& estimator) {
-  Team* best_team = nullptr;
-  double best_ep = 0;
-  for (Team& candidate_team : teams) {
-    if (!ValidateTeam(candidate_team)) {
-      continue;
-    }
-    int power = candidate_team.Power(profile);
-    float eb = candidate_team.EventBonus(event_bonus);
-    candidate_team.ReorderTeamForOptimalSkillValue();
-    int skill_value = candidate_team.SkillValue();
-    double candidate_ep = estimator.ExpectedEp(power, eb, skill_value, skill_value);
-    best_ep = std::max(best_ep, candidate_ep);
-    best_team = &candidate_team;
-  }
-  return std::make_pair(best_team, static_cast<int>(best_ep));
-}
-
 class TeamReporter {
  public:
   void Report(std::string_view name, const TeamProto& team) { teams_.emplace_back(name, team); }
@@ -205,14 +187,27 @@ void RunBenchmark(absl::AnyInvocable<std::unique_ptr<TeamBuilderBase>() const> m
     std::unique_ptr<TeamBuilderBase> builder = make_builder();
     std::vector<Team> teams = builder->RecommendTeams(pool, profile, event_bonus, estimator);
     state.PauseTiming();
-    state.counters["Considered"] = builder->stats().teams_considered;
-    state.counters["Evaluated"] = builder->stats().teams_evaluated;
-    state.counters["Pruned"] = builder->stats().cards_pruned;
-    Team* best_team_ptr = nullptr;
-    std::tie(best_team_ptr, state.counters["Best EP"]) =
-        ExtractBestEp(teams, profile, event_bonus, estimator);
-    if (best_team_ptr != nullptr) {
-      best_team = best_team_ptr->ToProto(profile, event_bonus, estimator);
+    // state.counters["Considered"] = builder->stats().teams_considered;
+    // state.counters["Evaluated"] = builder->stats().teams_evaluated;
+    // state.counters["Pruned"] = builder->stats().cards_pruned;
+
+    if (!teams.empty()) {
+      Team& candidate_team = teams[0];
+      if (!ValidateTeam(candidate_team)) {
+        LOG(WARNING) << "Team builder generated invalid team.";
+      }
+      int power = candidate_team.Power(profile);
+      state.counters["Max Power"] =
+          std::max(state.counters["Max Power"].value, static_cast<double>(power));
+      float eb = candidate_team.EventBonus(event_bonus);
+      state.counters["Max EB"] = std::max(state.counters["Max EB"].value, static_cast<double>(eb));
+      candidate_team.ReorderTeamForOptimalSkillValue(builder->constraints());
+      int skill_value = candidate_team.SkillValue();
+      state.counters["Max Skill"] =
+          std::max(state.counters["Max Skill"].value, static_cast<double>(skill_value));
+      double candidate_ep = estimator.ExpectedEp(power, eb, skill_value, skill_value);
+      state.counters["Max EP"] = std::max(state.counters["Max EP"].value, candidate_ep);
+      best_team = candidate_team.ToProto(profile, event_bonus, estimator);
     }
     state.ResumeTiming();
   }
@@ -297,10 +292,10 @@ BENCHMARK(BM_RecommendTeam<NaiveSkillTeamBuilder>)
     ->Name("Naive (Skill)")
     ->Unit(benchmark::kMillisecond);
 BENCHMARK(BM_RecommendTeam<MaxBonusTeamBuilder>)
-    ->Name("Partitioned (Max Bonus)")
+    ->Name("Partitioned (Bonus)")
     ->Unit(benchmark::kMillisecond);
 BENCHMARK(BM_RecommendTeam<MaxPowerTeamBuilder>)
-    ->Name("Partitioned (Max Power)")
+    ->Name("Partitioned (Power)")
     ->Unit(benchmark::kMillisecond);
 BENCHMARK(BM_RecommendTeam<EventTeamBuilder>)
     ->Name("Partitioned (Event)")
@@ -314,26 +309,42 @@ BENCHMARK(BM_RecommendTeamPruneByBonus)
 BENCHMARK(BM_RecommendTeamPruneByAll)
     ->Name("Partitioned (Event, All)")
     ->Unit(benchmark::kMillisecond);
+
 BENCHMARK(BM_RecommendTeamWithConstraints<NaiveTeamBuilder>)
     ->Name("Naive (Points, Constrained)")
     ->Unit(benchmark::kMillisecond);
-BENCHMARK(BM_RecommendTeamWithConstraints<NaiveBonusTeamBuilder>)
-    ->Name("Naive (Bonus, Constrained)")
-    ->Unit(benchmark::kMillisecond);
-BENCHMARK(BM_RecommendTeamWithConstraints<NaivePowerTeamBuilder>)
-    ->Name("Naive (Power, Constrained)")
-    ->Unit(benchmark::kMillisecond);
-BENCHMARK(BM_RecommendTeamWithConstraints<NaiveSkillTeamBuilder>)
-    ->Name("Naive (Skill, Constrained)")
+BENCHMARK(BM_RecommendTeamWithConstraints<SimulatedAnnealingTeamBuilder>)
+    ->Name("Annealing (Points, Constrained)")
     ->Unit(benchmark::kMillisecond);
 BENCHMARK(BM_RecommendTeamWithConstraints<MaxBonusTeamBuilder>)
-    ->Name("Partitioned (Max Bonus, Constrained)")
+    ->Name("Partitioned (Bonus, Constrained)")
     ->Unit(benchmark::kMillisecond);
 BENCHMARK(BM_RecommendTeamWithConstraints<MaxPowerTeamBuilder>)
-    ->Name("Partitioned (Max Power, Constrained)")
+    ->Name("Partitioned (Power, Constrained)")
     ->Unit(benchmark::kMillisecond);
 BENCHMARK(BM_RecommendTeamWithConstraints<EventTeamBuilder>)
     ->Name("Partitioned (Event, Constrained)")
+    ->Unit(benchmark::kMillisecond);
+
+BENCHMARK(BM_RecommendTeamWithConstraints<NaiveBonusTeamBuilder>)
+    ->Name("Naive (Bonus, Constrained)")
+    ->Unit(benchmark::kMillisecond);
+BENCHMARK(BM_RecommendTeamWithConstraints<SimulatedAnnealingBonusTeamBuilder>)
+    ->Name("Annealing (Bonus, Constrained)")
+    ->Unit(benchmark::kMillisecond);
+
+BENCHMARK(BM_RecommendTeamWithConstraints<NaivePowerTeamBuilder>)
+    ->Name("Naive (Power, Constrained)")
+    ->Unit(benchmark::kMillisecond);
+BENCHMARK(BM_RecommendTeamWithConstraints<SimulatedAnnealingPowerTeamBuilder>)
+    ->Name("Annealing (Power, Constrained)")
+    ->Unit(benchmark::kMillisecond);
+
+BENCHMARK(BM_RecommendTeamWithConstraints<NaiveSkillTeamBuilder>)
+    ->Name("Naive (Skill, Constrained)")
+    ->Unit(benchmark::kMillisecond);
+BENCHMARK(BM_RecommendTeamWithConstraints<SimulatedAnnealingSkillTeamBuilder>)
+    ->Name("Annealing (Skill, Constrained)")
     ->Unit(benchmark::kMillisecond);
 
 }  // namespace

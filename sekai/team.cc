@@ -29,6 +29,7 @@ Team::Team(std::span<const Card* const> cards) {
     attrs_ |= card->attr();
     event_bonus_base_ += CardBonusContrib(card);
     chars_present_.set(card->character_id());
+    rarities_present_.set(card->db_rarity());
   }
   attrs_count_ = attrs_.count();
   attr_match_ = attrs_count_ == 1;
@@ -193,6 +194,12 @@ void Team::ReorderTeamForKizuna(std::span<const Character> kizuna_pairs) {
       }
     }
   }
+}
+
+bool Team::SatisfiesConstraints(const Constraints& constraints) const {
+  return constraints.CharacterSetSatisfiesConstraint(chars_present_) &&
+         ConstrainedMaxSkillValue(constraints).lead_skill >= constraints.min_lead_skill() &&
+         constraints.RaritiesSatisfiesConstraint(rarities_present_);
 }
 
 TeamProto Team::ToProto(const Profile& profile, const class EventBonus& event_bonus,

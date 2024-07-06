@@ -33,6 +33,7 @@ cc_library(
         "//sekai/team_builder:event_team_builder",
         "//sekai/team_builder:max_bonus_team_builder",
         "//sekai/team_builder:max_power_team_builder",
+        "//sekai/team_builder:simulated_annealing_team_builder",
         "@abseil-cpp//absl/flags:flag",
         "@abseil-cpp//absl/log:flags",
         "@abseil-cpp//absl/strings:str_format",

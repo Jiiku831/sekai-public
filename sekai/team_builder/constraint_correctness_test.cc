@@ -14,6 +14,7 @@
 #include "sekai/team_builder/max_bonus_team_builder.h"
 #include "sekai/team_builder/max_power_team_builder.h"
 #include "sekai/team_builder/naive_team_builder.h"
+#include "sekai/team_builder/simulated_annealing_team_builder.h"
 #include "testing/util.h"
 
 namespace sekai {
@@ -139,7 +140,8 @@ class ConstraintCorrectnessTest : public testing::Test {
 
 using TeamBuilderTypes =
     ::testing::Types<EventTeamBuilder, MaxBonusTeamBuilder, MaxPowerTeamBuilder, NaiveTeamBuilder,
-                     NaivePowerTeamBuilder, NaiveBonusTeamBuilder, NaiveSkillTeamBuilder>;
+                     NaivePowerTeamBuilder, NaiveBonusTeamBuilder, NaiveSkillTeamBuilder,
+                     SimulatedAnnealingTeamBuilder>;
 TYPED_TEST_SUITE(ConstraintCorrectnessTest, TeamBuilderTypes);
 
 TYPED_TEST(ConstraintCorrectnessTest, DisallowedRarity) {

@@ -49,6 +49,9 @@ class Team {
   SkillValueDetail ConstrainedMaxSkillValue(const Constraints& constraints) const;
   SkillValueDetail ConstrainedMaxSkillValue(Character eligible_leads) const;
 
+  Character chars_present() const { return chars_present_; }
+  bool SatisfiesConstraints(const Constraints& constraints) const;
+
   TeamProto ToProto(const Profile& profile, const class EventBonus& event_bonus,
                     const Estimator& estimator) const;
 
@@ -67,6 +70,7 @@ class Team {
   bool primary_units_match_ = false;
   bool secondary_units_match_ = false;
   Character chars_present_;
+  CardRarityType rarities_present_;
 };
 
 }  // namespace sekai

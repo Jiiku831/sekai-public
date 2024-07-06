@@ -458,5 +458,79 @@ TEST_F(TeamTest, ExampleTeam1ReorderTeamWithKizunaConstraintAlt) {
   EXPECT_EQ(team.cards()[1], &cards[4]);
 }
 
+TEST_F(TeamTest, TeamSatisfiesLeadConstraint) {
+  std::array cards = {
+      CreateCard(profile_, /*card_id=*/495, /*level=*/60, /*master_rank=*/0, /*skill_level=*/1),
+      CreateCard(profile_, /*card_id=*/535, /*level=*/60, /*master_rank=*/0, /*skill_level=*/2),
+      CreateCard(profile_, /*card_id=*/259, /*level=*/60, /*master_rank=*/0, /*skill_level=*/3),
+      CreateCard(profile_, /*card_id=*/622, /*level=*/60, /*master_rank=*/5, /*skill_level=*/4),
+      CreateCard(profile_, /*card_id=*/224, /*level=*/60),
+  };
+  Team team = MakeTeam(cards);
+  Constraints constraints1;
+  constraints1.AddLeadChar(cards[0].character_id());
+  EXPECT_TRUE(team.SatisfiesConstraints(constraints1));
+
+  Constraints constraints2;
+  constraints2.AddLeadChar(20);
+  EXPECT_FALSE(team.SatisfiesConstraints(constraints2));
+}
+
+TEST_F(TeamTest, TeamSatisfiesLeadKizunaConstraint) {
+  std::array cards = {
+      CreateCard(profile_, /*card_id=*/495, /*level=*/60, /*master_rank=*/0, /*skill_level=*/1),
+      CreateCard(profile_, /*card_id=*/535, /*level=*/60, /*master_rank=*/0, /*skill_level=*/2),
+      CreateCard(profile_, /*card_id=*/259, /*level=*/60, /*master_rank=*/0, /*skill_level=*/3),
+      CreateCard(profile_, /*card_id=*/622, /*level=*/60, /*master_rank=*/5, /*skill_level=*/4),
+      CreateCard(profile_, /*card_id=*/224, /*level=*/60),
+  };
+  Team team = MakeTeam(cards);
+  Constraints constraints1;
+  constraints1.AddKizunaPair({cards[2].character_id(), cards[4].character_id()});
+  EXPECT_TRUE(team.SatisfiesConstraints(constraints1));
+
+  Constraints constraints2;
+  constraints2.AddKizunaPair({1, 20});
+  EXPECT_FALSE(team.SatisfiesConstraints(constraints2));
+}
+
+TEST_F(TeamTest, TeamSatisfiesLeadSkillConstraint) {
+  std::array cards = {
+      CreateCard(profile_, /*card_id=*/495, /*level=*/60, /*master_rank=*/0, /*skill_level=*/1),
+      CreateCard(profile_, /*card_id=*/535, /*level=*/60, /*master_rank=*/0, /*skill_level=*/2),
+      CreateCard(profile_, /*card_id=*/259, /*level=*/60, /*master_rank=*/0, /*skill_level=*/3),
+      CreateCard(profile_, /*card_id=*/622, /*level=*/60, /*master_rank=*/5, /*skill_level=*/4),
+      CreateCard(profile_, /*card_id=*/15, /*level=*/60),
+  };
+  Team team = MakeTeam(cards);
+  Constraints constraints1;
+  constraints1.AddLeadChar(cards[3].character_id());
+  constraints1.SetMinLeadSkill(150);
+  EXPECT_TRUE(team.SatisfiesConstraints(constraints1));
+
+  Constraints constraints2;
+  constraints2.AddLeadChar(cards[0].character_id());
+  constraints2.SetMinLeadSkill(150);
+  EXPECT_FALSE(team.SatisfiesConstraints(constraints2));
+}
+
+TEST_F(TeamTest, TeamSatisfiesRarityConstraint) {
+  std::array cards = {
+      CreateCard(profile_, /*card_id=*/495, /*level=*/60, /*master_rank=*/0, /*skill_level=*/1),
+      CreateCard(profile_, /*card_id=*/535, /*level=*/60, /*master_rank=*/0, /*skill_level=*/2),
+      CreateCard(profile_, /*card_id=*/259, /*level=*/60, /*master_rank=*/0, /*skill_level=*/3),
+      CreateCard(profile_, /*card_id=*/622, /*level=*/60, /*master_rank=*/5, /*skill_level=*/4),
+      CreateCard(profile_, /*card_id=*/224, /*level=*/60),
+  };
+  Team team = MakeTeam(cards);
+  Constraints constraints1;
+  constraints1.AddExcludedRarity(db::RARITY_3);
+  EXPECT_TRUE(team.SatisfiesConstraints(constraints1));
+
+  Constraints constraints2;
+  constraints2.AddExcludedRarity(db::RARITY_4);
+  EXPECT_FALSE(team.SatisfiesConstraints(constraints2));
+}
+
 }  // namespace
 }  // namespace sekai

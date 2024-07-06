@@ -131,6 +131,38 @@ cc_library(
 )
 
 cc_library(
+    name = "neighbor_teams",
+    srcs = ["neighbor_teams.cc"],
+    hdrs = ["neighbor_teams.h"],
+    deps = [
+        ":constraints",
+        "//sekai:array_size",
+        "//sekai:bitset",
+        "//sekai:card",
+        "//sekai:team",
+        "@abseil-cpp//absl/base:core_headers",
+    ],
+)
+
+cc_test(
+    name = "neighbor_teams_test",
+    srcs = ["neighbor_teams_test.cc"],
+    data = [
+        "//data:flat-db",
+    ],
+    deps = [
+        ":constraints",
+        ":neighbor_teams",
+        "//sekai:card",
+        "//sekai:team",
+        "//sekai/db:master_db",
+        "//sekai/db/proto:all",
+        "//testing:test_main",
+        "@googletest//:gtest",
+    ],
+)
+
+cc_library(
     name = "pool_utils",
     srcs = ["pool_utils.cc"],
     hdrs = ["pool_utils.h"],
@@ -157,6 +189,29 @@ cc_test(
         "//sekai/proto:event_id_cc_proto",
         "//testing:test_main",
         "@googletest//:gtest",
+    ],
+)
+
+cc_library(
+    name = "simulated_annealing_team_builder",
+    srcs = ["simulated_annealing_team_builder.cc"],
+    hdrs = ["simulated_annealing_team_builder.h"],
+    deps = [
+        ":neighbor_teams",
+        ":optimization_objective",
+        ":pool_utils",
+        ":team_builder_base",
+        "//sekai:array_size",
+        "//sekai:bitset",
+        "//sekai:card",
+        "//sekai:combinations",
+        "//sekai:estimator",
+        "//sekai:event_bonus",
+        "//sekai:profile",
+        "//sekai:team",
+        "@abseil-cpp//absl/log:absl_check",
+        "@abseil-cpp//absl/time",
+        "@indicators",
     ],
 )
 
@@ -227,6 +282,7 @@ cc_test(
         ":max_bonus_team_builder",
         ":max_power_team_builder",
         ":naive_team_builder",
+        ":simulated_annealing_team_builder",
         "//sekai:card",
         "//sekai:estimator",
         "//sekai:profile",
@@ -252,6 +308,7 @@ cc_test(
         ":max_bonus_team_builder",
         ":max_power_team_builder",
         ":naive_team_builder",
+        ":simulated_annealing_team_builder",
         ":team_builder_base",
         "//sekai:card",
         "//sekai:estimator",

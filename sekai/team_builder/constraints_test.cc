@@ -16,6 +16,7 @@ namespace {
 using ::sekai::db::MasterDb;
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
+using ::testing::Pair;
 using ::testing::ParseTextProto;
 using ::testing::UnorderedElementsAre;
 
@@ -277,6 +278,34 @@ TEST(ConstraintsTest, TestHasLeadSkillConstraint) {
   EXPECT_TRUE(constraints.HasLeadSkillConstraint());
   constraints.SetMinLeadSkill(0);
   EXPECT_FALSE(constraints.HasLeadSkillConstraint());
+}
+
+TEST(ConstraintsTest, AddKizunaPair) {
+  Constraints constraints(ParseTextProto<TeamConstraints>(R"pb(
+    kizuna_pairs {char_1: 1 char_2: 3}
+    kizuna_pairs {char_1: 2 char_2: 4}
+    kizuna_pairs {char_1: 2 char_2: 5}
+  )pb"));
+  EXPECT_THAT(constraints.kizuna_std_pairs(),
+              UnorderedElementsAre(Pair(1, 3), Pair(2, 4), Pair(2, 5)));
+
+  Character pair1;
+  pair1.set(1);
+  pair1.set(3);
+  Character pair2;
+  pair2.set(2);
+  pair2.set(4);
+  Character pair3;
+  pair3.set(2);
+  pair3.set(5);
+  EXPECT_THAT(constraints.kizuna_pairs(), UnorderedElementsAre(pair1, pair2, pair3));
+}
+
+TEST(ConstraintsTest, AddLeadChar) {
+  Constraints constraints(ParseTextProto<TeamConstraints>(R"pb(
+    lead_char_ids: 1 lead_char_ids: 3
+  )pb"));
+  EXPECT_THAT(constraints.lead_char_ids(), UnorderedElementsAre(1, 3));
 }
 
 }  // namespace
