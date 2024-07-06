@@ -1,6 +1,7 @@
 #include "sekai/team_builder/simulated_annealing_team_builder.h"
 
 #include <algorithm>
+#include <bitset>
 #include <cmath>
 #include <limits>
 #include <optional>
@@ -13,6 +14,7 @@
 #include "sekai/array_size.h"
 #include "sekai/bitset.h"
 #include "sekai/combinations.h"
+#include "sekai/estimator_base.h"
 #include "sekai/team.h"
 #include "sekai/team_builder/constraints.h"
 #include "sekai/team_builder/neighbor_teams.h"
@@ -22,6 +24,91 @@
 namespace sekai {
 
 namespace {
+
+std::optional<Team> FindAnyValidTeamForChars(
+    std::span<const Card* const> support_pool,
+    std::array<std::vector<const Card*>, kCharacterArraySize> char_pools,
+    const Constraints& constraints, std::span<const int> candidate_chars) {
+  Character chars_present;
+  for (int char_id : candidate_chars) {
+    chars_present.set(char_id);
+  }
+  if (!constraints.CharacterSetSatisfiesConstraint(chars_present)) {
+    return std::nullopt;
+  }
+  Character lead_chars = constraints.GetCharactersEligibleForLead(chars_present);
+
+  std::array<std::span<const Card* const>, 5> current_pool;
+  ABSL_CHECK_EQ(static_cast<int>(candidate_chars.size()), 5);
+  for (int i = 0; i < static_cast<int>(candidate_chars.size()); ++i) {
+    current_pool[i] = char_pools[candidate_chars[i]];
+    if (current_pool[i].empty()) {
+      return std::nullopt;
+    }
+  }
+
+  // Go down the list of candidate cards for each possible lead until
+  // we find a match.
+  for (int i = 0; i < static_cast<int>(candidate_chars.size()); ++i) {
+    int candidate_char = candidate_chars[i];
+    if (!lead_chars.test(candidate_char)) {
+      continue;
+    }
+    std::array<const Card*, 5> candidate_cards;
+    for (int j = 0; j < static_cast<int>(candidate_chars.size()); ++j) {
+      candidate_cards[j] = current_pool[j][0];
+    }
+    std::span<const Card* const> candidate_pool = current_pool[i];
+    for (int j = 0; j < static_cast<int>(candidate_pool.size()); ++j) {
+      candidate_cards[i] = candidate_pool[j];
+
+      Team candidate_team{candidate_cards};
+      bool bad_team = false;
+      std::bitset<kCardArraySize> cards_present;
+      for (const Card* card : candidate_team.cards()) {
+        if (cards_present.test(card->card_id())) {
+          bad_team = true;
+          break;
+        }
+        cards_present.set(card->card_id());
+      }
+      if (bad_team) {
+        continue;
+      }
+      bool constraints_satisfied = !constraints.HasLeadSkillConstraint();
+      if (!constraints_satisfied) {
+        Team::SkillValueDetail skill_value = candidate_team.ConstrainedMaxSkillValue(lead_chars);
+        constraints_satisfied = constraints.LeadSkillSatisfiesConstraint(skill_value.lead_skill);
+      }
+
+      if (constraints_satisfied) {
+        if (!support_pool.empty()) {
+          candidate_team.FillSupportCards(support_pool);
+        }
+        return candidate_team;
+      }
+    }
+  }
+
+  return std::nullopt;
+}
+
+std::optional<Team> GetRandomTeamAllowRepeat(std::span<const Card* const> pool,
+                                             std::span<const Card* const> support_pool,
+                                             const Constraints& constraints, std::mt19937& g) {
+  std::vector<const Card*> card_pool = {pool.begin(), pool.end()};
+  std::shuffle(card_pool.begin(), card_pool.end(), g);
+
+  std::optional<Team> team;
+  Combinations<const Card*, 5>{
+      pool,
+      [&](std::span<const Card* const> candidate_cards) {
+        team = Team(candidate_cards);
+        return false;
+      },
+  }();
+  return team;
+}
 
 std::optional<Team> GetRandomTeam(std::span<const Card* const> pool,
                                   std::span<const Card* const> support_pool,
@@ -36,58 +123,12 @@ std::optional<Team> GetRandomTeam(std::span<const Card* const> pool,
   Combinations<int, 5>{
       shuffled_ids,
       [&](std::span<const int> candidate_chars) {
-        Character chars_present;
-        for (int char_id : candidate_chars) {
-          chars_present.set(char_id);
+        std::optional<Team> candidate_team =
+            FindAnyValidTeamForChars(support_pool, char_pools, constraints, candidate_chars);
+        if (candidate_team.has_value()) {
+          team = *candidate_team;
+          return false;
         }
-        if (!constraints.CharacterSetSatisfiesConstraint(chars_present)) {
-          return true;
-        }
-        Character lead_chars = constraints.GetCharactersEligibleForLead(chars_present);
-
-        std::array<std::span<const Card* const>, 5> current_pool;
-        ABSL_CHECK_EQ(static_cast<int>(candidate_chars.size()), 5);
-        for (int i = 0; i < static_cast<int>(candidate_chars.size()); ++i) {
-          current_pool[i] = char_pools[candidate_chars[i]];
-          if (current_pool[i].empty()) {
-            return true;
-          }
-        }
-
-        // Go down the list of candidate cards for each possible lead until
-        // we find a match.
-        for (int i = 0; i < static_cast<int>(candidate_chars.size()); ++i) {
-          int candidate_char = candidate_chars[i];
-          if (!lead_chars.test(candidate_char)) {
-            continue;
-          }
-          std::array<const Card*, 5> candidate_cards;
-          for (int j = 0; j < static_cast<int>(candidate_chars.size()); ++j) {
-            candidate_cards[j] = current_pool[j][0];
-          }
-          std::span<const Card* const> candidate_pool = current_pool[i];
-          for (int j = 0; j < static_cast<int>(candidate_pool.size()); ++j) {
-            candidate_cards[i] = candidate_pool[j];
-
-            Team candidate_team{candidate_cards};
-            bool constraints_satisfied = !constraints.HasLeadSkillConstraint();
-            if (!constraints_satisfied) {
-              Team::SkillValueDetail skill_value =
-                  candidate_team.ConstrainedMaxSkillValue(lead_chars);
-              constraints_satisfied =
-                  constraints.LeadSkillSatisfiesConstraint(skill_value.lead_skill);
-            }
-
-            if (constraints_satisfied) {
-              if (!support_pool.empty()) {
-                candidate_team.FillSupportCards(support_pool);
-              }
-              team = candidate_team;
-              return false;
-            }
-          }
-        }
-
         return true;
       },
   }();
@@ -102,7 +143,7 @@ float TransitionProbability(double start_val, double candidate_val, double temp)
 
 std::vector<Team> SimulatedAnnealingTeamBuilder::RecommendTeamsImpl(
     std::span<const Card* const> pool, const Profile& profile, const EventBonus& event_bonus,
-    const Estimator& estimator, std::optional<absl::Time> deadline) {
+    const EstimatorBase& estimator, std::optional<absl::Time> deadline) {
   std::random_device rd;
   std::mt19937 g{rd()};
   std::vector<const Card*> shuffled_pool = {pool.begin(), pool.end()};
@@ -119,9 +160,23 @@ std::vector<Team> SimulatedAnnealingTeamBuilder::RecommendTeamsImpl(
         indicators::option::PostfixText{absl::StrFormat("0/%llu", max_progress)});
   }
 
-  SimpleNeighbors neighbors_gen(shuffled_pool, constraints_);
+  std::unique_ptr<NeighborTeams> neighbors_gen = nullptr;
+  switch (opts_.neighbor_gen) {
+    using enum NeighborStrategy;
+    case kSimple:
+      neighbors_gen =
+          std::unique_ptr<NeighborTeams>(new SimpleNeighbors(shuffled_pool, &constraints_));
+      break;
+    case kChallengeLive:
+      neighbors_gen = std::unique_ptr<NeighborTeams>(new ChallengeLiveNeighbors(shuffled_pool));
+      break;
+  }
+  ABSL_CHECK_NE(neighbors_gen, nullptr);
   ObjectiveFunction objective = GetObjectiveFunction(obj_);
-  std::optional<Team> best_team = GetRandomTeam(shuffled_pool, support_pool_, constraints_, g);
+  std::optional<Team> best_team =
+      opts_.allow_repeat_chars
+          ? GetRandomTeamAllowRepeat(shuffled_pool, support_pool_, constraints_, g)
+          : GetRandomTeam(shuffled_pool, support_pool_, constraints_, g);
 
   if (!best_team.has_value()) {
     return {};
@@ -143,7 +198,7 @@ std::vector<Team> SimulatedAnnealingTeamBuilder::RecommendTeamsImpl(
           indicators::option::PostfixText{absl::StrFormat("%llu/%llu", i, max_progress)});
     }
 
-    std::optional<Team> new_team = neighbors_gen.GetRandomNeighbor(current_team, g);
+    std::optional<Team> new_team = neighbors_gen->GetRandomNeighbor(current_team, g);
     if (new_team.has_value()) {
       ++stats_.teams_evaluated;
       if (!support_pool_.empty()) {

@@ -1,15 +1,18 @@
 #pragma once
 
+#include <functional>
 #include <optional>
 #include <span>
 #include <vector>
 
 #include "absl/time/time.h"
 #include "sekai/card.h"
-#include "sekai/estimator.h"
+#include "sekai/estimator_base.h"
 #include "sekai/event_bonus.h"
 #include "sekai/profile.h"
 #include "sekai/team.h"
+#include "sekai/team_builder/constraints.h"
+#include "sekai/team_builder/neighbor_teams.h"
 #include "sekai/team_builder/optimization_objective.h"
 #include "sekai/team_builder/team_builder_base.h"
 
@@ -27,7 +30,12 @@ class SimulatedAnnealingTeamBuilder : public TeamBuilderBase {
 
     int early_exit_steps = 1'000'000;
 
-    bool enable_progress = true;
+    bool enable_progress = false;
+
+    NeighborStrategy neighbor_gen = NeighborStrategy::kSimple;
+    // When this is true, then constraints are not respected in the initial team. Which may result
+    // in no teams.
+    bool allow_repeat_chars = false;
   };
   explicit SimulatedAnnealingTeamBuilder(
       OptimizationObjective obj = OptimizationObjective::kOptimizePoints)
@@ -36,13 +44,14 @@ class SimulatedAnnealingTeamBuilder : public TeamBuilderBase {
       const Options& options, OptimizationObjective obj = OptimizationObjective::kOptimizePoints)
       : opts_(options), obj_(obj) {}
 
-  std::vector<Team> RecommendTeamsImpl(std::span<const Card* const> pool, const Profile& profile,
-                                       const EventBonus& event_bonus, const Estimator& estimator,
-                                       std::optional<absl::Time> deadline = std::nullopt) override;
-
  protected:
   Options opts_;
   OptimizationObjective obj_;
+
+  std::vector<Team> RecommendTeamsImpl(std::span<const Card* const> pool, const Profile& profile,
+                                       const EventBonus& event_bonus,
+                                       const EstimatorBase& estimator,
+                                       std::optional<absl::Time> deadline = std::nullopt) override;
 };
 
 class SimulatedAnnealingPowerTeamBuilder : public SimulatedAnnealingTeamBuilder {

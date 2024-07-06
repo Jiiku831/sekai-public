@@ -16,6 +16,7 @@
 #include "sekai/db/proto/game_character.pb.h"
 #include "sekai/db/proto/game_character_unit.pb.h"
 #include "sekai/db/proto/master_lesson.pb.h"
+#include "sekai/db/proto/music.pb.h"
 #include "sekai/db/proto/music_meta.pb.h"
 #include "sekai/db/proto/records.pb.h"
 #include "sekai/db/proto/skill.pb.h"
@@ -25,9 +26,10 @@
 
 namespace sekai::db {
 
-using AllRecordTypes = std::tuple<AreaItem, AreaItemLevel, Card, CardEpisode, CharacterRank, Event,
-                                  EventCard, EventDeckBonus, EventRarityBonusRate, GameCharacter,
-                                  GameCharacterUnit, MasterLesson, MusicMeta, Skill, WorldBloom,
-                                  WorldBloomDifferentAttributeBonus, WorldBloomSupportDeckBonus>;
+using AllRecordTypes =
+    std::tuple<AreaItem, AreaItemLevel, Card, CardEpisode, CharacterRank, Event, EventCard,
+               EventDeckBonus, EventRarityBonusRate, GameCharacter, GameCharacterUnit, MasterLesson,
+               Music, MusicMeta, Skill, WorldBloom, WorldBloomDifferentAttributeBonus,
+               WorldBloomSupportDeckBonus>;
 
 }  // namespace sekai::db

@@ -27,7 +27,7 @@ constexpr int kMaxBonus = 750;
 
 std::vector<absl::Nonnull<const db::MusicMeta*>> GetTestSongs() {
   return MasterDb::GetIf<db::MusicMeta>([](const db::MusicMeta& meta) {
-    return meta.difficulty() == "master" && meta.music_id() <= 3;
+    return meta.difficulty() == db::DIFF_MASTER && meta.music_id() <= 3;
   });
 }
 

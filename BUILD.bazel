@@ -41,3 +41,41 @@ cc_library(
         "@ctml",
     ],
 )
+
+cc_binary(
+    name = "build_challenge_live_team_main",
+    data = [
+        "//data:flat-db",
+        "//data:profile",
+    ],
+    deps = [
+        ":build_challenge_live_team_lib",
+    ],
+)
+
+cc_library(
+    name = "build_challenge_live_team_lib",
+    srcs = ["build_challenge_live_teams_main.cc"],
+    deps = [
+        "//sekai:array_size",
+        "//sekai:card",
+        "//sekai:challenge_live_estimator",
+        "//sekai:config",
+        "//sekai:estimator_base",
+        "//sekai:event_bonus",
+        "//sekai:profile",
+        "//sekai:proto_util",
+        "//sekai:team",
+        "//sekai/db:master_db",
+        "//sekai/db/proto:all",
+        "//sekai/html:report",
+        "//sekai/html:team",
+        "//sekai/proto:profile_cc_proto",
+        "//sekai/team_builder:challenge_live_team_builder",
+        "@abseil-cpp//absl/flags:flag",
+        "@abseil-cpp//absl/log:flags",
+        "@abseil-cpp//absl/strings:str_format",
+        "@abseil-cpp//absl/time",
+        "@ctml",
+    ],
+)

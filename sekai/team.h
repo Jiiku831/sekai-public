@@ -7,7 +7,7 @@
 
 #include "sekai/bitset.h"
 #include "sekai/card.h"
-#include "sekai/estimator.h"
+#include "sekai/estimator_base.h"
 #include "sekai/event_bonus.h"
 #include "sekai/profile.h"
 #include "sekai/proto/team.pb.h"
@@ -40,6 +40,7 @@ class Team {
   void ReorderTeamForOptimalSkillValue(const Constraints& constraints);
   void ReorderTeamForOptimalSkillValue(Character eligible_leads);
   void ReorderTeamForKizuna(std::span<const Character> kizuna_pairs);
+  std::vector<int> GetSkillValues() const;
 
   struct SkillValueDetail {
     float lead_skill;
@@ -52,7 +53,7 @@ class Team {
   bool SatisfiesConstraints(const Constraints& constraints) const;
 
   TeamProto ToProto(const Profile& profile, const class EventBonus& event_bonus,
-                    const Estimator& estimator) const;
+                    const EstimatorBase& estimator) const;
 
   void FillSupportCards(std::span<const Card* const> sorted_pool);
 

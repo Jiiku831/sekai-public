@@ -14,4 +14,8 @@ message TeamProto {
   repeated CardProto support_cards = 7;
   optional float main_bonus        = 8;
   optional float support_bonus     = 9;
+
+  // For challenge live teams.
+  optional int32 expected_score  = 10;
+  optional string best_song_name = 11;
 }

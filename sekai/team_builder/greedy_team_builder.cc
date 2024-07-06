@@ -12,6 +12,7 @@
 #include "sekai/bitset.h"
 #include "sekai/card.h"
 #include "sekai/combinations.h"
+#include "sekai/estimator_base.h"
 #include "sekai/team.h"
 #include "sekai/team_builder/optimization_objective.h"
 #include "sekai/team_builder/pool_utils.h"
@@ -22,7 +23,7 @@ namespace {
 
 std::vector<Team> RecommendTeamsImplNoConstraints(
     std::span<const Card* const> sorted_pool, std::span<const Card* const> support_pool,
-    const Profile& profile, const EventBonus& event_bonus, const Estimator& estimator,
+    const Profile& profile, const EventBonus& event_bonus, const EstimatorBase& estimator,
     std::optional<absl::Time> deadline, TeamBuilder::Stats& stats) {
   std::vector<const Card*> candidate_cards;
   std::bitset<kCharacterArraySize> chars_present;
@@ -47,7 +48,7 @@ std::vector<Team> RecommendTeamsImplNoConstraints(
 
 std::vector<Team> RecommendTeamsImplWithConstraints(
     std::span<const Card* const> sorted_pool, std::span<const Card* const> support_pool,
-    const Profile& profile, const EventBonus& event_bonus, const Estimator& estimator,
+    const Profile& profile, const EventBonus& event_bonus, const EstimatorBase& estimator,
     std::optional<absl::Time> deadline, const Constraints& constraints, OptimizationObjective obj,
     TeamBuilder::Stats& stats) {
   ObjectiveFunction obj_fn = GetObjectiveFunction(obj);
@@ -129,7 +130,7 @@ std::vector<Team> RecommendTeamsImplWithConstraints(
 std::vector<Team> GreedyTeamBuilder::RecommendTeamsImpl(std::span<const Card* const> pool,
                                                         const Profile& profile,
                                                         const EventBonus& event_bonus,
-                                                        const Estimator& estimator,
+                                                        const EstimatorBase& estimator,
                                                         std::optional<absl::Time> deadline) {
   if (constraints_.empty()) {
     return RecommendTeamsImplNoConstraints(pool, support_pool_, profile, event_bonus, estimator,

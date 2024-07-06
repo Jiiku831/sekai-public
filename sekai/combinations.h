@@ -61,12 +61,12 @@ class [[nodiscard]] Combinations<T, 5> : public CombinationsBase<T> {
 template <typename T>
 class ProductBase {
  public:
-  ProductBase(std::span<std::span<const T>> pools,
+  ProductBase(std::span<const std::span<const T>> pools,
               absl::AnyInvocable<bool(std::span<const T>) const> loop_body)
       : pools_(pools), loop_body_(std::move(loop_body)) {}
 
  protected:
-  std::span<std::span<const T>> pools_;
+  std::span<const std::span<const T>> pools_;
   absl::AnyInvocable<bool(std::span<const T>) const> loop_body_;
 };
 
@@ -76,14 +76,14 @@ class [[nodiscard]] Product : public ProductBase<T> {};
 template <typename T>
 class [[nodiscard]] Product<T, 5> : public ProductBase<T> {
  public:
-  Product(std::span<std::span<const T>> pools,
+  Product(std::span<const std::span<const T>> pools,
           absl::AnyInvocable<bool(std::span<const T>) const> loop_body)
       : ProductBase<T>(pools, std::move(loop_body)) {
     ABSL_CHECK_EQ(static_cast<int64_t>(pools.size()), 5);
   }
 
   void operator()() {
-    std::span<std::span<const T>>& pools = ProductBase<T>::pools_;
+    std::span<const std::span<const T>>& pools = ProductBase<T>::pools_;
     absl::AnyInvocable<bool(std::span<const T>) const>& loop_body = ProductBase<T>::loop_body_;
     std::array<int, 5> pool_sizes;
     for (int i = 0; i < 5; ++i) {

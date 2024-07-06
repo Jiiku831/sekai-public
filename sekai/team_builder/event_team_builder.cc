@@ -17,6 +17,7 @@
 #include "sekai/combinations.h"
 #include "sekai/config.h"
 #include "sekai/estimator.h"
+#include "sekai/estimator_base.h"
 #include "sekai/team_builder/card_pruning.h"
 #include "sekai/team_builder/pool_utils.h"
 
@@ -121,12 +122,22 @@ uint64_t PrunedProgress(std::span<const int> char_ids,
 std::vector<Team> EventTeamBuilder::RecommendTeamsImpl(std::span<const Card* const> pool,
                                                        const Profile& profile,
                                                        const EventBonus& event_bonus,
-                                                       const Estimator& estimator,
+                                                       const EstimatorBase& estimator,
+                                                       std::optional<absl::Time> deadline) {
+  auto cast_estimator = dynamic_cast<const Estimator*>(&estimator);
+  ABSL_CHECK_NE(cast_estimator, nullptr);
+  return RecommendTeamsImpl(pool, profile, event_bonus, cast_estimator, deadline);
+}
+
+std::vector<Team> EventTeamBuilder::RecommendTeamsImpl(std::span<const Card* const> pool,
+                                                       const Profile& profile,
+                                                       const EventBonus& event_bonus,
+                                                       const Estimator* estimator,
                                                        std::optional<absl::Time> deadline) {
   ABSL_CHECK_LE(CharacterArraySize(), kCharacterArraySize);
   BS::thread_pool thread_pool;
 
-  Estimator local_estimator = estimator;
+  Estimator local_estimator = *estimator;
   if (opts_.max_skill < kMaxSkillValue) {
     local_estimator.PopulateLookupTable(kMinSkillValue, opts_.max_skill);
   }

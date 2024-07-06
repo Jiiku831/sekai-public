@@ -49,7 +49,8 @@ TEST(SimpleNeighborsTest, GeneratesSingleCardMutationsNoRepeatCharactersOrCard) 
   Team starting_team{starting_cards};
 
   Constraints constraints;
-  std::vector<Team> new_teams = SimpleNeighbors(card_ptrs, constraints).GetNeighbors(starting_team);
+  std::vector<Team> new_teams =
+      SimpleNeighbors(card_ptrs, &constraints).GetNeighbors(starting_team);
   std::vector<std::vector<int>> new_team_cards;
   for (const Team& team : new_teams) {
     new_team_cards.emplace_back();
@@ -97,7 +98,8 @@ TEST(SimpleNeighborsTest, RespectsLeadConstraints) {
 
   Constraints constraints;
   constraints.AddLeadChar(cards[2].character_id());
-  std::vector<Team> new_teams = SimpleNeighbors(card_ptrs, constraints).GetNeighbors(starting_team);
+  std::vector<Team> new_teams =
+      SimpleNeighbors(card_ptrs, &constraints).GetNeighbors(starting_team);
   std::vector<std::vector<int>> new_team_cards;
   for (const Team& team : new_teams) {
     new_team_cards.emplace_back();
@@ -142,7 +144,8 @@ TEST(SimpleNeighborsTest, RespectsKizunaConstraints) {
 
   Constraints constraints;
   constraints.AddKizunaPair({cards[0].character_id(), cards[2].character_id()});
-  std::vector<Team> new_teams = SimpleNeighbors(card_ptrs, constraints).GetNeighbors(starting_team);
+  std::vector<Team> new_teams =
+      SimpleNeighbors(card_ptrs, &constraints).GetNeighbors(starting_team);
   std::vector<std::vector<int>> new_team_cards;
   for (const Team& team : new_teams) {
     new_team_cards.emplace_back();
@@ -183,7 +186,8 @@ TEST(SimpleNeighborsTest, RespectsLeadSkillConstraints) {
 
   Constraints constraints;
   constraints.SetMinLeadSkill(150);
-  std::vector<Team> new_teams = SimpleNeighbors(card_ptrs, constraints).GetNeighbors(starting_team);
+  std::vector<Team> new_teams =
+      SimpleNeighbors(card_ptrs, &constraints).GetNeighbors(starting_team);
   std::vector<std::vector<int>> new_team_cards;
   for (const Team& team : new_teams) {
     new_team_cards.emplace_back();

@@ -6,6 +6,7 @@
 #include "sekai/array_size.h"
 #include "sekai/bitset.h"
 #include "sekai/combinations.h"
+#include "sekai/estimator_base.h"
 #include "sekai/team.h"
 #include "sekai/team_builder/constraints.h"
 #include "sekai/team_builder/optimization_objective.h"
@@ -15,7 +16,7 @@ namespace sekai {
 std::vector<Team> NaiveTeamBuilder::RecommendTeamsImpl(std::span<const Card* const> pool,
                                                        const Profile& profile,
                                                        const EventBonus& event_bonus,
-                                                       const Estimator& estimator,
+                                                       const EstimatorBase& estimator,
                                                        std::optional<absl::Time> deadline) {
   ObjectiveFunction objective = GetObjectiveFunction(obj_);
   std::optional<Team> best_team;

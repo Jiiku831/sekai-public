@@ -12,6 +12,7 @@
 #include "sekai/bitset.h"
 #include "sekai/card.h"
 #include "sekai/combinations.h"
+#include "sekai/estimator_base.h"
 #include "sekai/team.h"
 #include "sekai/team_builder/constraints.h"
 #include "sekai/team_builder/greedy_team_builder.h"
@@ -28,12 +29,10 @@ struct CandidateState {
   db::Unit secondary_unit;
 };
 
-std::vector<Team> RecommendTeamsForState(const CandidateState& state,
-                                         std::span<const Card* const> pool, const Profile& profile,
-                                         const EventBonus& event_bonus, const Estimator& estimator,
-                                         const Constraints& constraints,
-                                         std::optional<absl::Time> deadline,
-                                         TeamBuilder::Stats& stats) {
+std::vector<Team> RecommendTeamsForState(
+    const CandidateState& state, std::span<const Card* const> pool, const Profile& profile,
+    const EventBonus& event_bonus, const EstimatorBase& estimator, const Constraints& constraints,
+    std::optional<absl::Time> deadline, TeamBuilder::Stats& stats) {
   std::vector<const Card*> filtered_pool = {pool.begin(), pool.end()};
   bool attr_match = false;
   if (state.attr != db::ATTR_UNKNOWN) {
@@ -68,7 +67,7 @@ std::vector<Team> RecommendTeamsForState(const CandidateState& state,
 std::vector<Team> MaxPowerTeamBuilder::RecommendTeamsImpl(std::span<const Card* const> pool,
                                                           const Profile& profile,
                                                           const EventBonus& event_bonus,
-                                                          const Estimator& estimator,
+                                                          const EstimatorBase& estimator,
                                                           std::optional<absl::Time> deadline) {
   std::optional<Team> best_team;
   for (int attr = 0; attr <= db::Attr_MAX; ++attr) {

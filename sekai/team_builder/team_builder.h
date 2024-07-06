@@ -6,7 +6,7 @@
 
 #include "absl/time/time.h"
 #include "sekai/card.h"
-#include "sekai/estimator.h"
+#include "sekai/estimator_base.h"
 #include "sekai/event_bonus.h"
 #include "sekai/profile.h"
 #include "sekai/team.h"
@@ -19,7 +19,7 @@ class TeamBuilder {
 
   virtual std::vector<Team> RecommendTeams(std::span<const Card* const> pool,
                                            const Profile& profile, const EventBonus& event_bonus,
-                                           const Estimator& estimator,
+                                           const EstimatorBase& estimator,
                                            std::optional<absl::Time> deadline = std::nullopt) = 0;
 
   struct Stats {

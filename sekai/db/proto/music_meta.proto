@@ -3,11 +3,12 @@ syntax = "proto3";
 package sekai.db;
 
 import "sekai/db/proto/descriptor.proto";
+import "sekai/db/proto/enums.proto";
 
 message MusicMeta {
   option (sekai_best_file)          = "music_metas.json";
   optional int32 music_id           = 1 [(json_name) = "music_id"];
-  optional string difficulty        = 2 [(json_name) = "difficulty"];
+  optional Difficulty difficulty    = 2 [(json_name) = "difficulty"];
   optional float music_time         = 3 [(json_name) = "music_time"];
   optional int32 event_rate         = 4 [(json_name) = "event_rate"];
   optional double base_score        = 5 [(json_name) = "base_score"];

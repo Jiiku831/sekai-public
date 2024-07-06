@@ -44,3 +44,12 @@ enum Unit {
   UNIT_25   = 5 [(json_value) = "school_refusal"];
   UNIT_VS   = 6 [(json_value) = "piapro"];
 }
+enum Difficulty {
+  DIFF_UNKNOWN = 0;
+  DIFF_EASY    = 1 [(json_value) = "easy"];
+  DIFF_NORMAL  = 2 [(json_value) = "normal"];
+  DIFF_HARD    = 3 [(json_value) = "hard"];
+  DIFF_EXPERT  = 4 [(json_value) = "expert"];
+  DIFF_MASTER  = 5 [(json_value) = "master"];
+  DIFF_APPEND  = 6 [(json_value) = "append"];
+}

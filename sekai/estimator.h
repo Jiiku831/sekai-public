@@ -8,6 +8,9 @@
 #include "absl/base/nullability.h"
 #include "sekai/config.h"
 #include "sekai/db/proto/music_meta.pb.h"
+#include "sekai/estimator_base.h"
+#include "sekai/event_bonus.h"
+#include "sekai/profile.h"
 
 namespace sekai {
 
@@ -16,7 +19,7 @@ struct LookupTableEntry {
   int upper_bound = 0;
 };
 
-class Estimator {
+class Estimator : public EstimatorBase {
  public:
   enum class Mode { kSolo, kMulti, kCheerful, kAuto };
 
@@ -37,6 +40,14 @@ class Estimator {
   std::size_t LookupTableSize() const {
     return ep_lookup_table_.size() * ep_lookup_table_[0].size();
   }
+
+  double ExpectedValue(const Profile& profile, const EventBonus& event_bonus,
+                       const Team& team) const override;
+  double MaxExpectedValue(const Profile& profile, const EventBonus& event_bonus, const Team& team,
+                          Character lead_chars) const override;
+
+  void AnnotateTeamProto(const Profile& profile, const EventBonus& event_bonus, const Team& team,
+                         TeamProto& team_proto) const override;
 
  private:
   // EP estimator params

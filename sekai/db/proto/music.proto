@@ -5,7 +5,7 @@ package sekai.db;
 import "sekai/db/proto/descriptor.proto";
 message Music {
   option (master_db_file)                               = "musics.json";
-  optional int32 id                                     = 1 [(json_name) = "id"];
+  optional int32 id                                     = 1 [(json_name) = "id", (primary_key) = true];
   optional int32 seq                                    = 2 [(json_name) = "seq"];
   optional int32 release_condition_id                   = 3 [(json_name) = "releaseConditionId"];
   repeated string categories                            = 4 [(json_name) = "categories"];
@@ -25,4 +25,5 @@ message Music {
   optional float filler_sec                             = 18 [(json_name) = "fillerSec"];
   optional bool is_newly_written_music                  = 19 [(json_name) = "isNewlyWrittenMusic"];
   optional int32 music_collaboration_id                 = 20 [(json_name) = "musicCollaborationId"];
+  optional bool is_full_length                          = 21 [(json_name) = "isFullLength"];
 }

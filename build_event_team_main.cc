@@ -78,7 +78,7 @@ std::optional<Team> GetMaxPowerTeam(std::span<const Card* const> cards, const Pr
 std::vector<Team> GetMaxTeamSimulatedAnnealing(
     OptimizationObjective obj, std::span<const Card* const> cards, const Profile& profile,
     const EventBonus& event_bonus, const Estimator& estimator, const Constraints& constraints) {
-  SimulatedAnnealingTeamBuilder builder(obj);
+  SimulatedAnnealingTeamBuilder builder({.enable_progress = true}, obj);
   builder.AddConstraints(constraints);
   return builder.RecommendTeams(cards, profile, event_bonus, estimator);
 }

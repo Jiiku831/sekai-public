@@ -48,9 +48,6 @@ class EventTeamBuilder : public TeamBuilderBase {
   };
   EventTeamBuilder() = default;
   explicit EventTeamBuilder(const Options& options) : opts_(options) {}
-  std::vector<Team> RecommendTeamsImpl(std::span<const Card* const> pool, const Profile& profile,
-                                       const EventBonus& event_bonus, const Estimator& estimator,
-                                       std::optional<absl::Time> deadline = std::nullopt) override;
 
  protected:
   Options opts_{};
@@ -62,6 +59,14 @@ class EventTeamBuilder : public TeamBuilderBase {
 
   void Wait(BS::thread_pool& thread_pool, uint64_t max_progress,
             indicators::ProgressBar* bar = nullptr) const;
+
+  std::vector<Team> RecommendTeamsImpl(std::span<const Card* const> pool, const Profile& profile,
+                                       const EventBonus& event_bonus, const Estimator* estimator,
+                                       std::optional<absl::Time> deadline = std::nullopt);
+  std::vector<Team> RecommendTeamsImpl(std::span<const Card* const> pool, const Profile& profile,
+                                       const EventBonus& event_bonus,
+                                       const EstimatorBase& estimator,
+                                       std::optional<absl::Time> deadline = std::nullopt) override;
 };
 
 }  // namespace sekai

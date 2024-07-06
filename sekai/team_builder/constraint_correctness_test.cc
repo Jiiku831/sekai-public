@@ -100,7 +100,7 @@ ProfileProto TestProfile() {
 Estimator MakeEstimator() {
   std::vector<const db::MusicMeta*> metas =
       db::MasterDb::GetIf<db::MusicMeta>([](const db::MusicMeta& meta) {
-        return meta.difficulty() == "expert" && meta.music_id() <= 100;
+        return meta.difficulty() == db::DIFF_EXPERT && meta.music_id() <= 100;
       });
   return Estimator{Estimator::Mode::kMulti, metas};
 }

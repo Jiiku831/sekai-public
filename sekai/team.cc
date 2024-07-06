@@ -198,6 +198,15 @@ void Team::ReorderTeamForKizuna(std::span<const Character> kizuna_pairs) {
   }
 }
 
+std::vector<int> Team::GetSkillValues() const {
+  std::vector<int> skills;
+  UnitCount unit_count(cards_);
+  for (const Card* card : cards_) {
+    skills.push_back(CardSkillContrib(card, unit_count));
+  }
+  return skills;
+}
+
 bool Team::SatisfiesConstraints(const Constraints& constraints) const {
   return constraints.CharacterSetSatisfiesConstraint(chars_present_) &&
          ConstrainedMaxSkillValue(constraints).lead_skill >= constraints.min_lead_skill() &&
@@ -205,7 +214,7 @@ bool Team::SatisfiesConstraints(const Constraints& constraints) const {
 }
 
 TeamProto Team::ToProto(const Profile& profile, const class EventBonus& event_bonus,
-                        const Estimator& estimator) const {
+                        const EstimatorBase& estimator) const {
   TeamProto team;
   UnitCount unit_count(cards_);
   for (const Card* card : cards_) {
@@ -225,8 +234,7 @@ TeamProto Team::ToProto(const Profile& profile, const class EventBonus& event_bo
   team.set_power(Power(profile));
   team.set_event_bonus(EventBonus(event_bonus));
   team.set_skill_value(SkillValue());
-  team.set_expected_ep(estimator.ExpectedEp(team.power(), team.event_bonus(), team.skill_value(),
-                                            team.skill_value()));
+  estimator.AnnotateTeamProto(profile, event_bonus, *this, team);
   Eigen::Vector4i power_detailed = PowerDetailed(profile);
   *team.mutable_power_detailed() = {power_detailed.begin(), power_detailed.end()};
   if (!support_cards_.empty()) {

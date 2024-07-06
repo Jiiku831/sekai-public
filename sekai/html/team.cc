@@ -15,9 +15,16 @@ CTML::Node Team(const TeamProto& team) {
   for (const CardProto& card : team.cards()) {
     row.AppendChild(CTML::Node("td").AppendChild(Card(card)));
   }
-  std::string team_details = absl::StrFormat(
-      "Power        %6d\nEvent Bonus  %5.1f%%\nSkill Value  %5.1f%%\nExpected EP  %6d",
-      team.power(), team.event_bonus(), team.skill_value(), team.expected_ep());
+  std::string team_details =
+      absl::StrFormat("Power        %6d\nEvent Bonus  %5.1f%%\nSkill Value  %5.1f%%", team.power(),
+                      team.event_bonus(), team.skill_value());
+  if (team.has_expected_ep()) {
+    absl::StrAppend(&team_details, absl::StrFormat("\nExpected EP  %d", team.expected_ep()));
+  }
+  if (team.has_expected_score()) {
+    absl::StrAppend(&team_details, absl::StrFormat("\nEst. Score  %7d\nBest Song   %s",
+                                                   team.expected_score(), team.best_song_name()));
+  }
   if (team.has_support_bonus()) {
     absl::StrAppend(&team_details,
                     absl::StrFormat("\n\n\nEvent Bonus Details\n-------------------\nMain         "

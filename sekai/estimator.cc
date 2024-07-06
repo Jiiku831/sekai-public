@@ -9,6 +9,9 @@
 #include "absl/log/absl_check.h"
 #include "sekai/db/master_db.h"
 #include "sekai/db/proto/music_meta.pb.h"
+#include "sekai/event_bonus.h"
+#include "sekai/profile.h"
+#include "sekai/team.h"
 
 namespace sekai {
 namespace {
@@ -16,7 +19,6 @@ namespace {
 using ::sekai::db::MasterDb;
 
 constexpr int kNumSkills = 6;
-constexpr std::string_view kDifficultyExpert = "expert";
 
 int GetEpFactor(Estimator::Mode mode) {
   switch (mode) {
@@ -228,9 +230,30 @@ LookupTableEntry Estimator::LookupEstimatedEp(int power, int event_bonus) const 
   return ep_lookup_table_[power >> kPowerBucketSize][event_bonus >> kEventBonusBucketSize];
 }
 
+double Estimator::ExpectedValue(const Profile& profile, const EventBonus& event_bonus,
+                                const Team& team) const {
+  int power = team.Power(profile);
+  float eb = team.EventBonus(event_bonus);
+  int skill_value = team.SkillValue();
+  return ExpectedEp(power, eb, skill_value, skill_value);
+}
+
+double Estimator::MaxExpectedValue(const Profile& profile, const EventBonus& event_bonus,
+                                   const Team& team, Character lead_chars) const {
+  int power = team.Power(profile);
+  float eb = team.EventBonus(event_bonus);
+  int skill_value = team.ConstrainedMaxSkillValue(lead_chars).skill_value;
+  return ExpectedEp(power, eb, skill_value, skill_value);
+}
+
+void Estimator::AnnotateTeamProto(const Profile& profile, const EventBonus& event_bonus,
+                                  const Team& team, TeamProto& team_proto) const {
+  team_proto.set_expected_ep(ExpectedValue(profile, event_bonus, team));
+}
+
 Estimator RandomExEstimator(Estimator::Mode mode) {
   std::vector<absl::Nonnull<const db::MusicMeta*>> metas = MasterDb::GetIf<db::MusicMeta>(
-      [](const db::MusicMeta& meta) { return meta.difficulty() == kDifficultyExpert; });
+      [](const db::MusicMeta& meta) { return meta.difficulty() == db::DIFF_EXPERT; });
   return Estimator{mode, metas};
 }
 

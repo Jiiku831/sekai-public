@@ -12,6 +12,7 @@
 #include "sekai/bitset.h"
 #include "sekai/card.h"
 #include "sekai/combinations.h"
+#include "sekai/estimator_base.h"
 #include "sekai/team.h"
 #include "sekai/team_builder/greedy_team_builder.h"
 #include "sekai/team_builder/optimization_objective.h"
@@ -23,7 +24,7 @@ namespace sekai {
 std::vector<Team> MaxBonusTeamBuilder::RecommendTeamsImpl(std::span<const Card* const> pool,
                                                           const Profile& profile,
                                                           const EventBonus& event_bonus,
-                                                          const Estimator& estimator,
+                                                          const EstimatorBase& estimator,
                                                           std::optional<absl::Time> deadline) {
   // TODO: this doesnt work for world link. need optimizer that looks only at rainbow teams.
   std::vector<const Card*> sorted_pool = SortCardsByBonus(pool);
