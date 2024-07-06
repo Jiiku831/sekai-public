@@ -82,13 +82,13 @@ EventBonus::EventBonus()
 EventBonus::EventBonus(const EventId& event_id)
     : EventBonus(MasterDb::FindFirst<db::Event>(event_id.event_id())) {
   if (event_id.has_chapter_id()) {
-    support_bonus_ = std::unique_ptr<EventBonus>(new SupportUnitEventBonus{event_id});
+    support_bonus_ = std::shared_ptr<EventBonus>(new SupportUnitEventBonus{event_id});
   }
 }
 
 EventBonus::EventBonus(const SimpleEventBonus& event_bonus) : EventBonus() {
   if (event_bonus.has_chapter_char_id()) {
-    support_bonus_ = std::unique_ptr<EventBonus>(new SupportUnitEventBonus{event_bonus});
+    support_bonus_ = std::shared_ptr<EventBonus>(new SupportUnitEventBonus{event_bonus});
   }
   if (event_bonus.attr() != db::ATTR_UNKNOWN) {
     PopulateAttrBonus(event_bonus.attr(), kDefaultBonusRate, deck_bonus_);

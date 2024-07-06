@@ -148,6 +148,7 @@ Estimator MakeEstimator(Estimator::Mode mode,
   double b = 4 * life_factor * mean_event_rate_base / ep_factor;
   double c = 4 * life_factor * mean_event_rate_skill / ep_factor;
   double d = 4 * life_factor * mean_event_rate_encore / ep_factor;
+
   return Estimator(a, b, c, d);
 }
 

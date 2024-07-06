@@ -207,20 +207,11 @@ std::vector<std::pair<std::string, TeamProto>> BuildEventTeamProtos(const EventB
 std::vector<std::pair<std::string, TeamProto>> BuildAllWorldBloomTeams() {
   std::vector<std::pair<std::string, TeamProto>> teams;
   Estimator estimator = RandomExEstimator(Estimator::Mode::kMulti);
-  for (int i = 1; i <= 4; ++i) {
-    EventId event_id;
-    event_id.set_event_id(absl::GetFlag(FLAGS_event_id));
-    event_id.set_chapter_id(i);
+  EventId event_id;
+  event_id.set_event_id(absl::GetFlag(FLAGS_event_id));
+  for (const auto* world_bloom : db::MasterDb::FindAll<db::WorldBloom>(event_id.event_id())) {
+    event_id.set_chapter_id(world_bloom->chapter_no());
     EventBonus event_bonus{event_id};
-
-    absl::Nullable<const db::WorldBloom*> world_bloom = nullptr;
-    for (const auto* cand : db::MasterDb::FindAll<db::WorldBloom>(event_id.event_id())) {
-      if (cand->chapter_no() == i) {
-        world_bloom = cand;
-        break;
-      }
-    }
-    ABSL_CHECK_NE(world_bloom, nullptr);
 
     std::vector<std::pair<std::string, TeamProto>> chapter_teams =
         BuildEventTeamProtos(event_bonus, estimator, /*compute_max=*/false);

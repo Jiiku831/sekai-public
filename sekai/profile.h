@@ -8,6 +8,7 @@
 
 #include "absl/base/nullability.h"
 #include "absl/container/flat_hash_map.h"
+#include "absl/status/status.h"
 #include "absl/strings/str_format.h"
 #include "sekai/card.h"
 #include "sekai/db/proto/all.h"
@@ -24,6 +25,8 @@ class Profile : public ProfileBonus {
   explicit Profile(const ProfileProto& profile);
 
   void LoadCardsFromCsv(std::filesystem::path path);
+  absl::Status LoadCardsFromCsvString(std::string_view contents);
+  absl::Status LoadCardsFromCsv(std::stringstream& ss);
   void ApplyEventBonus(const EventBonus& event_bonus);
 
   std::span<const BonusRate> attr_bonus() const override { return attr_bonus_; }
@@ -42,6 +45,9 @@ class Profile : public ProfileBonus {
     return out;
   }
   absl::Nullable<const Card*> GetCard(int card_id) const;
+  std::span<const Card* const> sorted_support() const { return sorted_support_; }
+
+  ProfileProto CardsToProto() const;
 
  private:
   std::array<BonusRate, db::Attr_ARRAYSIZE> attr_bonus_;
@@ -51,6 +57,7 @@ class Profile : public ProfileBonus {
   std::array<BonusRate, db::Unit_ARRAYSIZE> unit_bonus_;
   int bonus_power_ = 0;
   absl::flat_hash_map<int, Card> cards_;
+  std::vector<const Card*> sorted_support_;
 };
 
 }  // namespace sekai

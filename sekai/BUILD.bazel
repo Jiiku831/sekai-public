@@ -254,6 +254,7 @@ cc_library(
         "//sekai/db:master_db",
         "//sekai/db/proto:all",
         "//sekai/proto:profile_cc_proto",
+        "//sekai/team_builder:pool_utils",
         "@abseil-cpp//absl/log:absl_check",
         "@abseil-cpp//absl/strings",
         "@abseil-cpp//absl/strings:str_format",

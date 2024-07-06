@@ -56,7 +56,7 @@ class EventBonus {
   std::array<float, db::Attr_ARRAYSIZE> diff_attr_bonus_;
   bool has_diff_attr_bonus_ = false;
 
-  std::unique_ptr<EventBonus> support_bonus_ = nullptr;
+  std::shared_ptr<EventBonus> support_bonus_ = nullptr;
 };
 
 class SupportUnitEventBonus : public EventBonus {

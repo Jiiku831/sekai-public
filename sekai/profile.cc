@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
+#include <sstream>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -16,6 +17,7 @@
 #include "sekai/card.h"
 #include "sekai/db/master_db.h"
 #include "sekai/db/proto/all.h"
+#include "sekai/team_builder/pool_utils.h"
 
 namespace sekai {
 
@@ -66,11 +68,14 @@ void LoadCards(const ProfileProto& profile, absl::flat_hash_map<int, Card>& card
   }
 }
 
-void TryParseInt(std::string_view str, int& out) {
-  if (str.empty()) return;
+bool TryParseInt(std::string_view str, int& out) {
+  if (str.empty()) return false;
   int tmp;
   if (absl::SimpleAtoi(str, &tmp)) {
     std::swap(tmp, out);
+    return true;
+  } else {
+    return false;
   }
 }
 
@@ -105,35 +110,69 @@ int Profile::character_rank(int char_id) const {
 
 void Profile::LoadCardsFromCsv(std::filesystem::path path) {
   std::ifstream fin(path);
-  for (std::string line; std::getline(fin, line);) {
+  std::stringstream ss;
+  ss << fin.rdbuf();
+  ABSL_CHECK_OK(LoadCardsFromCsv(ss));
+}
+
+absl::Status Profile::LoadCardsFromCsvString(std::string_view contents) {
+  std::stringstream ss;
+  ss << contents;
+  return LoadCardsFromCsv(ss);
+}
+
+absl::Status Profile::LoadCardsFromCsv(std::stringstream& ss) {
+  for (std::string line; std::getline(ss, line);) {
     std::vector<std::string> parts = absl::StrSplit(line, ',');
     if (parts[0] != "TRUE") continue;
+    if (parts.empty()) continue;
+    if (parts.size() <= 7) {
+      return absl::InvalidArgumentError(absl::StrCat("Invalid input line: ", line));
+    }
     int card_id = 0;
-    TryParseInt(parts[7], card_id);
+    if (!TryParseInt(parts[7], card_id)) {
+      return absl::InvalidArgumentError(absl::StrCat("Failed to parse as int: ", parts[7]));
+    }
     int master_rank = 0;
     int skill_level = 1;
-    TryParseInt(parts[1], master_rank);
-    TryParseInt(parts[2], skill_level);
+    if (!parts[1].empty() && !TryParseInt(parts[1], master_rank)) {
+      return absl::InvalidArgumentError(absl::StrCat("Failed to parse as int: ", parts[1]));
+    }
+    if (!parts[2].empty() && !TryParseInt(parts[2], skill_level)) {
+      return absl::InvalidArgumentError(absl::StrCat("Failed to parse as int: ", parts[2]));
+    }
     const db::Card& card = MasterDb::FindFirst<db::Card>(card_id);
     CardState state = CreateMaxCardState(card_id);
     state.set_master_rank(master_rank);
     state.set_skill_level(skill_level);
     auto [new_card, success] = cards_.emplace(card_id, Card{card, state});
-    ABSL_CHECK(success) << "duplicate ids";
+    if (!success) {
+      return absl::InvalidArgumentError(absl::StrCat("Found duplicate id: ", card_id));
+    }
     new_card->second.ApplyProfilePowerBonus(*this);
   }
+  return absl::OkStatus();
 }
 
 void Profile::ApplyEventBonus(const EventBonus& event_bonus) {
   for (auto& [unused_id, card] : cards_) {
     card.ApplyEventBonus(event_bonus);
   }
+  sorted_support_ = GetSortedSupportPool(CardPtrs());
 }
 
 absl::Nullable<const Card*> Profile::GetCard(int card_id) const {
   auto card = cards_.find(card_id);
   if (card == cards_.end()) return nullptr;
   return &card->second;
+}
+
+ProfileProto Profile::CardsToProto() const {
+  ProfileProto profile;
+  for (const auto& [card_id, card] : cards_) {
+    (*profile.mutable_cards())[card_id] = card.state();
+  }
+  return profile;
 }
 
 ProfileProto EmptyProfileProto() {

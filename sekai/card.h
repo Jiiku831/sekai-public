@@ -63,6 +63,7 @@ class Card : public CardBase {
   db::CardRarityType db_rarity() const { return db_rarity_; }
 
   CardProto ToProto(UnitCountBase& unit_count) const;
+  CardState state() const { return state_; }
 
  private:
   // Card state

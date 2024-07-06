@@ -225,5 +225,38 @@ TEST(ProfileTest, ApplySkillCharacterRanks) {
   EXPECT_FLOAT_EQ(card->SkillValue(unit_count), 160);
 }
 
+TEST(ProfileTest, SortedSupport) {
+  auto event_id = ParseTextProto<EventId>(R"pb(event_id: 112 chapter_id: 1)pb");
+  EventBonus bonus(event_id);
+
+  auto profile_proto = ParseTextProto<ProfileProto>(R"pb(
+    cards: {
+      key: 71
+      value: {level: 1 master_rank: 0 skill_level: 1}
+    }
+    cards: {
+      key: 74
+      value: {level: 1 master_rank: 0 skill_level: 1}
+    }
+    cards: {
+      key: 116
+      value: {level: 1 master_rank: 0 skill_level: 1}
+    }
+    cards: {
+      key: 198
+      value: {level: 1 master_rank: 0 skill_level: 1}
+    }
+  )pb");
+  profile_proto.MergeFrom(TestProfile());
+  Profile profile{profile_proto};
+  profile.ApplyEventBonus(bonus);
+
+  std::vector<int> sorted_support_ids;
+  for (const Card* card : profile.sorted_support()) {
+    sorted_support_ids.push_back(card->card_id());
+  }
+  EXPECT_THAT(sorted_support_ids, ElementsAre(116, 71, 74));
+}
+
 }  // namespace
 }  // namespace sekai

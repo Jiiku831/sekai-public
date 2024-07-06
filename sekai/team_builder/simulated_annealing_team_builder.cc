@@ -23,8 +23,6 @@ namespace sekai {
 
 namespace {
 
-constexpr int kTeamSize = 5;
-
 std::optional<Team> GetRandomTeam(std::span<const Card* const> pool,
                                   std::span<const Card* const> support_pool,
                                   const Constraints& constraints, std::mt19937& g) {
