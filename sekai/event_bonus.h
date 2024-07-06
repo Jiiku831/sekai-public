@@ -12,6 +12,7 @@ namespace sekai {
 class EventBonus {
  public:
   EventBonus();
+  virtual ~EventBonus() = default;
   explicit EventBonus(const db::Event& event);
   explicit EventBonus(const EventId& event_id);
   explicit EventBonus(const SimpleEventBonus& event_bonus);

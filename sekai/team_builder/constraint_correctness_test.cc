@@ -97,12 +97,6 @@ ProfileProto TestProfile() {
   // clang-format on
 }
 
-EventBonus GetEventBonus() {
-  auto event_id = ParseTextProto<EventId>(R"pb(event_id: 117)pb");
-  EventBonus bonus(event_id);
-  return bonus;
-}
-
 Estimator MakeEstimator() {
   std::vector<const db::MusicMeta*> metas =
       db::MasterDb::GetIf<db::MusicMeta>([](const db::MusicMeta& meta) {
@@ -132,7 +126,7 @@ class ConstraintCorrectnessTest : public testing::Test {
 
   T team_builder_;
   Profile profile_{TestProfile()};
-  EventBonus event_bonus_ = GetEventBonus();
+  EventBonus event_bonus_{ParseTextProto<EventId>(R"pb(event_id: 117)pb")};
   Estimator estimator_ = MakeEstimator();
   std::vector<Card> cards_;
   Constraints constraints_;

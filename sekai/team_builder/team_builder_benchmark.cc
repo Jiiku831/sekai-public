@@ -106,12 +106,6 @@ ProfileProto TestProfile() {
   // clang-format on
 }
 
-EventBonus GetEventBonus() {
-  auto event_id = ParseTextProto<EventId>(R"pb(event_id: 117)pb");
-  EventBonus bonus(event_id);
-  return bonus;
-}
-
 std::vector<Card> MakeCards(const Profile& profile, const EventBonus& event_bonus) {
   std::vector<Card> cards;
   for (const db::Card& card : db::MasterDb::GetAll<db::Card>()) {
@@ -178,7 +172,7 @@ TeamReporter kTeamReporter;
 void RunBenchmark(absl::AnyInvocable<std::unique_ptr<TeamBuilderBase>() const> make_builder,
                   benchmark::State& state) {
   Profile profile{TestProfile()};
-  EventBonus event_bonus = GetEventBonus();
+  EventBonus event_bonus{ParseTextProto<EventId>(R"pb(event_id: 117)pb")};
   Estimator estimator = MakeEstimator();
   std::vector<Card> cards = MakeCards(profile, event_bonus);
   std::vector<const Card*> pool = MakePool(cards);
