@@ -1,0 +1,17 @@
+{
+    "homepage": "https://github.com/emscripten-core/emscripten",
+    "maintainers": [
+        {
+            "email": "",
+            "github": "emscripten-core",
+            "name": "Emscripten"
+        }
+    ],
+    "repository": [
+        "github:emscripten-core/emscripten"
+    ],
+    "versions": [
+        "3.1.51"
+    ],
+    "yanked_versions": {}
+}

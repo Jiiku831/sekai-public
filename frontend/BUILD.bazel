@@ -1,0 +1,187 @@
+load("@gzgz_rules_sass//sass:defs.bzl", "sass_binary")
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library")
+load("@rules_pkg//pkg:mappings.bzl", "pkg_files")
+
+exports_files([
+    "server.py",
+    "shell.html",
+])
+
+cc_library(
+    name = "console_log_sink",
+    srcs = ["console_log_sink.cc"],
+    hdrs = ["console_log_sink.h"],
+    deps = [
+        "@abseil-cpp//absl/base:log_severity",
+        "@abseil-cpp//absl/log:log_entry",
+        "@abseil-cpp//absl/log:log_sink",
+    ],
+)
+
+cc_library(
+    name = "context",
+    srcs = ["context.cc"],
+    hdrs = ["context.h"],
+    deps = [
+        ":display_text",
+        ":element_id",
+        ":util",
+        "//frontend/proto:context_cc_proto",
+        "@sekai-public//sekai:card",
+        "@sekai-public//sekai:character",
+        "@sekai-public//sekai/db:master_db",
+        "@sekai-public//sekai/db/proto:all",
+        "@sekai-public//sekai/proto:team_cc_proto",
+    ],
+)
+
+cc_library(
+    name = "controller",
+    srcs = ["controller.cc"],
+    hdrs = ["controller.h"],
+    deps = [
+        ":context",
+        ":element_id",
+        "//frontend/proto:context_cc_proto",
+        "@abseil-cpp//absl/algorithm:container",
+        "@abseil-cpp//absl/log",
+        "@abseil-cpp//absl/strings",
+        "@abseil-cpp//absl/time",
+        "@protobuf",
+        "@sekai-public//sekai:bitset",
+        "@sekai-public//sekai:card",
+        "@sekai-public//sekai:challenge_live_estimator",
+        "@sekai-public//sekai:estimator",
+        "@sekai-public//sekai:event_bonus",
+        "@sekai-public//sekai:profile",
+        "@sekai-public//sekai:proto_util",
+        "@sekai-public//sekai:team",
+        "@sekai-public//sekai/db:master_db",
+        "@sekai-public//sekai/db/proto:all",
+        "@sekai-public//sekai/proto:card_state_cc_proto",
+        "@sekai-public//sekai/proto:team_cc_proto",
+        "@sekai-public//sekai/team_builder:challenge_live_team_builder",
+        "@sekai-public//sekai/team_builder:simulated_annealing_team_builder",
+    ],
+    alwayslink = True,
+)
+
+cc_library(
+    name = "display_text",
+    srcs = ["display_text.cc"],
+    hdrs = ["display_text.h"],
+    deps = [
+        "@abseil-cpp//absl/log:absl_check",
+        "@sekai-public//sekai/db/proto:all",
+    ],
+)
+
+cc_library(
+    name = "element_id",
+    srcs = ["element_id.cc"],
+    hdrs = ["element_id.h"],
+    deps = [
+        "@abseil-cpp//absl/strings",
+    ],
+)
+
+cc_library(
+    name = "init",
+    srcs = ["init.cc"],
+    hdrs = ["init.h"],
+    deps = [
+        ":context",
+        ":display_text",
+        ":element_id",
+        "//frontend/proto:context_cc_proto",
+        "@abseil-cpp//absl/log:absl_check",
+        "@abseil-cpp//absl/strings",
+        "@protobuf",
+        "@sekai-public//sekai:bitset",
+        "@sekai-public//sekai:card",
+        "@sekai-public//sekai:profile",
+        "@sekai-public//sekai:proto_util",
+        "@sekai-public//sekai/db:master_db",
+        "@sekai-public//sekai/db/proto:all",
+    ],
+)
+
+cc_library(
+    name = "sajii_lib",
+    srcs = ["main.cc"],
+    deps = [
+        ":console_log_sink",
+        ":controller",
+        ":init",
+        "@abseil-cpp//absl/log",
+        "@abseil-cpp//absl/log:globals",
+        "@abseil-cpp//absl/log:log_sink_registry",
+        "@sekai-public//base",
+        "@sekai-public//sekai/db:master_db",
+    ],
+)
+
+cc_binary(
+    name = "sajii",
+    additional_linker_inputs = [
+        "shell.html",
+        "//data:flat-db",
+    ],
+    linkopts = [
+        "--bind",
+        "-lidbfs.js",
+        "--oformat=html",
+        "--shell-file $(execpath shell.html)",
+        "--preload-file $(location //data:flat-db)@data/flat-db",
+        "-s ASSERTIONS",
+        "-s ALLOW_MEMORY_GROWTH",
+        "-s NO_EXIT_RUNTIME",
+        #"-fsanitize=address",
+        #"-fsanitize=undefined",
+    ],
+    deps = [
+        ":sajii_lib",
+    ],
+)
+
+cc_library(
+    name = "util",
+    srcs = ["util.cc"],
+    hdrs = ["util.h"],
+    deps = [
+        "@sekai-public//sekai/db:master_db",
+    ],
+)
+
+pkg_files(
+    name = "src_root",
+    srcs = [
+        "_headers",
+        "robots.txt",
+        "sajii_lib.js",
+    ],
+)
+
+pkg_files(
+    name = "licenses",
+    srcs = [
+        "@abseil-cpp//:LICENSE",
+        "@eigen//:COPYING.MPL2",
+        "@emscripten_license//:LICENSE",
+        "@protobuf//:LICENSE",
+        "@zstd_license//:LICENSE",
+    ],
+    prefix = "licenses/",
+    renames = {
+        "@abseil-cpp//:LICENSE": "abseil-cpp/LICENSE.txt",
+        "@eigen//:COPYING.MPL2": "eigen/LICENSE.txt",
+        "@emscripten_license//:LICENSE": "emscripten/LICENSE.txt",
+        "@protobuf//:LICENSE": "protobuf/LICENSE.txt",
+        "@zstd_license//:LICENSE": "zstd/LICENSE.txt",
+    },
+)
+
+sass_binary(
+    name = "styles",
+    src = "styles.sass",
+)

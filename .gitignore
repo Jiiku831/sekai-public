@@ -1,6 +1,8 @@
 bazel-*
 compile_commands.json
 reports/*.html
+data/storage-sekai-best
+data/images
 
 # Intentionally ignore Bazel lockfile
 MODULE.bazel.lock

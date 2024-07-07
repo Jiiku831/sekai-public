@@ -19,7 +19,6 @@
 #include "sekai/proto_util.h"
 
 ABSL_FLAG(std::string, output, "", "output path");
-ABSL_FLAG(bool, enable_thumbnails, false, "whether or not to enabled thumbnails");
 
 using namespace ::sekai::db;
 
@@ -34,9 +33,7 @@ class FlatDbGenerator {
     Records records;
     std::apply([&records](auto&&... items) { ((records.MergeFrom(items.ToRecords())), ...); },
                items_);
-    if (absl::GetFlag(FLAGS_enable_thumbnails)) {
-      AddEmbeddedThumbnails(records);
-    }
+    AddEmbeddedThumbnails(records);
     sekai::WriteCompressedBinaryProtoFile(path, records);
   }
 
@@ -49,6 +46,9 @@ class FlatDbGenerator {
 
   void AddEmbeddedThumbnails(std::filesystem::path src, std::filesystem::path dst,
                              Records& records) {
+    if (!std::filesystem::exists(sekai::MainRunfilesRoot() / src)) {
+      return;
+    }
     for (const auto& entry : std::filesystem::directory_iterator(sekai::MainRunfilesRoot() / src)) {
       if (!entry.is_regular_file()) {
         LOG(WARNING) << "Skipping non-regular file: " << entry.path();

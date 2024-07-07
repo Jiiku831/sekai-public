@@ -1,0 +1,8 @@
+--- /dev/null
++++ BUILD.bazel
+@@ -0,0 +1,5 @@
++licenses(["notice"])
++
++exports_files([
++  "LICENSE",
++])

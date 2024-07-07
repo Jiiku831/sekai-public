@@ -22,8 +22,6 @@ events, edit the event parameters in `build_event_team_main.cc` and then run
 
 *  You may consider setting up a private repo to save your profile. See the
    `sample_repo/` directory for example and instructions.
-*  World link support is not added. You can run it and it probably will give a
-   correct result but it may be slow.
 *  The default point calculation is based on playing random songs on expert
    difficulty and assumes that pub skill values scales with your skill value.
    This means the importance of skill value is slightly exaggerated. You can
@@ -33,6 +31,9 @@ events, edit the event parameters in `build_event_team_main.cc` and then run
 ## Non-JP players before bloom fes update
 
 *  Add `--subunitless_offset=10` when running these scripts.
+*  For events before 3nd anniversary update, change the database version to the
+   latest for EN in `MODULES.bazel`. Check
+   `modules/sekai-master-db/metadata.json` for a list.
 
 Note: there may be slight differences in points gained due to the use of JP
 songs for point calculation.
@@ -49,8 +50,16 @@ cd /path/to/sekai-public
 pre-commit install
 ```
 
-There is a incomplete wasm port of this program at
-https://jiiku.pages.dev/sajii. Contact me if you want to complete it.
+### Additional dependencies for running the frontend
+
+* gallery-dl: `pipx install gallery-dl`
+
+Download the thumbnails before running the server:
+
+```
+./pull.sh
+./run_local_server.sh
+```
 
 ## Detailed Instructions
 

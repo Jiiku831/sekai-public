@@ -1,0 +1,56 @@
+load("@emsdk//emscripten_toolchain:wasm_rules.bzl", "wasm_cc_binary")
+load("@gzgz_rules_sass//sass:defs.bzl", "sass_binary")
+load("@rules_pkg//pkg:mappings.bzl", "pkg_files")
+load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
+load("@rules_python//python:defs.bzl", "py_binary")
+
+wasm_cc_binary(
+    name = "sajii_wasm",
+    cc_target = "//frontend:sajii",
+    outputs = [
+        "sajii.html",
+        "sajii.js",
+        "sajii.data",
+        "sajii.wasm",
+    ],
+    threads = "emscripten",
+)
+
+pkg_files(
+    name = "data/assets/64",
+    srcs = ["//data:storage-sekai-best/64"],
+    prefix = "data/assets/64",
+)
+
+pkg_files(
+    name = "data/assets/128",
+    srcs = ["//data:storage-sekai-best/128"],
+    prefix = "data/assets/128",
+)
+
+pkg_files(
+    name = "images",
+    srcs = ["//data:images"],
+    prefix = "images",
+)
+
+pkg_tar(
+    name = "server_root",
+    srcs = [
+        ":data/assets/128",
+        ":data/assets/64",
+        ":images",
+        ":sajii_wasm",
+        "//frontend:licenses",
+        "//frontend:src_root",
+        "//frontend:styles",
+    ],
+)
+
+py_binary(
+    name = "server",
+    srcs = ["//frontend:server.py"],
+    data = [
+        ":server_root",
+    ],
+)

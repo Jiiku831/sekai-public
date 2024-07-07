@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <script src="/sajii_lib.js"></script>
+    <link rel="stylesheet" href="/styles.css"></script>
+    <link rel="icon" type="image/png" href="/images/favicon.png"></script>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>:Sajii:</title>
+  </head>
+  <body>
+    <div class="team-builder" id="team-builder">
+    </div>
+
+    <p>
+      <b>Instructions</b>: Mark cards as owned in the list below and customize
+      stats. Enter card ID in the table above to add to team.
+    </p>
+
+    <details open>
+      <summary>Save Profile</summary>
+
+      <div>
+        This will save most stuff that matters. The teams and the challenge
+        live character selection are not saved.
+        <br>
+        <input type="button" value="Load" onclick="controller.ReadSaveData();">
+        <input type="button" value="Save" onclick="controller.WriteSaveData();">
+        <input type="button" value="Delete" onclick="controller.DeleteSaveData();">
+        &middot;
+        <input id="upload-cards" type="file" name="upload-cards" size=30>
+        <input type="button" value="Import CSV" onclick="ImportCsv();">
+        <span id="upload-cards-output-area"></span>
+      </div>
+    </details>
+
+    <hr>
+
+    <details open>
+      <summary>Team Recommender</summary>
+
+      <div>
+        <h4>Important Notes</h4>
+        <ul>
+          <li>
+            The optimizer is probabilistic and may not be the true optimal team. Check the&nbsp;
+            <a href="https://github.com/Jiiku831/sekai-public" target="_blank">source repo</a>
+            &nbsp;for an exact optimizer. You may click the recommend button a few times to find if
+            there is a better team.
+          </li>
+          <li>
+            You may choose to import the card list from&nbsp;<a href="https://docs.google.com/spreadsheets/d/1_pHFBUTILVJbBFymBY08pVbrLu6VmYfPDuQifQKD0dA/edit?gid=1370982493#gid=1370982493" target="_blank">
+              this spreadsheet</a>. Download the sheet as a CSV and then import
+            it using the file select above.
+          </li>
+        </ul>
+
+        <input type="button" value="Recommend Event Team (Slot 0)" onclick="controller.BuildEventTeam();">
+        <input type="button" value="Recommend Challenge Live Team (Slot 1)" onclick="BuildChallengeLiveTeam();">
+
+        <div id="team-recommender-output">
+        </div>
+        <details open>
+          <summary>Event Bonus</summary>
+          <div id="event-bonus-form">
+            <label for="event-bonus-event-select">
+              Event:
+            </label>
+            <select id="event-bonus-event-select"
+                    onchange="SetEventBonusByEvent(this);">
+            </select>
+            <details>
+              <summary>Custom Event</summary>
+              <div>
+                <table class="custom-event">
+                  <tbody>
+                    <tr>
+                      <th>Event Attribute</th>
+                      <td id="custom-event-attr"></td>
+                      <td>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th>Event Characters</th>
+                      <td id="custom-event-chars"></td>
+                      <td>
+                        <input type="button" value="All"
+                               onclick="SetAllFilter('custom-event-chars', true)">
+                        <input type="button" value="None"
+                               onclick="SetAllFilter('custom-event-chars', false)">
+                      </td>
+                    </tr>
+                    <tr>
+                      <th>Chapter Character</th>
+                      <td id="custom-event-chapter"></td>
+                      <td>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </details>
+          </div>
+        </details>
+        <details>
+          <summary>Team Constraints</summary>
+          <div>
+            <table class="team-constraints">
+              <tbody>
+                <tr>
+                  <th>Allowed Leads</th>
+                  <td id="lead-constraints"></td>
+                  <td>
+                    <input type="button" value="All"
+                           onclick="SetAllFilter('lead-constraints', true)">
+                    <input type="button" value="None"
+                           onclick="SetAllFilter('lead-constraints', false)">
+                  </td>
+                </tr>
+                <tr>
+                  <th>Allowed Kizuna</th>
+                  <td id="kizuna-constraints"></td>
+                  <td>
+                    <input type="button" value="All"
+                           onclick="SetAllFilter('kizuna-constraints', true)">
+                    <input type="button" value="None"
+                           onclick="SetAllFilter('kizuna-constraints', false)">
+                  </td>
+                </tr>
+                <tr>
+                  <th>Allowed Rarities</th>
+                  <td id="rarity-constraints"></td>
+                  <td>
+                    <input type="button" value="All"
+                           onclick="SetAllFilter('rarity-constraints', true)">
+                    <input type="button" value="None"
+                           onclick="SetAllFilter('rarity-constraints', false)">
+                  </td>
+                </tr>
+                <tr>
+                  <th>Other Constraints</th>
+                  <td>
+                    <label for="lead-skill-constraint">
+                      Min Lead Skill:
+                    </label>
+                    <input type="number"
+                           id="lead-skill-constraint"
+                           value="0"
+                           onchange="controller.SetMinLeadSkill(parseInt(this.value));">
+                  </td>
+                  <td>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+        <details>
+          <summary>Challenge Live Character Select</summary>
+          <div id="cl-character-select">
+          </div>
+        </details>
+        <details open>
+          <summary>Compatibility Options</summary>
+          <div id="use-old-subunitless-bonus-container">
+          </div>
+        </details>
+      </div>
+    </details>
+
+    <hr>
+
+    <details>
+      <summary>Power Bonus</summary>
+      <div>
+        <table class="power-bonus-table">
+          <tbody id="power-bonus-table-body">
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <hr>
+
+    <details open>
+      <summary>Card List</summary>
+
+      <div>
+        <details>
+          <summary>Filters</summary>
+          <div>
+            <table class="card-list-filter">
+              <tbody>
+                <tr>
+                  <th>Character</th>
+                  <td id="card-list-char-filter"></td>
+                  <td>
+                    <input type="button" value="All"
+                           onclick="SetAllFilter('card-list-char-filter', true)">
+                    <input type="button" value="None"
+                           onclick="SetAllFilter('card-list-char-filter', false)">
+                  </td>
+                </tr>
+                <tr>
+                  <th>Attribute</th>
+                  <td id="card-list-attr-filter"></td>
+                  <td>
+                    <input type="button" value="All"
+                           onclick="SetAllFilter('card-list-attr-filter', true)">
+                    <input type="button" value="None"
+                           onclick="SetAllFilter('card-list-attr-filter', false)">
+                  </td>
+                </tr>
+                <tr>
+                  <th>Rarity</th>
+                  <td id="card-list-rarity-filter"></td>
+                  <td>
+                    <input type="button" value="All"
+                           onclick="SetAllFilter('card-list-rarity-filter', true)">
+                    <input type="button" value="None"
+                           onclick="SetAllFilter('card-list-rarity-filter', false)">
+                  </td>
+                </tr>
+                <tr>
+                  <th>Unreleased Cards</th>
+                  <td>
+                    <input type="checkbox"
+                           id="card-list-unreleased-filter"
+                           onchange="controller.SetUnreleasedContentFilterState(this.checked)">
+                    <label for="card-list-unreleased-filter">
+                      Show
+                    </label>
+                  </td>
+                  <td>
+                  </td>
+                </tr>
+                <tr>
+                  <th>Ownership</th>
+                  <td>
+                    <input type="checkbox"
+                           id="card-list-owned-filter"
+                           onchange="controller.SetOwnedCardsFilterState(this.checked)">
+                    <label for="card-list-owned-filter">
+                      Owned Cards Only
+                    </label>
+                  </td>
+                  <td>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+
+        <div>
+          Set ownership of all currently visible cards:
+          <input type="button" value="Set" onclick="SetVisibleOwned(true)">
+          <input type="button" value="Clear" onclick="SetVisibleOwned(false)">
+        </div>
+
+        <table id="card-list" class="card-list">
+          <thead>
+            <th>Owned</th>
+            <th></th>
+            <th></th>
+            <th>ID</th>
+            <th>Char</th>
+            <th>Attr</th>
+            <th>Rarity</th>
+            <th>Level</th>
+            <th>Trained</th>
+            <th>Story 1</th>
+            <th>Story 2</th>
+            <th>Master Rank</th>
+            <th>Skill Level</th>
+          </thead>
+          <tbody id="card-list-body">
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <details open>
+      <summary>Notices</summary>
+      <div>
+        <p>
+          This tool is unaffiliated with SEGA, Colorful Palette and Crypton, who owns the
+          thumbnails and card data provided here for research purposes.
+        </p>
+
+        <p>
+          This program contains compiled code from the following open source libraries:
+        </p>
+
+        <ul>
+          <li>
+            <a href="https://github.com/abseil/abseil-cpp">abseil-cpp</a>&nbsp;
+            (<a href="/licenses/abseil-cpp/LICENSE.txt">Notice</a>)
+          </li>
+          <li>
+            <a href="https://gitlab.com/libeigen/eigen">eigen</a>&nbsp;
+            (<a href="/licenses/eigen/LICENSE.txt">Notice</a>)
+          </li>
+          <li>
+            <a href="https://github.com/emscripten-core/emscripten">emscripten</a>&nbsp;
+            (<a href="/licenses/emscripten/LICENSE.txt">Notice</a>)
+          </li>
+          <li>
+            <a href="https://github.com/protocolbuffers/protobuf">protobuf</a>&nbsp;
+            (<a href="/licenses/protobuf/LICENSE.txt">Notice</a>)
+          </li>
+          <li>
+            <a href="https://github.com/madler/zlib">zlib</a>
+          </li>
+          <li>
+            <a href="https://github.com/facebook/zstd">zstd</a>&nbsp;
+            (<a href="/licenses/zstd/LICENSE.txt">Notice</a>)
+          </li>
+        </ul>
+      </div>
+    </details>
+
+    <script type='text/javascript'>
+      var Module = {
+        totalDependencies: 0,
+        monitorRunDependencies: (left) => {
+          this.totalDependencies = Math.max(this.totalDependencies, left);
+          console.log(left ? 'Preparing... (' + (this.totalDependencies - left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
+        },
+      };
+      console.log('Downloading...');
+      window.onerror = () => {
+        console.log('Exception thrown, see JavaScript console');
+      };
+    </script>
+    {{{ SCRIPT }}}
+  </body>
+</html>

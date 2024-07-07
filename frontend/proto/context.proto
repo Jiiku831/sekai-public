@@ -1,0 +1,132 @@
+syntax = "proto3";
+
+package frontend;
+
+message AttrContext {
+  optional string display_text = 1;
+  optional int32 value         = 2;
+  // TODO: add thumbnail
+}
+
+message CharacterContext {
+  optional string display_text = 1;
+  optional int32 char_id       = 2;
+  optional int32 unit_id       = 3;
+  // TODO: add thumbnail
+}
+
+message CharacterContextGroup { repeated CharacterContext chars = 1; }
+
+message RarityContext {
+  optional string display_text = 1;
+  optional int32 value         = 2;
+  // TODO: add thumbnail
+}
+
+message CardStateContext {
+  optional int32 level       = 1;
+  optional int32 master_rank = 2;
+  optional int32 skill_level = 3;
+
+  // Makes sense only within a team.
+  int32 team_power_contrib = 4;
+  float team_bonus_contrib = 5;
+  int32 team_skill_contrib = 6;
+}
+
+message CardContext {
+  optional int32 card_id                = 1;
+  optional string thumbnail_url         = 2;
+  optional CharacterContext character   = 3;
+  optional AttrContext attr             = 4;
+  optional RarityContext rarity         = 5;
+  optional string card_list_row_id      = 6;
+  optional int32 max_level              = 7;
+  optional bool trainable               = 8;
+  optional int32 card_episode_1         = 9;
+  optional int32 card_episode_2         = 10;
+  optional CardStateContext state       = 11;
+  optional string attr_frame            = 12;
+  optional string rarity_frame          = 13;
+  optional string alt_thumbnail_url     = 14;
+  optional string alt_rarity_frame      = 15;
+  optional int32 thumbnail_res          = 16;
+  optional string thumbnail_url_128     = 17;
+  optional string alt_thumbnail_url_128 = 18;
+}
+
+message TeamContext {
+  repeated CardContext cards         = 1;
+  optional int32 power               = 2;
+  repeated int32 power_detailed      = 3;
+  optional float skill_value         = 4;
+  optional float event_bonus         = 5;
+  optional int32 expected_ep         = 6;
+  optional int32 expected_score      = 7;
+  optional string best_song_name     = 8;
+  repeated CardContext support_cards = 9;
+  optional float main_bonus          = 10;
+  optional float support_bonus       = 11;
+}
+
+message ListFilter {
+  repeated AttrContext attrs               = 1;
+  repeated CharacterContextGroup char_rows = 2;
+  repeated RarityContext rarities          = 3;
+}
+
+message CardListContext {
+  repeated CardContext cards      = 1;
+  optional ListFilter list_filter = 2;
+}
+
+message AreaItemContext {
+  optional string display_text = 1;
+  optional int32 area_item_id  = 2;
+  optional int32 area_id       = 3;
+  // TODO: add max level
+  // TODO: add thumbnail
+}
+
+message PowerBonusContext {
+  message AreaContext {
+    optional string display_text        = 1;
+    repeated AreaItemContext area_items = 2;
+  }
+  repeated AreaContext areas               = 1;
+  repeated CharacterContextGroup char_rows = 2;
+}
+
+message KizunaContext {
+  CharacterContext kizuna_main    = 1;
+  repeated CharacterContext chars = 2;
+}
+
+message CustomEventContext {
+  repeated AttrContext attrs                   = 1;
+  repeated CharacterContextGroup bonus_chars   = 2;
+  repeated CharacterContextGroup chapter_chars = 3;
+}
+
+message TeamBuilderContext {
+  message EventContext {
+    optional string display_text = 1;
+    optional int32 event_id      = 2;
+    optional int32 chapter_id    = 3;
+    optional bool selected       = 4;
+    optional string event_str    = 5;
+  }
+  repeated EventContext events                             = 1;
+  repeated CharacterContextGroup challenge_live_characters = 2;
+  optional bool use_old_subunitless_bonus                  = 3;
+  repeated CharacterContextGroup lead_character_constraint = 4;
+  repeated KizunaContext kizuna_constraint                 = 5;
+  repeated RarityContext rarity_constraint                 = 6;
+  optional CustomEventContext custom_event                 = 7;
+}
+
+message InitialRenderContext {
+  optional CardListContext card_list       = 1;
+  optional PowerBonusContext power_bonus   = 2;
+  optional TeamBuilderContext team_builder = 3;
+}

@@ -5,12 +5,12 @@ genrule(
     srcs = [
         "@sekai-master-db",
         ":sekai-best",
+        ":storage-sekai-best",
     ],
     outs = [
         "flat-db",
     ],
     cmd = "./$(execpath //sekai/db:generate_flat_db_main) --output=$@",
-    #cmd = "find . > $@",
     tools = ["//sekai/db:generate_flat_db_main"],
 )
 
@@ -48,4 +48,33 @@ filegroup(
 filegroup(
     name = "sekai-best/music_metas",
     srcs = ["@sekai-best-music-metas//file"],
+)
+
+filegroup(
+    name = "storage-sekai-best",
+    srcs = [
+        ":storage-sekai-best/128",
+        ":storage-sekai-best/32",
+        ":storage-sekai-best/64",
+    ],
+)
+
+filegroup(
+    name = "storage-sekai-best/32",
+    srcs = glob(["storage-sekai-best/sekai-assets/thumbnail/chara_32/*.webp"]),
+)
+
+filegroup(
+    name = "storage-sekai-best/64",
+    srcs = glob(["storage-sekai-best/sekai-assets/thumbnail/chara_64/*.webp"]),
+)
+
+filegroup(
+    name = "storage-sekai-best/128",
+    srcs = glob(["storage-sekai-best/sekai-assets/thumbnail/chara_128/*.webp"]),
+)
+
+filegroup(
+    name = "images",
+    srcs = glob(["images/**"]),
 )

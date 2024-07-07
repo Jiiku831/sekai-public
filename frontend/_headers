@@ -1,0 +1,19 @@
+https://jiiku.pages.dev/*
+    Access-Control-Allow-Origin: https://jiiku.pages.dev/
+    Cross-Origin-Embedder-Policy: require-corp
+    Cross-Origin-Opener-Policy: same-origin
+    Referrer-Policy: no-referrer
+    Vary: Origin
+    X-Content-Type-Options: nosniff
+    X-Frame-Options: DENY
+    X-Robots-Tag: noindex
+
+https://en.jiiku.pages.dev/*
+    Access-Control-Allow-Origin: https://en.jiiku.pages.dev/
+    Cross-Origin-Embedder-Policy: require-corp
+    Cross-Origin-Opener-Policy: same-origin
+    Referrer-Policy: no-referrer
+    Vary: Origin
+    X-Content-Type-Options: nosniff
+    X-Frame-Options: DENY
+    X-Robots-Tag: noindex

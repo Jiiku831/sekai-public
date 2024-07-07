@@ -1,0 +1,135 @@
+.card-list
+  &, tr, td, th
+    border: black thin solid
+    border-collapse: collapse
+  .hidden
+    visibility: collapse
+
+.card-list-filter, .team-constraints, .custom-event
+  &, tr, td, th
+    border: black thin solid
+    border-collapse: collapse
+
+.power-bonus-table
+  &, tr, td, th
+    border: black thin solid
+    border-collapse: collapse
+  th
+    background-color: #ddd
+
+.card-hover-child
+  display: none
+  position: absolute
+  .card-thumbnail
+    width: 100px
+    height: 100px
+
+.card-hover-container:hover
+  .card-hover-child
+    display: initial
+
+.card-thumbnail
+  display: block
+
+details
+  > div
+    margin-left: 1em
+
+input:invalid
+  border: thin dashed red
+  background-color: #fee
+
+.team-builder
+  table
+    margin-bottom: 1ex
+
+  table, tr, td, th
+    border-collapse: collapse
+
+  table
+    border: black thin solid
+
+  th
+    border-right: black thin solid
+
+  .team-builder-stats-cell
+    border-left: black thin solid
+    vertical-align: top
+    padding: 0 1em
+
+  .team-builder-id-row
+    height: 23.5px
+
+  .team-builder-stats-row
+    border-bottom: black thin solid
+
+  .team-builder-id
+    width: 92px
+    font-size: small
+
+  .card-thumbnail
+    width: 100px
+    height: 100px
+
+  .support-team-thumb
+    width: 49px
+    .card-thumbnail
+      width: 49px
+      height: 49px
+    .card-hover-child
+      .card-thumbnail
+        width: 100px
+        height: 100px
+
+  .support-team-thumb:last-child
+    width: auto
+
+.team-builder-stats
+  font-family: monospace
+  font-size: smaller
+
+.team-builder-stats-row
+  min-height: 5ex
+  vertical-align: top
+  .team-builder-stats
+    padding-top: 1ex
+
+.team-builder-thumb-row
+  height: 100px
+
+summary
+  font-size: large
+  font-weight: bold
+
+.kizuna-table
+  .kizuna-table-header
+    th
+      writing-mode: vertical-rl
+      text-orientation: mixed
+      text-align: left
+  .kizuna-table-char-name
+    text-align: left
+
+  .kizuna-table-highlight
+    background-color: #3ff
+
+  &, td, tr, th
+    border-collapse: collapse
+
+  &, tr
+    border: none
+
+  tr:first-child
+    td, th
+      border-top: none
+
+  tr:last-child
+    td, th
+      border-bottom: none
+
+  tr
+    td:first-child, th:first-child
+      border-left: none
+
+    td:last-child, th:last-child
+      border-right: none

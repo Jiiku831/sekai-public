@@ -1,0 +1,4 @@
+module(
+    name = "emscripten_license",
+    version = "3.1.51",
+)
