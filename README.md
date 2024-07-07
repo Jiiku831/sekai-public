@@ -1,3 +1,10 @@
+## Web frontends
+
+Requires browser with wasm support:
+
+* JP: https://jiiku.pages.dev/sajii (most supported)
+* EN: https://en.jiiku.pages.dev/sajii
+
 ## Short instructions
 
 Install [bazelisk](https://github.com/bazelbuild/bazelisk):
@@ -50,11 +57,12 @@ cd /path/to/sekai-public
 pre-commit install
 ```
 
-### Additional dependencies for running the frontend
+### Additional dependencies for running a local server
 
 * gallery-dl: `pipx install gallery-dl`
 
-Download the thumbnails before running the server:
+Download the thumbnails before running the server. You should only need to do
+this when there is new master data.
 
 ```
 ./pull.sh

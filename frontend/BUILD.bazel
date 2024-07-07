@@ -136,8 +136,6 @@ cc_binary(
         "-s ASSERTIONS",
         "-s ALLOW_MEMORY_GROWTH",
         "-s NO_EXIT_RUNTIME",
-        #"-fsanitize=address",
-        #"-fsanitize=undefined",
     ],
     deps = [
         ":sajii_lib",
