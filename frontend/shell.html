@@ -324,8 +324,8 @@
       var Module = {
         totalDependencies: 0,
         monitorRunDependencies: (left) => {
-          this.totalDependencies = Math.max(this.totalDependencies, left);
-          console.log(left ? 'Preparing... (' + (this.totalDependencies - left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
+          this.totalDependencies = Math.max(this.totalDependencies ?? 0, left);
+          console.log('Preparing... (' + (this.totalDependencies - left) + '/' + this.totalDependencies + ')');
         },
       };
       console.log('Downloading...');
