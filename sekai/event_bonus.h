@@ -2,6 +2,7 @@
 
 #include "absl/base/nullability.h"
 #include "sekai/bitset.h"
+#include "sekai/character.h"
 #include "sekai/config.h"
 #include "sekai/db/proto/all.h"
 #include "sekai/proto/event_bonus.pb.h"
@@ -67,7 +68,10 @@ class SupportUnitEventBonus : public EventBonus {
 
   float GetBonus(int card_id, int character_id, db::Attr attr, db::Unit unit,
                  db::CardRarityType rarity, int master_rank, int skill_level) const override {
-    if (!chapter_unit_.test(unit)) {
+    if (chapter_unit_.test(db::UNIT_VS) && LookupCharacterUnit(character_id) != db::UNIT_VS) {
+      return 0;
+    }
+    if (!chapter_unit_.test(db::UNIT_VS) && !chapter_unit_.test(unit)) {
       return 0;
     }
     return card_bonus(card_id) + deck_bonus(character_id, attr, unit) +
