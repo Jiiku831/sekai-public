@@ -26,4 +26,5 @@ message Music {
   optional bool is_newly_written_music                  = 19 [(json_name) = "isNewlyWrittenMusic"];
   optional int32 music_collaboration_id                 = 20 [(json_name) = "musicCollaborationId"];
   optional bool is_full_length                          = 21 [(json_name) = "isFullLength"];
+  optional string creator                               = 22 [(json_name) = "creator"];
 }

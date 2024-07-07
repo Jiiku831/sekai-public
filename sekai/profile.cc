@@ -64,7 +64,12 @@ void LoadCharacterRankBonus(const ProfileProto& profile, std::vector<BonusRate>&
 
 void LoadCards(const ProfileProto& profile, absl::flat_hash_map<int, Card>& cards) {
   for (const auto& [card_id, state] : profile.cards()) {
-    cards.emplace(card_id, Card{MasterDb::FindFirst<db::Card>(card_id), state});
+    const db::Card* card = MasterDb::SafeFindFirst<db::Card>(card_id);
+    if (card == nullptr) {
+      LOG(INFO) << "Card not found, skipping: " << card_id;
+      continue;
+    }
+    cards.emplace(card_id, Card{*card, state});
   }
 }
 

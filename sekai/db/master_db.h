@@ -155,6 +155,11 @@ class MasterDb {
   }
 
   template <typename T>
+  static const T* SafeFindFirst(int64_t key) {
+    return Get().template Get<T>().SafeFindFirst(key);
+  }
+
+  template <typename T>
   static const std::vector<absl::Nonnull<const T*>>& FindAll(int64_t key) {
     return Get().template Get<T>().FindAll(key);
   }

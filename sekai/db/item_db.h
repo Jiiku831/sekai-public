@@ -34,10 +34,18 @@ class ItemDb {
   const absl::Status status() const { return status_; }
 
   const T& FindFirst(int64_t key) const {
+    const T* obj = SafeFindFirst(key);
+    ABSL_CHECK_NE(obj, nullptr) << "While looking up item type " << typeid(T).name() << " with key "
+                                << key;
+    return *obj;
+  }
+
+  const T* SafeFindFirst(int64_t key) const {
     auto it = indexed_objs_.find(key);
-    ABSL_CHECK(it != indexed_objs_.end() && !it->second.empty() && it->second.front() != nullptr)
-        << "While looking up item type " << typeid(T).name() << " with key " << key;
-    return *it->second.front();
+    if (it == indexed_objs_.end() || it->second.empty() || it->second.front() == nullptr) {
+      return nullptr;
+    }
+    return it->second.front();
   }
 
   const std::vector<absl::Nonnull<const T*>>& FindAll(int64_t key) const {

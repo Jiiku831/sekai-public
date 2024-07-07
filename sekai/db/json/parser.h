@@ -362,6 +362,10 @@ class JsonParser : public json::json_sax_t {
 
 template <typename T>
 absl::StatusOr<std::vector<T>> ParseJsonFromFile(const std::filesystem::path path) {
+  if (!std::filesystem::exists(path)) {
+    LOG(INFO) << "File not found: " << path;
+    return std::vector<T>{};
+  }
   std::ifstream ifs;
   internal::JsonParser<T> parser;
   ifs.open(path, std::ifstream::in);
