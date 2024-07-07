@@ -234,6 +234,7 @@ cc_library(
         "//sekai/proto:event_bonus_cc_proto",
         "//sekai/proto:event_id_cc_proto",
         "@abseil-cpp//absl/base:nullability",
+        "@abseil-cpp//absl/flags:flag",
         "@abseil-cpp//absl/log:absl_check",
     ],
 )

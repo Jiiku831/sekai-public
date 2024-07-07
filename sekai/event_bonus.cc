@@ -1,12 +1,15 @@
 #include "sekai/event_bonus.h"
 
 #include "absl/base/nullability.h"
+#include "absl/flags/flag.h"
 #include "absl/log/absl_check.h"
 #include "sekai/array_size.h"
 #include "sekai/character.h"
 #include "sekai/db/master_db.h"
 #include "sekai/db/proto/all.h"
 #include "sekai/proto_util.h"
+
+ABSL_FLAG(float, subunitless_offset, 0, "The EB offset to apply to subunitless vs");
 
 namespace sekai {
 namespace {
@@ -15,7 +18,6 @@ using ::sekai::db::MasterDb;
 
 constexpr float kDefaultBonusRate = 25;
 constexpr float kDefaultCardBonusRate = 20;
-constexpr float kSubunitlessOffset = 0;
 
 void PopulateAttrBonus(db::Attr attr, float rate, EventBonus::DeckBonusType& deck_bonus) {
   for (int char_id = 1; char_id < static_cast<int64_t>(deck_bonus.size()); ++char_id) {
@@ -38,8 +40,8 @@ void PopulateCharBonus(int char_id, db::Unit unit, float rate,
     deck_bonus[char_id][attr][unit] = std::max(deck_bonus[char_id][attr][unit], rate);
     if (char_unit == db::UNIT_VS) {
       // Subunitless bonus
-      deck_bonus[char_id][attr][char_unit] =
-          std::max(deck_bonus[char_id][attr][char_unit], rate - kSubunitlessOffset);
+      deck_bonus[char_id][attr][char_unit] = std::max(
+          deck_bonus[char_id][attr][char_unit], rate - absl::GetFlag(FLAGS_subunitless_offset));
     }
   }
 }
@@ -50,8 +52,8 @@ void PopulateAttrCharBonus(int char_id, db::Unit unit, db::Attr attr, float rate
   db::Unit char_unit = LookupCharacterUnit(char_id);
   if (char_unit == db::UNIT_VS) {
     // Subunitless bonus
-    deck_bonus[char_id][attr][char_unit] =
-        std::max(deck_bonus[char_id][attr][char_unit], rate - kSubunitlessOffset);
+    deck_bonus[char_id][attr][char_unit] = std::max(deck_bonus[char_id][attr][char_unit],
+                                                    rate - absl::GetFlag(FLAGS_subunitless_offset));
   }
 }
 

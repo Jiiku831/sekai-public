@@ -32,7 +32,7 @@ events, edit the event parameters in `build_event_team_main.cc` and then run
 
 ## Non-JP players before bloom fes update
 
-*  Change `kSubunitlessOffset` to `10` in `sekai/event_bonus.cc`.
+*  Add `--subunitless_offset=10` when running these scripts.
 
 Note: there may be slight differences in points gained due to the use of JP
 songs for point calculation.
