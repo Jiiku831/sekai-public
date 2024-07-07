@@ -83,13 +83,13 @@ EventBonus::EventBonus()
 
 EventBonus::EventBonus(const EventId& event_id)
     : EventBonus(MasterDb::FindFirst<db::Event>(event_id.event_id())) {
-  if (event_id.has_chapter_id()) {
+  if (event_id.chapter_id() > 0) {
     support_bonus_ = std::shared_ptr<EventBonus>(new SupportUnitEventBonus{event_id});
   }
 }
 
 EventBonus::EventBonus(const SimpleEventBonus& event_bonus) : EventBonus() {
-  if (event_bonus.has_chapter_char_id()) {
+  if (event_bonus.chapter_char_id() > 0) {
     support_bonus_ = std::shared_ptr<EventBonus>(new SupportUnitEventBonus{event_bonus});
   }
   if (event_bonus.attr() != db::ATTR_UNKNOWN) {
@@ -113,7 +113,7 @@ EventBonus::EventBonus(const SimpleEventBonus& event_bonus) : EventBonus() {
 
   PopulateMasterRankBonus(master_rank_bonus_);
 
-  if (event_bonus.attr() == db::ATTR_UNKNOWN) {
+  if (event_bonus.attr() == db::ATTR_UNKNOWN && event_bonus.has_chapter_char_id()) {
     PopulateDiffAttrBonus(diff_attr_bonus_);
     has_diff_attr_bonus_ = true;
   }

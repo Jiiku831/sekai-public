@@ -62,7 +62,12 @@ cc_proto_library(
 proto_library(
     name = "profile_proto",
     srcs = ["profile.proto"],
-    deps = [":card_state_proto"],
+    deps = [
+        ":card_state_proto",
+        ":event_bonus_proto",
+        ":event_id_proto",
+        "//sekai/db/proto:enums_proto",
+    ],
 )
 
 cc_proto_library(

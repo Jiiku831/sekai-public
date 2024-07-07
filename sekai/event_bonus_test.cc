@@ -66,6 +66,7 @@ TEST(EventBonusTest, WorldBloomEventFromSimpleEventBonus) {
     cards: 786
     cards: 787
     cards: 788
+    chapter_char_id: 18
   )pb");
   EventBonus bonus(event_bonus);
   EventBonusProto bonus_proto = bonus.ToProto();

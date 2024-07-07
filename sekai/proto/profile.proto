@@ -3,10 +3,26 @@ syntax = "proto3";
 package sekai;
 
 import "sekai/proto/card_state.proto";
+import "sekai/proto/event_bonus.proto";
+import "sekai/proto/event_id.proto";
+import "sekai/db/proto/enums.proto";
 
 message ProfileProto {
   repeated int32 area_item_levels = 1;
   repeated int32 character_ranks  = 2;
   optional int32 bonus_power      = 3;
   map<int32, CardState> cards     = 4;
+
+  // No effect outside of frontend. Used for data persistence.
+  optional bool use_old_subunitless_bonus = 5;
+  repeated int32 exclude_lead_char_ids    = 6;
+  message KizunaPair {
+    int32 char_1 = 1;
+    int32 char_2 = 2;
+  }
+  repeated KizunaPair exclude_kizuna_pairs    = 7;
+  int32 min_lead_skill                        = 8;
+  repeated db.CardRarityType exclude_rarities = 9;
+  optional SimpleEventBonus custom_event      = 10;
+  optional EventId event_id                   = 11;
 }

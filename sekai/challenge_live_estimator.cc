@@ -62,7 +62,9 @@ ChallengeLiveEstimator::ValueDetail ChallengeLiveEstimator::ExpectedValueImpl(
     const Profile& profile, const EventBonus& event_bonus, const Team& team) const {
   std::vector<int> skills = team.GetSkillValues();
   std::sort(skills.begin(), skills.end(), std::greater<int>());
-  ABSL_CHECK_EQ(static_cast<int>(skills.size()), kTeamSize);
+  while (skills.size() < kTeamSize) {
+    skills.push_back(0);
+  }
   skills.push_back(skills.front());
   int power = team.Power(profile);
   double max_score = 0;
