@@ -65,7 +65,7 @@ std::string GetAreaDisplayText(int area_id) {
 
 std::string GetUnitDisplayText(int unit_id) {
   static std::array names = {
-      "", "LN", "MMJ", "VBS", "WxS", "25ji", "Miku and Friends",
+      "", "LN", "MMJ", "VBS", "WxS", "25ji", "Miku",
   };
   ABSL_CHECK_NE(unit_id, 0);
   ABSL_CHECK_LT(unit_id, names.size());

@@ -70,23 +70,24 @@ CustomEventContext CreateCustomEventContext() {
   for (const GameCharacter& character : MasterDb::GetAll<GameCharacter>()) {
     if (!group->chars().empty()) {
       int last_char_id = group->chars().rbegin()->char_id();
-      if (LookupCharacterUnit(last_char_id) != LookupCharacterUnit(character.id()) ||
-          LookupCharacterUnit(last_char_id) == sekai::db::UNIT_VS) {
+      sekai::db::Unit last_unit = sekai::LookupCharacterUnit(last_char_id);
+      if (last_unit != LookupCharacterUnit(character.id())) {
+        // Fill in subunit VS
+        if (last_unit != sekai::db::UNIT_VS) {
+          for (const GameCharacter& vs_character : MasterDb::GetAll<GameCharacter>()) {
+            if (LookupCharacterUnit(vs_character.id()) != sekai::db::UNIT_VS) {
+              continue;
+            }
+            CharacterContext vs_char_context = CreateCharacterContext(vs_character.id());
+            vs_char_context.set_unit_id(static_cast<int>(last_unit));
+            *group->add_chars() = vs_char_context;
+          }
+        }
         group = context.add_bonus_chars();
       }
     }
     CharacterContext char_context = CreateCharacterContext(character.id());
     *group->add_chars() = char_context;
-    if (LookupCharacterUnit(character.id()) == sekai::db::UNIT_VS) {
-      for (Unit unit : sekai::EnumValues<Unit, sekai::db::Unit_descriptor>()) {
-        if (unit == sekai::db::UNIT_VS || unit == sekai::db::UNIT_NONE) continue;
-        char_context.set_display_text(absl::StrFormat("%s (%s)",
-                                                      GetCharacterDisplayText(character.id()),
-                                                      GetUnitDisplayText(static_cast<int>(unit))));
-        char_context.set_unit_id(static_cast<int>(unit));
-        *group->add_chars() = char_context;
-      }
-    }
   }
   return context;
 }
@@ -140,6 +141,7 @@ CharacterContext CreateCharacterContext(int char_id) {
   CharacterContext context;
   context.set_display_text(GetCharacterDisplayText(char_id));
   context.set_char_id(char_id);
+  context.set_unit_display_text(GetUnitDisplayText(LookupCharacterUnit(char_id)));
   return context;
 }
 

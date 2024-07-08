@@ -505,23 +505,49 @@ function CreateCustomEventAttrs(attrs) {
   });
 }
 
-function CreateCustomEventCharRow(chars, container) {
+function CreateCustomEventCharRow(index, chars, padding) {
+  const row = document.createElement("tr");
+  row.id = `custom-event-character-row-${index}`
+  const unit = chars[0].unitDisplayText;
+  row.appendChild(CreateNode("th",
+    document.createTextNode(unit)));
   Array.from(chars).forEach((character) => {
     const unitId = character.unitId ?? 0;
-    container.appendChild(
+    row.appendChild(
+      CreateNode("td",
       CreateCheckbox(`custom-event-character-${character.charId}-${unitId}`, "", character.displayText, (e) => {
         controller.SetCustomEventCharacter(character.charId, unitId, e.target.checked);
-      }), false);
+      }), false));
   });
-  container.appendChild(document.createElement("br"));
+  for (let i = 0; i < padding; ++i) {
+    row.appendChild(document.createElement("td"));
+  }
+  const allBtn = document.createElement("input");
+  allBtn.type = "button";
+  allBtn.value = "All";
+  allBtn.addEventListener("click", () => {
+    SetAllFilter(row.id, true);
+  });
+  row.appendChild(CreateNode("td", allBtn));
+  const noneBtn = document.createElement("input");
+  noneBtn.type = "button";
+  noneBtn.value = "None";
+  noneBtn.addEventListener("click", () => {
+    SetAllFilter(row.id, false);
+  });
+  row.appendChild(CreateNode("td", noneBtn));
+  return row;
 }
 
 function CreateCustomEventChars(groups) {
   const container = document.getElementById("custom-event-chars");
-  Array.from(groups).forEach((group) => {
-    CreateCustomEventCharRow(group.chars, container);
-  });
-  container.appendChild(document.createElement("br"));
+  const table = document.createElement("table");
+  table.classList.add("custom-event-chars-table");
+  const firstRowLength = groups[0].chars.length;
+  for (let i = 0; i < groups.length; ++i) {
+    table.appendChild(CreateCustomEventCharRow(i, groups[i].chars, firstRowLength - groups[i].chars.length));
+  }
+  container.appendChild(table);
 }
 
 function CreateCustomEventChapterRow(chars, container) {

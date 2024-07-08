@@ -9,9 +9,10 @@ message AttrContext {
 }
 
 message CharacterContext {
-  optional string display_text = 1;
-  optional int32 char_id       = 2;
-  optional int32 unit_id       = 3;
+  optional string display_text      = 1;
+  optional int32 char_id            = 2;
+  optional int32 unit_id            = 3;
+  optional string unit_display_text = 4;
   // TODO: add thumbnail
 }
 
