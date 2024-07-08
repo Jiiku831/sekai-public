@@ -801,7 +801,6 @@ function ImportTextProto() {
 }
 
 function SaveAsFile(fileName, data, type) {
-  //var bytes = new Uint8Array(data);
   var blob = new Blob([data], {type: type});
   var link = document.createElement('a');
   link.href = window.URL.createObjectURL(blob);
