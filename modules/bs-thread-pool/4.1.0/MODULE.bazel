@@ -1,4 +1,0 @@
-module(
-    name = "bs-thread-pool",
-    version = "4.1.0",
-)

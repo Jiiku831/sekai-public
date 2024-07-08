@@ -1,4 +1,0 @@
-module(
-    name = "ctml",
-    version = "2.0.0",
-)

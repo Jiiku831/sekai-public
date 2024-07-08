@@ -1,4 +1,0 @@
-module(
-    name = "zstd_license",
-    version = "1.5.6",
-)

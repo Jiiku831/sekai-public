@@ -1,4 +1,0 @@
-module(
-    name = "hedron_compile_commands",
-    version = "1.0",
-)
