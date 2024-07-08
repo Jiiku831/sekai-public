@@ -17,3 +17,13 @@ https://en.jiiku.pages.dev/*
     X-Content-Type-Options: nosniff
     X-Frame-Options: DENY
     X-Robots-Tag: noindex
+
+https://dev.jiiku.pages.dev/*
+    Access-Control-Allow-Origin: https://dev.jiiku.pages.dev/
+    Cross-Origin-Embedder-Policy: require-corp
+    Cross-Origin-Opener-Policy: same-origin
+    Referrer-Policy: no-referrer
+    Vary: Origin
+    X-Content-Type-Options: nosniff
+    X-Frame-Options: DENY
+    X-Robots-Tag: noindex
