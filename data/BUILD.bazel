@@ -4,7 +4,6 @@ genrule(
     name = "flat-db.genrule",
     srcs = [
         "@sekai-master-db",
-        ":sekai-best",
         ":storage-sekai-best",
     ],
     outs = [
@@ -39,20 +38,9 @@ filegroup(
 )
 
 filegroup(
-    name = "sekai-best",
-    srcs = [
-        ":sekai-best/music_metas",
-    ],
-)
-
-filegroup(
-    name = "sekai-best/music_metas",
-    srcs = ["@sekai-best-music-metas//file"],
-)
-
-filegroup(
     name = "storage-sekai-best",
     srcs = [
+        "storage-sekai-best/music_metas.json",
         ":storage-sekai-best/128",
         ":storage-sekai-best/32",
         ":storage-sekai-best/64",

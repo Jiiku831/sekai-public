@@ -48,7 +48,7 @@ std::string_view CppVersion() { return kCppVersion; }
 const std::filesystem::path& SekaiBestRoot() {
   static const std::filesystem::path* const kPath = [] {
     auto* path = new std::filesystem::path;
-    *path = RunfilesDir("external/sekai-best-music-metas/file", SekaiRepoRoot());
+    *path = RunfilesDir("data/storage-sekai-best", SekaiRepoRoot());
     return path;
   }();
   return *kPath;

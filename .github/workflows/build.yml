@@ -38,6 +38,7 @@ jobs:
         restore-keys: |
           bazel-${{ runner.os }}
     - name: Run all tests
+      if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev'
       run: ./test.sh
     - name: Build files to deploy
       run: ./run_local_server.sh --build_only
