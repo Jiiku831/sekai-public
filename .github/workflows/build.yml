@@ -2,6 +2,15 @@ name: Build and Deploy
 
 on:
   workflow_dispatch: {}
+  push:
+    branches:
+      - main
+      - dev
+      - en
+
+concurrency:
+  group: deploy-${{ github.ref_name }}
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -44,5 +53,4 @@ jobs:
         apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         projectName: jiiku
-        workingDirectory: sekai-public
         directory: bazel-bin/frontend/server.runfiles/_main/frontend/server_root
