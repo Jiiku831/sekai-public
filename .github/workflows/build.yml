@@ -1,0 +1,48 @@
+name: Build and Deploy
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Install zsh
+      run: sudo apt-get update; sudo apt-get install zsh
+    - name: Fetch source
+      uses: actions/checkout@v3
+      with:
+        path: sekai-public
+    - name: Fetch assets
+      uses: actions/checkout@v3
+      with:
+        repository: Jiiku831/sekai-assets
+        path: sekai-assets
+        token: ${{ secrets.ASSETS_TOKEN }}
+        lfs: true
+    - name: Load assets
+      run: |
+        cp -r sekai-assets/data/* sekai-public/data/
+    - name: Mount bazel cache
+      uses: actions/cache@v3
+      with:
+        path: "~/.cache/bazel"
+        key: bazel-${{ runner.os }}-${{ github.run_id }}
+        restore-keys: |
+          bazel-${{ runner.os }}
+    - name: Run all tests
+      run: |
+        cd sekai-public
+        ./test.sh
+    - name: Build files to deploy
+      run: |
+        cd sekai-public
+        ./run_local_server.sh --build_only
+    - name: Deploy to Cloudfare
+      uses: cloudflare/pages-action@v1.5.0
+      with:
+        apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        projectName: jiiku
+        workingDirectory: sekai-public
+        directory: bazel-bin/frontend/server.runfiles/_main/frontend/server_root
