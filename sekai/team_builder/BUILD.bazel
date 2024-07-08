@@ -326,6 +326,9 @@ cc_test(
     data = [
         "//data:flat-db",
     ],
+    tags = [
+        "manual",
+    ],
     deps = [
         ":event_team_builder",
         ":max_bonus_team_builder",

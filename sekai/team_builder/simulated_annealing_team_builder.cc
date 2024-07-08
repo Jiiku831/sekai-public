@@ -116,7 +116,12 @@ std::optional<Team> GetRandomTeam(std::span<const Card* const> pool,
   std::array<std::vector<const Card*>, kCharacterArraySize> char_pools =
       PartitionCardPoolByCharacters(pool);
 
-  std::vector<int> shuffled_ids = UniqueCharacterIds();
+  std::vector<int> shuffled_ids;
+  for (int char_id : UniqueCharacterIds()) {
+    if (!char_pools[char_id].empty()) {
+      shuffled_ids.push_back(char_id);
+    }
+  }
   std::shuffle(shuffled_ids.begin(), shuffled_ids.end(), g);
 
   std::optional<Team> team;

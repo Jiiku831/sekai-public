@@ -1,3 +1,3 @@
 #!/usr/bin/bash
-BAZEL_CXXOPTS=-std=c++20 bazelisk test \
+BAZEL_CXXOPTS=-std=c++20 bazelisk test -c opt \
     --build_tests_only --test_tag_filters=-manual --test_output=summary ...
