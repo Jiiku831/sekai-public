@@ -53,6 +53,8 @@ class Controller {
   void SetTitleBonus(int bonus);
 
   void ImportCardsFromCsv(const std::string& cards_csv);
+  void ImportDataFromProto(const std::string& binary_proto);
+  void ImportDataFromTextProto(const std::string& text_proto);
   void SetCardOwned(int card_id, bool state);
   void SetCardLevel(int card_id, int level);
   void SetCardMasterRank(int card_id, int level);
@@ -79,6 +81,9 @@ class Controller {
   void RefreshTeams() const;
 
   void SetUseOldSubunitlessBonus(bool state);
+
+  std::string SerializeStateToDebugString() const { return profile_proto_.DebugString(); }
+  std::string SerializeStateToString() const { return profile_proto_.SerializeAsString(); }
 
  private:
   sekai::ProfileProto profile_proto_ = sekai::EmptyProfileProto();

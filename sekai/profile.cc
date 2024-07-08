@@ -143,16 +143,37 @@ absl::Status Profile::LoadCardsFromCsv(std::stringstream& ss) {
     if (!parts[1].empty() && !TryParseInt(parts[1], master_rank)) {
       return absl::InvalidArgumentError(absl::StrCat("Failed to parse as int: ", parts[1]));
     }
+    if (master_rank < 0) {
+      LOG(WARNING) << "Clamping master rank for card " << card_id << " to 0";
+      master_rank = 0;
+    }
+    if (master_rank > 5) {
+      LOG(WARNING) << "Clamping master rank for card " << card_id << " to 5";
+      master_rank = 5;
+    }
     if (!parts[2].empty() && !TryParseInt(parts[2], skill_level)) {
       return absl::InvalidArgumentError(absl::StrCat("Failed to parse as int: ", parts[2]));
     }
-    const db::Card& card = MasterDb::FindFirst<db::Card>(card_id);
+    if (skill_level < 1) {
+      LOG(WARNING) << "Clamping skill level for card " << card_id << " to 1";
+      skill_level = 1;
+    }
+    if (skill_level > 4) {
+      LOG(WARNING) << "Clamping skill level for card " << card_id << " to 4";
+      skill_level = 4;
+    }
+    const db::Card* card = MasterDb::SafeFindFirst<db::Card>(card_id);
+    if (card == nullptr) {
+      LOG(WARNING) << "Card " << card_id << " not found in master db. skipping";
+      continue;
+    }
     CardState state = CreateMaxCardState(card_id);
     state.set_master_rank(master_rank);
     state.set_skill_level(skill_level);
-    auto [new_card, success] = cards_.emplace(card_id, Card{card, state});
+    auto [new_card, success] = cards_.emplace(card_id, Card{*card, state});
     if (!success) {
-      return absl::InvalidArgumentError(absl::StrCat("Found duplicate id: ", card_id));
+      LOG(WARNING) << "Found duplicate card ID " << card_id << ". skipping";
+      continue;
     }
     new_card->second.ApplyProfilePowerBonus(*this);
   }

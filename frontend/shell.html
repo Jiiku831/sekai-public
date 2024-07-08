@@ -23,14 +23,42 @@
       <div>
         This will save most stuff that matters. The teams and the challenge
         live character selection are not saved.
-        <br>
-        <input type="button" value="Load" onclick="controller.ReadSaveData();">
-        <input type="button" value="Save" onclick="controller.WriteSaveData();">
-        <input type="button" value="Delete" onclick="controller.DeleteSaveData();">
-        &middot;
-        <input id="upload-cards" type="file" name="upload-cards" size=30>
-        <input type="button" value="Import CSV" onclick="ImportCsv();">
-        <span id="upload-cards-output-area"></span>
+        <table class="save-table">
+          <tr>
+            <th>
+              Local browser storage
+            </th>
+            <td>
+              <input type="button" value="Load" onclick="controller.ReadSaveData();">
+              <input type="button" value="Save" onclick="controller.WriteSaveData();">
+              <input type="button" value="Delete" onclick="controller.DeleteSaveData();">
+            </td>
+          </tr>
+          <tr>
+            <th>
+              Load from external source
+            </th>
+            <td>
+              <input id="upload-cards" type="file" name="upload-cards" size=30><br>
+              <input type="button" value="Import cards from CSV" onclick="ImportCsv();">
+              <input type="button" value="Import from .binaryproto" onclick="ImportBinaryProto();">
+              <input type="button" value="Import from .textproto" onclick="ImportTextProto();">
+              <div id="upload-cards-output-area"></div>
+            </td>
+          </tr>
+          <tr>
+            <th>
+              Export save data
+            </th>
+            <td>
+              <input type="button" value="Export as .binaryproto" onclick="ExportBinaryProto();">
+              <input type="button" value="Export as .textproto" onclick="ExportTextProto();">
+              <br>
+              Exporting as .binaryproto is more forwards-compatible. Exporting
+              as .textproto is human readable.
+            </td>
+          </tr>
+        </table>
       </div>
     </details>
 

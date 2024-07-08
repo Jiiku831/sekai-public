@@ -734,11 +734,12 @@ function RenderTeamImpl(teamIndex, context) {
         --offset;
         continue;
       }
+      const bonusContrib = card.state.teamBonusContrib ?? 0;
       cardStatsNode.innerText =
         `Lv ${card.state.level}/MR ${card.state.masterRank}/SL ${card.state.skillLevel}\n` +
         `Power: ${card.state.teamPowerContrib}\n` +
         `Skill: ${card.state.teamSkillContrib}%\n` +
-        `Bonus: ${card.state.teamBonusContrib}%\n`;
+        `Bonus: ${bonusContrib}%\n`;
       thumbNode.appendChild(CreateCardThumb(card));
     }
   }
@@ -779,6 +780,43 @@ function ImportCsv() {
     controller.ImportCardsFromCsv(e.target.result);
   }
   reader.readAsText(file);
+}
+
+function ImportBinaryProto() {
+  let file = document.getElementById("upload-cards").files[0];
+  let reader = new FileReader();
+  reader.onload = (e) => {
+    controller.ImportDataFromProto(e.target.result);
+  }
+  reader.readAsText(file);
+}
+
+function ImportTextProto() {
+  let file = document.getElementById("upload-cards").files[0];
+  let reader = new FileReader();
+  reader.onload = (e) => {
+    controller.ImportDataFromTextProto(e.target.result);
+  }
+  reader.readAsText(file);
+}
+
+function SaveAsFile(fileName, data, type) {
+  //var bytes = new Uint8Array(data);
+  var blob = new Blob([data], {type: type});
+  var link = document.createElement('a');
+  link.href = window.URL.createObjectURL(blob);
+  link.download = fileName;
+  link.click();
+}
+
+function ExportBinaryProto() {
+  let data = controller.SerializeStateToString();
+  SaveAsFile("profile.binaryproto", data, "application/octet-stream");
+}
+
+function ExportTextProto() {
+  let data = controller.SerializeStateToDebugString();
+  SaveAsFile("profile.textproto", data, "text/plain");
 }
 
 function BuildChallengeLiveTeam() {

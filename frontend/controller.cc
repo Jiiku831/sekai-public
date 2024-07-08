@@ -55,6 +55,8 @@ using ::sekai::EventBonus;
 using ::sekai::EventId;
 using ::sekai::ProfileProto;
 using ::sekai::ReadBinaryProtoFile;
+using ::sekai::SafeParseBinaryProto;
+using ::sekai::SafeParseTextProto;
 using ::sekai::SimpleEventBonus;
 using ::sekai::SimulatedAnnealingTeamBuilder;
 using ::sekai::db::AreaItem;
@@ -464,6 +466,8 @@ void Controller::UpdateCardListVisibilities(FilterState new_state, bool force_up
 }
 
 void Controller::ImportCardsFromCsv(const std::string& cards_csv) {
+  SetUploadCardsOutput(
+      "Importing data... (if this doesn't change to Done then it means there was an error.)");
   sekai::Profile profile;
   if (absl::Status status = profile.LoadCardsFromCsvString(cards_csv); status.ok()) {
     profile.CardsToProto();
@@ -475,6 +479,36 @@ void Controller::ImportCardsFromCsv(const std::string& cards_csv) {
     SetUploadCardsOutput("Done.");
   } else {
     SetUploadCardsOutput(absl::StrCat("Failed to import CSV: ", status).c_str());
+  }
+}
+
+void Controller::ImportDataFromTextProto(const std::string& text_proto) {
+  SetUploadCardsOutput(
+      "Importing data... (if this doesn't change to Done then it means there was an error.)");
+  std::optional<ProfileProto> new_profile = SafeParseTextProto<ProfileProto>(text_proto);
+  if (new_profile.has_value()) {
+    profile_proto_ = *new_profile;
+    UpdateProfile();
+    ResetView(profile_proto_);
+    RefreshTeamInputs();
+    SetUploadCardsOutput("Done.");
+  } else {
+    SetUploadCardsOutput("Failed to import data from text proto.");
+  }
+}
+
+void Controller::ImportDataFromProto(const std::string& binary_proto) {
+  SetUploadCardsOutput(
+      "Importing data... (if this doesn't change to Done then it means there was an error.)");
+  std::optional<ProfileProto> new_profile = SafeParseBinaryProto<ProfileProto>(binary_proto);
+  if (new_profile.has_value()) {
+    profile_proto_ = *new_profile;
+    UpdateProfile();
+    ResetView(profile_proto_);
+    RefreshTeamInputs();
+    SetUploadCardsOutput("Done.");
+  } else {
+    SetUploadCardsOutput("Failed to import data from binary proto.");
   }
 }
 
@@ -850,9 +884,13 @@ EMSCRIPTEN_BINDINGS(controller) {
       .function("ClearTeamCard", &Controller::ClearTeamCard)
       .function("DeleteSaveData", &Controller::DeleteSaveData)
       .function("ImportCardsFromCsv", &Controller::ImportCardsFromCsv)
+      .function("ImportDataFromProto", &Controller::ImportDataFromProto)
+      .function("ImportDataFromTextProto", &Controller::ImportDataFromTextProto)
       .function("IsValidCard", &Controller::IsValidCard)
       .function("ReadSaveData", &Controller::ReadSaveData)
       .function("RefreshTeams", &Controller::RefreshTeams)
+      .function("SerializeStateToDebugString", &Controller::SerializeStateToDebugString)
+      .function("SerializeStateToString", &Controller::SerializeStateToString)
       .function("SetAreaItemLevel", &Controller::SetAreaItemLevel)
       .function("SetAttrFilterState", &Controller::SetAttrFilterState)
       .function("SetCardEpisodeRead", &Controller::SetCardEpisodeRead)

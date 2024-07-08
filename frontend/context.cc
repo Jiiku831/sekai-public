@@ -50,15 +50,9 @@ CardContext CreateCardContextFromCardProto(const sekai::CardProto& card,
   context.mutable_state()->set_level(card.state().level());
   context.mutable_state()->set_master_rank(card.state().master_rank());
   context.mutable_state()->set_skill_level(card.state().skill_level());
-  if (card.has_team_power_contrib()) {
-    context.mutable_state()->set_team_power_contrib(card.team_power_contrib());
-  }
-  if (card.has_team_bonus_contrib()) {
-    context.mutable_state()->set_team_bonus_contrib(card.team_bonus_contrib());
-  }
-  if (card.has_team_skill_contrib()) {
-    context.mutable_state()->set_team_skill_contrib(card.team_skill_contrib());
-  }
+  context.mutable_state()->set_team_power_contrib(card.team_power_contrib());
+  context.mutable_state()->set_team_bonus_contrib(card.team_bonus_contrib());
+  context.mutable_state()->set_team_skill_contrib(card.team_skill_contrib());
   return context;
 }
 

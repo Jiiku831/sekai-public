@@ -17,6 +17,25 @@ using ::sekai::db::MasterDb;
 
 constexpr int kTeamSize = 5;
 
+std::string DifficultyToDisplayText(db::Difficulty diff) {
+  switch (diff) {
+    case db::DIFF_EASY:
+      return "EASY";
+    case db::DIFF_NORMAL:
+      return "NORMAL";
+    case db::DIFF_HARD:
+      return "HARD";
+    case db::DIFF_EXPERT:
+      return "EX";
+    case db::DIFF_MASTER:
+      return "MAS";
+    case db::DIFF_APPEND:
+      return "AP";
+    default:
+      ABSL_CHECK(false) << "unhandled case";
+  }
+}
+
 }  // namespace
 
 ChallengeLiveSongEstimator::ChallengeLiveSongEstimator(const db::MusicMeta* meta) : meta_(meta) {
@@ -42,18 +61,23 @@ ChallengeLiveEstimator::ChallengeLiveEstimator() {
   // TODO: check if we can just evaluate all songs
   absl::flat_hash_set<std::pair<int, db::Difficulty>> meta_songs = {
       {104, db::DIFF_MASTER},  // Cendrillon
-      {154, db::DIFF_APPEND},  // Chikyuu
+      // {154, db::DIFF_APPEND},  // Chikyuu
       {72, db::DIFF_MASTER},   // BYB
       {11, db::DIFF_MASTER},   // Biba
       {62, db::DIFF_MASTER},   // JSG
       {91, db::DIFF_MASTER},   // Dramaturgy
       {410, db::DIFF_MASTER},  // Marshall Maximizer
+      {74, db::DIFF_MASTER},   // Ebi
   };
   std::vector<const db::MusicMeta*> metas =
       MasterDb::GetIf<db::MusicMeta>([&](const db::MusicMeta& meta) {
         return meta_songs.contains(std::make_pair(meta.music_id(), meta.difficulty()));
       });
   for (const db::MusicMeta* meta : metas) {
+    if (MasterDb::SafeFindFirst<db::Music>(meta->music_id()) == nullptr) {
+      LOG(WARNING) << "Music " << meta->music_id() << " not found in master db. skipping";
+      continue;
+    }
     metas_.emplace_back(meta);
   }
 }
@@ -100,7 +124,8 @@ void ChallengeLiveEstimator::AnnotateTeamProto(const Profile& profile,
   ChallengeLiveEstimator::ValueDetail detail = ExpectedValueImpl(profile, event_bonus, team);
   auto music = MasterDb::FindFirst<db::Music>(detail.meta->music_id());
   team_proto.set_expected_score(detail.value);
-  team_proto.set_best_song_name(music.title());
+  team_proto.set_best_song_name(
+      absl::StrFormat("%s %s", music.title(), DifficultyToDisplayText(detail.meta->difficulty())));
 }
 
 }  // namespace sekai
