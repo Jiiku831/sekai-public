@@ -7,6 +7,7 @@ import "sekai/db/proto/descriptor.proto";
 enum ArchiveDisplayType {
   ARCHIVE_DISPLAY_UNKNOWN = 0;
   ARCHIVE_DISPLAY_HIDE    = 1 [(json_value) = "hide"];
+  ARCHIVE_DISPLAY_NORMAL  = 2 [(json_value) = "normal"];
 }
 enum Attr {
   ATTR_UNKNOWN = 0;
