@@ -4,6 +4,8 @@ Requires browser with wasm support:
 
 * JP: https://jiiku.pages.dev/sajii (most supported)
 * EN: https://en.jiiku.pages.dev/sajii
+* KR: https://kr.jiiku.pages.dev/sajii
+* TW: https://tw.jiiku.pages.dev/sajii
 
 ## Short instructions
 
