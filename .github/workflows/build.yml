@@ -7,6 +7,8 @@ on:
       - main
       - dev
       - en
+      - kr
+      - tw
 
 concurrency:
   group: deploy-${{ github.ref_name }}
@@ -30,24 +32,43 @@ jobs:
     - name: Load assets
       run: |
         cp -r sekai-assets/data/* data/
-    - name: Mount bazel cache
+    - name: Mount bazel cache (main)
       uses: actions/cache/restore@v4
+      if: ${{ ! (github.ref == 'refs/heads/kr' || github.ref == 'refs/heads/tw') }}
       with:
         path: "~/.cache/bazel"
-        key: bazel-${{ runner.os }}-${{ github.run_id }}
+        key: bazel-main-${{ runner.os }}-${{ github.run_id }}
         restore-keys: |
+          bazel-main-${{ runner.os }}
+          bazel-alt-${{ runner.os }}
+          bazel-${{ runner.os }}
+    - name: Mount bazel cache (kr/tw)
+      uses: actions/cache/restore@v4
+      if: ${{ github.ref == 'refs/heads/kr' || github.ref == 'refs/heads/tw' }}
+      with:
+        path: "~/.cache/bazel"
+        key: bazel-${{ runner.os }}-alt-${{ github.run_id }}
+        restore-keys: |
+          bazel-alt-${{ runner.os }}
+          bazel-main-${{ runner.os }}
           bazel-${{ runner.os }}
     - name: Run all tests
       if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev'
       run: ./test.sh
     - name: Build files to deploy
       run: ./run_local_server.sh --build_only
-    - name: Save bazel cache
+    - name: Save bazel cache (main)
       uses: actions/cache/save@v4
-      if: always()
+      if: ${{ ! (github.ref == 'refs/heads/kr' || github.ref == 'refs/heads/tw') }}
       with:
         path: "~/.cache/bazel"
-        key: bazel-${{ runner.os }}-${{ github.run_id }}
+        key: bazel-main-${{ runner.os }}-${{ github.run_id }}
+    - name: Save bazel cache (kr/tw)
+      uses: actions/cache/save@v4
+      if: github.ref == 'refs/heads/kr' || github.ref == 'refs/heads/tw'
+      with:
+        path: "~/.cache/bazel"
+        key: bazel-alt-${{ runner.os }}-${{ github.run_id }}
     - name: Deploy to Cloudfare
       uses: cloudflare/pages-action@v1.5.0
       with:
