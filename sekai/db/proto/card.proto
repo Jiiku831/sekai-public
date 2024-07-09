@@ -8,11 +8,9 @@ package sekai.db;
 message Card {
   option (master_db_file) = "cards.json";
   message CardParameter {
-    optional int32 id                              = 1 [(json_name) = "id"];
-    optional int32 card_id                         = 2 [(json_name) = "cardId"];
-    optional int32 card_level                      = 3 [(json_name) = "cardLevel"];
-    optional CardParameterType card_parameter_type = 4 [(json_name) = "cardParameterType"];
-    optional int32 power                           = 5 [(json_name) = "power"];
+    repeated int32 param1 = 1 [(json_name) = "param1"];
+    repeated int32 param2 = 2 [(json_name) = "param2"];
+    repeated int32 param3 = 3 [(json_name) = "param3"];
   }
 
   message MasterLessonAchieveResource {
@@ -51,7 +49,7 @@ message Card {
   optional string flavor_text                        = 15 [(json_name) = "flavorText"];
   optional int64 release_at                          = 16 [(json_name) = "releaseAt"];
   optional int64 archive_published_at                = 17 [(json_name) = "archivePublishedAt"];
-  repeated CardParameter card_parameters             = 18 [(json_name) = "cardParameters"];
+  optional CardParameter card_parameters             = 18 [(json_name) = "cardParameters"];
   repeated MasterLessonAchieveResource master_lesson_achieve_resources = 19
       [(json_name) = "masterLessonAchieveResources"];
   repeated SpecialTrainingCost special_training_costs = 20 [(json_name) = "specialTrainingCosts"];

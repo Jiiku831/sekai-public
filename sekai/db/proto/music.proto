@@ -3,12 +3,15 @@ syntax = "proto3";
 package sekai.db;
 
 import "sekai/db/proto/descriptor.proto";
+
+message MusicCategory { optional string music_category_name = 1 [(json_name) = "musicCategoryName"]; }
+
 message Music {
   option (master_db_file)                               = "musics.json";
   optional int32 id                                     = 1 [(json_name) = "id", (primary_key) = true];
   optional int32 seq                                    = 2 [(json_name) = "seq"];
   optional int32 release_condition_id                   = 3 [(json_name) = "releaseConditionId"];
-  repeated string categories                            = 4 [(json_name) = "categories"];
+  repeated MusicCategory categories                     = 4 [(json_name) = "categories"];
   optional string title                                 = 5 [(json_name) = "title"];
   optional string pronunciation                         = 6 [(json_name) = "pronunciation"];
   optional int32 creator_artist_id                      = 7 [(json_name) = "creatorArtistId"];

@@ -27,23 +27,13 @@ Eigen::Vector3i GetBonusPower(const T& msg) {
 }
 
 Eigen::Vector3i GetBasePower(const db::Card& card, int level) {
-  Eigen::Vector3i power(0, 0, 0);
-  for (const db::Card::CardParameter& param : card.card_parameters()) {
-    if (param.card_level() != level) continue;
-    switch (param.card_parameter_type()) {
-      case db::CARD_PARAM_1:
-        power(0) = param.power();
-        break;
-      case db::CARD_PARAM_2:
-        power(1) = param.power();
-        break;
-      case db::CARD_PARAM_3:
-        power(2) = param.power();
-        break;
-      default:
-        break;
-    }
-  }
+  ABSL_CHECK_GT(level, 0);
+  ABSL_CHECK_LT(level - 1, static_cast<int>(card.card_parameters().param1_size()));
+  ABSL_CHECK_LT(level - 1, static_cast<int>(card.card_parameters().param2_size()));
+  ABSL_CHECK_LT(level - 1, static_cast<int>(card.card_parameters().param3_size()));
+  Eigen::Vector3i power(card.card_parameters().param1(level - 1),
+                        card.card_parameters().param2(level - 1),
+                        card.card_parameters().param3(level - 1));
   return power;
 }
 
