@@ -155,6 +155,7 @@ pkg_files(
     name = "src_root",
     srcs = [
         "_headers",
+        "index.html",
         "robots.txt",
         "sajii_lib.js",
     ],
