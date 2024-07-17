@@ -1,11 +1,13 @@
 ## Web frontends
 
-Requires browser with wasm support:
+Requires browser with wasm support.
 
-* JP: https://jiiku.pages.dev/sajii (most supported)
-* EN: https://en.jiiku.pages.dev/sajii
-* KR: https://kr.jiiku.pages.dev/sajii
-* TW: https://tw.jiiku.pages.dev/sajii
+* JP: https://jiiku.pages.dev/sajii (most supported) [![Build and Deploy](https://github.com/Jiiku831/sekai-public/actions/workflows/build.yml/badge.svg)](https://github.com/Jiiku831/sekai-public/actions/workflows/build.yml?query=branch%3Amain)
+* EN: https://en.jiiku.pages.dev/sajii [![Build and Deploy](https://github.com/Jiiku831/sekai-public/actions/workflows/build.yml/badge.svg?branch=en)](https://github.com/Jiiku831/sekai-public/actions/workflows/build.yml?query=branch%3Aen)
+* KR: https://kr.jiiku.pages.dev/sajii [![Build and Deploy](https://github.com/Jiiku831/sekai-public/actions/workflows/build.yml/badge.svg?branch=kr)](https://github.com/Jiiku831/sekai-public/actions/workflows/build.yml?query=branch%3Akr)
+* TW: https://tw.jiiku.pages.dev/sajii [![Build and Deploy](https://github.com/Jiiku831/sekai-public/actions/workflows/build.yml/badge.svg?branch=tw)](https://github.com/Jiiku831/sekai-public/actions/workflows/build.yml?query=branch%3Atw)
+* dev: https://dev.jiiku.pages.dev/sajii (JP data) [![Build and Deploy](https://github.com/Jiiku831/sekai-public/actions/workflows/build.yml/badge.svg?branch=dev)](https://github.com/Jiiku831/sekai-public/actions/workflows/build.yml?query=branch%3Adev)
+
 
 ## Short instructions
 
