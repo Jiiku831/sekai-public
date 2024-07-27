@@ -249,7 +249,7 @@ function CreateCardList(list) {
   });
 }
 
-function CreateNumberInput(min, max, elemId, onblur, disable = false) {
+function CreateNumberInput(min, max, elemId, onchange, disable = false) {
   const node = document.createElement("span");
   const input = document.createElement("input");
   input.disabled = disable;
@@ -258,7 +258,7 @@ function CreateNumberInput(min, max, elemId, onblur, disable = false) {
   input.max = max;
   input.value = min;
   input.id = elemId;
-  input.addEventListener("blur", onblur);
+  input.addEventListener("change", onchange);
   const minButton = document.createElement("input");
   minButton.tabIndex = -1;
   minButton.disabled = disable;
@@ -267,7 +267,7 @@ function CreateNumberInput(min, max, elemId, onblur, disable = false) {
   minButton.addEventListener("click", function(e) {
     const elem = document.getElementById(elemId);
     elem.value = min;
-    elem.dispatchEvent(new Event('blur'));
+    elem.dispatchEvent(new Event('change'));
   });
   const maxButton = document.createElement("input");
   maxButton.tabIndex = -1;
@@ -277,7 +277,7 @@ function CreateNumberInput(min, max, elemId, onblur, disable = false) {
   maxButton.addEventListener("click", function(e) {
     const elem = document.getElementById(elemId);
     elem.value = max;
-    elem.dispatchEvent(new Event('blur'));
+    elem.dispatchEvent(new Event('change'));
   });
 
   node.appendChild(minButton);
@@ -659,7 +659,7 @@ function CreateTeamBuilder(index) {
     input.max = 9999;
     input.classList.add("team-builder-id");
     input.placeholder = "Enter card ID";
-    input.addEventListener("blur", function (e) {
+    input.addEventListener("change", function (e) {
       this.setCustomValidity("");
       let isValid = true;
       if (!this.validity.valid || this.value == "") {
