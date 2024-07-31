@@ -14,9 +14,13 @@ concurrency:
   group: deploy-${{ github.ref_name }}
   cancel-in-progress: true
 
+env:
+  env_map: "{'main': 'prod', 'dev': 'dev', 'en': 'en', 'kr': 'kr', 'tw': 'tw'}"
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment: ${{ fromJSON(env.env_map)[github.ref_name] }}
     steps:
     - name: Install zsh
       run: sudo apt-get update; sudo apt-get install zsh
