@@ -1,0 +1,146 @@
+# proto-file: sekai/proto/event_bonus.proto
+# proto-message: EventBonusProto
+deck_bonus {
+  char_id: 24
+  attr_bonus {
+    attr: ATTR_COOL
+    unit_bonus {unit: UNIT_LN rate: 5}
+    unit_bonus {unit: UNIT_MMJ rate: 5}
+    unit_bonus {unit: UNIT_VBS rate: 5}
+    unit_bonus {unit: UNIT_WXS rate: 5}
+    unit_bonus {unit: UNIT_25 rate: 5}
+    unit_bonus {unit: UNIT_VS rate: 5}
+  }
+  attr_bonus {
+    attr: ATTR_CUTE
+    unit_bonus {unit: UNIT_LN rate: 5}
+    unit_bonus {unit: UNIT_MMJ rate: 5}
+    unit_bonus {unit: UNIT_VBS rate: 5}
+    unit_bonus {unit: UNIT_WXS rate: 5}
+    unit_bonus {unit: UNIT_25 rate: 5}
+    unit_bonus {unit: UNIT_VS rate: 5}
+  }
+  attr_bonus {
+    attr: ATTR_HAPPY
+    unit_bonus {unit: UNIT_LN rate: 5}
+    unit_bonus {unit: UNIT_MMJ rate: 5}
+    unit_bonus {unit: UNIT_VBS rate: 5}
+    unit_bonus {unit: UNIT_WXS rate: 5}
+    unit_bonus {unit: UNIT_25 rate: 5}
+    unit_bonus {unit: UNIT_VS rate: 5}
+  }
+  attr_bonus {
+    attr: ATTR_MYST
+    unit_bonus {unit: UNIT_LN rate: 5}
+    unit_bonus {unit: UNIT_MMJ rate: 5}
+    unit_bonus {unit: UNIT_VBS rate: 5}
+    unit_bonus {unit: UNIT_WXS rate: 5}
+    unit_bonus {unit: UNIT_25 rate: 5}
+    unit_bonus {unit: UNIT_VS rate: 5}
+  }
+  attr_bonus {
+    attr: ATTR_PURE
+    unit_bonus {unit: UNIT_LN rate: 5}
+    unit_bonus {unit: UNIT_MMJ rate: 5}
+    unit_bonus {unit: UNIT_VBS rate: 5}
+    unit_bonus {unit: UNIT_WXS rate: 5}
+    unit_bonus {unit: UNIT_25 rate: 5}
+    unit_bonus {unit: UNIT_VS rate: 5}
+  }
+}
+master_rank_bonus {
+  level_bonus: 0
+  level_bonus: 0
+  level_bonus: 0
+  level_bonus: 0
+  level_bonus: 0
+  level_bonus: 0
+}
+master_rank_bonus {
+  level_bonus: 1
+  level_bonus: 1.1
+  level_bonus: 1.2
+  level_bonus: 1.3
+  level_bonus: 1.4
+  level_bonus: 1.5
+}
+master_rank_bonus {
+  level_bonus: 2
+  level_bonus: 2.2
+  level_bonus: 2.4
+  level_bonus: 2.6
+  level_bonus: 2.8
+  level_bonus: 3
+}
+master_rank_bonus {
+  level_bonus: 3
+  level_bonus: 3.3
+  level_bonus: 3.6
+  level_bonus: 3.9
+  level_bonus: 4.2
+  level_bonus: 4.5
+}
+master_rank_bonus {
+  level_bonus: 10
+  level_bonus: 10.5
+  level_bonus: 11
+  level_bonus: 11.5
+  level_bonus: 12
+  level_bonus: 12.5
+}
+master_rank_bonus {
+  level_bonus: 5
+  level_bonus: 5.4
+  level_bonus: 5.8
+  level_bonus: 6.2
+  level_bonus: 6.6
+  level_bonus: 7
+}
+skill_level_bonus {
+  level_bonus: 0
+  level_bonus: 0
+  level_bonus: 0
+  level_bonus: 0
+  level_bonus: 0
+}
+skill_level_bonus {
+  level_bonus: 0
+  level_bonus: 0
+  level_bonus: 0.05
+  level_bonus: 0.2
+  level_bonus: 0.5
+}
+skill_level_bonus {
+  level_bonus: 0
+  level_bonus: 0
+  level_bonus: 0.1
+  level_bonus: 0.4
+  level_bonus: 1
+}
+skill_level_bonus {
+  level_bonus: 0
+  level_bonus: 0
+  level_bonus: 0.15
+  level_bonus: 0.6
+  level_bonus: 1.5
+}
+skill_level_bonus {
+  level_bonus: 0
+  level_bonus: 0
+  level_bonus: 0.25
+  level_bonus: 1
+  level_bonus: 2.5
+}
+skill_level_bonus {
+  level_bonus: 0
+  level_bonus: 0
+  level_bonus: 0.2
+  level_bonus: 0.8
+  level_bonus: 2
+}
+diff_attr_bonus: 0
+diff_attr_bonus: 0
+diff_attr_bonus: 0
+diff_attr_bonus: 0
+diff_attr_bonus: 0
+diff_attr_bonus: 0
