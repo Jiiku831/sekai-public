@@ -85,6 +85,16 @@ TEST(EventBonusTest, WorldBloomEventSupportUnit) {
   EXPECT_THAT(bonus_proto, ProtoEquals(expected_proto));
 }
 
+TEST(EventBonusTest, WorldBloomEventSupportUnitVs) {
+  auto event_id = ParseTextProto<EventId>(R"pb(event_id: 140 chapter_id: 1)pb");
+  EventBonus bonus(event_id);
+  ASSERT_NE(bonus.SupportUnitBonus(), nullptr);
+  EventBonusProto bonus_proto = bonus.SupportUnitBonus()->ToProto();
+  auto expected_proto =
+      ParseTextProtoFile<EventBonusProto>("sekai/testdata/support_event_bonus_140_1.textproto");
+  EXPECT_THAT(bonus_proto, ProtoEquals(expected_proto));
+}
+
 TEST(EventBonusTest, WorldBloomEventSupportUnitFromSimpleEventBonus) {
   auto event_bonus = ParseTextProto<SimpleEventBonus>(R"pb(
     chars {char_id: 17}
@@ -102,6 +112,30 @@ TEST(EventBonusTest, WorldBloomEventSupportUnitFromSimpleEventBonus) {
   EventBonusProto bonus_proto = bonus.SupportUnitBonus()->ToProto();
   auto expected_proto =
       ParseTextProtoFile<EventBonusProto>("sekai/testdata/support_event_bonus_112_1.textproto");
+  EXPECT_THAT(bonus_proto, ProtoEquals(expected_proto));
+}
+
+TEST(EventBonusTest, WorldBloomEventSupportUnitVsFromSimpleEventBonus) {
+  auto event_bonus = ParseTextProto<SimpleEventBonus>(R"pb(
+    chars {char_id: 21}
+    chars {char_id: 22}
+    chars {char_id: 23}
+    chars {char_id: 24}
+    chars {char_id: 25}
+    chars {char_id: 26}
+    cards: 979
+    cards: 980
+    cards: 981
+    cards: 982
+    cards: 983
+    cards: 984
+    chapter_char_id: 24
+  )pb");
+  EventBonus bonus(event_bonus);
+  ASSERT_NE(bonus.SupportUnitBonus(), nullptr);
+  EventBonusProto bonus_proto = bonus.SupportUnitBonus()->ToProto();
+  auto expected_proto =
+      ParseTextProtoFile<EventBonusProto>("sekai/testdata/support_event_bonus_140_1.textproto");
   EXPECT_THAT(bonus_proto, ProtoEquals(expected_proto));
 }
 
