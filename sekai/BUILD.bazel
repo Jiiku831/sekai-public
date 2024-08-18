@@ -246,6 +246,7 @@ cc_test(
         "testdata/event_bonus_112.textproto",
         "testdata/event_bonus_117.textproto",
         "testdata/support_event_bonus_112_1.textproto",
+        "testdata/support_event_bonus_140_1.textproto",
         "//data:flat-db",
     ],
     deps = [
