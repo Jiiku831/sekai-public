@@ -287,6 +287,13 @@ SupportUnitEventBonus::SupportUnitEventBonus(const EventId& event_id) : SupportU
   for (auto attr : EnumValues<db::Attr, db::Attr_descriptor>()) {
     if (attr == db::ATTR_UNKNOWN) continue;
     deck_bonus_[chapter_char_][attr][unit] = baseline_char_bonus;
+    if (unit == db::UNIT_VS) {
+      for (auto subunit : EnumValues<db::Unit, db::Unit_descriptor>()) {
+        if (subunit != db::UNIT_NONE && subunit != db::UNIT_VS) {
+          deck_bonus_[chapter_char_][attr][subunit] = baseline_char_bonus;
+        }
+      }
+    }
   }
 }
 
