@@ -1,3 +1,4 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary")
 load("@rules_python//python:defs.bzl", "py_binary")
 
 py_binary(
@@ -6,5 +7,17 @@ py_binary(
     deps = [
         "@abseil-py//absl:app",
         "@abseil-py//absl/flags",
+    ],
+)
+
+cc_binary(
+    name = "compile_template_main",
+    srcs = ["compile_template_main.cc"],
+    deps = [
+        "//base",
+        "@abseil-cpp//absl/flags:flag",
+        "@abseil-cpp//absl/log:absl_check",
+        "@inja",
+        "@nlohmann_json//:json",
     ],
 )

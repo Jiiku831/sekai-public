@@ -4,7 +4,6 @@ load("@rules_pkg//pkg:mappings.bzl", "pkg_files")
 
 exports_files([
     "server.py",
-    "shell.html",
 ])
 
 cc_library(
@@ -149,14 +148,14 @@ cc_library(
 cc_binary(
     name = "sajii",
     additional_linker_inputs = [
-        "shell.html",
+        "//frontend/templates:shell.html",
         "//data:flat-db",
     ],
     linkopts = [
         "--bind",
         "-lidbfs.js",
         "--oformat=html",
-        "--shell-file $(execpath shell.html)",
+        "--shell-file $(execpath //frontend/templates:shell.html)",
         "--preload-file $(location //data:flat-db)@data/flat-db",
         "-s ASSERTIONS",
         "-s ALLOW_MEMORY_GROWTH",
@@ -180,9 +179,9 @@ pkg_files(
     name = "src_root",
     srcs = [
         "_headers",
-        "index.html",
         "robots.txt",
         "sajii_lib.js",
+        "//frontend/templates:index.html",
     ],
 )
 

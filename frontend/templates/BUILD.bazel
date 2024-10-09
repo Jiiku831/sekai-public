@@ -1,0 +1,20 @@
+load("//:defs.bzl", "inja_template")
+
+filegroup(
+    name = "base_dir",
+    srcs = [
+        "base",
+    ],
+)
+
+inja_template(
+    name = "shell.html",
+    src = "shell.html.jinja",
+    base_dir = ":base_dir",
+)
+
+inja_template(
+    name = "index.html",
+    src = "index.html.jinja",
+    base_dir = ":base_dir",
+)
