@@ -36,12 +36,27 @@ cc_library(
 )
 
 cc_library(
+    name = "controller_base",
+    srcs = ["controller_base.cc"],
+    hdrs = ["controller_base.h"],
+    deps = [
+        ":log",
+        "@abseil-cpp//absl/log",
+        "@sekai-public//sekai:profile",
+        "@sekai-public//sekai:proto_util",
+        "@sekai-public//sekai/proto:profile_cc_proto",
+    ],
+)
+
+cc_library(
     name = "controller",
     srcs = ["controller.cc"],
     hdrs = ["controller.h"],
     deps = [
         ":context",
+        ":controller_base",
         ":element_id",
+        ":log",
         "//frontend/proto:context_cc_proto",
         "@abseil-cpp//absl/algorithm:container",
         "@abseil-cpp//absl/log",
@@ -103,6 +118,16 @@ cc_library(
         "@sekai-public//sekai:proto_util",
         "@sekai-public//sekai/db:master_db",
         "@sekai-public//sekai/db/proto:all",
+    ],
+)
+
+cc_library(
+    name = "log",
+    srcs = ["log.cc"],
+    hdrs = ["log.h"],
+    deps = [
+        "@abseil-cpp//absl/log",
+        "@protobuf",
     ],
 )
 

@@ -4,6 +4,7 @@
 #include <string>
 #include <variant>
 
+#include "frontend/controller_base.h"
 #include "sekai/bitset.h"
 #include "sekai/challenge_live_estimator.h"
 #include "sekai/db/proto/all.h"
@@ -35,13 +36,9 @@ struct FilterState {
   bool Eval(const sekai::db::Card& card, bool owned) const;
 };
 
-class Controller {
+class Controller : public ControllerBase {
  public:
   Controller();
-
-  void ReadSaveData();
-  void WriteSaveData() const;
-  void DeleteSaveData() const;
 
   void SetAttrFilterState(int attr, bool state);
   void SetCharacterFilterState(int char_id, bool state);
@@ -86,8 +83,6 @@ class Controller {
   std::string SerializeStateToString() const { return profile_proto_.SerializeAsString(); }
 
  private:
-  sekai::ProfileProto profile_proto_ = sekai::EmptyProfileProto();
-  sekai::Profile profile_{profile_proto_};
   FilterState card_list_filter_state_;
   std::array<std::array<int, kTeamSize>, kNumTeams> teams_{};
   sekai::Estimator::Mode estimator_mode_ = sekai::Estimator::Mode::kMulti;
@@ -107,7 +102,8 @@ class Controller {
   };
 
   void UpdateCardListVisibilities(FilterState new_state, bool force_update = false);
-  void UpdateProfile();
+  void OnProfileUpdate() override;
+  void OnSaveDataRead() override;
   sekai::CardState* GetCardState(int card_id);
   void RefreshTeam(int team_index) const;
 };
