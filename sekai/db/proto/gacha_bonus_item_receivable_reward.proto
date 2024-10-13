@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message GachaBonusItemReceivableReward {
+  option (master_db_file) = "gachaBonusItemReceivableRewards.json";
+  enum GachaBonusRewardType {
+    UNKNOWN_GACHA_BONUS_REWARD_TYPE = 0;
+    ITEM                            = 1 [(json_value) = "item"];
+    NOT_OWNED_RANDOM_RARITY4_FIXED  = 2 [(json_value) = "not_owned_random_rarity4_fixed"];
+    SELECTABLE_RARITY4_FIXED        = 3 [(json_value) = "selectable_rarity4_fixed"];
+  }
+
+  optional int32 id                                     = 1 [(json_name) = "id"];
+  optional int32 group_id                               = 2 [(json_name) = "groupId"];
+  optional int32 gacha_bonus_border_point               = 3 [(json_name) = "gachaBonusBorderPoint"];
+  optional GachaBonusRewardType gacha_bonus_reward_type = 4 [(json_name) = "gachaBonusRewardType"];
+  optional int32 resource_box_id                        = 5 [(json_name) = "resourceBoxId"];
+  optional int32 card_supply_group_id                   = 6 [(json_name) = "cardSupplyGroupId"];
+  optional string description                           = 7 [(json_name) = "description"];
+  optional string assetbundle_name                      = 8 [(json_name) = "assetbundleName"];
+}

@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message CardSupplyGroup {
+  option (master_db_file)       = "cardSupplyGroups.json";
+  optional int32 id             = 1 [(json_name) = "id"];
+  optional int32 group_id       = 2 [(json_name) = "groupId"];
+  optional int32 card_supply_id = 3 [(json_name) = "cardSupplyId"];
+}

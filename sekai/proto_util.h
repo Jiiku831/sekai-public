@@ -25,6 +25,19 @@ std::vector<T> EnumValues() {
   return values;
 }
 
+template <typename T, auto Descriptor>
+std::vector<T> EnumValuesExcludingDefault() {
+  std::vector<T> values;
+  const google::protobuf::EnumDescriptor* desc = Descriptor();
+  for (int i = 0; i < desc->value_count(); ++i) {
+    if (desc->value(i)->number() == 0) {
+      continue;
+    }
+    values.push_back(static_cast<T>(desc->value(i)->number()));
+  }
+  return values;
+}
+
 template <typename T>
 T ParseTextProto(const std::string& str) {
   T msg;

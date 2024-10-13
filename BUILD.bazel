@@ -79,3 +79,21 @@ cc_library(
         "@ctml",
     ],
 )
+
+cc_binary(
+    name = "build_max_cr_report_main",
+    srcs = ["build_max_cr_report_main.cc"],
+    data = [
+        "//data:flat-db",
+    ],
+    deps = [
+        "//base",
+        "//sekai:max_character_rank",
+        "//sekai/html:max_cr",
+        "//sekai/html:report",
+        "@abseil-cpp//absl/flags:flag",
+        "@abseil-cpp//absl/log:absl_check",
+        "@abseil-cpp//absl/log:flags",
+        "@abseil-cpp//absl/time",
+    ],
+)

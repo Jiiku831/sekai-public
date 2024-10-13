@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message AreaSpiritWorldTree {
+  option (master_db_file) = "areaSpiritWorldTrees.json";
+  message AreaSpiritWorldTreeReactionLotterie {
+    optional int32 id                        = 1 [(json_name) = "id"];
+    optional int32 area_spirit_world_tree_id = 2 [(json_name) = "areaSpiritWorldTreeId"];
+    optional string flavor_text              = 3 [(json_name) = "flavorText"];
+    optional int32 weight                    = 4 [(json_name) = "weight"];
+    optional string assetbundle_name         = 5 [(json_name) = "assetbundleName"];
+    optional string cue_name                 = 6 [(json_name) = "cueName"];
+  }
+
+  optional int32 id                        = 1 [(json_name) = "id"];
+  optional int32 area_id                   = 2 [(json_name) = "areaId"];
+  optional int32 seq                       = 3 [(json_name) = "seq"];
+  optional string display_assetbundle_name = 4 [(json_name) = "displayAssetbundleName"];
+  optional int32 release_condition_id1     = 5 [(json_name) = "releaseConditionId1"];
+  optional int32 release_condition_id2     = 6 [(json_name) = "releaseConditionId2"];
+  repeated AreaSpiritWorldTreeReactionLotterie area_spirit_world_tree_reaction_lotteries = 7
+      [(json_name) = "areaSpiritWorldTreeReactionLotteries"];
+}
