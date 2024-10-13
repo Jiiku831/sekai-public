@@ -3,33 +3,13 @@ syntax = "proto3";
 package sekai.db;
 
 import "sekai/db/proto/descriptor.proto";
+import "sekai/db/proto/enums.proto";
 
 message CharacterMissionV2 {
-  option (master_db_file) = "characterMissionV2s.json";
-  enum CharacterMissionType {
-    UNKNOWN_CHARACTER_MISSION_TYPE   = 0;
-    AREA_ITEM_LEVEL_UP_CHARACTER     = 1 [(json_value) = "area_item_level_up_character"];
-    AREA_ITEM_LEVEL_UP_REALITY_WORLD = 2 [(json_value) = "area_item_level_up_reality_world"];
-    AREA_ITEM_LEVEL_UP_UNIT          = 3 [(json_value) = "area_item_level_up_unit"];
-    COLLECT_ANOTHER_VOCAL            = 4 [(json_value) = "collect_another_vocal"];
-    COLLECT_COSTUME_3D               = 5 [(json_value) = "collect_costume_3d"];
-    COLLECT_MEMBER                   = 6 [(json_value) = "collect_member"];
-    COLLECT_STAMP                    = 7 [(json_value) = "collect_stamp"];
-    MASTER_RANK_UP_RARE              = 8 [(json_value) = "master_rank_up_rare"];
-    MASTER_RANK_UP_STANDARD          = 9 [(json_value) = "master_rank_up_standard"];
-    PLAY_LIVE                        = 10 [(json_value) = "play_live"];
-    PLAY_LIVE_EX                     = 11 [(json_value) = "play_live_ex"];
-    READ_AREA_TALK                   = 12 [(json_value) = "read_area_talk"];
-    READ_CARD_EPISODE_FIRST          = 13 [(json_value) = "read_card_episode_first"];
-    READ_CARD_EPISODE_SECOND         = 14 [(json_value) = "read_card_episode_second"];
-    SKILL_LEVEL_UP_RARE              = 15 [(json_value) = "skill_level_up_rare"];
-    SKILL_LEVEL_UP_STANDARD          = 16 [(json_value) = "skill_level_up_standard"];
-    WAITING_ROOM                     = 17 [(json_value) = "waiting_room"];
-    WAITING_ROOM_EX                  = 18 [(json_value) = "waiting_room_ex"];
-  }
+  option (master_db_file)                              = "characterMissionV2s.json";
 
   optional int32 id                                    = 1 [(json_name) = "id"];
-  optional CharacterMissionType character_mission_type = 2 [(json_name) = "characterMissionType"];
+  optional CharacterMissionType character_mission_type = 2 [(json_name) = "characterMissionType", (primary_key) = true];
   optional int32 character_id                          = 3 [(json_name) = "characterId"];
   optional int32 parameter_group_id                    = 4 [(json_name) = "parameterGroupId"];
   optional string sentence                             = 5 [(json_name) = "sentence"];

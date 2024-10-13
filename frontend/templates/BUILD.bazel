@@ -7,14 +7,45 @@ filegroup(
     ],
 )
 
-inja_template(
-    name = "shell.html",
-    src = "shell.html.jinja",
-    base_dir = ":base_dir",
+genrule(
+    name = "blaze_out_base_dir",
+    outs = ["blaze_out_base"],
+    cmd = "echo kek > $@",
 )
 
 inja_template(
-    name = "index.html",
-    src = "index.html.jinja",
+    name = "shell_html",
+    src = "shell.html.jinja",
+    out = "shell.html",
     base_dir = ":base_dir",
+    blaze_out_base_dir = ":blaze_out_base_dir",
+)
+
+inja_template(
+    name = "index_html",
+    src = "index.html.jinja",
+    out = "index.html",
+    base_dir = ":base_dir",
+    blaze_out_base_dir = ":blaze_out_base_dir",
+)
+
+genrule(
+    name = "max_cr_snapshot_html",
+    outs = ["max_cr_snapshot.html"],
+    cmd = "RUNFILES_DIR=$(execpath //:build_max_cr_report_main).runfiles " +
+          "./$(execpath //:build_max_cr_report_main) --raw --output=$@",
+    tools = [
+        "//:build_max_cr_report_main",
+    ],
+)
+
+inja_template(
+    name = "ohnyajii_html",
+    src = "ohnyajii.html.jinja",
+    out = "ohnyajii_shell.html",
+    base_dir = ":base_dir",
+    blaze_out_base_dir = ":blaze_out_base_dir",
+    data = [
+        ":max_cr_snapshot_html",
+    ],
 )

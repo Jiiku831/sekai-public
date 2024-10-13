@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message GachaFreebieGroup {
+  option (master_db_file)        = "gachaFreebieGroups.json";
+  optional int32 id              = 1 [(json_name) = "id"];
+  optional int32 group_id        = 2 [(json_name) = "groupId"];
+  optional int32 seq             = 3 [(json_name) = "seq"];
+  optional int32 resource_box_id = 4 [(json_name) = "resourceBoxId"];
+  optional int32 rarity          = 5 [(json_name) = "rarity"];
+  optional int32 weight          = 6 [(json_name) = "weight"];
+}

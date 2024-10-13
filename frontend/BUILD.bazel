@@ -26,11 +26,11 @@ cc_library(
         ":element_id",
         ":util",
         "//frontend/proto:context_cc_proto",
-        "@sekai-public//sekai:card",
-        "@sekai-public//sekai:character",
-        "@sekai-public//sekai/db:master_db",
-        "@sekai-public//sekai/db/proto:all",
-        "@sekai-public//sekai/proto:team_cc_proto",
+        "//sekai:card",
+        "//sekai:character",
+        "//sekai/db:master_db",
+        "//sekai/db/proto:all",
+        "//sekai/proto:team_cc_proto",
     ],
 )
 
@@ -40,11 +40,12 @@ cc_library(
     hdrs = ["controller_base.h"],
     deps = [
         ":log",
+        "//sekai:profile",
+        "//sekai:proto_util",
+        "//sekai/proto:profile_cc_proto",
         "@abseil-cpp//absl/log",
-        "@sekai-public//sekai:profile",
-        "@sekai-public//sekai:proto_util",
-        "@sekai-public//sekai/proto:profile_cc_proto",
     ],
+    alwayslink = True,
 )
 
 cc_library(
@@ -57,25 +58,26 @@ cc_library(
         ":element_id",
         ":log",
         "//frontend/proto:context_cc_proto",
+        "//sekai:bitset",
+        "//sekai:card",
+        "//sekai:challenge_live_estimator",
+        "//sekai:config",
+        "//sekai:estimator",
+        "//sekai:event_bonus",
+        "//sekai:profile",
+        "//sekai:proto_util",
+        "//sekai:team",
+        "//sekai/db:master_db",
+        "//sekai/db/proto:all",
+        "//sekai/proto:card_state_cc_proto",
+        "//sekai/proto:team_cc_proto",
+        "//sekai/team_builder:challenge_live_team_builder",
+        "//sekai/team_builder:simulated_annealing_team_builder",
         "@abseil-cpp//absl/algorithm:container",
         "@abseil-cpp//absl/log",
         "@abseil-cpp//absl/strings",
         "@abseil-cpp//absl/time",
         "@protobuf",
-        "@sekai-public//sekai:bitset",
-        "@sekai-public//sekai:card",
-        "@sekai-public//sekai:challenge_live_estimator",
-        "@sekai-public//sekai:estimator",
-        "@sekai-public//sekai:event_bonus",
-        "@sekai-public//sekai:profile",
-        "@sekai-public//sekai:proto_util",
-        "@sekai-public//sekai:team",
-        "@sekai-public//sekai/db:master_db",
-        "@sekai-public//sekai/db/proto:all",
-        "@sekai-public//sekai/proto:card_state_cc_proto",
-        "@sekai-public//sekai/proto:team_cc_proto",
-        "@sekai-public//sekai/team_builder:challenge_live_team_builder",
-        "@sekai-public//sekai/team_builder:simulated_annealing_team_builder",
     ],
     alwayslink = True,
 )
@@ -85,8 +87,8 @@ cc_library(
     srcs = ["display_text.cc"],
     hdrs = ["display_text.h"],
     deps = [
+        "//sekai/db/proto:all",
         "@abseil-cpp//absl/log:absl_check",
-        "@sekai-public//sekai/db/proto:all",
     ],
 )
 
@@ -108,15 +110,15 @@ cc_library(
         ":display_text",
         ":element_id",
         "//frontend/proto:context_cc_proto",
+        "//sekai:bitset",
+        "//sekai:card",
+        "//sekai:profile",
+        "//sekai:proto_util",
+        "//sekai/db:master_db",
+        "//sekai/db/proto:all",
         "@abseil-cpp//absl/log:absl_check",
         "@abseil-cpp//absl/strings",
         "@protobuf",
-        "@sekai-public//sekai:bitset",
-        "@sekai-public//sekai:card",
-        "@sekai-public//sekai:profile",
-        "@sekai-public//sekai:proto_util",
-        "@sekai-public//sekai/db:master_db",
-        "@sekai-public//sekai/db/proto:all",
     ],
 )
 
@@ -137,25 +139,25 @@ cc_library(
         ":console_log_sink",
         ":controller",
         ":init",
+        "//base",
+        "//sekai/db:master_db",
         "@abseil-cpp//absl/log",
         "@abseil-cpp//absl/log:globals",
         "@abseil-cpp//absl/log:log_sink_registry",
-        "@sekai-public//base",
-        "@sekai-public//sekai/db:master_db",
     ],
 )
 
 cc_binary(
     name = "sajii",
     additional_linker_inputs = [
-        "//frontend/templates:shell.html",
+        "//frontend/templates:shell_html",
         "//data:flat-db",
     ],
     linkopts = [
         "--bind",
         "-lidbfs.js",
         "--oformat=html",
-        "--shell-file $(execpath //frontend/templates:shell.html)",
+        "--shell-file $(execpath //frontend/templates:shell_html)",
         "--preload-file $(location //data:flat-db)@data/flat-db",
         "-s ASSERTIONS",
         "-s ALLOW_MEMORY_GROWTH",
@@ -166,12 +168,43 @@ cc_binary(
     ],
 )
 
+cc_binary(
+    name = "ohnyajii",
+    srcs = ["max_cr_main.cc"],
+    additional_linker_inputs = [
+        "//frontend/templates:ohnyajii_html",
+        "//data:flat-db",
+    ],
+    linkopts = [
+        "--bind",
+        "-lidbfs.js",
+        "--oformat=html",
+        "--shell-file $(execpath //frontend/templates:ohnyajii_html)",
+        "--preload-file $(location //data:flat-db)@data/flat-db",
+        "-s ASSERTIONS",
+        "-s ALLOW_MEMORY_GROWTH",
+        "-s NO_EXIT_RUNTIME",
+    ],
+    deps = [
+        ":console_log_sink",
+        ":controller_base",
+        ":init",
+        "//base",
+        "//sekai:max_character_rank",
+        "//sekai/db:master_db",
+        "//sekai/html:max_cr",
+        "@abseil-cpp//absl/log",
+        "@abseil-cpp//absl/log:globals",
+        "@abseil-cpp//absl/log:log_sink_registry",
+    ],
+)
+
 cc_library(
     name = "util",
     srcs = ["util.cc"],
     hdrs = ["util.h"],
     deps = [
-        "@sekai-public//sekai/db:master_db",
+        "//sekai/db:master_db",
     ],
 )
 
@@ -179,9 +212,11 @@ pkg_files(
     name = "src_root",
     srcs = [
         "_headers",
+        "ohnyajii_lib.js",
         "robots.txt",
         "sajii_lib.js",
-        "//frontend/templates:index.html",
+        "//frontend/templates:index_html",
+        "//frontend/templates:ohnyajii_html",
     ],
 )
 
@@ -189,6 +224,7 @@ pkg_files(
     name = "licenses",
     srcs = [
         "@abseil-cpp//:LICENSE",
+        "@ctml//:LICENSE",
         "@eigen//:COPYING.MPL2",
         "@emscripten_license//:LICENSE",
         "@protobuf//:LICENSE",
@@ -199,6 +235,7 @@ pkg_files(
         "@abseil-cpp//:LICENSE": "abseil-cpp/LICENSE.txt",
         "@eigen//:COPYING.MPL2": "eigen/LICENSE.txt",
         "@emscripten_license//:LICENSE": "emscripten/LICENSE.txt",
+        "@ctml//:LICENSE": "ctml/LICENSE.txt",
         "@protobuf//:LICENSE": "protobuf/LICENSE.txt",
         "@zstd_license//:LICENSE": "zstd/LICENSE.txt",
     },
@@ -207,4 +244,9 @@ pkg_files(
 sass_binary(
     name = "styles",
     src = "styles.sass",
+)
+
+sass_binary(
+    name = "ohnyajii_css",
+    src = "ohnyajii.sass",
 )

@@ -8,6 +8,7 @@ enum ArchiveDisplayType {
   ARCHIVE_DISPLAY_UNKNOWN = 0;
   ARCHIVE_DISPLAY_HIDE    = 1 [(json_value) = "hide"];
   ARCHIVE_DISPLAY_NORMAL  = 2 [(json_value) = "normal"];
+  ARCHIVE_DISPLAY_NONE    = 3 [(json_value) = "none"];
 }
 enum Attr {
   ATTR_UNKNOWN = 0;
@@ -53,4 +54,26 @@ enum Difficulty {
   DIFF_EXPERT  = 4 [(json_value) = "expert"];
   DIFF_MASTER  = 5 [(json_value) = "master"];
   DIFF_APPEND  = 6 [(json_value) = "append"];
+}
+enum CharacterMissionType {
+  CHARACTER_MISSION_TYPE_UNKNOWN                          = 0;
+  CHARACTER_MISSION_TYPE_AREA_ITEM_LEVEL_UP_CHARACTER     = 1 [(json_value) = "area_item_level_up_character"];
+  CHARACTER_MISSION_TYPE_AREA_ITEM_LEVEL_UP_REALITY_WORLD = 2 [(json_value) = "area_item_level_up_reality_world"];
+  CHARACTER_MISSION_TYPE_AREA_ITEM_LEVEL_UP_UNIT          = 3 [(json_value) = "area_item_level_up_unit"];
+  CHARACTER_MISSION_TYPE_COLLECT_ANOTHER_VOCAL            = 4 [(json_value) = "collect_another_vocal"];
+  CHARACTER_MISSION_TYPE_COLLECT_COSTUME_3D               = 5 [(json_value) = "collect_costume_3d"];
+  CHARACTER_MISSION_TYPE_COLLECT_MEMBER                   = 6 [(json_value) = "collect_member"];
+  CHARACTER_MISSION_TYPE_COLLECT_STAMP                    = 7 [(json_value) = "collect_stamp"];
+  CHARACTER_MISSION_TYPE_MASTER_RANK_UP_RARE              = 8 [(json_value) = "master_rank_up_rare"];
+  CHARACTER_MISSION_TYPE_MASTER_RANK_UP_STANDARD          = 9 [(json_value) = "master_rank_up_standard"];
+  CHARACTER_MISSION_TYPE_PLAY_LIVE                        = 10 [(json_value) = "play_live"];
+  CHARACTER_MISSION_TYPE_PLAY_LIVE_EX                     = 11 [(json_value) = "play_live_ex"];
+  CHARACTER_MISSION_TYPE_READ_AREA_TALK                   = 12 [(json_value) = "read_area_talk"];
+  CHARACTER_MISSION_TYPE_READ_CARD_EPISODE_FIRST          = 13 [(json_value) = "read_card_episode_first"];
+  CHARACTER_MISSION_TYPE_READ_CARD_EPISODE_SECOND         = 14 [(json_value) = "read_card_episode_second"];
+  CHARACTER_MISSION_TYPE_SKILL_LEVEL_UP_RARE              = 15 [(json_value) = "skill_level_up_rare"];
+  CHARACTER_MISSION_TYPE_SKILL_LEVEL_UP_STANDARD          = 16 [(json_value) = "skill_level_up_standard"];
+  CHARACTER_MISSION_TYPE_WAITING_ROOM                     = 17 [(json_value) = "waiting_room"];
+  CHARACTER_MISSION_TYPE_WAITING_ROOM_EX                  = 18 [(json_value) = "waiting_room_ex"];
+  CHARACTER_MISSION_TYPE_COLLECT_CHARACTER_ARCHIVE_VOICE  = 19 [(json_value) = "collect_character_archive_voice"];
 }

@@ -28,6 +28,7 @@
 #include "sekai/bitset.h"
 #include "sekai/card.h"
 #include "sekai/character.h"
+#include "sekai/config.h"
 #include "sekai/db/master_db.h"
 #include "sekai/db/proto/all.h"
 #include "sekai/estimator.h"
@@ -404,7 +405,8 @@ void Controller::SetAreaItemLevel(int area_item_id, int level) {
 }
 
 void Controller::SetCharacterRank(int char_id, int level) {
-  if (level < 1 || level > 135 || char_id >= profile_proto_.character_ranks_size()) {
+  if (level < 1 || level > sekai::kMaxCharacterRank ||
+      char_id >= profile_proto_.character_ranks_size()) {
     LOG(ERROR) << "Invalid char_id: " << char_id;
     return;
   }

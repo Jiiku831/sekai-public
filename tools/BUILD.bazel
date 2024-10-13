@@ -15,8 +15,10 @@ cc_binary(
     srcs = ["compile_template_main.cc"],
     deps = [
         "//base",
+        "//sekai:file_util",
         "@abseil-cpp//absl/flags:flag",
         "@abseil-cpp//absl/log:absl_check",
+        "@abseil-cpp//absl/strings",
         "@inja",
         "@nlohmann_json//:json",
     ],
