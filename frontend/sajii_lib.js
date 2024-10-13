@@ -320,7 +320,7 @@ function CreateCharacterRankRow(tbody, items, padding) {
   CreateBonusPowerRow(tbody, items, padding, (item) => {
     return CreateNode("td",
       CreateNumberInput(
-          1, 135, `character-rank-${item.charId}`,
+          1, 160, `character-rank-${item.charId}`,
           function(e) {
               if (!this.validity.valid || this.value == "") {
                   return;

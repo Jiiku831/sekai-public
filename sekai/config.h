@@ -20,6 +20,8 @@ inline constexpr float kReferenceScoreBoostCap = 140.0;
 
 inline constexpr std::size_t kSupportTeamSize = 12;
 
+inline constexpr int kMaxCharacterRank = 160;
+
 std::string_view CppVersion();
 const std::filesystem::path& SekaiBestRoot();
 const std::filesystem::path& MasterDbRoot();

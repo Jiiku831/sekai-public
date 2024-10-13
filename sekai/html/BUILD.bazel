@@ -16,6 +16,23 @@ cc_library(
 )
 
 cc_library(
+    name = "max_cr",
+    srcs = ["max_cr.cc"],
+    hdrs = ["max_cr.h"],
+    deps = [
+        "//frontend:display_text",
+        "//sekai:array_size",
+        "//sekai:max_character_rank",
+        "//sekai/db:master_db",
+        "//sekai/db/proto:all",
+        "//sekai/proto:max_character_rank_cc_proto",
+        "@abseil-cpp//absl/log:absl_check",
+        "@abseil-cpp//absl/strings:str_format",
+        "@ctml",
+    ],
+)
+
+cc_library(
     name = "report",
     srcs = ["report.cc"],
     hdrs = ["report.h"],

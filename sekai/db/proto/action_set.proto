@@ -3,25 +3,23 @@ syntax = "proto3";
 package sekai.db;
 
 import "sekai/db/proto/descriptor.proto";
+import "sekai/db/proto/enums.proto";
 
 message ActionSet {
   option (master_db_file) = "actionSets.json";
-  enum ArchiveDisplayType {
-    UNKNOWN_ARCHIVE_DISPLAY_TYPE = 0;
-    NONE                         = 1 [(json_value) = "none"];
-  }
 
   enum ActionSetType {
     UNKNOWN_ACTION_SET_TYPE = 0;
     LIMITED                 = 1 [(json_value) = "limited"];
     NORMAL                  = 2 [(json_value) = "normal"];
+    MUST_BE_UNIQUE_IN_AREA  = 3 [(json_value) = "must_be_unique_in_area"];
   }
 
-  optional int32 id                                = 1 [(json_name) = "id"];
+  optional int32 id                                = 1 [(json_name) = "id", (primary_key) = true];
   optional int32 area_id                           = 2 [(json_name) = "areaId"];
   optional bool is_next_grade                      = 3 [(json_name) = "isNextGrade"];
   optional string script_id                        = 4 [(json_name) = "scriptId"];
-  repeated int32 character_ids                     = 5 [(json_name) = "characterIds"];
+  repeated int32 character2d_ids                   = 5 [(json_name) = "characterIds"];
   optional ArchiveDisplayType archive_display_type = 6 [(json_name) = "archiveDisplayType"];
   optional int64 archive_published_at              = 7 [(json_name) = "archivePublishedAt"];
   optional int32 release_condition_id              = 8 [(json_name) = "releaseConditionId"];

@@ -3,6 +3,7 @@ syntax = "proto3";
 package sekai.db;
 
 import "sekai/db/proto/descriptor.proto";
+import "sekai/db/proto/enums.proto";
 
 message MusicVocal {
   option (master_db_file) = "musicVocals.json";
@@ -14,6 +15,7 @@ message MusicVocal {
     ORIGINAL_SONG            = 4 [(json_value) = "original_song"];
     SEKAI                    = 5 [(json_value) = "sekai"];
     VIRTUAL_SINGER           = 6 [(json_value) = "virtual_singer"];
+    STREAMING_LIVE           = 7 [(json_value) = "streaming_live"];
   }
 
   message Character {
@@ -31,13 +33,8 @@ message MusicVocal {
     optional int32 seq                    = 6 [(json_name) = "seq"];
   }
 
-  enum ArchiveDisplayType {
-    UNKNOWN_ARCHIVE_DISPLAY_TYPE = 0;
-    NONE                         = 1 [(json_value) = "none"];
-  }
-
   optional int32 id                                = 1 [(json_name) = "id"];
-  optional int32 music_id                          = 2 [(json_name) = "musicId"];
+  optional int32 music_id                          = 2 [(json_name) = "musicId", (primary_key) = true];
   optional MusicVocalType music_vocal_type         = 3 [(json_name) = "musicVocalType"];
   optional int32 seq                               = 4 [(json_name) = "seq"];
   optional int32 release_condition_id              = 5 [(json_name) = "releaseConditionId"];

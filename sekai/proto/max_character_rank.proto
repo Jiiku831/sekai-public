@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package sekai;
+
+import "sekai/db/proto/enums.proto";
+
+message CharacterRankSource {
+  optional sekai.db.CharacterMissionType character_mission_source = 1;
+  enum OtherSource {
+    OTHER_SOURCE_UNKNOWN                = 0;
+    OTHER_SOURCE_CHALLENGE_LIVE         = 1;
+    OTHER_SOURCE_ANNI_2_STAMP           = 2;
+    OTHER_SOURCE_ANNI_3_STAMP           = 3;
+    OTHER_SOURCE_WORLD_LINK             = 4;
+    OTHER_SOURCE_ANNI_4_STAMP           = 5;
+    OTHER_SOURCE_ANNI_4_MEMORIAL_SELECT = 6;
+  }
+  optional OtherSource other_source = 2;
+  optional int32 progress           = 3;
+  optional int32 max_progress       = 4;
+  optional int32 current_xp         = 5;
+  optional int32 max_xp             = 6;
+}
+
+message MaxCharacterRank {
+  optional int32 character_id = 1;
+  message Rank {
+    optional int32 rank      = 1;
+    optional int32 excess_xp = 2;
+  }
+  optional Rank current_rank           = 2;
+  optional Rank max_rank               = 3;
+  optional int32 current_xp            = 4;
+  optional int32 max_xp                = 5;
+  repeated CharacterRankSource sources = 6;
+}

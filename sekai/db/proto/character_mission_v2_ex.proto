@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+import "sekai/db/proto/enums.proto";
+
+message CharacterMissionV2Ex {
+  option (master_db_file) = "characterMissionV2ExJsons.json";
+
+  enum ResourceType {
+    UNKNOWN_RESOURCE_TYPE = 0;
+    MATERIAL              = 1 [(json_value) = "material"];
+  }
+
+  optional int32 id                                       = 1 [(json_name) = "id", (primary_key) = true];
+  optional CharacterMissionType character_mission_ex_type = 2 [(json_name) = "characterMissionExType"];
+  optional CharacterMissionType character_mission_type    = 3 [(json_name) = "characterMissionType"];
+  optional ResourceType resource_type                     = 4 [(json_name) = "resourceType"];
+}

@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message HomeExchangeButton {
+  option (master_db_file)          = "homeExchangeButtons.json";
+  optional int32 id                = 1 [(json_name) = "id"];
+  optional int64 start_at          = 2 [(json_name) = "startAt"];
+  optional int64 end_at            = 3 [(json_name) = "endAt"];
+  optional string assetbundle_name = 4 [(json_name) = "assetbundleName"];
+}
