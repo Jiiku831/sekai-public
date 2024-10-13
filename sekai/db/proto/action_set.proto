@@ -12,6 +12,7 @@ message ActionSet {
     UNKNOWN_ACTION_SET_TYPE = 0;
     LIMITED                 = 1 [(json_value) = "limited"];
     NORMAL                  = 2 [(json_value) = "normal"];
+    MUST_BE_UNIQUE_IN_AREA  = 3 [(json_value) = "must_be_unique_in_area"];
   }
 
   optional int32 id                                = 1 [(json_name) = "id", (primary_key) = true];
