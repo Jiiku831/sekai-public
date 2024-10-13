@@ -3,6 +3,7 @@ syntax = "proto3";
 package sekai.db;
 
 import "sekai/db/proto/descriptor.proto";
+import "sekai/db/proto/enums.proto";
 
 message Character2D {
   option (master_db_file) = "character2ds.json";
@@ -13,18 +14,7 @@ message Character2D {
     SUB_GAME_CHARACTER     = 3 [(json_value) = "sub_game_character"];
   }
 
-  enum Unit {
-    UNKNOWN_UNIT   = 0;
-    IDOL           = 1 [(json_value) = "idol"];
-    LIGHT_SOUND    = 2 [(json_value) = "light_sound"];
-    NONE           = 3 [(json_value) = "none"];
-    PIAPRO         = 4 [(json_value) = "piapro"];
-    SCHOOL_REFUSAL = 5 [(json_value) = "school_refusal"];
-    STREET         = 6 [(json_value) = "street"];
-    THEME_PARK     = 7 [(json_value) = "theme_park"];
-  }
-
-  optional int32 id                     = 1 [(json_name) = "id"];
+  optional int32 id                     = 1 [(json_name) = "id", (primary_key) = true];
   optional CharacterType character_type = 2 [(json_name) = "characterType"];
   optional bool is_next_grade           = 3 [(json_name) = "isNextGrade"];
   optional int32 character_id           = 4 [(json_name) = "characterId"];

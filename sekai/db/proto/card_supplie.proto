@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message CardSupplie {
+  option (master_db_file) = "cardSupplies.json";
+  enum CardSupplyType {
+    UNKNOWN_CARD_SUPPLY_TYPE  = 0;
+    BIRTHDAY                  = 1 [(json_value) = "birthday"];
+    BLOOM_FESTIVAL_LIMITED    = 2 [(json_value) = "bloom_festival_limited"];
+    COLLABORATION_LIMITED     = 3 [(json_value) = "collaboration_limited"];
+    COLORFUL_FESTIVAL_LIMITED = 4 [(json_value) = "colorful_festival_limited"];
+    NORMAL                    = 5 [(json_value) = "normal"];
+    TERM_LIMITED              = 6 [(json_value) = "term_limited"];
+    UNIT_EVENT_LIMITED        = 7 [(json_value) = "unit_event_limited"];
+  }
+
+  optional int32 id                        = 1 [(json_name) = "id"];
+  optional CardSupplyType card_supply_type = 2 [(json_name) = "cardSupplyType"];
+  optional string assetbundle_name         = 3 [(json_name) = "assetbundleName"];
+}

@@ -49,7 +49,7 @@ std::string GetCharacterDisplayText(int char_id) {
       "Mafuyu", "Ena",    "Mizuki", "Miku",   "Rin",     "Len",    "Luka",   "MEIKO", "KAITO",
   };
   ABSL_CHECK_NE(char_id, 0);
-  ABSL_CHECK_LT(char_id, names.size());
+  ABSL_CHECK_LT(static_cast<std::size_t>(char_id), names.size());
   return names[char_id];
 }
 
@@ -58,7 +58,7 @@ std::string GetAreaDisplayText(int area_id) {
                              "LN Sekai", "",        "MMJ Sekai", "VBS Sekai", "WxS Sekai",
                              "25 Sekai", "Kamikou", "",          "Miyajyo"};
   ABSL_CHECK_NE(area_id, 0);
-  ABSL_CHECK_LT(area_id, names.size());
+  ABSL_CHECK_LT(static_cast<std::size_t>(area_id), names.size());
   ABSL_CHECK(names[area_id][0] != '0');
   return names[area_id];
 }
@@ -68,7 +68,7 @@ std::string GetUnitDisplayText(int unit_id) {
       "", "LN", "MMJ", "VBS", "WxS", "25ji", "Miku",
   };
   ABSL_CHECK_NE(unit_id, 0);
-  ABSL_CHECK_LT(unit_id, names.size());
+  ABSL_CHECK_LT(static_cast<std::size_t>(unit_id), names.size());
   return names[unit_id];
 }
 

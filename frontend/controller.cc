@@ -20,12 +20,15 @@
 #include "absl/strings/str_split.h"
 #include "absl/time/time.h"
 #include "frontend/context.h"
+#include "frontend/controller_base.h"
 #include "frontend/element_id.h"
+#include "frontend/log.h"
 #include "frontend/proto/context.pb.h"
 #include "sekai/array_size.h"
 #include "sekai/bitset.h"
 #include "sekai/card.h"
 #include "sekai/character.h"
+#include "sekai/config.h"
 #include "sekai/db/master_db.h"
 #include "sekai/db/proto/all.h"
 #include "sekai/estimator.h"
@@ -45,6 +48,7 @@ ABSL_DECLARE_FLAG(float, subunitless_offset);
 namespace frontend {
 namespace {
 
+using ::emscripten::base;
 using ::emscripten::class_;
 using ::google::protobuf::util::MessageToJsonString;
 using ::sekai::CardState;
@@ -68,8 +72,6 @@ using ::sekai::db::Event;
 using ::sekai::db::GameCharacter;
 using ::sekai::db::MasterDb;
 using ::sekai::db::Unit;
-
-constexpr std::string_view kSaveDataPath = "/idbfs/profile";
 
 EM_JS(void, SetCardVisibility, (const char * element_id, bool state), {
     const elem = document.getElementById(UTF8ToString(element_id));
@@ -99,10 +101,6 @@ EM_JS(void, RenderTeam, (int team_index, const char * context), {
 });
 
 // clang-format off
-EM_JS(void, LogProto, (const char * proto), {
-    console.log(JSON.parse(UTF8ToString(proto)));
-});
-
 EM_JS(void, SetCardOwnership, (int card_id, bool state), {
   document.getElementById(`card-list-owned-${card_id}`).checked = state;
 });
@@ -336,13 +334,6 @@ sekai::Constraints MakeConstraints(const ProfileProto& profile) {
   return constraints;
 }
 
-void LogDebugProto(std::string_view title, const google::protobuf::Message& msg) {
-  std::string json;
-  (void)MessageToJsonString(msg, &json);
-  LOG(INFO) << title;
-  LogProto(json.c_str());
-}
-
 }  // namespace
 
 bool FilterState::Eval(const Card& card, bool owned) const {
@@ -414,7 +405,8 @@ void Controller::SetAreaItemLevel(int area_item_id, int level) {
 }
 
 void Controller::SetCharacterRank(int char_id, int level) {
-  if (level < 1 || level > 135 || char_id >= profile_proto_.character_ranks_size()) {
+  if (level < 1 || level > sekai::kMaxCharacterRank ||
+      char_id >= profile_proto_.character_ranks_size()) {
     LOG(ERROR) << "Invalid char_id: " << char_id;
     return;
   }
@@ -433,8 +425,7 @@ void Controller::SetTitleBonus(int bonus) {
   UpdateProfile();
 }
 
-void Controller::UpdateProfile() {
-  profile_ = sekai::Profile(profile_proto_);
+void Controller::OnProfileUpdate() {
   event_bonus_ = std::visit([](auto&& arg) { return EventBonus(arg); }, event_bonus_source());
   constraints_ = MakeConstraints(profile_proto_);
   profile_.ApplyEventBonus(event_bonus_);
@@ -663,43 +654,9 @@ void Controller::BuildEventTeam() {
   RefreshTeam(kTeamBuilderOutputSlot);
 }
 
-void Controller::ReadSaveData() {
-  if (!std::filesystem::exists(kSaveDataPath)) {
-    LOG(INFO) << "No existing save data!";
-    return;
-  }
-  profile_proto_ = ReadBinaryProtoFile<ProfileProto>(kSaveDataPath);
-  LOG(INFO) << "Successfully read save data.";
-  UpdateProfile();
+void Controller::OnSaveDataRead() {
   ResetView(profile_proto_);
   RefreshTeamInputs();
-}
-
-void Controller::WriteSaveData() const {
-  // TODO: add option for multiple slots
-  LogDebugProto("Save data: ", profile_proto_);
-  WriteBinaryProtoFile<ProfileProto>(kSaveDataPath, profile_proto_);
-
-  EM_ASM(
-      FS.syncfs(false, function (err) {
-          assert(!err);
-          console.log("Written save data!");
-        });
-  );
-}
-
-void Controller::DeleteSaveData() const {
-  std::error_code err;
-  if (!std::filesystem::remove(kSaveDataPath, err)) {
-    LOG(ERROR) << "Failed to delete saved data with code " << err.value() << ": " << err.message();
-    return;
-  }
-  EM_ASM(
-      FS.syncfs(false, function (err) {
-          assert(!err);
-          console.log("Deleted save data!");
-        });
-  );
 }
 
 bool Controller::IsValidCard(int card_id) const { return profile_.GetCard(card_id) != nullptr; }
@@ -877,17 +834,15 @@ void Controller::SetCustomEventChapter(int char_id) {
 }
 
 EMSCRIPTEN_BINDINGS(controller) {
-  class_<Controller>("Controller")
+  class_<Controller, base<ControllerBase>>("Controller")
       .constructor<>()
       .function("BuildChallengeLiveTeam", &Controller::BuildChallengeLiveTeam)
       .function("BuildEventTeam", &Controller::BuildEventTeam)
       .function("ClearTeamCard", &Controller::ClearTeamCard)
-      .function("DeleteSaveData", &Controller::DeleteSaveData)
       .function("ImportCardsFromCsv", &Controller::ImportCardsFromCsv)
       .function("ImportDataFromProto", &Controller::ImportDataFromProto)
       .function("ImportDataFromTextProto", &Controller::ImportDataFromTextProto)
       .function("IsValidCard", &Controller::IsValidCard)
-      .function("ReadSaveData", &Controller::ReadSaveData)
       .function("RefreshTeams", &Controller::RefreshTeams)
       .function("SerializeStateToDebugString", &Controller::SerializeStateToDebugString)
       .function("SerializeStateToString", &Controller::SerializeStateToString)
@@ -914,8 +869,7 @@ EMSCRIPTEN_BINDINGS(controller) {
       .function("SetTeamCard", &Controller::SetTeamCard)
       .function("SetTitleBonus", &Controller::SetTitleBonus)
       .function("SetUnreleasedContentFilterState", &Controller::SetUnreleasedContentFilterState)
-      .function("SetUseOldSubunitlessBonus", &Controller::SetUseOldSubunitlessBonus)
-      .function("WriteSaveData", &Controller::WriteSaveData);
+      .function("SetUseOldSubunitlessBonus", &Controller::SetUseOldSubunitlessBonus);
 }
 
 }  // namespace frontend

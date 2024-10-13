@@ -7,6 +7,7 @@
 #include <string>
 #include <string_view>
 
+#include "absl/log/log.h"
 #include "sekai/config.h"
 
 namespace sekai {
@@ -20,6 +21,10 @@ std::string GetFileContents(std::filesystem::path path) {
 }
 
 std::string GetFileContents(std::filesystem::path path, std::ios_base::openmode mode) {
+  if (!std::filesystem::exists(path)) {
+    LOG(ERROR) << "file does not exist: " << path << " (cwd: " << std::filesystem::current_path()
+               << ")";
+  }
   std::ifstream fin(path, mode);
   std::string data;
   fin.seekg(0, std::ios::end);

@@ -3,22 +3,19 @@ syntax = "proto3";
 package sekai.db;
 
 import "sekai/db/proto/descriptor.proto";
+import "sekai/db/proto/enums.proto";
 
 message Stamp {
   option (master_db_file) = "stamps.json";
   enum StampType {
-    UNKNOWN_STAMP_TYPE        = 0;
-    CHEERFUL_CARNIVAL_MESSAGE = 1 [(json_value) = "cheerful_carnival_message"];
-    ILLUSTRATION              = 2 [(json_value) = "illustration"];
-    TEXT                      = 3 [(json_value) = "text"];
+    UNKNOWN_STAMP_TYPE         = 0;
+    CHEERFUL_CARNIVAL_MESSAGE  = 1 [(json_value) = "cheerful_carnival_message"];
+    ILLUSTRATION               = 2 [(json_value) = "illustration"];
+    TEXT                       = 3 [(json_value) = "text"];
+    NON_CHARACTER_ILLUSTRATION = 4 [(json_value) = "non_character_illustration"];
   }
 
-  enum ArchiveDisplayType {
-    UNKNOWN_ARCHIVE_DISPLAY_TYPE = 0;
-    NONE                         = 1 [(json_value) = "none"];
-  }
-
-  optional int32 id                                = 1 [(json_name) = "id"];
+  optional int32 id                                = 1 [(json_name) = "id", (primary_key) = true];
   optional StampType stamp_type                    = 2 [(json_name) = "stampType"];
   optional int32 seq                               = 3 [(json_name) = "seq"];
   optional string name                             = 4 [(json_name) = "name"];

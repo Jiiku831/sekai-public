@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <script src="/ohnyajii_lib.js"></script>
+    <link rel="stylesheet" href="/ohnyajii.css"></script>
+    <link rel="icon" type="image/png" href="/images/favicon.png"></script>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>:Sajii:</title>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-N6DBLS8NF7"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-N6DBLS8NF7');
+    </script>
+  </head>
+  <body>
+    <div style="max-width: 40em;">
+      <h3>Notes</h3>
+      <ul>
+        <li>CL calculation is only supported after 4th anni. Before 4th anni, max CL is always assumed to be 101. Currently we assume all characters can get 1030 pts a day.</li>
+        <li>Some achievements like area convos and stamps are based on asset drop time and may not reflect the actual time you are able to obtain it.</li>
+      </ul>
+
+      <div id="static-warning">
+        <b>Notice</b>: You are currently viewing a snapshot generated when
+        this tool is updated, typically a few hours before event and gacha
+        starts. This means some achievements, such as ones based on cards and
+        ones for CL, will be under-counted. To view the latest stats, and
+        enable features like time travel, use a browser that supports WASM.
+      </div>
+
+      <div id="controls" style="display: none">
+        Time travel: <input type="datetime-local" id="date" onchange="OnDateChange()"> (JST)
+        <input type="button" value="Clear" onclick="OnDateClear()">
+      </div>
+    </div>
+
+    <div id="output">
+      {% include "max_cr_snapshot.html" %}
+    </div>
+
+    <details open>
+      <summary>Notices</summary>
+      <div>
+        <p>
+          This tool is unaffiliated with SEGA, Colorful Palette and Crypton, who owns the
+          thumbnails and card data provided here for research purposes.
+        </p>
+
+        <p>
+          This program contains compiled code from the following open source libraries:
+        </p>
+
+        <ul>
+          <li>
+            <a href="https://github.com/abseil/abseil-cpp">abseil-cpp</a>&nbsp;
+            (<a href="/licenses/abseil-cpp/LICENSE.txt">Notice</a>)
+          </li>
+          <li>
+            <a href="https://github.com/tinfoilboy">CTML</a>&nbsp;
+            (<a href="/licenses/ctml/LICENSE.txt">Notice</a>)
+          </li>
+          <li>
+            <a href="https://github.com/facebook/zstd">zstd</a>&nbsp;
+            (<a href="/licenses/zstd/LICENSE.txt">Notice</a>)
+          </li>
+          <li>
+            <a href="https://gitlab.com/libeigen/eigen">eigen</a>&nbsp;
+            (<a href="/licenses/eigen/LICENSE.txt">Notice</a>)
+          </li>
+          <li>
+            <a href="https://github.com/emscripten-core/emscripten">emscripten</a>&nbsp;
+            (<a href="/licenses/emscripten/LICENSE.txt">Notice</a>)
+          </li>
+          <li>
+            <a href="https://github.com/protocolbuffers/protobuf">protobuf</a>&nbsp;
+            (<a href="/licenses/protobuf/LICENSE.txt">Notice</a>)
+          </li>
+          <li>
+            <a href="https://github.com/madler/zlib">zlib</a>
+          </li>
+          <li>
+            <a href="https://github.com/facebook/zstd">zstd</a>&nbsp;
+            (<a href="/licenses/zstd/LICENSE.txt">Notice</a>)
+          </li>
+        </ul>
+      </div>
+    </details>
+
+    <script type='text/javascript'>
+      var Module = {
+        totalDependencies: 0,
+        monitorRunDependencies: (left) => {
+          this.totalDependencies = Math.max(this.totalDependencies ?? 0, left);
+          console.log('Preparing... (' + (this.totalDependencies - left) + '/' + this.totalDependencies + ')');
+        },
+      };
+      console.log('Downloading...');
+      window.onerror = () => {
+        console.log('Exception thrown, see JavaScript console');
+      };
+    </script>
+    {% set entry_point="{{{ SCRIPT }}}" %}{{ entry_point }}
+  </body>
+</html>

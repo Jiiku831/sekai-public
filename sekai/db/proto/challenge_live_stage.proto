@@ -3,10 +3,12 @@ syntax = "proto3";
 package sekai.db;
 
 import "sekai/db/proto/descriptor.proto";
+
 message ChallengeLiveStage {
   option (master_db_file)                       = "challengeLiveStages.json";
+
   optional int32 id                             = 1 [(json_name) = "id"];
-  optional int32 character_id                   = 2 [(json_name) = "characterId"];
+  optional int32 character_id                   = 2 [(json_name) = "characterId", (primary_key) = true];
   optional int32 rank                           = 3 [(json_name) = "rank"];
   optional string name                          = 4 [(json_name) = "name"];
   optional int32 next_stage_challenge_point     = 5 [(json_name) = "nextStageChallengePoint"];

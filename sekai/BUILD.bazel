@@ -50,6 +50,17 @@ cc_test(
 )
 
 cc_library(
+    name = "challenge_live",
+    srcs = ["challenge_live.cc"],
+    hdrs = ["challenge_live.h"],
+    deps = [
+        "//sekai/db:master_db",
+        "//sekai/db/proto:all",
+        "@abseil-cpp//absl/log:absl_check",
+    ],
+)
+
+cc_library(
     name = "challenge_live_estimator",
     srcs = ["challenge_live_estimator.cc"],
     hdrs = ["challenge_live_estimator.h"],
@@ -268,6 +279,37 @@ cc_library(
     hdrs = ["file_util.h"],
     deps = [
         ":config",
+        "@abseil-cpp//absl/log",
+    ],
+)
+
+cc_library(
+    name = "max_character_rank",
+    srcs = ["max_character_rank.cc"],
+    hdrs = ["max_character_rank.h"],
+    deps = [
+        ":array_size",
+        ":challenge_live",
+        ":character",
+        ":config",
+        "//sekai/db:master_db",
+        "//sekai/proto:max_character_rank_cc_proto",
+        "@abseil-cpp//absl/log:absl_check",
+    ],
+)
+
+cc_test(
+    name = "max_character_rank_test",
+    srcs = ["max_character_rank_test.cc"],
+    data = [
+        "//data:flat-db",
+    ],
+    deps = [
+        ":array_size",
+        ":max_character_rank",
+        "//testing:test_main",
+        "//testing:util",
+        "@googletest//:gtest",
     ],
 )
 

@@ -60,6 +60,19 @@ cc_proto_library(
 )
 
 proto_library(
+    name = "max_character_rank_proto",
+    srcs = ["max_character_rank.proto"],
+    deps = [
+        "//sekai/db/proto:enums_proto",
+    ],
+)
+
+cc_proto_library(
+    name = "max_character_rank_cc_proto",
+    deps = [":max_character_rank_proto"],
+)
+
+proto_library(
     name = "profile_proto",
     srcs = ["profile.proto"],
     deps = [
