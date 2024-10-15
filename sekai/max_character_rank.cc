@@ -77,7 +77,8 @@ int GetProgress(int char_id, CharacterRankSource::OtherSource source, absl::Time
   return 0;
 }
 
-int GetMaxProgress(int char_id, CharacterRankSource::OtherSource source, absl::Time time) {
+std::optional<int> GetMaxProgress(int char_id, CharacterRankSource::OtherSource source,
+                                  absl::Time time) {
   switch (source) {
     case CharacterRankSource::OTHER_SOURCE_CHALLENGE_LIVE:
       return GetChallengeLiveStagePointRequirement(char_id).size() - 1;
@@ -94,7 +95,7 @@ int GetMaxProgress(int char_id, CharacterRankSource::OtherSource source, absl::T
     default:
       ABSL_CHECK(false) << "unhandled case";
   }
-  return 0;
+  return std::nullopt;
 }
 
 int ProgressToXp(int char_id, CharacterRankSource::OtherSource source, int progress) {
@@ -408,7 +409,7 @@ std::vector<db::CharacterMissionV2ParameterGroup> ExpandGroup(
   return new_params;
 }
 
-int GetMaxProgressFromMissionParams(int char_id, db::CharacterMissionType source) {
+std::optional<int> GetMaxProgressFromMissionParams(int char_id, db::CharacterMissionType source) {
   std::vector<const db::CharacterMissionV2*> missions =
       db::MasterDb::FindAll<db::CharacterMissionV2>(source);
   const db::CharacterMissionV2* char_mission = nullptr;
@@ -418,9 +419,11 @@ int GetMaxProgressFromMissionParams(int char_id, db::CharacterMissionType source
       break;
     }
   }
-  ABSL_CHECK_NE(char_mission, nullptr)
-      << "Cannot find character " << char_id << " mission with type "
-      << db::CharacterMissionType_Name(source);
+  if (char_mission == nullptr) {
+    LOG(WARNING) << "Cannot find character " << char_id << " mission with type "
+                 << db::CharacterMissionType_Name(source);
+    return std::nullopt;
+  }
   std::vector<const db::CharacterMissionV2ParameterGroup*> params =
       db::MasterDb::FindAll<db::CharacterMissionV2ParameterGroup>(
           char_mission->parameter_group_id());
@@ -433,7 +436,7 @@ int GetMaxProgressFromMissionParams(int char_id, db::CharacterMissionType source
   return expanded_params.back().requirement();
 }
 
-int GetMaxProgress(int char_id, db::CharacterMissionType source, absl::Time time) {
+std::optional<int> GetMaxProgress(int char_id, db::CharacterMissionType source, absl::Time time) {
   switch (source) {
     case db::CHARACTER_MISSION_TYPE_AREA_ITEM_LEVEL_UP_CHARACTER:
     case db::CHARACTER_MISSION_TYPE_AREA_ITEM_LEVEL_UP_REALITY_WORLD:
@@ -459,7 +462,7 @@ int GetMaxProgress(int char_id, db::CharacterMissionType source, absl::Time time
     default:
       ABSL_CHECK(false) << "unhandled case";
   }
-  return 0;
+  return std::nullopt;
 }
 
 int ProgressToXp(int char_id, db::CharacterMissionType source, int progress) {
@@ -502,11 +505,16 @@ void SetSource(db::CharacterMissionType source, CharacterRankSource& cr_source) 
 }
 
 template <typename T>
-CharacterRankSource GetMaxCharacterRankForSource(int char_id, T source, absl::Time time) {
+std::optional<CharacterRankSource> GetMaxCharacterRankForSource(int char_id, T source,
+                                                                absl::Time time) {
+  std::optional<int> max_progress = GetMaxProgress(char_id, source, time);
+  if (!max_progress.has_value()) {
+    return std::nullopt;
+  }
   CharacterRankSource cr_source;
   SetSource(source, cr_source);
   cr_source.set_progress(GetProgress(char_id, source, time));
-  cr_source.set_max_progress(GetMaxProgress(char_id, source, time));
+  cr_source.set_max_progress(*max_progress);
   cr_source.set_current_xp(ProgressToXp(char_id, source, cr_source.progress()));
   cr_source.set_max_xp(ProgressToXp(char_id, source, cr_source.max_progress()));
   return cr_source;
@@ -543,16 +551,26 @@ MaxCharacterRank GetMaxCharacterRank(int char_id, absl::Time time) {
   for (db::CharacterMissionType source :
        EnumValuesExcludingDefault<db::CharacterMissionType,
                                   db::CharacterMissionType_descriptor>()) {
-    *max_rank.add_sources() = GetMaxCharacterRankForSource(char_id, source, time);
-    total_xp += max_rank.sources().rbegin()->current_xp();
-    total_max_xp += max_rank.sources().rbegin()->max_xp();
+    std::optional<CharacterRankSource> cr_source =
+        GetMaxCharacterRankForSource(char_id, source, time);
+    if (!cr_source.has_value()) {
+      continue;
+    }
+    total_xp += cr_source->current_xp();
+    total_max_xp += cr_source->max_xp();
+    *max_rank.add_sources() = *std::move(cr_source);
   }
   for (CharacterRankSource::OtherSource source :
        EnumValuesExcludingDefault<CharacterRankSource::OtherSource,
                                   CharacterRankSource::OtherSource_descriptor>()) {
-    *max_rank.add_sources() = GetMaxCharacterRankForSource(char_id, source, time);
-    total_xp += max_rank.sources().rbegin()->current_xp();
-    total_max_xp += max_rank.sources().rbegin()->max_xp();
+    std::optional<CharacterRankSource> cr_source =
+        GetMaxCharacterRankForSource(char_id, source, time);
+    if (!cr_source.has_value()) {
+      continue;
+    }
+    total_xp += cr_source->current_xp();
+    total_max_xp += cr_source->max_xp();
+    *max_rank.add_sources() = *std::move(cr_source);
   }
   max_rank.set_current_xp(total_xp);
   max_rank.set_max_xp(total_max_xp);
