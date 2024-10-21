@@ -2,12 +2,14 @@
 
 #include <array>
 #include <limits>
+#include <string_view>
 #include <variant>
 
 #include <ctml.hpp>
 
 #include "absl/log/absl_check.h"
 #include "absl/log/log.h"
+#include "absl/strings/str_cat.h"
 #include "absl/strings/str_format.h"
 #include "frontend/display_text.h"
 #include "sekai/array_size.h"
@@ -62,6 +64,11 @@ std::string FormatProgress(int current, int max) {
   return absl::StrFormat("%d / %d", current, max);
 }
 
+CTML::Node CreateProgressNode(int current, int max, std::string_view cls) {
+  return CTML::Node("div", FormatProgress(current, max))
+      .SetAttribute("class", absl::StrCat(cls, current >= max ? " capped" : ""));
+}
+
 CTML::Node GenerateTableCell(const std::optional<CharacterRankSource> source) {
   if (!source.has_value()) {
     return CTML::Node("td").SetAttribute("class", "empty");
@@ -70,10 +77,8 @@ CTML::Node GenerateTableCell(const std::optional<CharacterRankSource> source) {
       .SetAttribute("class", source->has_other_source()
                                  ? SourceToClass(source->other_source())
                                  : SourceToClass(source->character_mission_source()))
-      .AppendChild(CTML::Node("div", FormatProgress(source->current_xp(), source->max_xp()))
-                       .SetAttribute("class", "xp"))
-      .AppendChild(CTML::Node("div", FormatProgress(source->progress(), source->max_progress()))
-                       .SetAttribute("class", "progress"));
+      .AppendChild(CreateProgressNode(source->current_xp(), source->max_xp(), "xp"))
+      .AppendChild(CreateProgressNode(source->progress(), source->max_progress(), "progress"));
 }
 
 std::string FormatMaxRank(const MaxCharacterRank& max_cr) {
@@ -89,8 +94,7 @@ CTML::Node GenerateRow(int char_id, const MaxCharacterRank& max_cr) {
       CTML::Node("td")
           .SetAttribute("class", "rank")
           .AppendChild(CTML::Node("div", FormatMaxRank(max_cr)).SetAttribute("class", "xp"))
-          .AppendChild(CTML::Node("div", FormatProgress(max_cr.current_xp(), max_cr.max_xp()))
-                           .SetAttribute("class", "progress")));
+          .AppendChild(CreateProgressNode(max_cr.current_xp(), max_cr.max_xp(), "progress")));
   for (const auto& source : source_order) {
     row.AppendChild(std::visit(
         [&max_cr](auto&& source) {
