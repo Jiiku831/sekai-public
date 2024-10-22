@@ -18,6 +18,7 @@
 #include "sekai/db/master_db.h"
 #include "sekai/proto/max_character_rank.pb.h"
 #include "sekai/proto_util.h"
+#include "sekai/version.h"
 
 namespace sekai {
 namespace {
@@ -58,19 +59,23 @@ int GetMaxChallengeLiveStage(int char_id, absl::Time time) {
 }
 
 int GetProgress(int char_id, CharacterRankSource::OtherSource source, absl::Time time) {
+  constexpr Version<4> kAnni2AssetVersion({2, 0, 0, 0});
+  constexpr Version<4> kAnni3AssetVersion({3, 0, 0, 0});
+  constexpr Version<4> kEndOfWlAssetVersion({3, 8, 0, 30});
+  constexpr Version<4> kAnni4AssetVersion({4, 0, 0, 0});
   switch (source) {
     case CharacterRankSource::OTHER_SOURCE_CHALLENGE_LIVE:
       return GetMaxChallengeLiveStage(char_id, time);
     case CharacterRankSource::OTHER_SOURCE_ANNI_2_STAMP:
-      return 3;
+      return GetAssetVersionAt(time) >= kAnni2AssetVersion ? 3 : 0;
     case CharacterRankSource::OTHER_SOURCE_ANNI_3_STAMP:
-      return 3;
+      return GetAssetVersionAt(time) >= kAnni3AssetVersion ? 3 : 0;
     case CharacterRankSource::OTHER_SOURCE_WORLD_LINK:
-      return 2;
+      return GetAssetVersionAt(time) >= kEndOfWlAssetVersion ? 2 : 0;
     case CharacterRankSource::OTHER_SOURCE_ANNI_4_STAMP:
-      return 2;
+      return GetAssetVersionAt(time) >= kAnni4AssetVersion ? 2 : 0;
     case CharacterRankSource::OTHER_SOURCE_ANNI_4_MEMORIAL_SELECT:
-      return 1;
+      return GetAssetVersionAt(time) >= kAnni4AssetVersion ? 1 : 0;
     default:
       ABSL_CHECK(false) << "unhandled case";
   }

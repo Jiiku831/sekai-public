@@ -19,6 +19,7 @@ inja_template(
     out = "shell.html",
     base_dir = ":base_dir",
     blaze_out_base_dir = ":blaze_out_base_dir",
+    data = [":notices_html"],
 )
 
 inja_template(
@@ -40,6 +41,17 @@ genrule(
 )
 
 inja_template(
+    name = "notices_html",
+    src = "notices.html.jinja",
+    out = "notices.html",
+    base_dir = ":base_dir",
+    blaze_out_base_dir = ":blaze_out_base_dir",
+    data = [
+        ":version_html",
+    ],
+)
+
+inja_template(
     name = "ohnyajii_html",
     src = "ohnyajii.html.jinja",
     out = "ohnyajii_shell.html",
@@ -47,5 +59,16 @@ inja_template(
     blaze_out_base_dir = ":blaze_out_base_dir",
     data = [
         ":max_cr_snapshot_html",
+        ":notices_html",
+    ],
+)
+
+genrule(
+    name = "version_html",
+    outs = ["version.html"],
+    cmd = "RUNFILES_DIR=$(execpath //sekai/html:version_main).runfiles " +
+          "./$(execpath //sekai/html:version_main) --output=$@",
+    tools = [
+        "//sekai/html:version_main",
     ],
 )
