@@ -1,0 +1,75 @@
+load("@rules_cc//cc:defs.bzl", "cc_library")
+
+cc_library(
+    name = "commit",
+    srcs = ["commit.cc"],
+    hdrs = ["commit.h"],
+    deps = [
+        "@abseil-cpp//absl/base:nullability",
+        "@abseil-cpp//absl/log:absl_check",
+        "@libgit2",
+    ],
+)
+
+cc_library(
+    name = "errors",
+    srcs = ["errors.cc"],
+    hdrs = ["errors.h"],
+    deps = [
+        "//base:util",
+        "@abseil-cpp//absl/status:status",
+        "@abseil-cpp//absl/strings:str_format",
+        "@libgit2",
+    ],
+)
+
+cc_library(
+    name = "init",
+    srcs = ["init.cc"],
+    hdrs = ["init.h"],
+    deps = [
+        ":errors",
+        "@abseil-cpp//absl/status:status",
+        "@libgit2",
+    ],
+)
+
+cc_library(
+    name = "object_id",
+    srcs = ["object_id.cc"],
+    hdrs = ["object_id.h"],
+    deps = [
+        "@abseil-cpp//absl/base:nullability",
+        "@libgit2",
+    ],
+)
+
+cc_library(
+    name = "reference",
+    srcs = ["reference.cc"],
+    hdrs = ["reference.h"],
+    deps = [
+        "object_id",
+        "@abseil-cpp//absl/base:nullability",
+        "@abseil-cpp//absl/log:absl_check",
+        "@abseil-cpp//absl/status:status",
+        "@abseil-cpp//absl/status:statusor",
+        "@libgit2",
+    ],
+)
+
+cc_library(
+    name = "repository",
+    srcs = ["repository.cc"],
+    hdrs = ["repository.h"],
+    deps = [
+        ":commit",
+        ":errors",
+        ":reference",
+        "@abseil-cpp//absl/base:nullability",
+        "@abseil-cpp//absl/log:absl_check",
+        "@abseil-cpp//absl/status:status",
+        "@abseil-cpp//absl/status:statusor",
+        "@libgit2",
+    ],
+)
