@@ -23,7 +23,7 @@ int main(int argc, char** argv) {
   ABSL_CHECK_OK(git::Init());
 
   ABSL_CHECK(!absl::GetFlag(FLAGS_repo_path).empty());
-  ASSIGN_OR_RETURN_MAP(git::Repository repo, git::Open(absl::GetFlag(FLAGS_repo_path)),
+  ASSIGN_OR_RETURN_MAP(git::Repository repo, git::Repository::Open(absl::GetFlag(FLAGS_repo_path)),
                        LogAndReturnStatusCode);
   ASSIGN_OR_RETURN_MAP(git::Reference ref_head, repo.LookupReference("refs/heads/main"),
                        LogAndReturnStatusCode);

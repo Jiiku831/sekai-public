@@ -40,13 +40,31 @@ absl::StatusOr<Reference> Repository::LookupReference(const std::string& name) {
   return Reference(ref);
 }
 
-absl::StatusOr<Repository> Open(std::filesystem::path path) {
+absl::StatusOr<Repository> Repository::Init(std::filesystem::path path) {
+  git_repository* repo = nullptr;
+  GIT_RETURN_IF_ERROR(git_repository_init(&repo, path.c_str(), false));
+  if (repo == nullptr) {
+    return absl::UnknownError("git_repository is null after init");
+  }
+  return Repository(repo);
+}
+
+absl::StatusOr<Repository> Repository::Open(std::filesystem::path path) {
   git_repository* repo = nullptr;
   GIT_RETURN_IF_ERROR(git_repository_open(&repo, path.c_str()));
   if (repo == nullptr) {
     return absl::UnknownError("git_repository is null after open");
   }
   return Repository(repo);
+}
+
+absl::StatusOr<Index> Repository::RepositoryIndex() {
+  git_index* index = nullptr;
+  GIT_RETURN_IF_ERROR(git_repository_index(&index, repo_.get()));
+  if (index == nullptr) {
+    return absl::UnknownError("git_index is null after git_repository_index");
+  }
+  return Index(index);
 }
 
 }  // namespace git
