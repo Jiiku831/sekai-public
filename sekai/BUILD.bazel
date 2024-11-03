@@ -292,6 +292,7 @@ cc_library(
         ":challenge_live",
         ":character",
         ":config",
+        ":version",
         "//sekai/db:master_db",
         "//sekai/proto:max_character_rank_cc_proto",
         "@abseil-cpp//absl/log:absl_check",
@@ -489,6 +490,32 @@ cc_test(
         ":unit_count",
         "//sekai/db:master_db",
         "//sekai/db/proto:all",
+        "//testing:test_main",
+        "//testing:util",
+        "@googletest//:gtest",
+    ],
+)
+
+cc_library(
+    name = "version",
+    srcs = ["version.cc"],
+    hdrs = ["version.h"],
+    deps = [
+        "//sekai/db:master_db",
+        "@abseil-cpp//absl/log:absl_check",
+        "@abseil-cpp//absl/strings",
+        "@abseil-cpp//absl/time",
+    ],
+)
+
+cc_test(
+    name = "version_test",
+    srcs = ["version_test.cc"],
+    data = [
+        "//data:flat-db",
+    ],
+    deps = [
+        ":version",
         "//testing:test_main",
         "//testing:util",
         "@googletest//:gtest",

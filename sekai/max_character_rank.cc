@@ -18,6 +18,7 @@
 #include "sekai/db/master_db.h"
 #include "sekai/proto/max_character_rank.pb.h"
 #include "sekai/proto_util.h"
+#include "sekai/version.h"
 
 namespace sekai {
 namespace {
@@ -30,6 +31,10 @@ constexpr std::array kCharacterRankXpRequirement = {
     1,  2,  4,  7,  10,  14,  18,  22,  26,  30,  35,  40,  45,  50,  55,  61,  67,  73,
     79, 85, 92, 99, 106, 113, 120, 128, 136, 144, 152, 160, 169, 178, 187, 196, 205,
 };
+constexpr Version<4> kAnni2AssetVersion({2, 0, 0, 0});
+constexpr Version<4> kAnni3AssetVersion({3, 0, 0, 0});
+constexpr Version<4> kEndOfWlAssetVersion({3, 8, 0, 30});
+constexpr Version<4> kAnni4AssetVersion({4, 0, 0, 0});
 
 absl::Time Get4thAnniUncapResetTime() {
   return absl::FromCivil(absl::CivilSecond(2024, 9, 27, 19, 0, 0), absl::UTCTimeZone());
@@ -62,15 +67,15 @@ int GetProgress(int char_id, CharacterRankSource::OtherSource source, absl::Time
     case CharacterRankSource::OTHER_SOURCE_CHALLENGE_LIVE:
       return GetMaxChallengeLiveStage(char_id, time);
     case CharacterRankSource::OTHER_SOURCE_ANNI_2_STAMP:
-      return 3;
+      return GetAssetVersionAt(time) >= kAnni2AssetVersion ? 3 : 0;
     case CharacterRankSource::OTHER_SOURCE_ANNI_3_STAMP:
-      return 3;
+      return GetAssetVersionAt(time) >= kAnni3AssetVersion ? 3 : 0;
     case CharacterRankSource::OTHER_SOURCE_WORLD_LINK:
-      return 2;
+      return GetAssetVersionAt(time) >= kEndOfWlAssetVersion ? 2 : 0;
     case CharacterRankSource::OTHER_SOURCE_ANNI_4_STAMP:
-      return 2;
+      return GetAssetVersionAt(time) >= kAnni4AssetVersion ? 2 : 0;
     case CharacterRankSource::OTHER_SOURCE_ANNI_4_MEMORIAL_SELECT:
-      return 1;
+      return GetAssetVersionAt(time) >= kAnni4AssetVersion ? 1 : 0;
     default:
       ABSL_CHECK(false) << "unhandled case";
   }
@@ -83,15 +88,15 @@ std::optional<int> GetMaxProgress(int char_id, CharacterRankSource::OtherSource 
     case CharacterRankSource::OTHER_SOURCE_CHALLENGE_LIVE:
       return GetChallengeLiveStagePointRequirement(char_id).size() - 1;
     case CharacterRankSource::OTHER_SOURCE_ANNI_2_STAMP:
-      return 3;
+      return GetAssetVersionAt(time) >= kAnni2AssetVersion ? 3 : 0;
     case CharacterRankSource::OTHER_SOURCE_ANNI_3_STAMP:
-      return 3;
+      return GetAssetVersionAt(time) >= kAnni3AssetVersion ? 3 : 0;
     case CharacterRankSource::OTHER_SOURCE_WORLD_LINK:
-      return 2;
+      return GetAssetVersionAt(time) >= kEndOfWlAssetVersion ? 2 : 0;
     case CharacterRankSource::OTHER_SOURCE_ANNI_4_STAMP:
-      return 2;
+      return GetAssetVersionAt(time) >= kAnni4AssetVersion ? 2 : 0;
     case CharacterRankSource::OTHER_SOURCE_ANNI_4_MEMORIAL_SELECT:
-      return 1;
+      return GetAssetVersionAt(time) >= kAnni4AssetVersion ? 1 : 0;
     default:
       ABSL_CHECK(false) << "unhandled case";
   }

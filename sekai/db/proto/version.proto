@@ -3,6 +3,7 @@ syntax = "proto3";
 package sekai.db;
 
 import "sekai/db/proto/descriptor.proto";
+
 message Version {
   option (master_db_file)            = "versions.json";
   optional string system_profile     = 1 [(json_name) = "systemProfile"];
