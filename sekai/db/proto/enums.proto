@@ -77,3 +77,10 @@ enum CharacterMissionType {
   CHARACTER_MISSION_TYPE_WAITING_ROOM_EX                  = 18 [(json_value) = "waiting_room_ex"];
   CHARACTER_MISSION_TYPE_COLLECT_CHARACTER_ARCHIVE_VOICE  = 19 [(json_value) = "collect_character_archive_voice"];
 }
+enum Server {
+  SERVER_UNKNOWN = 0;
+  SERVER_JP      = 1;
+  SERVER_TW      = 2;
+  SERVER_KR      = 3;
+  SERVER_EN      = 4;
+}
