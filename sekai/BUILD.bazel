@@ -295,6 +295,7 @@ cc_library(
         ":version",
         "//sekai/db:master_db",
         "//sekai/proto:max_character_rank_cc_proto",
+        "@abseil-cpp//absl/log",
         "@abseil-cpp//absl/log:absl_check",
     ],
 )

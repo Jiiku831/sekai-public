@@ -22,7 +22,9 @@ cc_library(
     deps = [
         "//frontend:display_text",
         "//sekai:array_size",
+        "//sekai:character",
         "//sekai:max_character_rank",
+        "//sekai:proto_util",
         "//sekai/db:master_db",
         "//sekai/db/proto:all",
         "//sekai/proto:max_character_rank_cc_proto",
