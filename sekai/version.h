@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "absl/log/absl_check.h"
+#include "absl/log/log.h"
 #include "absl/strings/numbers.h"
 #include "absl/strings/str_join.h"
 #include "absl/strings/str_split.h"
@@ -19,8 +20,11 @@ class Version {
   explicit Version(absl::string_view version_string) {
     version_.fill(0);
     std::vector<std::string> parts = absl::StrSplit(version_string, ".");
-    ABSL_CHECK_EQ(parts.size(), N)
-        << "Expected " << N << " parts in version string: " << version_string;
+    ABSL_CHECK_LE(parts.size(), N)
+        << "Expected at most " << N << " parts in version string: " << version_string;
+    if (parts.size() < N) {
+      LOG(WARNING) << "Got less than " << N << " parts in version string: " << version_string;
+    }
     for (std::size_t i = 0; i < N; ++i) {
       ABSL_CHECK(absl::SimpleAtoi(parts[i], &version_[i]))
           << "Failed to parse \"" << parts[i] << "\" as an integer.";
