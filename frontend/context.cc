@@ -60,7 +60,7 @@ CustomEventContext CreateCustomEventContext() {
   CustomEventContext context;
   for (Attr attr : sekai::EnumValues<Attr, sekai::db::Attr_descriptor>()) {
     if (attr == sekai::db::ATTR_UNKNOWN) continue;
-    *context.add_attrs() = CreateAttrContext(attr);
+    *context.add_attrs() = CreateAttrContext(attr, /*short_name=*/true);
   }
 
   std::vector<CharacterContextGroup> groups = CreateCharacterContextGroups();
@@ -78,7 +78,8 @@ CustomEventContext CreateCustomEventContext() {
             if (LookupCharacterUnit(vs_character.id()) != sekai::db::UNIT_VS) {
               continue;
             }
-            CharacterContext vs_char_context = CreateCharacterContext(vs_character.id());
+            CharacterContext vs_char_context =
+                CreateCharacterContext(vs_character.id(), /*short_name=*/true);
             vs_char_context.set_unit_id(static_cast<int>(last_unit));
             *group->add_chars() = vs_char_context;
           }
@@ -86,7 +87,7 @@ CustomEventContext CreateCustomEventContext() {
         group = context.add_bonus_chars();
       }
     }
-    CharacterContext char_context = CreateCharacterContext(character.id());
+    CharacterContext char_context = CreateCharacterContext(character.id(), /*short_name=*/true);
     *group->add_chars() = char_context;
   }
   return context;
@@ -130,22 +131,23 @@ std::string GetRarityFramePath(CardRarityType rarity, bool trained) {
 
 }  // namespace
 
-AttrContext CreateAttrContext(Attr attr) {
+AttrContext CreateAttrContext(Attr attr, bool short_name) {
   AttrContext context;
-  context.set_display_text(GetAttrDisplayText(attr));
+  context.set_display_text(short_name ? GetAttrDisplayTextShort(attr) : GetAttrDisplayText(attr));
   context.set_value(static_cast<int>(attr));
   return context;
 }
 
-CharacterContext CreateCharacterContext(int char_id) {
+CharacterContext CreateCharacterContext(int char_id, bool short_name) {
   CharacterContext context;
-  context.set_display_text(GetCharacterDisplayText(char_id));
+  context.set_display_text(short_name ? GetCharacterDisplayTextShort(char_id)
+                                      : GetCharacterDisplayText(char_id));
   context.set_char_id(char_id);
   context.set_unit_display_text(GetUnitDisplayText(LookupCharacterUnit(char_id)));
   return context;
 }
 
-std::vector<CharacterContextGroup> CreateCharacterContextGroups() {
+std::vector<CharacterContextGroup> CreateCharacterContextGroups(bool short_name) {
   std::vector<CharacterContextGroup> groups;
   groups.emplace_back();
   CharacterContextGroup* group = &groups.back();
@@ -157,7 +159,7 @@ std::vector<CharacterContextGroup> CreateCharacterContextGroups() {
         group = &groups.back();
       }
     }
-    *group->add_chars() = CreateCharacterContext(character.id());
+    *group->add_chars() = CreateCharacterContext(character.id(), short_name);
   }
   return groups;
 }

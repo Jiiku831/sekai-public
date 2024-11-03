@@ -53,16 +53,19 @@ function CreateAttrFilters(attrs) {
 function CreateCharacterFilters(charRows) {
   const node = document.getElementById("card-list-char-filter");
   charRows.forEach((row, index1) => {
+    const tr = document.createElement("tr");
     row.chars.forEach((character, index2) => {
-      node.appendChild(CreateCheckbox(
+      const cell = document.createElement("td");
+      cell.appendChild(CreateCheckbox(
         `card-list-character-filter-${index1}-${index2}`,
         ['character-filter-checkbox'],
         character.displayText,
         function (e) {
           controller.SetCharacterFilterState(character.charId, this.checked);
         }));
+      tr.appendChild(cell);
     });
-    node.appendChild(document.createElement("br"));
+    node.appendChild(tr);
   });
 }
 
@@ -400,23 +403,29 @@ function CreateEventBonusEventDropdown(events) {
 }
 
 function CreateChallengeLiveCharacterRow(chars, container) {
+  const row = document.createElement("tr");
   Array.from(chars).forEach((character) => {
-    container.appendChild(
+    const cell = document.createElement("td");
+    cell.appendChild(
       CreateRadio(`cl-character-${character.charId}`, "cl-character-radio",
         character.charId, "", character.displayText, () => {}));
+    row.appendChild(cell);
   });
-  container.appendChild(document.createElement("br"));
+  container.appendChild(row);
 }
 
 function CreateLeadConstraintsCheckbox(chars, container) {
+  const row = document.createElement("tr");
   Array.from(chars).forEach((character) => {
-    container.appendChild(
+    const cell = document.createElement("td");
+    cell.appendChild(
       CreateCheckbox(`lead-constraint-${character.charId}`, "",
         character.displayText, (e) => {
           controller.SetLeadConstraint(character.charId, e.target.checked);
         }));
+    row.appendChild(cell);
   });
-  container.appendChild(document.createElement("br"));
+  container.appendChild(row);
 }
 
 function CreateRarityConstraintsCheckbox(rarities, container) {
@@ -551,16 +560,19 @@ function CreateCustomEventChars(groups) {
 }
 
 function CreateCustomEventChapterRow(chars, container) {
+  const row = document.createElement("tr");
   Array.from(chars).forEach((character) => {
-    container.appendChild(
+    const cell = document.createElement("td");
+    cell.appendChild(
       CreateRadio(`custom-event-chapter-${character.charId}`,
         "custom-event-chapter-radio", character.charId, "", character.displayText, () => {
         controller.SetCustomEventChapter(character.charId);
         controller.SetCustomEventAttr(0);
         document.getElementById("custom-event-attr-0").checked = true;
       }));
+    row.appendChild(cell);
   });
-  container.appendChild(document.createElement("br"));
+  container.appendChild(row);
 }
 
 function CreateCustomEventChapters(groups) {
