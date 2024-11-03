@@ -32,6 +32,7 @@ cc_library(
         ":music_meta_cc_proto",
         ":music_vocal_cc_proto",
         ":records_cc_proto",
+        ":server_cc_proto",
         ":skill_cc_proto",
         ":stamp_cc_proto",
         ":version_cc_proto",
@@ -2238,6 +2239,16 @@ proto_library(
 cc_proto_library(
     name = "rule_slide_cc_proto",
     deps = [":rule_slide_proto"],
+)
+
+proto_library(
+    name = "server_proto",
+    srcs = ["server.proto"],
+)
+
+cc_proto_library(
+    name = "server_cc_proto",
+    deps = [":server_proto"],
 )
 
 proto_library(

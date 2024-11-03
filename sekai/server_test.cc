@@ -4,7 +4,7 @@
 #include <gtest/gtest.h>
 
 #include "absl/log/log.h"
-#include "sekai/db/proto/enums.pb.h"
+#include "sekai/db/proto/server.pb.h"
 
 namespace sekai {
 namespace {

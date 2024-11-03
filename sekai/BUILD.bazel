@@ -375,7 +375,7 @@ cc_library(
     srcs = ["server.cc"],
     hdrs = ["server.h"],
     deps = [
-        "//sekai/db/proto:enums_cc_proto",
+        "//sekai/db/proto:server_cc_proto",
         "@abseil-cpp//absl/log:absl_check",
         "@sekai-master-db//:server_id",
     ],
@@ -386,7 +386,7 @@ cc_test(
     srcs = ["server_test.cc"],
     deps = [
         ":server",
-        "//sekai/db/proto:enums_cc_proto",
+        "//sekai/db/proto:server_cc_proto",
         "//testing:test_main",
         "//testing:util",
         "@abseil-cpp//absl/log",

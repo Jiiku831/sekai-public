@@ -1,6 +1,7 @@
 #include "sekai/server.h"
 
 #include "absl/log/absl_check.h"
+#include "sekai/db/proto/server.pb.h"
 
 namespace sekai {
 
