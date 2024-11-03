@@ -15,3 +15,14 @@ cc_library(
         "@zstd",
     ],
 )
+
+cc_library(
+    name = "util",
+    hdrs = [
+        "util.h",
+    ],
+    deps = [
+        "@abseil-cpp//absl/status",
+        "@abseil-cpp//absl/status:statusor",
+    ],
+)

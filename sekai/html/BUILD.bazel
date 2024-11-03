@@ -1,4 +1,4 @@
-load("@rules_cc//cc:defs.bzl", "cc_library")
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library")
 
 cc_library(
     name = "card",
@@ -61,5 +61,31 @@ cc_library(
         "@abseil-cpp//absl/strings",
         "@abseil-cpp//absl/strings:str_format",
         "@ctml",
+    ],
+)
+
+cc_library(
+    name = "version",
+    srcs = ["version.cc"],
+    hdrs = ["version.h"],
+    deps = [
+        "//sekai:version",
+        "@abseil-cpp//absl/strings:str_format",
+        "@ctml",
+    ],
+)
+
+cc_binary(
+    name = "version_main",
+    srcs = ["version_main.cc"],
+    data = [
+        "//data:flat-db",
+    ],
+    deps = [
+        ":version",
+        "//base",
+        "@abseil-cpp//absl/flags:flag",
+        "@abseil-cpp//absl/log:absl_check",
+        "@abseil-cpp//absl/log:flags",
     ],
 )

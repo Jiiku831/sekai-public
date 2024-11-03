@@ -18,6 +18,8 @@ MATCHER_P(ProtoEquals, other, "") {
   return result;
 }
 
+std::filesystem::path GetTestTempDir();
+
 std::filesystem::path GetDataPath(std::filesystem::path path);
 
 template <typename T>

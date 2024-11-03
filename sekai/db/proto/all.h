@@ -31,6 +31,7 @@
 #include "sekai/db/proto/records.pb.h"
 #include "sekai/db/proto/skill.pb.h"
 #include "sekai/db/proto/stamp.pb.h"
+#include "sekai/db/proto/version.pb.h"
 #include "sekai/db/proto/world_bloom.pb.h"
 #include "sekai/db/proto/world_bloom_different_attribute_bonus.pb.h"
 #include "sekai/db/proto/world_bloom_support_deck_bonus.pb.h"
@@ -42,7 +43,7 @@ using AllRecordTypes =
                Character2D, CharacterArchiveVoice, CharacterMissionV2, CharacterMissionV2AreaItem,
                CharacterMissionV2Ex, CharacterMissionV2ParameterGroup, CharacterRank, Costume3D,
                Event, EventCard, EventDeckBonus, EventRarityBonusRate, GameCharacter,
-               GameCharacterUnit, MasterLesson, Music, MusicMeta, MusicVocal, Skill, Stamp,
+               GameCharacterUnit, MasterLesson, Music, MusicMeta, MusicVocal, Skill, Stamp, Version,
                WorldBloom, WorldBloomDifferentAttributeBonus, WorldBloomSupportDeckBonus>;
 
 }  // namespace sekai::db

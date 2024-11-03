@@ -1,0 +1,132 @@
+load("@rules_cc//cc:defs.bzl", "cc_library", "cc_test")
+
+cc_library(
+    name = "commit",
+    srcs = ["commit.cc"],
+    hdrs = ["commit.h"],
+    deps = [
+        "@abseil-cpp//absl/base:nullability",
+        "@abseil-cpp//absl/log:absl_check",
+        "@libgit2",
+    ],
+)
+
+cc_library(
+    name = "errors",
+    srcs = ["errors.cc"],
+    hdrs = ["errors.h"],
+    deps = [
+        "//base:util",
+        "@abseil-cpp//absl/status:status",
+        "@abseil-cpp//absl/strings:str_format",
+        "@libgit2",
+    ],
+)
+
+cc_library(
+    name = "index",
+    srcs = ["index.cc"],
+    hdrs = ["index.h"],
+    deps = [
+        ":errors",
+        ":object_id",
+        "@abseil-cpp//absl/base:nullability",
+        "@abseil-cpp//absl/log:absl_check",
+        "@abseil-cpp//absl/status:statusor",
+        "@libgit2",
+    ],
+)
+
+cc_library(
+    name = "init",
+    srcs = ["init.cc"],
+    hdrs = ["init.h"],
+    deps = [
+        ":errors",
+        "@abseil-cpp//absl/status:status",
+        "@libgit2",
+    ],
+)
+
+cc_library(
+    name = "object_id",
+    srcs = ["object_id.cc"],
+    hdrs = ["object_id.h"],
+    deps = [
+        "@abseil-cpp//absl/base:nullability",
+        "@libgit2",
+    ],
+)
+
+cc_library(
+    name = "reference",
+    srcs = ["reference.cc"],
+    hdrs = ["reference.h"],
+    deps = [
+        "object_id",
+        "@abseil-cpp//absl/base:nullability",
+        "@abseil-cpp//absl/log:absl_check",
+        "@abseil-cpp//absl/status:status",
+        "@abseil-cpp//absl/status:statusor",
+        "@libgit2",
+    ],
+)
+
+cc_library(
+    name = "repository",
+    srcs = ["repository.cc"],
+    hdrs = ["repository.h"],
+    deps = [
+        ":commit",
+        ":errors",
+        ":index",
+        ":reference",
+        "@abseil-cpp//absl/base:nullability",
+        "@abseil-cpp//absl/log:absl_check",
+        "@abseil-cpp//absl/status:status",
+        "@abseil-cpp//absl/status:statusor",
+        "@libgit2",
+    ],
+)
+
+cc_test(
+    name = "repository_test",
+    srcs = ["repository_test.cc"],
+    deps = [
+        ":init",
+        ":repository",
+        "//testing:git_test_main",
+        "//testing:util",
+        "@abseil-cpp//absl/log",
+        "@abseil-cpp//absl/status:status_matchers",
+        "@googletest//:gtest",
+    ],
+)
+
+cc_library(
+    name = "signature",
+    srcs = ["signature.cc"],
+    hdrs = ["signature.h"],
+    deps = [
+        ":errors",
+        "@abseil-cpp//absl/base:nullability",
+        "@abseil-cpp//absl/log:absl_check",
+        "@abseil-cpp//absl/status:status",
+        "@abseil-cpp//absl/status:statusor",
+        "@abseil-cpp//absl/time",
+        "@libgit2",
+    ],
+)
+
+cc_test(
+    name = "signature_test",
+    srcs = ["signature_test.cc"],
+    deps = [
+        ":init",
+        ":signature",
+        "//testing:git_test_main",
+        "@abseil-cpp//absl/log",
+        "@abseil-cpp//absl/status:status_matchers",
+        "@googletest//:gtest",
+    ],
+)
