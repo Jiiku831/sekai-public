@@ -37,7 +37,7 @@ EM_JS(void, CallInitialRender, (const char* context), {
 void CreateAttrFilters(CardListContext& list) {
   for (Attr attr : EnumValues<Attr, sekai::db::Attr_descriptor>()) {
     if (attr == sekai::db::ATTR_UNKNOWN) continue;
-    *list.mutable_list_filter()->add_attrs() = CreateAttrContext(attr);
+    *list.mutable_list_filter()->add_attrs() = CreateAttrContext(attr, /*short_name=*/true);
   }
 }
 

@@ -1,5 +1,6 @@
 #include "sekai/html/max_cr.h"
 
+#include <algorithm>
 #include <array>
 #include <limits>
 #include <string_view>
@@ -13,8 +14,10 @@
 #include "absl/strings/str_format.h"
 #include "frontend/display_text.h"
 #include "sekai/array_size.h"
+#include "sekai/character.h"
 #include "sekai/max_character_rank.h"
 #include "sekai/proto/max_character_rank.pb.h"
+#include "sekai/proto_util.h"
 
 namespace sekai::html {
 namespace {
@@ -87,14 +90,21 @@ std::string FormatMaxRank(const MaxCharacterRank& max_cr) {
                          max_cr.max_rank().excess_xp());
 }
 
-CTML::Node GenerateRow(int char_id, const MaxCharacterRank& max_cr) {
-  auto row = CTML ::Node("tr");
-  row.AppendChild(CTML::Node("th", frontend::GetCharacterDisplayText(char_id)));
+void AppendCharNameAndRank(int char_id, const MaxCharacterRank& max_cr, CTML::Node& row,
+                           bool short_name = false) {
+  row.AppendChild(CTML::Node("th", short_name ? frontend::GetCharacterDisplayTextShort(char_id)
+                                              : frontend::GetCharacterDisplayText(char_id))
+                      .SetAttribute("class", "char-name"));
   row.AppendChild(
       CTML::Node("td")
           .SetAttribute("class", "rank")
           .AppendChild(CTML::Node("div", FormatMaxRank(max_cr)).SetAttribute("class", "xp"))
           .AppendChild(CreateProgressNode(max_cr.current_xp(), max_cr.max_xp(), "progress")));
+}
+
+CTML::Node GenerateRow(int char_id, const MaxCharacterRank& max_cr) {
+  auto row = CTML ::Node("tr");
+  AppendCharNameAndRank(char_id, max_cr, row);
   for (const auto& source : source_order) {
     row.AppendChild(std::visit(
         [&max_cr](auto&& source) {
@@ -116,16 +126,85 @@ CTML::Node GenerateHeader() {
   return row;
 }
 
-}  // namespace
+CTML::Node GenerateSummaryTableHeaderRow() {
+  auto row = CTML::Node("tr");
+  for ([[maybe_unused]] auto unit : EnumValuesExcludingDefault<db::Unit, db::Unit_descriptor>()) {
+    row.AppendChild(CTML::Node("th", "Char"));
+    row.AppendChild(CTML::Node("th", "Rank").SetAttribute("class", "rank"));
+  }
+  return row;
+}
 
-CTML::Node MaxCrTable(std::span<const MaxCharacterRank> max_cr) {
-  ABSL_CHECK_GE(max_cr.size(), static_cast<std::size_t>(CharacterArraySize()));
+int GetMaxUnitOffset() {
+  int max_unit_offset = 0;
+  int cur_unit_offset = 0;
+  db::Unit unit = db::UNIT_NONE;
+  for (int char_id : UniqueCharacterIds()) {
+    if (auto char_unit = LookupCharacterUnit(char_id); char_unit != unit) {
+      unit = char_unit;
+      max_unit_offset = std::max(max_unit_offset, cur_unit_offset);
+      cur_unit_offset = 0;
+    }
+    ++cur_unit_offset;
+  }
+  max_unit_offset = std::max(max_unit_offset, cur_unit_offset);
+  return max_unit_offset;
+}
+
+CTML::Node GenerateSummaryTableRow(std::span<const MaxCharacterRank> max_cr, int unit_offset) {
+  auto row = CTML::Node("tr");
+  db::Unit unit = db::UNIT_NONE;
+  int cur_unit_offset = 0;
+  bool unit_written = true;
+  for (int char_id : UniqueCharacterIds()) {
+    if (auto char_unit = LookupCharacterUnit(char_id); char_unit != unit) {
+      if (!unit_written) {
+        row.AppendChild(CTML::Node("td"))
+            .AppendChild(CTML::Node("td").SetAttribute("class", "rank"));
+      }
+      unit = char_unit;
+      cur_unit_offset = 0;
+      unit_written = false;
+    } else {
+      ++cur_unit_offset;
+    }
+    if (unit_offset == cur_unit_offset) {
+      AppendCharNameAndRank(char_id, max_cr[char_id], row, /*short_name=*/true);
+      unit_written = true;
+    }
+  }
+  return row;
+}
+
+CTML::Node GenerateSummaryTable(std::span<const MaxCharacterRank> max_cr) {
+  auto table = CTML::Node("table");
+  table.AppendChild(GenerateSummaryTableHeaderRow());
+  int max_unit_offset = GetMaxUnitOffset();
+  for (int offset = 0; offset < max_unit_offset; ++offset) {
+    table.AppendChild(GenerateSummaryTableRow(max_cr, offset));
+  }
+  return table;
+}
+
+CTML::Node GenerateDetailsTable(std::span<const MaxCharacterRank> max_cr) {
   auto table = CTML::Node("table");
   table.AppendChild(GenerateHeader());
   for (int char_id : UniqueCharacterIds()) {
     table.AppendChild(GenerateRow(char_id, max_cr[char_id]));
   }
   return table;
+}
+
+}  // namespace
+
+CTML::Node MaxCrTable(std::span<const MaxCharacterRank> max_cr) {
+  ABSL_CHECK_GE(max_cr.size(), static_cast<std::size_t>(CharacterArraySize()));
+  auto container = CTML::Node("div");
+  container.AppendChild(CTML::Node("h2", "Max Character Ranks"))
+      .AppendChild(GenerateSummaryTable(max_cr))
+      .AppendChild(CTML::Node("h2", "Details"))
+      .AppendChild(GenerateDetailsTable(max_cr));
+  return container;
 }
 
 }  // namespace sekai::html
