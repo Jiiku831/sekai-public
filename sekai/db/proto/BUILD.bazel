@@ -34,6 +34,7 @@ cc_library(
         ":records_cc_proto",
         ":skill_cc_proto",
         ":stamp_cc_proto",
+        ":version_cc_proto",
         ":world_bloom_cc_proto",
         ":world_bloom_different_attribute_bonus_cc_proto",
         ":world_bloom_support_deck_bonus_cc_proto",

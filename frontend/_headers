@@ -8,8 +8,28 @@ https://jiiku.pages.dev/*
     X-Frame-Options: DENY
     X-Robots-Tag: noindex
 
+https://jiiku.dev/*
+    Access-Control-Allow-Origin: https://jiiku.dev/
+    Cross-Origin-Embedder-Policy: require-corp
+    Cross-Origin-Opener-Policy: same-origin
+    Referrer-Policy: no-referrer
+    Vary: Origin
+    X-Content-Type-Options: nosniff
+    X-Frame-Options: DENY
+    X-Robots-Tag: noindex
+
 https://dev.jiiku.pages.dev/*
     Access-Control-Allow-Origin: https://dev.jiiku.pages.dev/
+    Cross-Origin-Embedder-Policy: require-corp
+    Cross-Origin-Opener-Policy: same-origin
+    Referrer-Policy: no-referrer
+    Vary: Origin
+    X-Content-Type-Options: nosniff
+    X-Frame-Options: DENY
+    X-Robots-Tag: noindex
+
+https://dev.jiiku.dev/*
+    Access-Control-Allow-Origin: https://dev.jiiku.dev/
     Cross-Origin-Embedder-Policy: require-corp
     Cross-Origin-Opener-Policy: same-origin
     Referrer-Policy: no-referrer
@@ -28,6 +48,16 @@ https://en.jiiku.pages.dev/*
     X-Frame-Options: DENY
     X-Robots-Tag: noindex
 
+https://en.jiiku.dev/*
+    Access-Control-Allow-Origin: https://en.jiiku.dev/
+    Cross-Origin-Embedder-Policy: require-corp
+    Cross-Origin-Opener-Policy: same-origin
+    Referrer-Policy: no-referrer
+    Vary: Origin
+    X-Content-Type-Options: nosniff
+    X-Frame-Options: DENY
+    X-Robots-Tag: noindex
+
 https://kr.jiiku.pages.dev/*
     Access-Control-Allow-Origin: https://kr.jiiku.pages.dev/
     Cross-Origin-Embedder-Policy: require-corp
@@ -38,8 +68,28 @@ https://kr.jiiku.pages.dev/*
     X-Frame-Options: DENY
     X-Robots-Tag: noindex
 
+https://kr.jiiku.dev/*
+    Access-Control-Allow-Origin: https://kr.jiiku.dev/
+    Cross-Origin-Embedder-Policy: require-corp
+    Cross-Origin-Opener-Policy: same-origin
+    Referrer-Policy: no-referrer
+    Vary: Origin
+    X-Content-Type-Options: nosniff
+    X-Frame-Options: DENY
+    X-Robots-Tag: noindex
+
 https://tw.jiiku.pages.dev/*
     Access-Control-Allow-Origin: https://tw.jiiku.pages.dev/
+    Cross-Origin-Embedder-Policy: require-corp
+    Cross-Origin-Opener-Policy: same-origin
+    Referrer-Policy: no-referrer
+    Vary: Origin
+    X-Content-Type-Options: nosniff
+    X-Frame-Options: DENY
+    X-Robots-Tag: noindex
+
+https://tw.jiiku.dev/*
+    Access-Control-Allow-Origin: https://tw.jiiku.dev/
     Cross-Origin-Embedder-Policy: require-corp
     Cross-Origin-Opener-Policy: same-origin
     Referrer-Policy: no-referrer

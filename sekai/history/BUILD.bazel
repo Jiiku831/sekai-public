@@ -1,0 +1,27 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+
+genrule(
+    name = "sekai_master_db_repo",
+    outs = ["sekai_master_db_repo.zip"],
+    cmd = "out=\"$$(realpath $@)\";" +
+          "tmp=\"$$(mktemp -d || mktemp -d -t bazel-tmp)\";" +
+          "trap \"rm -rf $$tmp\" EXIT;" +
+          "cd \"$$tmp\";" +
+          "git clone https://github.com/Sekai-World/sekai-master-db-diff.git .;" +
+          "shopt  -s dotglob;" +
+          "zip -r \"$$out\" ./*;",
+)
+
+cc_binary(
+    name = "history_analyzer_main",
+    srcs = ["history_analyzer_main.cc"],
+    deps = [
+        "//base",
+        "//git:init",
+        "//git:repository",
+        "@abseil-cpp//absl/flags:flag",
+        "@abseil-cpp//absl/log",
+        "@abseil-cpp//absl/log:absl_check",
+        "@abseil-cpp//absl/log:flags",
+    ],
+)
