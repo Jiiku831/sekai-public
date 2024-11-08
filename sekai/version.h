@@ -25,7 +25,7 @@ class Version {
     if (parts.size() < N) {
       LOG(WARNING) << "Got less than " << N << " parts in version string: " << version_string;
     }
-    for (std::size_t i = 0; i < N; ++i) {
+    for (std::size_t i = 0; i < parts.size(); ++i) {
       ABSL_CHECK(absl::SimpleAtoi(parts[i], &version_[i]))
           << "Failed to parse \"" << parts[i] << "\" as an integer.";
     }

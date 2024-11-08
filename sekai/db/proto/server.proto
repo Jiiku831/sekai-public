@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package sekai.db;
+
+enum Server {
+  SERVER_UNKNOWN = 0;
+  SERVER_JP      = 1;
+  SERVER_TW      = 2;
+  SERVER_KR      = 3;
+  SERVER_EN      = 4;
+}
