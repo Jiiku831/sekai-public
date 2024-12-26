@@ -868,7 +868,6 @@ void Controller::SetCustomEventWorldBloomVersion(int version) {
     LOG(ERROR) << "Invalid version: " << version;
     return;
   }
-  LOG(INFO) << "update version: " << version;
   profile_proto_.set_world_bloom_version(static_cast<WorldBloomVersion>(version));
   UpdateProfile();
 }
