@@ -14,6 +14,7 @@
 #include "sekai/character.h"
 #include "sekai/db/master_db.h"
 #include "sekai/db/proto/all.h"
+#include "sekai/proto/world_bloom.pb.h"
 
 namespace frontend {
 namespace {
@@ -21,6 +22,7 @@ namespace {
 using ::sekai::LookupCharacterUnit;
 using ::sekai::MaxLevelForRarity;
 using ::sekai::TrainableCard;
+using ::sekai::WorldBloomVersion;
 using ::sekai::db::AreaItem;
 using ::sekai::db::Attr;
 using ::sekai::db::Card;
@@ -53,6 +55,13 @@ CardContext CreateCardContextFromCardProto(const sekai::CardProto& card,
   context.mutable_state()->set_team_power_contrib(card.team_power_contrib());
   context.mutable_state()->set_team_bonus_contrib(card.team_bonus_contrib());
   context.mutable_state()->set_team_skill_contrib(card.team_skill_contrib());
+  return context;
+}
+
+WorldBloomVersionContext CreateWorldBloomVersionContext(WorldBloomVersion version) {
+  WorldBloomVersionContext context;
+  context.set_display_text(GetWorldBloomVersionDisplayText(version));
+  context.set_value(static_cast<int>(version));
   return context;
 }
 
@@ -90,6 +99,13 @@ CustomEventContext CreateCustomEventContext() {
     CharacterContext char_context = CreateCharacterContext(character.id(), /*short_name=*/true);
     *group->add_chars() = char_context;
   }
+
+  for (WorldBloomVersion version :
+       sekai::EnumValues<WorldBloomVersion, sekai::WorldBloomVersion_descriptor>()) {
+    if (version == sekai::WORLD_BLOOM_VERSION_UNKNOWN) continue;
+    *context.add_world_bloom_versions() = CreateWorldBloomVersionContext(version);
+  }
+
   return context;
 }
 

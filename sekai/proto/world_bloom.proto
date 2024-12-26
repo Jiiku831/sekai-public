@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package sekai;
+
+enum WorldBloomVersion {
+  WORLD_BLOOM_VERSION_UNKNOWN = 0;
+  WORLD_BLOOM_VERSION_1       = 1;
+  WORLD_BLOOM_VERSION_2       = 2;
+}
+
+message WorldBloomConfig { optional int32 support_team_size = 1; }

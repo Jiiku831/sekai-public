@@ -244,14 +244,16 @@ TeamProto Team::ToProto(const Profile& profile, const class EventBonus& event_bo
   return team;
 }
 
-void Team::FillSupportCards(std::span<const Card* const> sorted_pool) {
+void Team::FillSupportCards(std::span<const Card* const> sorted_pool, WorldBloomVersion version) {
+  const WorldBloomConfig& wl_config = GetWorldBloomConfig(version);
   std::bitset<kCardArraySize> cards_present;
   support_cards_.clear();
   support_bonus_base_ = 0;
   for (const Card* card : cards_) {
     cards_present.set(card->card_id());
   }
-  for (std::size_t i = 0; i < sorted_pool.size() && support_cards_.size() < kSupportTeamSize; ++i) {
+  for (std::size_t i = 0;
+       i < sorted_pool.size() && support_cards_.size() < wl_config.support_team_size(); ++i) {
     const Card* candidate_card = sorted_pool[i];
     if (cards_present.test(candidate_card->card_id())) {
       continue;

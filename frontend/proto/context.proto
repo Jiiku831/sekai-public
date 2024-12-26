@@ -103,10 +103,16 @@ message KizunaContext {
   repeated CharacterContext chars = 2;
 }
 
+message WorldBloomVersionContext {
+  optional int32 value         = 1;
+  optional string display_text = 2;
+}
+
 message CustomEventContext {
-  repeated AttrContext attrs                   = 1;
-  repeated CharacterContextGroup bonus_chars   = 2;
-  repeated CharacterContextGroup chapter_chars = 3;
+  repeated AttrContext attrs                             = 1;
+  repeated CharacterContextGroup bonus_chars             = 2;
+  repeated CharacterContextGroup chapter_chars           = 3;
+  repeated WorldBloomVersionContext world_bloom_versions = 4;
 }
 
 message TeamBuilderContext {

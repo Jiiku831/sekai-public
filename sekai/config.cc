@@ -4,6 +4,8 @@
 #include <filesystem>
 #include <string_view>
 
+#include "absl/log/absl_check.h"
+
 namespace sekai {
 namespace {
 
@@ -79,6 +81,22 @@ const std::filesystem::path& MainRunfilesRoot() {
     return path;
   }();
   return *kPath;
+}
+
+const WorldBloomConfig& GetWorldBloomConfig(WorldBloomVersion version) {
+  static const auto* const kConfig = [] {
+    auto arr = std::make_unique<std::array<WorldBloomConfig, WorldBloomVersion_ARRAYSIZE>>();
+    auto& ver1_config = (*arr)[WORLD_BLOOM_VERSION_1];
+    ver1_config.set_support_team_size(12);
+
+    auto& ver2_config = (*arr)[WORLD_BLOOM_VERSION_2];
+    ver2_config.set_support_team_size(20);
+    return arr.release();
+  }();
+  ABSL_CHECK_NE(version, WORLD_BLOOM_VERSION_UNKNOWN);
+  ABSL_CHECK_LT(version, WorldBloomVersion_ARRAYSIZE);
+  ABSL_CHECK_GE(version, 0);
+  return (*kConfig)[version];
 }
 
 }  // namespace sekai
