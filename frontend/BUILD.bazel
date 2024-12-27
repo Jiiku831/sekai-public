@@ -31,6 +31,7 @@ cc_library(
         "//sekai/db:master_db",
         "//sekai/db/proto:all",
         "//sekai/proto:team_cc_proto",
+        "//sekai/proto:world_bloom_cc_proto",
     ],
 )
 
@@ -71,6 +72,7 @@ cc_library(
         "//sekai/db/proto:all",
         "//sekai/proto:card_state_cc_proto",
         "//sekai/proto:team_cc_proto",
+        "//sekai/proto:world_bloom_cc_proto",
         "//sekai/team_builder:challenge_live_team_builder",
         "//sekai/team_builder:simulated_annealing_team_builder",
         "@abseil-cpp//absl/algorithm:container",
@@ -88,6 +90,7 @@ cc_library(
     hdrs = ["display_text.h"],
     deps = [
         "//sekai/db/proto:all",
+        "//sekai/proto:world_bloom_cc_proto",
         "@abseil-cpp//absl/log:absl_check",
     ],
 )

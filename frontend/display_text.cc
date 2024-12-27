@@ -2,6 +2,7 @@
 
 #include "absl/log/absl_check.h"
 #include "sekai/db/proto/all.h"
+#include "sekai/proto/world_bloom.pb.h"
 
 namespace frontend {
 
@@ -175,6 +176,17 @@ std::string GetUnitDisplayText(int unit_id) {
   ABSL_CHECK_NE(unit_id, 0);
   ABSL_CHECK_LT(static_cast<std::size_t>(unit_id), names.size());
   return names[unit_id];
+}
+
+std::string GetWorldBloomVersionDisplayText(sekai::WorldBloomVersion version) {
+  switch (version) {
+    case sekai::WORLD_BLOOM_VERSION_1:
+      return "World Link 1";
+    case sekai::WORLD_BLOOM_VERSION_2:
+      return "World Link 2";
+    default:
+      ABSL_CHECK(false) << "unhandled case";
+  }
 }
 
 }  // namespace frontend

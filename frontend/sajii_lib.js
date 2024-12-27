@@ -1,5 +1,7 @@
 var controller = null;
 
+const kMaxSupportTeamSize = 20;
+
 function InitPage () {
   CreateTeamBuilder(0);
   CreateTeamBuilder(1);
@@ -589,10 +591,22 @@ function CreateCustomEventChapters(groups) {
   container.appendChild(document.createElement("br"));
 }
 
+function CreateCustomEventWorldBloomVersions(versions) {
+  const container = document.getElementById("custom-event-wl-version");
+  Array.from(versions).forEach((version) => {
+    container.appendChild(
+      CreateRadio(`custom-event-wl-version-${version.value}`, "custom-event-wl-version-radio",
+        version.value, "", version.displayText, () => {
+          controller.SetCustomEventWorldBloomVersion(version.value);
+        }));
+  });
+}
+
 function CreateCustomEvent(context) {
   CreateCustomEventAttrs(context.attrs);
   CreateCustomEventChars(context.bonusChars);
   CreateCustomEventChapters(context.chapterChars);
+  CreateCustomEventWorldBloomVersions(context.worldBloomVersions);
 }
 
 function CreateTeamRecommender(context) {
@@ -712,7 +726,7 @@ function CreateTeamBuilder(index) {
   supportHeader.rowSpan = 2;
   supportRow.appendChild(supportHeader);
   const supportStatsRow = document.createElement("tr");
-  for (let i = 0; i < 13; ++i) {
+  for (let i = 0; i < kMaxSupportTeamSize + 1; ++i) {
     const thumbCell = document.createElement("td");
     thumbCell.id = `team-builder-${index}-${i}-support-thumb`;
     thumbCell.classList.add("support-team-thumb");
@@ -781,31 +795,22 @@ function RenderTeamImpl(teamIndex, context) {
       thumbNode.appendChild(CreateCardThumb(card));
     }
   }
-  if (context.supportCards) {
-    for (let i = 0; i < 12 && i < context.supportCards.length; ++i) {
-      const card = context.supportCards[i];
-      const thumbCell = document.getElementById(
-        `team-builder-${teamIndex}-${i}-support-thumb`);
-      while (thumbCell.lastChild) {
-        thumbCell.removeChild(thumbCell.lastChild);
-      }
-      thumbCell.appendChild(CreateCardThumbHover(card));
+  for (let i = 0; i < kMaxSupportTeamSize; ++i) {
+    const thumbCell = document.getElementById(
+      `team-builder-${teamIndex}-${i}-support-thumb`);
+    const statsCell = document.getElementById(
+      `team-builder-${teamIndex}-${i}-support-stats`);
+    while (thumbCell.lastChild) {
+      thumbCell.removeChild(thumbCell.lastChild);
+    }
 
-      const statsCell = document.getElementById(
-        `team-builder-${teamIndex}-${i}-support-stats`);
+    if (context.supportCards && i < context.supportCards.length) {
+      const card = context.supportCards[i];
+      thumbCell.appendChild(CreateCardThumbHover(card));
       statsCell.innerText =
         `MR${card.state.masterRank}/SL${card.state.skillLevel}\n` +
         `${card.state.teamBonusContrib}%\n`;
-    }
-  } else {
-    for (let i = 0; i < 12; ++i) {
-      const thumbCell = document.getElementById(
-        `team-builder-${teamIndex}-${i}-support-thumb`);
-      while (thumbCell.lastChild) {
-        thumbCell.removeChild(thumbCell.lastChild);
-      }
-      const statsCell = document.getElementById(
-        `team-builder-${teamIndex}-${i}-support-stats`);
+    } else {
       statsCell.innerText = "";
     }
   }
