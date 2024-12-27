@@ -79,6 +79,7 @@ proto_library(
         ":card_state_proto",
         ":event_bonus_proto",
         ":event_id_proto",
+        ":world_bloom_proto",
         "//sekai/db/proto:enums_proto",
     ],
 )
@@ -97,4 +98,14 @@ proto_library(
 cc_proto_library(
     name = "team_cc_proto",
     deps = [":team_proto"],
+)
+
+proto_library(
+    name = "world_bloom_proto",
+    srcs = ["world_bloom.proto"],
+)
+
+cc_proto_library(
+    name = "world_bloom_cc_proto",
+    deps = [":world_bloom_proto"],
 )

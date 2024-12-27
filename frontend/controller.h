@@ -63,6 +63,7 @@ class Controller : public ControllerBase {
   void SetCustomEventAttr(int attr);
   void SetCustomEventCharacter(int char_id, int unit_id, bool state);
   void SetCustomEventChapter(int char_id);
+  void SetCustomEventWorldBloomVersion(int version);
   void SetLeadConstraint(int char_id, bool state);
   void SetKizunaConstraint(int char_1, int char_2, bool state);
   void SetRarityConstraint(int rarity, bool state);

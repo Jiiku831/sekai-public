@@ -3,6 +3,8 @@
 #include <filesystem>
 #include <string_view>
 
+#include "sekai/proto/world_bloom.pb.h"
+
 namespace sekai {
 
 inline constexpr int kMasterRankMax = 5;
@@ -18,14 +20,17 @@ inline constexpr int kMaxSkillValue = 160 + (160 / 5) * 4;
 
 inline constexpr float kReferenceScoreBoostCap = 140.0;
 
-inline constexpr std::size_t kSupportTeamSize = 12;
-
 inline constexpr int kMaxCharacterRank = 160;
+
+inline constexpr WorldBloomVersion kDefaultWorldBloomVersion = WORLD_BLOOM_VERSION_2;
+inline constexpr std::array kWorldBloomVersionCutoffs = {152};
 
 std::string_view CppVersion();
 const std::filesystem::path& SekaiBestRoot();
 const std::filesystem::path& MasterDbRoot();
 const std::filesystem::path& SekaiRunfilesRoot();
 const std::filesystem::path& MainRunfilesRoot();
+
+const WorldBloomConfig& GetWorldBloomConfig(WorldBloomVersion version);
 
 }  // namespace sekai

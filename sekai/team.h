@@ -7,10 +7,12 @@
 
 #include "sekai/bitset.h"
 #include "sekai/card.h"
+#include "sekai/config.h"
 #include "sekai/estimator_base.h"
 #include "sekai/event_bonus.h"
 #include "sekai/profile.h"
 #include "sekai/proto/team.pb.h"
+#include "sekai/proto/world_bloom.pb.h"
 #include "sekai/team_builder/constraints.h"
 #include "sekai/unit_count.h"
 
@@ -55,7 +57,8 @@ class Team {
   TeamProto ToProto(const Profile& profile, const class EventBonus& event_bonus,
                     const EstimatorBase& estimator) const;
 
-  void FillSupportCards(std::span<const Card* const> sorted_pool);
+  void FillSupportCards(std::span<const Card* const> sorted_pool,
+                        WorldBloomVersion version = kDefaultWorldBloomVersion);
 
  private:
   int CardPowerContrib(const Card* card) const;
