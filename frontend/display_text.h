@@ -3,6 +3,7 @@
 #include <string>
 
 #include "sekai/db/proto/all.h"
+#include "sekai/proto/world_bloom.pb.h"
 
 namespace frontend {
 
@@ -16,5 +17,6 @@ std::string GetCharacterDisplayText(int char_id);
 std::string GetCharacterDisplayTextShort(int char_id);
 std::string GetUnitDisplayText(int unit_id);
 std::string GetUnitDisplayTextShort(int unit_id);
+std::string GetWorldBloomVersionDisplayText(sekai::WorldBloomVersion version);
 
 }  // namespace frontend

@@ -231,6 +231,7 @@ cc_library(
         "//sekai:event_bonus",
         "//sekai:profile",
         "//sekai:team",
+        "//sekai/proto:world_bloom_cc_proto",
         "@abseil-cpp//absl/log:absl_check",
         "@abseil-cpp//absl/time",
         "@indicators",

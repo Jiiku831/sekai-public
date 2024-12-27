@@ -207,7 +207,7 @@ std::vector<Team> SimulatedAnnealingTeamBuilder::RecommendTeamsImpl(
     if (new_team.has_value()) {
       ++stats_.teams_evaluated;
       if (!support_pool_.empty()) {
-        new_team->FillSupportCards(support_pool_);
+        new_team->FillSupportCards(support_pool_, opts_.world_bloom_version);
       }
       float new_val =
           objective(*new_team, profile, event_bonus, estimator,

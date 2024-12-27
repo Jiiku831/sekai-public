@@ -7,9 +7,11 @@
 
 #include "absl/time/time.h"
 #include "sekai/card.h"
+#include "sekai/config.h"
 #include "sekai/estimator_base.h"
 #include "sekai/event_bonus.h"
 #include "sekai/profile.h"
+#include "sekai/proto/world_bloom.pb.h"
 #include "sekai/team.h"
 #include "sekai/team_builder/constraints.h"
 #include "sekai/team_builder/neighbor_teams.h"
@@ -36,6 +38,8 @@ class SimulatedAnnealingTeamBuilder : public TeamBuilderBase {
     // When this is true, then constraints are not respected in the initial team. Which may result
     // in no teams.
     bool allow_repeat_chars = false;
+
+    WorldBloomVersion world_bloom_version = kDefaultWorldBloomVersion;
   };
   explicit SimulatedAnnealingTeamBuilder(
       OptimizationObjective obj = OptimizationObjective::kOptimizePoints)

@@ -38,6 +38,7 @@
 #include "sekai/proto/event_id.pb.h"
 #include "sekai/proto/profile.pb.h"
 #include "sekai/proto/team.pb.h"
+#include "sekai/proto/world_bloom.pb.h"
 #include "sekai/proto_util.h"
 #include "sekai/team.h"
 #include "sekai/team_builder/challenge_live_team_builder.h"
@@ -63,6 +64,7 @@ using ::sekai::SafeParseBinaryProto;
 using ::sekai::SafeParseTextProto;
 using ::sekai::SimpleEventBonus;
 using ::sekai::SimulatedAnnealingTeamBuilder;
+using ::sekai::WorldBloomVersion;
 using ::sekai::db::AreaItem;
 using ::sekai::db::Attr;
 using ::sekai::db::Card;
@@ -187,6 +189,10 @@ EM_JS(void, SetCustomEventChapterRadio, (int value), {
   document.getElementById(`custom-event-chapter-${value}`).checked = true;
 });
 
+EM_JS(void, SetCustomEventWorldBloomVersionRadio, (int value), {
+  document.getElementById(`custom-event-wl-version-${value}`).checked = true;
+});
+
 EM_JS(void, SetSelectedEventDropdown, (int event_id, int chapter_id), {
     document.querySelector(
         `#event-bonus-event-select option[data-event-id='${event_id}'][data-chapter-id='${chapter_id}']`).selected = true;
@@ -246,6 +252,7 @@ void ResetView() {
 
   SetCustomEventAttrRadio(0);
   SetCustomEventChapterRadio(0);
+  SetCustomEventWorldBloomVersionRadio(static_cast<int>(sekai::kDefaultWorldBloomVersion));
   for (const GameCharacter& game_char : MasterDb::GetAll<GameCharacter>()) {
     SetCustomEventCharacterCheckbox(game_char.id(), 0, false);
     if (sekai::LookupCharacterUnit(game_char.id()) == sekai::db::UNIT_VS) {
@@ -294,6 +301,9 @@ void ResetView(const ProfileProto& profile) {
   if (profile.custom_event().has_chapter_char_id()) {
     SetCustomEventChapterRadio(profile.custom_event().chapter_char_id());
   }
+  if (profile.has_world_bloom_version()) {
+    SetCustomEventWorldBloomVersionRadio(profile.world_bloom_version());
+  }
   for (const SimpleEventBonus::CharacterAndUnit& char_and_unit : profile.custom_event().chars()) {
     SetCustomEventCharacterCheckbox(char_and_unit.char_id(), static_cast<int>(char_and_unit.unit()),
                                     true);
@@ -332,6 +342,25 @@ sekai::Constraints MakeConstraints(const ProfileProto& profile) {
 
   constraints.SetMinLeadSkill(profile.min_lead_skill());
   return constraints;
+}
+
+WorldBloomVersion GetWorldBloomVersion(const ProfileProto& profile) {
+  if (profile.event_id().event_id() == 0) {
+    if (profile.world_bloom_version() != sekai::WORLD_BLOOM_VERSION_UNKNOWN) {
+      return profile.world_bloom_version();
+    } else {
+      return sekai::kDefaultWorldBloomVersion;
+    }
+  }
+  int version = 1;
+  for (int cutoff : sekai::kWorldBloomVersionCutoffs) {
+    if (profile.event_id().event_id() > cutoff) {
+      ++version;
+    }
+  }
+  ABSL_CHECK(sekai::WorldBloomVersion_IsValid(version));
+  ABSL_CHECK_GT(version, 0);
+  return static_cast<WorldBloomVersion>(version);
 }
 
 }  // namespace
@@ -635,6 +664,7 @@ void Controller::BuildEventTeam() {
   SimulatedAnnealingTeamBuilder builder{{
       .early_exit_steps = 2'000'000,
       .enable_progress = false,
+      .world_bloom_version = GetWorldBloomVersion(profile_proto_),
   }};
   builder.AddConstraints(constraints_);
 
@@ -689,7 +719,7 @@ void Controller::RefreshTeam(int team_index) const {
     cards.push_back(card);
   }
   sekai::Team team(cards);
-  team.FillSupportCards(profile_.sorted_support());
+  team.FillSupportCards(profile_.sorted_support(), GetWorldBloomVersion(profile_proto_));
   sekai::TeamProto team_proto = team.ToProto(profile_, event_bonus_, estimator());
   if (team.chars_present().count() == 1) {
     cl_estimator_.AnnotateTeamProto(profile_, event_bonus_, team, team_proto);
@@ -833,6 +863,15 @@ void Controller::SetCustomEventChapter(int char_id) {
   UpdateProfile();
 }
 
+void Controller::SetCustomEventWorldBloomVersion(int version) {
+  if (!sekai::WorldBloomVersion_IsValid(version) || version == 0) {
+    LOG(ERROR) << "Invalid version: " << version;
+    return;
+  }
+  profile_proto_.set_world_bloom_version(static_cast<WorldBloomVersion>(version));
+  UpdateProfile();
+}
+
 EMSCRIPTEN_BINDINGS(controller) {
   class_<Controller, base<ControllerBase>>("Controller")
       .constructor<>()
@@ -859,6 +898,7 @@ EMSCRIPTEN_BINDINGS(controller) {
       .function("SetCustomEventAttr", &Controller::SetCustomEventAttr)
       .function("SetCustomEventChapter", &Controller::SetCustomEventChapter)
       .function("SetCustomEventCharacter", &Controller::SetCustomEventCharacter)
+      .function("SetCustomEventWorldBloomVersion", &Controller::SetCustomEventWorldBloomVersion)
       .function("SetEventBonusByEvent", &Controller::SetEventBonusByEvent)
       .function("SetKizunaConstraint", &Controller::SetKizunaConstraint)
       .function("SetLeadConstraint", &Controller::SetLeadConstraint)
