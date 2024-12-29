@@ -140,7 +140,7 @@ std::vector<OptimizeExactPoints::ViableStrategy> OptimizeExactPoints::GetViableS
   std::vector<ViableStrategy> strategies;
   double max_team_score = SoloEbiMasEstimator().ExpectedValue(profile, event_bonus, team);
   const float team_event_bonus = team.EventBonus(event_bonus);
-  for (int i = kBoostMultipliers.size() - 1; i >= 0; --i) {
+  for (int i = 0; static_cast<std::size_t>(i) < kBoostMultipliers.size(); ++i) {
     if (target_ % kBoostMultipliers[i] != 0) {
       continue;
     }
