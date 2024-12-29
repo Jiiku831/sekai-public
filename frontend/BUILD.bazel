@@ -247,9 +247,11 @@ pkg_files(
 sass_binary(
     name = "styles",
     src = "styles.sass",
+    sourcemap_embed_sources = True,
 )
 
 sass_binary(
     name = "ohnyajii_css",
     src = "ohnyajii.sass",
+    sourcemap_embed_sources = True,
 )

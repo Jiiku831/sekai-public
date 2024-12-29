@@ -17,3 +17,40 @@ build:wasm \
   --cxxopt=-Wno-error=deprecated-pragma \
   --cxxopt=-Wno-error=unused-function \
   --cxxopt=-DBS_THREAD_POOL_DISABLE_EXCEPTION_HANDLING
+
+build:wasm-dbg \
+  --cxxopt=-O0 \
+  --linkopt=-O0 \
+  --cxxopt=-g \
+  --linkopt=-g \
+  --linkopt=-gsource-map \
+  --cxxopt=-std=c++20 \
+  --cxxopt=-Wno-error=deprecated-pragma \
+  --cxxopt=-Wno-error=unused-function \
+  --cxxopt=-DBS_THREAD_POOL_DISABLE_EXCEPTION_HANDLING \
+
+build:wasm-asan \
+  --cxxopt=-O0 \
+  --linkopt=-O0 \
+  --cxxopt=-g \
+  --linkopt=-g \
+  --linkopt=-gsource-map \
+  --cxxopt=-fsanitize=address \
+  --linkopt=-fsanitize=address \
+  --cxxopt=-std=c++20 \
+  --cxxopt=-Wno-error=deprecated-pragma \
+  --cxxopt=-Wno-error=unused-function \
+  --cxxopt=-DBS_THREAD_POOL_DISABLE_EXCEPTION_HANDLING
+
+build:wasm-ubsan \
+  --cxxopt=-O0 \
+  --linkopt=-O0 \
+  --cxxopt=-g \
+  --linkopt=-g \
+  --linkopt=-gsource-map \
+  --cxxopt=-fsanitize=undefined \
+  --linkopt=-fsanitize=undefined \
+  --cxxopt=-std=c++20 \
+  --cxxopt=-Wno-error=deprecated-pragma \
+  --cxxopt=-Wno-error=unused-function \
+  --cxxopt=-DBS_THREAD_POOL_DISABLE_EXCEPTION_HANDLING
