@@ -84,7 +84,7 @@ OptimizeExactPoints::OptimizeExactPoints(int target) : target_(target) {
   }
 
   for (int eb = 0; eb < kMaxEventBonus; ++eb) {
-    for (int score = 0; score < kMaxPower; score += kScoreStep) {
+    for (int score = 0; score < kMaxScore; score += kScoreStep) {
       const int point = BaseEp(score, eb);
       auto min_multiplier = min_multiplier_pts.find(point);
       if (min_multiplier != min_multiplier_pts.end()) {
@@ -123,18 +123,15 @@ ObjectiveFunction OptimizeExactPoints::GetObjectiveFunction() const {
     int min_score = min_score_.at(closest_viable_eb);
     double max_team_score =
         SoloEbiMasEstimator().MaxExpectedValue(profile, event_bonus, team, lead_chars);
-    int eb_penalty = 100 * std::abs(closest_viable_eb - team_event_bonus);
-    int score_penalty = std::max(0.0, kMinScoreMargin + min_score - max_team_score);
+    // Optimize to ensure that event bonus is exact and team score is at least the minimum needed.
+    int eb_penalty = std::abs(closest_viable_eb - team_event_bonus);
+    double score_penalty = std::max(0.0, min_score - max_team_score) / 1000;
 
     if (eb_penalty + score_penalty > 0) {
-      return -100 * static_cast<double>(eb_penalty + score_penalty);
+      return -1.0 * (eb_penalty + score_penalty);
     }
 
-    double score_bonus =
-        min_score <= 0 ? 100.0 : 100.0 * (max_team_score - min_score) / max_team_score;
-    double boost_bonus = kBoostMultipliers.size() - min_multiplier_.at(closest_viable_eb);
-
-    return score_bonus + boost_bonus * 1000;
+    return min_score <= 0 ? 100.0 : 100.0 * (max_team_score - min_score) / max_team_score;
   };
 }
 

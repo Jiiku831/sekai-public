@@ -293,6 +293,10 @@ TeamBuilderContext CreateTeamBuilderContext() {
   default_event_context.set_selected(true);
 
   for (const Event& event : MasterDb::GetAll<Event>()) {
+    std::string event_name = event.name();
+    if (absl::FromUnixMillis(event.start_at()) > absl::Now()) {
+      event_name = "TBA (Spoiler Warning)";
+    }
     if (event.event_type() == Event::WORLD_BLOOM) {
       for (const WorldBloom* world_bloom : MasterDb::FindAll<WorldBloom>(event.id())) {
         auto character = MasterDb::FindFirst<GameCharacter>(world_bloom->game_character_id());
@@ -300,7 +304,7 @@ TeamBuilderContext CreateTeamBuilderContext() {
         event_context.set_event_id(event.id());
         event_context.set_chapter_id(world_bloom->chapter_no());
         event_context.set_display_text(absl::StrFormat("%d-%d - %s - %s", event.id(),
-                                                       world_bloom->chapter_no(), event.name(),
+                                                       world_bloom->chapter_no(), event_name,
                                                        character.given_name()));
         event_context.set_event_str(
             absl::StrFormat("%d-%d", event.id(), world_bloom->chapter_no()));
@@ -308,7 +312,7 @@ TeamBuilderContext CreateTeamBuilderContext() {
     } else {
       TeamBuilderContext::EventContext& event_context = *context.add_events();
       event_context.set_event_id(event.id());
-      event_context.set_display_text(absl::StrFormat("%d - %s", event.id(), event.name()));
+      event_context.set_display_text(absl::StrFormat("%d - %s", event.id(), event_name));
       event_context.set_event_str(std::to_string(event.id()));
     }
   }
