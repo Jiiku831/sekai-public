@@ -25,6 +25,12 @@
       stats. Enter card ID in the table above to add to team.
     </p>
 
+    <ul>
+      <li>
+        Slot 2 is special in that it will never have support cards added.
+      </li>
+    </ul>
+
     <p>
       <b>Other instances</b>:&nbsp;
       <a href="https://jiiku.pages.dev/sajii" target="_blank">JP Server</a>&nbsp;&middot;&nbsp;
@@ -102,6 +108,20 @@
 
         <input type="button" value="Recommend Event Team (Slot 0)" onclick="controller.BuildEventTeam();">
         <input type="button" value="Recommend Challenge Live Team (Slot 1)" onclick="BuildChallengeLiveTeam();">
+        <br>
+        <input type="button" value="Recommend Parking Team (Slot 2)" onclick="controller.BuildParkingTeam(false);">
+        <input type="button" value="Recommend Parking Team Ignoring Constraints (Slot 2)" onclick="controller.BuildParkingTeam(true);">
+        <input type="number" placeholder="Target Points" style="width: 7em;" min="100" step="1"
+               pattern="[0-9]" onchange="SetTargetPoints(this);">
+
+        <p>
+          <small class="new">
+            The parking team feature is new and experimental! Please cross
+            check with other sources or do a few test runs to ensure accuracy
+            before you commit to your final park. Report any inaccuracies you
+            find.
+          </small>
+        </p>
 
         <div id="team-recommender-output">
         </div>

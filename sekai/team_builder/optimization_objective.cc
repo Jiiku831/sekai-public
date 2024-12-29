@@ -1,13 +1,20 @@
 #include "sekai/team_builder/optimization_objective.h"
 
+#include <algorithm>
+#include <cmath>
 #include <limits>
 
 #include "absl/base/no_destructor.h"
+#include "absl/container/flat_hash_map.h"
 #include "absl/log/absl_check.h"
+#include "absl/log/log.h"
 #include "sekai/bitset.h"
+#include "sekai/challenge_live_estimator.h"
+#include "sekai/config.h"
 #include "sekai/estimator_base.h"
 #include "sekai/event_bonus.h"
 #include "sekai/profile.h"
+#include "sekai/proto/team.pb.h"
 #include "sekai/team.h"
 
 namespace sekai {
@@ -56,6 +63,123 @@ ObjectiveFunction OptimizeSkill::GetObjectiveFunction() const {
 const OptimizationObjective& OptimizeSkill::Get() {
   static const absl::NoDestructor<OptimizeSkill> kObj;
   return *kObj;
+}
+
+int OptimizeExactPoints::BaseEp(int score, double eb) {
+  return static_cast<int>(kBaseFactor * (100 + static_cast<int>(score / kScoreStep)) *
+                          (10000 + static_cast<int>(eb * 100)) / 1000'000.00);
+}
+
+OptimizeExactPoints::OptimizeExactPoints(int target) : target_(target) {
+  absl::flat_hash_map<int, int> min_multiplier_pts;
+  for (int i = kBoostMultipliers.size() - 1; i >= 0; --i) {
+    if (target % kBoostMultipliers[i] != 0) {
+      continue;
+    }
+    int base_target = target / kBoostMultipliers[i];
+    if (base_target < 100) {
+      continue;
+    }
+    min_multiplier_pts[base_target] = i;
+  }
+
+  for (int eb = 0; eb < kMaxEventBonus; ++eb) {
+    for (int score = 0; score < kMaxPower; score += kScoreStep) {
+      const int point = BaseEp(score, eb);
+      auto min_multiplier = min_multiplier_pts.find(point);
+      if (min_multiplier != min_multiplier_pts.end()) {
+        viable_bonuses_.push_back(eb);
+        min_score_[eb] = score;
+        min_multiplier_[eb] = min_multiplier->second;
+        break;
+      }
+    }
+  }
+}
+
+ObjectiveFunction OptimizeExactPoints::GetObjectiveFunction() const {
+  return [this](const Team& team, const Profile& profile, const EventBonus& event_bonus,
+                const EstimatorBase& estimator, Character lead_chars) -> double {
+    if (viable_bonuses_.empty()) {
+      return -std::numeric_limits<double>::infinity();
+    }
+    const float team_event_bonus = team.EventBonus(event_bonus);
+    const auto eb_lb =
+        std::lower_bound(viable_bonuses_.begin(), viable_bonuses_.end(), team_event_bonus);
+    int closest_viable_eb = viable_bonuses_.front();
+    if (eb_lb != viable_bonuses_.end()) {
+      // Otherwise, all viable bonuses are greater than the team event bonus.
+      // So the closest is the first value.
+      const auto eb_ub = std::next(eb_lb);
+      if (eb_ub == viable_bonuses_.end()) {
+        closest_viable_eb = *eb_lb;
+      } else {
+        int dist_to_lb = team_event_bonus - *eb_lb;
+        int dist_to_ub = *eb_ub - team_event_bonus;
+        closest_viable_eb = dist_to_lb < dist_to_ub ? *eb_lb : *eb_ub;
+      }
+    }
+
+    int min_score = min_score_.at(closest_viable_eb);
+    double max_team_score =
+        SoloEbiMasEstimator().MaxExpectedValue(profile, event_bonus, team, lead_chars);
+    int eb_penalty = 100 * std::abs(closest_viable_eb - team_event_bonus);
+    int score_penalty = std::max(0.0, kMinScoreMargin + min_score - max_team_score);
+
+    if (eb_penalty + score_penalty > 0) {
+      return -100 * static_cast<double>(eb_penalty + score_penalty);
+    }
+
+    double score_bonus =
+        min_score <= 0 ? 100.0 : 100.0 * (max_team_score - min_score) / max_team_score;
+    double boost_bonus = kBoostMultipliers.size() - min_multiplier_.at(closest_viable_eb);
+
+    return score_bonus + boost_bonus * 1000;
+  };
+}
+
+std::vector<OptimizeExactPoints::ViableStrategy> OptimizeExactPoints::GetViableStrategies(
+    const Team& team, const Profile& profile, const EventBonus& event_bonus) const {
+  std::vector<ViableStrategy> strategies;
+  double max_team_score = SoloEbiMasEstimator().ExpectedValue(profile, event_bonus, team);
+  const float team_event_bonus = team.EventBonus(event_bonus);
+  for (int i = kBoostMultipliers.size() - 1; i >= 0; --i) {
+    if (target_ % kBoostMultipliers[i] != 0) {
+      continue;
+    }
+    int base_target = target_ / kBoostMultipliers[i];
+    for (int score = 0; score < max_team_score; score += kScoreStep) {
+      if (BaseEp(score, team_event_bonus) == base_target) {
+        strategies.push_back({
+            .boost = i,
+            .multiplier = kBoostMultipliers[i],
+            .base_ep = base_target,
+            .ep = target_,
+            .score_lb = score,
+            .score_ub = score + kScoreStep - 1,
+        });
+      }
+    }
+  }
+  return strategies;
+}
+
+void OptimizeExactPoints::AnnotateTeamProto(const Team& team, const Profile& profile,
+                                            const EventBonus& event_bonus,
+                                            TeamProto& team_proto) const {
+  std::vector<ViableStrategy> strategies = GetViableStrategies(team, profile, event_bonus);
+  team_proto.set_target_ep(target_);
+  team_proto.set_max_solo_ebi_score(
+      SoloEbiMasEstimator().ExpectedValue(profile, event_bonus, team));
+  for (const ViableStrategy& strategy : strategies) {
+    ParkingStrategy& strategy_proto = *team_proto.add_parking_strategies();
+    strategy_proto.set_boost(strategy.boost);
+    strategy_proto.set_multiplier(strategy.multiplier);
+    strategy_proto.set_base_ep(strategy.base_ep);
+    strategy_proto.set_total_ep(strategy.ep);
+    strategy_proto.set_score_lb(strategy.score_lb);
+    strategy_proto.set_score_ub(strategy.score_ub);
+  }
 }
 
 ObjectiveFunction GetObjectiveFunction(const OptimizationObjective& obj) {

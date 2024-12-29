@@ -267,6 +267,20 @@ TeamContext CreateTeamContext(const sekai::TeamProto& team) {
     context.set_support_bonus(team.support_bonus());
     context.set_main_bonus(team.main_bonus());
   }
+  if (team.has_target_ep()) {
+    ParkingContext& parking_context = *context.mutable_parking_details();
+    parking_context.set_target(team.target_ep());
+    parking_context.set_max_score(team.max_solo_ebi_score());
+    for (const sekai::ParkingStrategy& strategy : team.parking_strategies()) {
+      ParkingStrategyContext& strategy_context = *parking_context.add_strategies();
+      strategy_context.set_boost(strategy.boost());
+      strategy_context.set_multiplier(strategy.multiplier());
+      strategy_context.set_base_ep(strategy.base_ep());
+      strategy_context.set_total_ep(strategy.total_ep());
+      strategy_context.set_score_lb(strategy.score_lb());
+      strategy_context.set_score_ub(strategy.score_ub());
+    }
+  }
   return context;
 }
 

@@ -23,6 +23,7 @@ class ChallengeLiveSongEstimator {
 class ChallengeLiveEstimator : public EstimatorBase {
  public:
   ChallengeLiveEstimator();
+  ChallengeLiveEstimator(std::span<absl::Nonnull<const db::MusicMeta* const>> songs);
   double ExpectedValue(const Profile& profile, const EventBonus& event_bonus,
                        const Team& team) const override;
   double MaxExpectedValue(const Profile& profile, const EventBonus& event_bonus, const Team& team,
@@ -41,5 +42,7 @@ class ChallengeLiveEstimator : public EstimatorBase {
   ValueDetail ExpectedValueImpl(const Profile& profile, const EventBonus& event_bonus,
                                 const Team& team) const;
 };
+
+const ChallengeLiveEstimator& SoloEbiMasEstimator();
 
 }  // namespace sekai

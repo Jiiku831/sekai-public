@@ -27,6 +27,7 @@
 #include "sekai/array_size.h"
 #include "sekai/bitset.h"
 #include "sekai/card.h"
+#include "sekai/challenge_live_estimator.h"
 #include "sekai/character.h"
 #include "sekai/config.h"
 #include "sekai/db/master_db.h"
@@ -42,6 +43,7 @@
 #include "sekai/proto_util.h"
 #include "sekai/team.h"
 #include "sekai/team_builder/challenge_live_team_builder.h"
+#include "sekai/team_builder/optimization_objective.h"
 #include "sekai/team_builder/simulated_annealing_team_builder.h"
 
 ABSL_DECLARE_FLAG(float, subunitless_offset);
@@ -58,6 +60,7 @@ using ::sekai::CharacterArraySize;
 using ::sekai::CreateMaxCardState;
 using ::sekai::EventBonus;
 using ::sekai::EventId;
+using ::sekai::OptimizeExactPoints;
 using ::sekai::ProfileProto;
 using ::sekai::ReadBinaryProtoFile;
 using ::sekai::SafeParseBinaryProto;
@@ -719,8 +722,14 @@ void Controller::RefreshTeam(int team_index) const {
     cards.push_back(card);
   }
   sekai::Team team(cards);
-  team.FillSupportCards(profile_.sorted_support(), GetWorldBloomVersion(profile_proto_));
+  if (team_index != 2) {
+    team.FillSupportCards(profile_.sorted_support(), GetWorldBloomVersion(profile_proto_));
+  }
   sekai::TeamProto team_proto = team.ToProto(profile_, event_bonus_, estimator());
+  if (target_points_.has_value()) {
+    OptimizeExactPoints objective = UnsafeGetParkingObjective();
+    objective.AnnotateTeamProto(team, profile_, event_bonus_, team_proto);
+  }
   if (team.chars_present().count() == 1) {
     cl_estimator_.AnnotateTeamProto(profile_, event_bonus_, team, team_proto);
   }
@@ -872,11 +881,65 @@ void Controller::SetCustomEventWorldBloomVersion(int version) {
   UpdateProfile();
 }
 
+void Controller::SetTargetPoints(int value) {
+  if (value == 0) {
+    target_points_ = std::nullopt;
+  } else {
+    target_points_ = value;
+  }
+  RefreshTeams();
+}
+
+sekai::OptimizeExactPoints Controller::UnsafeGetParkingObjective() const {
+  return {target_points_.value()};
+}
+
+void Controller::BuildParkingTeam(bool ignore_constraints) {
+  constexpr int kTeamBuilderOutputSlot = 2;
+  teams_[kTeamBuilderOutputSlot].fill(0);
+  if (!target_points_.has_value()) {
+    SetTeamBuilderOutput("ERROR: no target points set");
+    return;
+  }
+
+  OptimizeExactPoints objective = UnsafeGetParkingObjective();
+  SimulatedAnnealingTeamBuilder builder{{
+                                            .early_exit_steps = 2'000'000,
+                                            .enable_progress = false,
+                                            .disable_support = true,
+                                        },
+                                        objective};
+  if (!ignore_constraints) {
+    builder.AddConstraints(constraints_);
+  }
+
+  std::vector<sekai::Team> teams =
+      builder.RecommendTeams(profile_.CardPtrs(), profile_, event_bonus_, estimator());
+  sekai::Character all_chars;
+  all_chars.set();
+  if (teams.empty()) {
+    SetTeamBuilderOutput("WARNING: no teams built.");
+  } else if (objective.GetObjectiveFunction()(teams[0], profile_, event_bonus_, estimator(),
+                                              all_chars) < 0) {
+    SetTeamBuilderOutput("WARNING: no viable teams.");
+  } else {
+    teams[0].ReorderTeamForOptimalSkillValue(builder.constraints());
+    for (int i = 0; i < kTeamSize; ++i) {
+      teams_[kTeamBuilderOutputSlot][i] =
+          i < teams[0].cards().size() ? teams[0].cards()[i]->card_id() : 0;
+      SetTeamCardId(kTeamBuilderOutputSlot, i, teams_[kTeamBuilderOutputSlot][i]);
+    }
+    SetTeamBuilderOutput("Done.");
+  }
+  RefreshTeam(kTeamBuilderOutputSlot);
+}
+
 EMSCRIPTEN_BINDINGS(controller) {
   class_<Controller, base<ControllerBase>>("Controller")
       .constructor<>()
       .function("BuildChallengeLiveTeam", &Controller::BuildChallengeLiveTeam)
       .function("BuildEventTeam", &Controller::BuildEventTeam)
+      .function("BuildParkingTeam", &Controller::BuildParkingTeam)
       .function("ClearTeamCard", &Controller::ClearTeamCard)
       .function("ImportCardsFromCsv", &Controller::ImportCardsFromCsv)
       .function("ImportDataFromProto", &Controller::ImportDataFromProto)
@@ -906,6 +969,7 @@ EMSCRIPTEN_BINDINGS(controller) {
       .function("SetOwnedCardsFilterState", &Controller::SetOwnedCardsFilterState)
       .function("SetRarityFilterState", &Controller::SetRarityFilterState)
       .function("SetRarityConstraint", &Controller::SetRarityConstraint)
+      .function("SetTargetPoints", &Controller::SetTargetPoints)
       .function("SetTeamCard", &Controller::SetTeamCard)
       .function("SetTitleBonus", &Controller::SetTitleBonus)
       .function("SetUnreleasedContentFilterState", &Controller::SetUnreleasedContentFilterState)

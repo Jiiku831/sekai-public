@@ -5,6 +5,7 @@ const kMaxSupportTeamSize = 20;
 function InitPage () {
   CreateTeamBuilder(0);
   CreateTeamBuilder(1);
+  CreateTeamBuilder(2);
   controller = new Module.Controller();
   console.log("Ready.");
 }
@@ -715,11 +716,21 @@ function CreateTeamBuilder(index) {
   statsTd.classList.add("team-builder-stats-cell");
   const statsNode = document.createElement("pre");
   statsTd.rowSpan = 3;
-  statsTd.colSpan = 3;
+  statsTd.colSpan = 4;
   statsNode.id = `team-builder-${index}-stats`;
   statsNode.classList.add("team-builder-stats");
   statsTd.appendChild(statsNode);
   inputRow.appendChild(statsTd);
+
+  const parkingTd = document.createElement("td");
+  parkingTd.classList.add("team-builder-parking-cell");
+  const parkingNode = document.createElement("pre");
+  parkingTd.rowSpan = 3;
+  parkingTd.colSpan = 6;
+  parkingNode.id = `team-builder-${index}-parking`;
+  parkingNode.classList.add("team-builder-parking");
+  parkingTd.appendChild(parkingNode);
+  inputRow.appendChild(parkingTd);
 
   const supportRow = document.createElement("tr");
   const supportHeader = CreateNode("th", document.createTextNode("Support"));
@@ -750,26 +761,51 @@ function CreateTeamBuilder(index) {
 function RenderTeamImpl(teamIndex, context) {
   const statsNode = document.getElementById(`team-builder-${teamIndex}-stats`);
   statsNode.innerText =
-    `Power:         ${context.power}\n` +
-    `- Base:        ${context.powerDetailed[0]}\n` +
-    `- Area Item:   ${context.powerDetailed[1]}\n` +
-    `- Char Rank:   ${context.powerDetailed[2]}\n` +
-    `- Titles:      ${context.powerDetailed[3]}\n` +
-    `Skill Value:   ${context.skillValue}%\n` +
-    `Event Bonus:   ${context.eventBonus}%\n` +
-    `Est. EP:       ${context.expectedEp}\n`;
+    `Power:         ${context.power.toLocaleString().padStart(7)}\n` +
+    `- Base:        ${context.powerDetailed[0].toLocaleString().padStart(7)}\n` +
+    `- Area Item:   ${context.powerDetailed[1].toLocaleString().padStart(7)}\n` +
+    `- Char Rank:   ${context.powerDetailed[2].toLocaleString().padStart(7)}\n` +
+    `- Titles:      ${context.powerDetailed[3].toLocaleString().padStart(7)}\n` +
+    `Skill Value:   ${context.skillValue.toLocaleString().padStart(6)}%\n` +
+    `Event Bonus:   ${context.eventBonus.toLocaleString().padStart(6)}%\n` +
+    `Est. EP:       ${context.expectedEp.toLocaleString().padStart(7)}\n`;
   if (context.supportBonus) {
     statsNode.innerText +=
       `\nEvent Bonus Breakdown\n` +
-      `Main Bonus:    ${context.mainBonus}%\n` +
-      `Support Bonus: ${context.supportBonus}%\n` +
-      `Total Bonus:   ${context.eventBonus}%\n`;
+      `Main Bonus:    ${context.mainBonus.toLocaleString().padStart(6)}%\n` +
+      `Support Bonus: ${context.supportBonus.toLocaleString().padStart(6)}%\n` +
+      `Total Bonus:   ${context.eventBonus.toLocaleString().padStart(6)}%\n`;
   }
+  const parkingNode = document.getElementById(`team-builder-${teamIndex}-parking`);
+  parkingNode.innerText = "";
   if (context.expectedScore) {
-    statsNode.innerText +=
-      `\nChallenge Live Details\n` +
-      `Est. CL Score: ${context.expectedScore}\n` +
+    parkingNode.innerText +=
+      `Challenge Live Details\n` +
+      `Est. CL Score: ${context.expectedScore.toLocaleString().padStart(9)}\n` +
       `Best CL Song:  ${context.bestSongName}\n`;
+  }
+  if (context.parkingDetails) {
+    if (parkingNode.innerText != "") {
+      parkingNode.innerText += "\n";
+    }
+    parkingNode.innerText +=
+      `Target EP: ${context.parkingDetails.target}\n`;
+    if (context.parkingDetails.strategies) {
+      parkingNode.innerText += "\nCan           Score Range    EP    ";
+      parkingNode.innerText += "\n-----------------------------------\n";
+      Array.from(context.parkingDetails.strategies).forEach((s) => {
+        const boost = String(s.boost).padStart(2);
+        const range = `${s.scoreLb.toLocaleString().padStart(9)} ~ ${s.scoreUb.toLocaleString().padStart(9)}`;
+        const ep = s.baseEp.toLocaleString().padStart(5);
+        const mult = `x${s.multiplier}`.padStart(3);
+        parkingNode.innerText += `${boost}x ${range} ${ep} ${mult}\n`;
+      });
+
+      parkingNode.innerText += `\nMax Solo Ebi Score: ${context.parkingDetails.maxScore.toLocaleString()}`;
+
+    } else {
+      parkingNode.innerText += "\nNot Viable.";
+    }
   }
   let offset = 0;
   for (let i = 0; i < 5; ++i) {
@@ -868,4 +904,23 @@ function BuildChallengeLiveTeam() {
       "No character selected for challenge live.";
   }
   controller.BuildChallengeLiveTeam(parseInt(selected.value));
+}
+
+function SetTargetPoints(e) {
+  if (!e.validity.valid) {
+    return;
+  }
+
+  const value = parseInt(e.value);
+  if (value < 100) {
+    e.setCustomValidity(
+      "Invalid target point value (must be whole number at least 100)");
+    return;
+  }
+
+  if (e.value == "") {
+    controller.SetTargetPoints(0);
+  } else {
+    controller.SetTargetPoints(value);
+  }
 }

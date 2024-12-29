@@ -22,6 +22,8 @@ inline constexpr float kReferenceScoreBoostCap = 140.0;
 
 inline constexpr int kMaxCharacterRank = 160;
 
+inline constexpr std::array kBoostMultipliers = {1, 5, 10, 15, 20, 25, 27, 29, 31, 33, 35};
+
 inline constexpr WorldBloomVersion kDefaultWorldBloomVersion = WORLD_BLOOM_VERSION_2;
 inline constexpr std::array kWorldBloomVersionCutoffs = {152};
 

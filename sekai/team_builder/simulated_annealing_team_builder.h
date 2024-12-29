@@ -40,6 +40,8 @@ class SimulatedAnnealingTeamBuilder : public TeamBuilderBase {
     bool allow_repeat_chars = false;
 
     WorldBloomVersion world_bloom_version = kDefaultWorldBloomVersion;
+
+    bool disable_support = false;
   };
   explicit SimulatedAnnealingTeamBuilder(const OptimizationObjective& obj = OptimizePoints::Get())
       : obj_(obj) {}

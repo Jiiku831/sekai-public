@@ -56,18 +56,34 @@ message CardContext {
   optional string alt_thumbnail_url_128 = 18;
 }
 
+message ParkingStrategyContext {
+  optional int32 boost      = 1;
+  optional int32 multiplier = 2;
+  optional int32 base_ep    = 3;
+  optional int32 total_ep   = 4;
+  optional int32 score_lb   = 5;
+  optional int32 score_ub   = 6;
+}
+
+message ParkingContext {
+  optional int32 target                      = 1;
+  optional int32 max_score                   = 2;
+  repeated ParkingStrategyContext strategies = 3;
+}
+
 message TeamContext {
-  repeated CardContext cards         = 1;
-  optional int32 power               = 2;
-  repeated int32 power_detailed      = 3;
-  optional float skill_value         = 4;
-  optional float event_bonus         = 5;
-  optional int32 expected_ep         = 6;
-  optional int32 expected_score      = 7;
-  optional string best_song_name     = 8;
-  repeated CardContext support_cards = 9;
-  optional float main_bonus          = 10;
-  optional float support_bonus       = 11;
+  repeated CardContext cards              = 1;
+  optional int32 power                    = 2;
+  repeated int32 power_detailed           = 3;
+  optional float skill_value              = 4;
+  optional float event_bonus              = 5;
+  optional int32 expected_ep              = 6;
+  optional int32 expected_score           = 7;
+  optional string best_song_name          = 8;
+  repeated CardContext support_cards      = 9;
+  optional float main_bonus               = 10;
+  optional float support_bonus            = 11;
+  optional ParkingContext parking_details = 12;
 }
 
 message ListFilter {
