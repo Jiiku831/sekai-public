@@ -41,16 +41,15 @@ class SimulatedAnnealingTeamBuilder : public TeamBuilderBase {
 
     WorldBloomVersion world_bloom_version = kDefaultWorldBloomVersion;
   };
-  explicit SimulatedAnnealingTeamBuilder(
-      OptimizationObjective obj = OptimizationObjective::kOptimizePoints)
+  explicit SimulatedAnnealingTeamBuilder(const OptimizationObjective& obj = OptimizePoints::Get())
       : obj_(obj) {}
-  explicit SimulatedAnnealingTeamBuilder(
-      const Options& options, OptimizationObjective obj = OptimizationObjective::kOptimizePoints)
+  explicit SimulatedAnnealingTeamBuilder(const Options& options,
+                                         const OptimizationObjective& obj = OptimizePoints::Get())
       : opts_(options), obj_(obj) {}
 
  protected:
   Options opts_;
-  OptimizationObjective obj_;
+  const OptimizationObjective& obj_;
 
   std::vector<Team> RecommendTeamsImpl(std::span<const Card* const> pool, const Profile& profile,
                                        const EventBonus& event_bonus,
@@ -61,19 +60,19 @@ class SimulatedAnnealingTeamBuilder : public TeamBuilderBase {
 class SimulatedAnnealingPowerTeamBuilder : public SimulatedAnnealingTeamBuilder {
  public:
   explicit SimulatedAnnealingPowerTeamBuilder()
-      : SimulatedAnnealingTeamBuilder(OptimizationObjective::kOptimizePower) {}
+      : SimulatedAnnealingTeamBuilder(OptimizePower::Get()) {}
 };
 
 class SimulatedAnnealingBonusTeamBuilder : public SimulatedAnnealingTeamBuilder {
  public:
   explicit SimulatedAnnealingBonusTeamBuilder()
-      : SimulatedAnnealingTeamBuilder(OptimizationObjective::kOptimizeBonus) {}
+      : SimulatedAnnealingTeamBuilder(OptimizeBonus::Get()) {}
 };
 
 class SimulatedAnnealingSkillTeamBuilder : public SimulatedAnnealingTeamBuilder {
  public:
   explicit SimulatedAnnealingSkillTeamBuilder()
-      : SimulatedAnnealingTeamBuilder(OptimizationObjective::kOptimizeSkill) {}
+      : SimulatedAnnealingTeamBuilder(OptimizeSkill::Get()) {}
 };
 
 }  // namespace sekai

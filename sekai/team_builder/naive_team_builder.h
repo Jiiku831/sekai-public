@@ -17,11 +17,10 @@ namespace sekai {
 
 class NaiveTeamBuilder : public TeamBuilderBase {
  public:
-  explicit NaiveTeamBuilder(OptimizationObjective obj = OptimizationObjective::kOptimizePoints)
-      : obj_(obj) {}
+  explicit NaiveTeamBuilder(const OptimizationObjective& obj = OptimizePoints::Get()) : obj_(obj) {}
 
  protected:
-  OptimizationObjective obj_;
+  const OptimizationObjective& obj_;
 
   std::vector<Team> RecommendTeamsImpl(std::span<const Card* const> pool, const Profile& profile,
                                        const EventBonus& event_bonus,
@@ -31,17 +30,17 @@ class NaiveTeamBuilder : public TeamBuilderBase {
 
 class NaivePowerTeamBuilder : public NaiveTeamBuilder {
  public:
-  explicit NaivePowerTeamBuilder() : NaiveTeamBuilder(OptimizationObjective::kOptimizePower) {}
+  explicit NaivePowerTeamBuilder() : NaiveTeamBuilder(OptimizePower::Get()) {}
 };
 
 class NaiveBonusTeamBuilder : public NaiveTeamBuilder {
  public:
-  explicit NaiveBonusTeamBuilder() : NaiveTeamBuilder(OptimizationObjective::kOptimizeBonus) {}
+  explicit NaiveBonusTeamBuilder() : NaiveTeamBuilder(OptimizeBonus::Get()) {}
 };
 
 class NaiveSkillTeamBuilder : public NaiveTeamBuilder {
  public:
-  explicit NaiveSkillTeamBuilder() : NaiveTeamBuilder(OptimizationObjective::kOptimizeSkill) {}
+  explicit NaiveSkillTeamBuilder() : NaiveTeamBuilder(OptimizeSkill::Get()) {}
 };
 
 }  // namespace sekai

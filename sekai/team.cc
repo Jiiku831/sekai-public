@@ -253,7 +253,9 @@ void Team::FillSupportCards(std::span<const Card* const> sorted_pool, WorldBloom
     cards_present.set(card->card_id());
   }
   for (std::size_t i = 0;
-       i < sorted_pool.size() && support_cards_.size() < wl_config.support_team_size(); ++i) {
+       i < sorted_pool.size() &&
+       support_cards_.size() < static_cast<std::size_t>(wl_config.support_team_size());
+       ++i) {
     const Card* candidate_card = sorted_pool[i];
     if (cards_present.test(candidate_card->card_id())) {
       continue;

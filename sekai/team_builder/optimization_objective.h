@@ -10,16 +10,52 @@
 
 namespace sekai {
 
-enum class OptimizationObjective {
-  kOptimizePoints,
-  kOptimizePower,
-  kOptimizeBonus,
-  kOptimizeSkill,
-};
-
 using ObjectiveFunction = absl::AnyInvocable<double(const Team&, const Profile&, const EventBonus&,
                                                     const EstimatorBase&, Character) const>;
 
-ObjectiveFunction GetObjectiveFunction(OptimizationObjective obj);
+class OptimizationObjective {
+ public:
+  ~OptimizationObjective() = default;
+
+  virtual ObjectiveFunction GetObjectiveFunction() const = 0;
+};
+
+class OptimizePoints : public OptimizationObjective {
+ public:
+  OptimizePoints() = default;
+
+  ObjectiveFunction GetObjectiveFunction() const override;
+
+  static const OptimizationObjective& Get();
+};
+
+class OptimizePower : public OptimizationObjective {
+ public:
+  OptimizePower() = default;
+
+  ObjectiveFunction GetObjectiveFunction() const override;
+
+  static const OptimizationObjective& Get();
+};
+
+class OptimizeBonus : public OptimizationObjective {
+ public:
+  OptimizeBonus() = default;
+
+  ObjectiveFunction GetObjectiveFunction() const override;
+
+  static const OptimizationObjective& Get();
+};
+
+class OptimizeSkill : public OptimizationObjective {
+ public:
+  OptimizeSkill() = default;
+
+  ObjectiveFunction GetObjectiveFunction() const override;
+
+  static const OptimizationObjective& Get();
+};
+
+ObjectiveFunction GetObjectiveFunction(const OptimizationObjective& obj);
 
 }  // namespace sekai

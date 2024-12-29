@@ -263,6 +263,8 @@ cc_library(
         "//sekai:profile",
         "//sekai:team",
         "@abseil-cpp//absl/functional:any_invocable",
+        "@abseil-cpp//absl/log",
+        "@abseil-cpp//absl/log:absl_check",
     ],
 )
 

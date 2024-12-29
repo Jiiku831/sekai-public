@@ -18,10 +18,10 @@ namespace sekai {
 // Returns the first feasible team.
 class GreedyTeamBuilder : public TeamBuilderBase {
  public:
-  GreedyTeamBuilder(OptimizationObjective obj) : obj_(obj) {}
+  GreedyTeamBuilder(const OptimizationObjective& obj) : obj_(obj) {}
 
  private:
-  OptimizationObjective obj_;
+  const OptimizationObjective& obj_;
 
   // Assumes that the pool is already sorted.
   std::vector<Team> RecommendTeamsImpl(std::span<const Card* const> pool, const Profile& profile,
