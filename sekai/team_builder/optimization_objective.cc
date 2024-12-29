@@ -124,7 +124,7 @@ ObjectiveFunction OptimizeExactPoints::GetObjectiveFunction() const {
     double max_team_score =
         SoloEbiMasEstimator().MaxExpectedValue(profile, event_bonus, team, lead_chars);
     // Optimize to ensure that event bonus is exact and team score is at least the minimum needed.
-    int eb_penalty = std::abs(closest_viable_eb - team_event_bonus);
+    double eb_penalty = 10 * std::abs(closest_viable_eb - team_event_bonus);
     double score_penalty = std::max(0.0, min_score - max_team_score) / 1000;
 
     if (eb_penalty + score_penalty > 0) {
