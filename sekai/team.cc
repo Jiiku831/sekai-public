@@ -14,6 +14,7 @@
 #include "sekai/db/master_db.h"
 #include "sekai/db/proto/all.h"
 #include "sekai/event_bonus.h"
+#include "sekai/points.h"
 #include "sekai/profile.h"
 #include "sekai/proto/card.pb.h"
 #include "sekai/proto/team.pb.h"
@@ -21,6 +22,9 @@
 #include "sekai/unit_count.h"
 
 namespace sekai {
+
+// Forward decls from challenge_live_estimator.h
+const EstimatorBase& SoloEbiMasEstimator();
 
 Team::Team(std::span<const Card* const> cards) {
   cards_.reserve(cards.size());
@@ -263,6 +267,20 @@ void Team::FillSupportCards(std::span<const Card* const> sorted_pool, WorldBloom
     support_cards_.push_back(candidate_card);
     support_bonus_base_ += candidate_card->support_bonus();
   }
+}
+
+Team::SoloEbiBasePoints Team::GetSoloEbiBasePoints(const Profile& profile,
+                                                   const class EventBonus& event_bonus,
+                                                   float accuracy) const {
+  SoloEbiBasePoints points;
+  double max_score = SoloEbiMasEstimator().ExpectedValue(profile, event_bonus, *this) * accuracy;
+  double eb = Team::EventBonus(event_bonus);
+  for (int score = 0; score < max_score; score += kSoloScoreStep) {
+    int ep = SoloEbiPoints(score, eb);
+    points.possible_points.push_back(ep);
+    points.score_threshold[ep] = score;
+  }
+  return points;
 }
 
 }  // namespace sekai

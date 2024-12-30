@@ -34,6 +34,7 @@
 #include "sekai/db/proto/all.h"
 #include "sekai/estimator.h"
 #include "sekai/event_bonus.h"
+#include "sekai/parking.h"
 #include "sekai/profile.h"
 #include "sekai/proto/card_state.pb.h"
 #include "sekai/proto/event_id.pb.h"
@@ -726,9 +727,11 @@ void Controller::RefreshTeam(int team_index) const {
     team.FillSupportCards(profile_.sorted_support(), GetWorldBloomVersion(profile_proto_));
   }
   sekai::TeamProto team_proto = team.ToProto(profile_, event_bonus_, estimator());
-  if (target_points_.has_value()) {
+  if (target_points_.has_value() && team.cards().size() == kTeamSize) {
     OptimizeExactPoints objective = UnsafeGetParkingObjective();
     objective.AnnotateTeamProto(team, profile_, event_bonus_, team_proto);
+    sekai::AnnotateTeamProtoWithMultiTurnParkingStrategy(
+        team, profile_, event_bonus_, park_accuracy(), *target_points_, team_proto);
   }
   if (team.chars_present().count() == 1) {
     cl_estimator_.AnnotateTeamProto(profile_, event_bonus_, team, team_proto);
@@ -890,8 +893,13 @@ void Controller::SetTargetPoints(int value) {
   RefreshTeams();
 }
 
+void Controller::SetParkAccuracy(int value) {
+  park_accuracy_ = value;
+  RefreshTeams();
+}
+
 sekai::OptimizeExactPoints Controller::UnsafeGetParkingObjective() const {
-  return {target_points_.value()};
+  return {target_points_.value(), park_accuracy()};
 }
 
 void Controller::BuildParkingTeam(bool ignore_constraints) {
@@ -967,6 +975,7 @@ EMSCRIPTEN_BINDINGS(controller) {
       .function("SetLeadConstraint", &Controller::SetLeadConstraint)
       .function("SetMinLeadSkill", &Controller::SetMinLeadSkill)
       .function("SetOwnedCardsFilterState", &Controller::SetOwnedCardsFilterState)
+      .function("SetParkAccuracy", &Controller::SetParkAccuracy)
       .function("SetRarityFilterState", &Controller::SetRarityFilterState)
       .function("SetRarityConstraint", &Controller::SetRarityConstraint)
       .function("SetTargetPoints", &Controller::SetTargetPoints)

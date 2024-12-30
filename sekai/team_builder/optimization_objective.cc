@@ -13,6 +13,7 @@
 #include "sekai/config.h"
 #include "sekai/estimator_base.h"
 #include "sekai/event_bonus.h"
+#include "sekai/points.h"
 #include "sekai/profile.h"
 #include "sekai/proto/team.pb.h"
 #include "sekai/team.h"
@@ -65,12 +66,8 @@ const OptimizationObjective& OptimizeSkill::Get() {
   return *kObj;
 }
 
-int OptimizeExactPoints::BaseEp(int score, double eb) {
-  return static_cast<int>(kBaseFactor * (100 + static_cast<int>(score / kScoreStep)) *
-                          (10000 + static_cast<int>(eb * 100)) / 1000'000.00);
-}
-
-OptimizeExactPoints::OptimizeExactPoints(int target) : target_(target) {
+OptimizeExactPoints::OptimizeExactPoints(int target, float accuracy)
+    : target_(target), accuracy_(accuracy) {
   absl::flat_hash_map<int, int> min_multiplier_pts;
   for (int i = kBoostMultipliers.size() - 1; i >= 0; --i) {
     if (target % kBoostMultipliers[i] != 0) {
@@ -84,8 +81,8 @@ OptimizeExactPoints::OptimizeExactPoints(int target) : target_(target) {
   }
 
   for (int eb = 0; eb < kMaxEventBonus; ++eb) {
-    for (int score = 0; score < kMaxScore; score += kScoreStep) {
-      const int point = BaseEp(score, eb);
+    for (int score = 0; score < kMaxScore; score += kSoloScoreStep) {
+      const int point = SoloEbiPoints(score, eb);
       auto min_multiplier = min_multiplier_pts.find(point);
       if (min_multiplier != min_multiplier_pts.end()) {
         viable_bonuses_.push_back(eb);
@@ -122,7 +119,7 @@ ObjectiveFunction OptimizeExactPoints::GetObjectiveFunction() const {
 
     int min_score = min_score_.at(closest_viable_eb);
     double max_team_score =
-        SoloEbiMasEstimator().MaxExpectedValue(profile, event_bonus, team, lead_chars);
+        SoloEbiMasEstimator().MaxExpectedValue(profile, event_bonus, team, lead_chars) * accuracy_;
     // Optimize to ensure that event bonus is exact and team score is at least the minimum needed.
     double eb_penalty = 10 * std::abs(closest_viable_eb - team_event_bonus);
     double score_penalty = std::max(0.0, min_score - max_team_score) / 1000;
@@ -138,22 +135,23 @@ ObjectiveFunction OptimizeExactPoints::GetObjectiveFunction() const {
 std::vector<OptimizeExactPoints::ViableStrategy> OptimizeExactPoints::GetViableStrategies(
     const Team& team, const Profile& profile, const EventBonus& event_bonus) const {
   std::vector<ViableStrategy> strategies;
-  double max_team_score = SoloEbiMasEstimator().ExpectedValue(profile, event_bonus, team);
+  double max_team_score =
+      SoloEbiMasEstimator().ExpectedValue(profile, event_bonus, team) * accuracy_;
   const float team_event_bonus = team.EventBonus(event_bonus);
   for (int i = 0; static_cast<std::size_t>(i) < kBoostMultipliers.size(); ++i) {
     if (target_ % kBoostMultipliers[i] != 0) {
       continue;
     }
     int base_target = target_ / kBoostMultipliers[i];
-    for (int score = 0; score < max_team_score; score += kScoreStep) {
-      if (BaseEp(score, team_event_bonus) == base_target) {
+    for (int score = 0; score < max_team_score; score += kSoloScoreStep) {
+      if (SoloEbiPoints(score, team_event_bonus) == base_target) {
         strategies.push_back({
             .boost = i,
             .multiplier = kBoostMultipliers[i],
             .base_ep = base_target,
             .ep = target_,
             .score_lb = score,
-            .score_ub = score + kScoreStep - 1,
+            .score_ub = score + kSoloScoreStep - 1,
         });
       }
     }
@@ -167,7 +165,7 @@ void OptimizeExactPoints::AnnotateTeamProto(const Team& team, const Profile& pro
   std::vector<ViableStrategy> strategies = GetViableStrategies(team, profile, event_bonus);
   team_proto.set_target_ep(target_);
   team_proto.set_max_solo_ebi_score(
-      SoloEbiMasEstimator().ExpectedValue(profile, event_bonus, team));
+      SoloEbiMasEstimator().ExpectedValue(profile, event_bonus, team) * accuracy_);
   for (const ViableStrategy& strategy : strategies) {
     ParkingStrategy& strategy_proto = *team_proto.add_parking_strategies();
     strategy_proto.set_boost(strategy.boost);

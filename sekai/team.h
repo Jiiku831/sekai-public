@@ -5,6 +5,7 @@
 
 #include <Eigen/Eigen>
 
+#include "absl/container/flat_hash_map.h"
 #include "sekai/bitset.h"
 #include "sekai/card.h"
 #include "sekai/config.h"
@@ -59,6 +60,14 @@ class Team {
 
   void FillSupportCards(std::span<const Card* const> sorted_pool,
                         WorldBloomVersion version = kDefaultWorldBloomVersion);
+
+  // Guaranteed to be sorted.
+  struct SoloEbiBasePoints {
+    std::vector<int> possible_points;
+    absl::flat_hash_map<int, int> score_threshold;
+  };
+  SoloEbiBasePoints GetSoloEbiBasePoints(const Profile& profile,
+                                         const class EventBonus& event_bonus, float accuracy) const;
 
  private:
   int CardPowerContrib(const Card* card) const;

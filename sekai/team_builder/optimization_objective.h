@@ -63,7 +63,7 @@ class OptimizeSkill : public OptimizationObjective {
 // Optimize for exact points gained by ebi.
 class OptimizeExactPoints : public OptimizationObjective {
  public:
-  OptimizeExactPoints(int target);
+  OptimizeExactPoints(int target, float accuracy);
 
   ObjectiveFunction GetObjectiveFunction() const override;
 
@@ -82,17 +82,12 @@ class OptimizeExactPoints : public OptimizationObjective {
   void AnnotateTeamProto(const Team& team, const Profile& profile, const EventBonus& event_bonus,
                          TeamProto& team_proto) const;
 
-  static int BaseEp(int score, double eb);
-
  private:
   int target_;
+  float accuracy_;
   absl::flat_hash_map<int, int> min_score_;
   absl::flat_hash_map<int, int> min_multiplier_;
   std::vector<int> viable_bonuses_;
-
-  static constexpr int kBaseFactor = 100;
-  static constexpr int kScoreStep = 20'000;
-  static constexpr int kMinScoreMargin = 10'000;
 };
 
 ObjectiveFunction GetObjectiveFunction(const OptimizationObjective& obj);

@@ -22,6 +22,13 @@ absl::Status AssignOrReturn(T& lhs, absl::StatusOr<T> rhs) {
 #define CONCAT_NAME_INNER(x, y) x##y
 #define CONCAT_NAME(x, y) CONCAT_NAME_INNER(x, y)
 
+#define ASSIGN_OR_RETURN_VOID_IMPL(tmp, dst, expr) \
+  auto tmp = expr;                                 \
+  if (!tmp.ok()) {                                 \
+    return;                                        \
+  }                                                \
+  dst = *std::move(tmp);
+
 #define ASSIGN_OR_RETURN_IMPL(tmp, dst, expr) \
   auto tmp = expr;                            \
   if (!tmp.ok()) {                            \
@@ -35,6 +42,9 @@ absl::Status AssignOrReturn(T& lhs, absl::StatusOr<T> rhs) {
     return fn(tmp.status());                          \
   }                                                   \
   dst = *std::move(tmp);
+
+#define ASSIGN_OR_RETURN_VOID(dst, expr) \
+  ASSIGN_OR_RETURN_VOID_IMPL(CONCAT_NAME(tmp, __COUNTER__), dst, expr)
 
 #define ASSIGN_OR_RETURN(dst, expr) ASSIGN_OR_RETURN_IMPL(CONCAT_NAME(tmp, __COUNTER__), dst, expr)
 

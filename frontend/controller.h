@@ -70,6 +70,7 @@ class Controller : public ControllerBase {
   void SetRarityConstraint(int rarity, bool state);
   void SetMinLeadSkill(int value);
   void SetTargetPoints(int value);
+  void SetParkAccuracy(int value);
 
   void BuildEventTeam();
   void BuildChallengeLiveTeam(int char_id);
@@ -96,6 +97,7 @@ class Controller : public ControllerBase {
   sekai::EventBonus event_bonus_;
   sekai::Constraints constraints_;
   std::optional<int> target_points_;
+  int park_accuracy_ = 95;
 
   const sekai::Estimator& estimator() const {
     return estimator_mode_ == sekai::Estimator::Mode::kCheerful ? cc_estimator_ : estimator_;
@@ -114,6 +116,7 @@ class Controller : public ControllerBase {
   void OnSaveDataRead() override;
   sekai::CardState* GetCardState(int card_id);
   void RefreshTeam(int team_index) const;
+  float park_accuracy() const { return park_accuracy_ / 100.f; }
 };
 
 }  // namespace frontend

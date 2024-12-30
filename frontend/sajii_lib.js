@@ -791,20 +791,34 @@ function RenderTeamImpl(teamIndex, context) {
     parkingNode.innerText +=
       `Target EP: ${context.parkingDetails.target}\n`;
     if (context.parkingDetails.strategies) {
-      parkingNode.innerText += "\nCan           Score Range    EP    ";
-      parkingNode.innerText += "\n-----------------------------------\n";
+      parkingNode.innerText += "\nSingle-Turn Park Found (choose one)\n";
+      parkingNode.innerText += "\nCan           Score Range    EP Mult";
+      parkingNode.innerText += "\n------------------------------------\n";
       Array.from(context.parkingDetails.strategies).forEach((s) => {
         const boost = String(s.boost).padStart(2);
         const range = `${s.scoreLb.toLocaleString().padStart(9)} ~ ${s.scoreUb.toLocaleString().padStart(9)}`;
         const ep = s.baseEp.toLocaleString().padStart(5);
-        const mult = `x${s.multiplier}`.padStart(3);
+        const mult = `x${s.multiplier}`.padStart(4);
         parkingNode.innerText += `${boost}x ${range} ${ep} ${mult}\n`;
       });
 
       parkingNode.innerText += `\nMax Solo Ebi Score: ${context.parkingDetails.maxScore.toLocaleString()}`;
+    } else if (context.parkingDetails.multiTurnStrategies) {
+      parkingNode.innerText += "\nMulti-Turn Park Found (play all)\n";
+      parkingNode.innerText += "\nCan           Score Range    EP Mult Plays";
+      parkingNode.innerText += "\n------------------------------------------\n";
+      Array.from(context.parkingDetails.multiTurnStrategies).forEach((s) => {
+        const boost = String(s.boost).padStart(2);
+        const range = `${s.scoreLb.toLocaleString().padStart(9)} ~ ${s.scoreUb.toLocaleString().padStart(9)}`;
+        const ep = s.baseEp.toLocaleString().padStart(5);
+        const mult = `x${s.multiplier}`.padStart(4);
+        const plays = `x${s.plays.toLocaleString()}`.padStart(5);
+        parkingNode.innerText += `${boost}x ${range} ${ep} ${mult} ${plays}\n`;
+      });
 
+      parkingNode.innerText += `\nMax Solo Ebi Score: ${context.parkingDetails.maxScore.toLocaleString()}`;
     } else {
-      parkingNode.innerText += "\nNot Viable.";
+      parkingNode.innerText += "\nNot viable or compute budget exhausted.";
     }
   }
   let offset = 0;
@@ -922,5 +936,24 @@ function SetTargetPoints(e) {
     controller.SetTargetPoints(0);
   } else {
     controller.SetTargetPoints(value);
+  }
+}
+
+function SetParkAccuracy(e) {
+  if (!e.validity.valid) {
+    return;
+  }
+
+  const value = parseInt(e.value);
+  if (value <= 0 || value > 100) {
+    e.setCustomValidity(
+      "Invalid target point value (must be whole number at least 0 and at most 100)");
+    return;
+  }
+
+  if (e.value == "") {
+    controller.SetParkAccuracy(0);
+  } else {
+    controller.SetParkAccuracy(value);
   }
 }

@@ -216,6 +216,7 @@ cc_test(
         "//data:flat-db",
     ],
     deps = [
+        ":challenge_live_estimator",
         ":estimator",
         "//sekai/db:master_db",
         "//sekai/db/proto:all",
@@ -313,6 +314,63 @@ cc_test(
     deps = [
         ":array_size",
         ":max_character_rank",
+        "//testing:test_main",
+        "//testing:util",
+        "@googletest//:gtest",
+    ],
+)
+
+cc_library(
+    name = "parking",
+    srcs = ["parking.cc"],
+    hdrs = ["parking.h"],
+    deps = [
+        ":config",
+        ":event_bonus",
+        ":profile",
+        ":team",
+        "//base:util",
+        "@abseil-cpp//absl/container:btree",
+        "@abseil-cpp//absl/log:absl_check",
+        "@abseil-cpp//absl/status:statusor",
+        "@abseil-cpp//absl/strings",
+    ],
+)
+
+cc_test(
+    name = "parking_test",
+    srcs = ["parking_test.cc"],
+    data = [
+        "//data:flat-db",
+    ],
+    deps = [
+        ":challenge_live_estimator",
+        ":parking",
+        "//sekai/db:master_db",
+        "//testing:test_main",
+        "//testing:util",
+        "@abseil-cpp//absl/log",
+        "@googletest//:gtest",
+    ],
+)
+
+cc_library(
+    name = "points",
+    srcs = ["points.cc"],
+    hdrs = ["points.h"],
+    deps = [
+        ":config",
+    ],
+)
+
+cc_test(
+    name = "points_test",
+    srcs = ["points_test.cc"],
+    data = [
+        "//data:flat-db",
+    ],
+    deps = [
+        ":points",
         "//testing:test_main",
         "//testing:util",
         "@googletest//:gtest",
@@ -438,6 +496,7 @@ cc_library(
         ":card",
         ":estimator_base",
         ":event_bonus",
+        ":points",
         ":profile",
         ":unit_count",
         "//sekai/db:master_db",
@@ -457,6 +516,7 @@ cc_test(
     ],
     deps = [
         ":card",
+        ":challenge_live_estimator",
         ":event_bonus",
         ":profile",
         ":team",
@@ -477,6 +537,7 @@ cc_test(
     deps = [
         ":bitset",
         ":card",
+        ":challenge_live_estimator",
         ":profile",
         ":team",
         "//sekai/db:master_db",

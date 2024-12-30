@@ -28,6 +28,9 @@ inline constexpr std::array kBoostMultipliers = {1, 5, 10, 15, 20, 25, 27, 29, 3
 inline constexpr WorldBloomVersion kDefaultWorldBloomVersion = WORLD_BLOOM_VERSION_2;
 inline constexpr std::array kWorldBloomVersionCutoffs = {152};
 
+inline constexpr int kEbiBaseFactor = 100;
+inline constexpr int kSoloScoreStep = 20'000;
+
 std::string_view CppVersion();
 const std::filesystem::path& SekaiBestRoot();
 const std::filesystem::path& MasterDbRoot();

@@ -43,6 +43,6 @@ class ChallengeLiveEstimator : public EstimatorBase {
                                 const Team& team) const;
 };
 
-const ChallengeLiveEstimator& SoloEbiMasEstimator();
+const EstimatorBase& SoloEbiMasEstimator();
 
 }  // namespace sekai

@@ -139,7 +139,7 @@ void ChallengeLiveEstimator::AnnotateTeamProto(const Profile& profile,
       absl::StrFormat("%s %s", music.title(), DifficultyToDisplayText(detail.meta->difficulty())));
 }
 
-const ChallengeLiveEstimator& SoloEbiMasEstimator() {
+const EstimatorBase& SoloEbiMasEstimator() {
   static const absl::NoDestructor<ChallengeLiveEstimator> kEstimator(
       MasterDb::GetIf<db::MusicMeta>([](const db::MusicMeta& meta) {
         return meta.difficulty() == db::DIFF_MASTER && meta.music_id() == 74;
