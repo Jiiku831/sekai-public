@@ -222,7 +222,7 @@ absl::StatusOr<absl::flat_hash_map<int, int>> SolveSubsetSumWithRepetition(
       return absl::FailedPreconditionError("Not all values are positive.");
     }
   }
-  if (target < 100'000) {
+  if (target <= 100'000) {
     return ExhaustiveSubsetSumWithRepetition(values, target);
   }
   return ProbabilisticSubsetSumWithRepetition(values, target);
