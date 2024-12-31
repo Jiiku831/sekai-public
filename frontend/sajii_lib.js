@@ -807,7 +807,7 @@ function RenderTeamImpl(teamIndex, context) {
     parkingNode.innerText +=
       `Target EP: ${context.parkingDetails.target}\n`;
     if (context.parkingDetails.strategies) {
-      parkingNode.innerText += "\nSingle-Turn Park Found (choose one)\n";
+      parkingNode.innerText += "\nSingle-Turn Solo Ebi Park Found (choose one)\n";
       parkingNode.innerText += "\nCan           Score Range    EP Mult";
       parkingNode.innerText += "\n------------------------------------\n";
       Array.from(context.parkingDetails.strategies).forEach((s) => {
@@ -820,7 +820,7 @@ function RenderTeamImpl(teamIndex, context) {
 
       parkingNode.innerText += `\nMax Solo Ebi Score: ${context.parkingDetails.maxScore.toLocaleString()}`;
     } else if (context.parkingDetails.multiTurnStrategies) {
-      parkingNode.innerText += "\nMulti-Turn Park Found (play all)\n";
+      parkingNode.innerText += "\nMulti-Turn Solo Ebi Park Found (play all)\n";
       parkingNode.innerText += "\nCan           Score Range    EP Mult Plays";
       parkingNode.innerText += "\n------------------------------------------\n";
       Array.from(context.parkingDetails.multiTurnStrategies).forEach((s) => {
