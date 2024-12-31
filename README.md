@@ -137,3 +137,14 @@ For events not yet released. You can build a team for a custom event.
 3.  Change the bonus attribute and characters.
 4.  Run `./build_event_teams.sh`.
 5.  The result will be at `reports/event_team.html`.
+
+## Debugging
+
+To debug WASM in Chrome, install the C/C++ DevTools Support extension and add
+the following path substitutions:
+
+* `/proc/self/cwd` -> `http://localhost:8000/src`
+* `/emsdk` -> `http://localhost:8000/src/external/emscripten_bin_linux`
+
+To stop at exceptions, use the "Pause on caught exceptions" option in the Developer tools. To enable
+debug support or clang sanitizers, pass one of `--dbg/--asan/--ubsan` to `./run_local_server.sh`.

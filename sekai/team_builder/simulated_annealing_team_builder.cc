@@ -28,7 +28,8 @@ namespace {
 std::optional<Team> FindAnyValidTeamForChars(
     std::span<const Card* const> support_pool,
     std::array<std::vector<const Card*>, kCharacterArraySize> char_pools,
-    const Constraints& constraints, std::span<const int> candidate_chars) {
+    const Constraints& constraints, std::span<const int> candidate_chars,
+    const SimulatedAnnealingTeamBuilder::Options& opts) {
   Character chars_present;
   for (int char_id : candidate_chars) {
     chars_present.set(char_id);
@@ -82,7 +83,7 @@ std::optional<Team> FindAnyValidTeamForChars(
       }
 
       if (constraints_satisfied) {
-        if (!support_pool.empty()) {
+        if (!support_pool.empty() && !opts.disable_support) {
           candidate_team.FillSupportCards(support_pool);
         }
         return candidate_team;
@@ -112,7 +113,9 @@ std::optional<Team> GetRandomTeamAllowRepeat(std::span<const Card* const> pool,
 
 std::optional<Team> GetRandomTeam(std::span<const Card* const> pool,
                                   std::span<const Card* const> support_pool,
-                                  const Constraints& constraints, std::mt19937& g) {
+                                  const Constraints& constraints,
+                                  const SimulatedAnnealingTeamBuilder::Options& opts,
+                                  std::mt19937& g) {
   std::array<std::vector<const Card*>, kCharacterArraySize> char_pools =
       PartitionCardPoolByCharacters(pool);
 
@@ -129,7 +132,7 @@ std::optional<Team> GetRandomTeam(std::span<const Card* const> pool,
       shuffled_ids,
       [&](std::span<const int> candidate_chars) {
         std::optional<Team> candidate_team =
-            FindAnyValidTeamForChars(support_pool, char_pools, constraints, candidate_chars);
+            FindAnyValidTeamForChars(support_pool, char_pools, constraints, candidate_chars, opts);
         if (candidate_team.has_value()) {
           team = *candidate_team;
           return false;
@@ -181,7 +184,7 @@ std::vector<Team> SimulatedAnnealingTeamBuilder::RecommendTeamsImpl(
   std::optional<Team> best_team =
       opts_.allow_repeat_chars
           ? GetRandomTeamAllowRepeat(shuffled_pool, support_pool_, constraints_, g)
-          : GetRandomTeam(shuffled_pool, support_pool_, constraints_, g);
+          : GetRandomTeam(shuffled_pool, support_pool_, constraints_, opts_, g);
 
   if (!best_team.has_value()) {
     return {};
@@ -206,7 +209,7 @@ std::vector<Team> SimulatedAnnealingTeamBuilder::RecommendTeamsImpl(
     std::optional<Team> new_team = neighbors_gen->GetRandomNeighbor(current_team, g);
     if (new_team.has_value()) {
       ++stats_.teams_evaluated;
-      if (!support_pool_.empty()) {
+      if (!support_pool_.empty() && !opts_.disable_support) {
         new_team->FillSupportCards(support_pool_, opts_.world_bloom_version);
       }
       float new_val =

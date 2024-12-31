@@ -69,7 +69,7 @@ TEST(SkillTest, TestSkillEnhanceUnitBonus) {
     }
 
     UnitCount unit_count(cards);
-    EXPECT_EQ(card.SkillValue(unit_count), expected[i]);
+    EXPECT_EQ(card.SkillValue(0, unit_count), expected[i]);
     EXPECT_EQ(card.MaxSkillValue(), 150);
     EXPECT_EQ(unit_count.CharacterCount(db::UNIT_WXS), i + 1);
     EXPECT_EQ(unit_count.CharacterCount(db::UNIT_LN), 4 - i);
@@ -91,7 +91,7 @@ TEST(SkillTest, TestSkillScoreUpUnitCount0) {
 
     UnitCount unit_count(cards);
     Skill skill{db_skill, skill_level};
-    EXPECT_EQ(skill.SkillValue(unit_count), expected[skill_level - 1]);
+    EXPECT_EQ(skill.SkillValue(0, unit_count), expected[skill_level - 1]);
     EXPECT_EQ(skill.MaxSkillValue(), expected_max[skill_level - 1]);
   }
 }
@@ -112,7 +112,7 @@ TEST(SkillTest, TestSkillScoreUpUnitCount1) {
 
     UnitCount unit_count(cards);
     Skill skill{db_skill, skill_level};
-    EXPECT_EQ(skill.SkillValue(unit_count), expected[skill_level - 1]);
+    EXPECT_EQ(skill.SkillValue(0, unit_count), expected[skill_level - 1]);
     EXPECT_EQ(skill.MaxSkillValue(), expected_max[skill_level - 1]);
   }
 }
@@ -134,7 +134,7 @@ TEST(SkillTest, TestSkillScoreUpUnitCount2) {
 
     UnitCount unit_count(cards);
     Skill skill{db_skill, skill_level};
-    EXPECT_EQ(skill.SkillValue(unit_count), expected[skill_level - 1]);
+    EXPECT_EQ(skill.SkillValue(0, unit_count), expected[skill_level - 1]);
     EXPECT_EQ(skill.MaxSkillValue(), expected_max[skill_level - 1]);
   }
 }
@@ -157,7 +157,7 @@ TEST(SkillTest, TestSkillScoreUpUnitCount3) {
 
     UnitCount unit_count(cards);
     Skill skill{db_skill, skill_level};
-    EXPECT_EQ(skill.SkillValue(unit_count), expected[skill_level - 1]);
+    EXPECT_EQ(skill.SkillValue(0, unit_count), expected[skill_level - 1]);
     EXPECT_EQ(skill.MaxSkillValue(), expected_max[skill_level - 1]);
   }
 }
@@ -174,7 +174,7 @@ TEST(SkillTest, TestCharacterRankEnhanceValue) {
       UnitCount unit_count(cards);
       Skill skill{db_skill, skill_level};
       skill.ApplyCharacterRank(cr);
-      EXPECT_EQ(skill.SkillValue(unit_count), expected);
+      EXPECT_EQ(skill.SkillValue(0, unit_count), expected);
       EXPECT_EQ(skill.MaxSkillValue(), expected_max[skill_level - 1]);
     }
   }
@@ -183,7 +183,7 @@ TEST(SkillTest, TestCharacterRankEnhanceValue) {
 TEST(SkillTest, TestScoreUpReferenceBase) {
   const db::Skill& db_skill = MasterDb::FindFirst<db::Skill>(23);
   std::array expected = {60, 65, 70, 80};
-  std::array expected_max = {130, 135, 140, 150};
+  std::array expected_max = {120, 130, 140, 150};
   for (int skill_level = 1; skill_level <= 4; ++skill_level) {
     Skill skill{db_skill, skill_level};
     EXPECT_EQ(skill.raw_skill_value(), expected[skill_level - 1]);
@@ -201,8 +201,21 @@ TEST(SkillTest, TestScoreUpReferenceAddsOtherAverage) {
   // Expected boost is (50 + 60 + 70 + 50) / 4 = 57.5
   const db::Skill& db_skill = MasterDb::FindFirst<db::Skill>(23);
 
-  std::array expected = {60 + 57.5, 65 + 57.5, 70 + 57.5, 80 + 57.5};
-  std::array expected_max = {130.f, 135.f, 140.f, 150.f};
+  std::array expected = {
+      0.0f,
+      60.f + static_cast<float>(100 + 120 + 120 + 100) / 8,
+      65.f + static_cast<float>(100 + 120 + 130 + 100) / 8,
+      70.f + 57.5f,
+      80.f + 57.5f,
+  };
+  std::array expected_avg = {
+      0.0f,
+      static_cast<float>(100 + 120 + 120 + 100) / 4,
+      static_cast<float>(100 + 120 + 130 + 100) / 4,
+      57.5f * 2,
+      57.5f * 2,
+  };
+  std::array expected_max = {0.0f, 120.f, 130.f, 140.f, 150.f};
   for (int skill_level = 1; skill_level <= 4; ++skill_level) {
     CardState skill_state;
     skill_state.set_skill_level(skill_level);
@@ -214,17 +227,66 @@ TEST(SkillTest, TestScoreUpReferenceAddsOtherAverage) {
 
     UnitCount unit_count(cards);
     Skill skill{db_skill, skill_level};
-    EXPECT_FLOAT_EQ(skill.SkillValue(unit_count), expected[skill_level - 1]);
-    EXPECT_EQ(skill.MaxSkillValue(), expected_max[skill_level - 1]);
-    EXPECT_EQ(
-        unit_count.ReferenceBoostCappedSkillValueTotal(),
-        100 + 120 + 140 + 100 + std::min(kReferenceScoreBoostCap, expected_max[skill_level - 1]));
-    EXPECT_EQ(card_special.ReferenceBoostCappedMaxSkillValue(),
-              std::min(kReferenceScoreBoostCap, expected_max[skill_level - 1]));
-    EXPECT_EQ(skill.ReferenceBoostCappedMaxSkillValue(),
-              std::min(kReferenceScoreBoostCap, expected_max[skill_level - 1]));
-    EXPECT_EQ(skill.ReferenceBoostCappedMaxCardSkillValue(),
-              std::min(kReferenceScoreBoostCap, expected_max[skill_level - 1]));
+    EXPECT_FLOAT_EQ(skill.SkillValue(0, unit_count), expected[skill_level]);
+    EXPECT_EQ(skill.MaxSkillValue(), expected_max[skill_level]);
+    EXPECT_FLOAT_EQ(unit_count.ReferenceBoostAverageCappedSkillValue(0), expected_avg[skill_level]);
+    EXPECT_EQ(card_special.ReferenceBoostCappedMaxSkillValue(skill_level),
+              std::min(kReferenceScoreBoostCaps[skill_level], expected_max[skill_level]));
+    EXPECT_EQ(skill.ReferenceBoostCappedMaxSkillValue(skill_level),
+              std::min(kReferenceScoreBoostCaps[skill_level], expected_max[skill_level]));
+    EXPECT_EQ(skill.ReferenceBoostCappedMaxCardSkillValue(skill_level),
+              std::min(kReferenceScoreBoostCaps[skill_level], expected_max[skill_level]));
+  }
+}
+
+TEST(SkillTest, TestScoreUpReferenceAddsOtherAverageExample2) {
+  CardState sl1, sl4;
+  sl1.set_skill_level(1);
+  sl4.set_skill_level(4);
+  Card card_1{MasterDb::FindFirst<db::Card>(1058), sl4};  // 150
+  Card card_2{MasterDb::FindFirst<db::Card>(227), sl1};   // 100
+  Card card_3{MasterDb::FindFirst<db::Card>(671), sl4};   // 140
+  Card card_4{MasterDb::FindFirst<db::Card>(1057), sl1};  // 120
+  Card card_5{MasterDb::FindFirst<db::Card>(1061), sl1};  // 130
+  const db::Skill& db_skill = MasterDb::FindFirst<db::Skill>(23);
+
+  std::vector<const Card*> cards = {&card_1, &card_2, &card_3, &card_4, &card_5};
+
+  {
+    constexpr int kSkillLevel = 1;
+    UnitCount unit_count(cards);
+    Skill skill{db_skill, kSkillLevel};
+    EXPECT_FLOAT_EQ(skill.SkillValue(3, unit_count),
+                    60 + static_cast<float>(120 + 100 + 120 + 120) / 8);
+    EXPECT_EQ(skill.MaxSkillValue(), 120);
+    EXPECT_FLOAT_EQ(unit_count.ReferenceBoostAverageCappedSkillValue(3),
+                    static_cast<float>(120 + 100 + 120 + 120) / 4);
+    EXPECT_EQ(card_4.ReferenceBoostCappedMaxSkillValue(kSkillLevel), 120);
+    EXPECT_EQ(skill.ReferenceBoostCappedMaxSkillValue(kSkillLevel), 120);
+    EXPECT_EQ(skill.ReferenceBoostCappedMaxCardSkillValue(kSkillLevel), 120);
+  }
+
+  {
+    constexpr int kSkillLevel = 4;
+    UnitCount unit_count(cards);
+    Skill skill{db_skill, kSkillLevel};
+    EXPECT_FLOAT_EQ(skill.SkillValue(0, unit_count),
+                    80 + static_cast<float>(100 + 140 + 120 + 130) / 8);
+    EXPECT_EQ(skill.MaxSkillValue(), 150);
+    EXPECT_FLOAT_EQ(unit_count.ReferenceBoostAverageCappedSkillValue(0),
+                    static_cast<float>(100 + 140 + 120 + 130) / 4);
+    EXPECT_EQ(card_1.ReferenceBoostCappedMaxSkillValue(kSkillLevel), 140);
+    EXPECT_EQ(skill.ReferenceBoostCappedMaxSkillValue(kSkillLevel), 140);
+    EXPECT_EQ(skill.ReferenceBoostCappedMaxCardSkillValue(kSkillLevel), 140);
+  }
+}
+
+TEST(SkillTest, TestScoreUpReferenceCap) {
+  const db::Skill& db_skill = MasterDb::FindFirst<db::Skill>(23);
+  for (int skill_level = 1; skill_level < kSkillLevelArraySize; ++skill_level) {
+    Skill skill{db_skill, skill_level};
+    EXPECT_EQ(skill.ReferenceBoostCappedMaxSkillValue(skill_level),
+              kReferenceScoreBoostCaps[skill_level]);
   }
 }
 
@@ -234,7 +296,7 @@ TEST(SkillTest, TestScoreUpReferenceAddsOtherAverageCapped) {
   Card card{MasterDb::FindFirst<db::Card>(622), state};  // 150%
   const db::Skill& db_skill = MasterDb::FindFirst<db::Skill>(23);
 
-  std::array expected_max = {130, 135, 140, 150};
+  std::array expected_max = {120, 130, 140, 150};
   for (int skill_level = 1; skill_level <= 4; ++skill_level) {
     CardState skill_state;
     skill_state.set_skill_level(skill_level);
@@ -245,8 +307,29 @@ TEST(SkillTest, TestScoreUpReferenceAddsOtherAverageCapped) {
 
     UnitCount unit_count(cards);
     Skill skill{db_skill, skill_level};
-    EXPECT_FLOAT_EQ(skill.SkillValue(unit_count), expected_max[skill_level - 1]);
+    EXPECT_FLOAT_EQ(skill.SkillValue(0, unit_count), expected_max[skill_level - 1]);
     EXPECT_EQ(skill.MaxSkillValue(), expected_max[skill_level - 1]);
+  }
+}
+
+TEST(SkillTest, TestScoreUpReferenceSucceedsWithNoOtherCards) {
+  CardState state;
+  state.set_skill_level(4);
+  Card card{MasterDb::FindFirst<db::Card>(622), state};  // 150%
+  const db::Skill& db_skill = MasterDb::FindFirst<db::Skill>(23);
+
+  std::array expected = {60, 65, 70, 80};
+  for (int skill_level = 1; skill_level <= 4; ++skill_level) {
+    CardState skill_state;
+    skill_state.set_skill_level(skill_level);
+    Card card_special{MasterDb::FindFirst<db::Card>(949), skill_state};
+    std::vector<const Card*> cards = {
+        &card_special,
+    };
+
+    UnitCount unit_count(cards);
+    Skill skill{db_skill, skill_level};
+    EXPECT_FLOAT_EQ(skill.SkillValue(0, unit_count), expected[skill_level - 1]);
   }
 }
 

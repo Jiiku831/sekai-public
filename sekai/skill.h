@@ -13,10 +13,10 @@ class Skill {
   Skill() = default;
   Skill(const db::Skill& skill, int skill_level);
 
-  float SkillValue(UnitCountBase& unit_count) const;
+  float SkillValue(int card_index, UnitCountBase& unit_count) const;
   float MaxSkillValue() const;
-  float ReferenceBoostCappedMaxSkillValue() const {
-    return std::min(kReferenceScoreBoostCap, MaxSkillValue());
+  float ReferenceBoostCappedMaxSkillValue(int origin_skill_level) const {
+    return std::min(kReferenceScoreBoostCaps[origin_skill_level], MaxSkillValue());
   }
   float raw_skill_value() const { return skill_value_; }
   db::Unit db_skill_enhance_unit() const { return db_skill_enhance_unit_; }
@@ -25,9 +25,11 @@ class Skill {
   void ApplyCharacterRank(int rank);
 
   void SetCardMaxSkillValue(float value) { max_card_skill_value_ = value; }
-  float ReferenceBoostCappedMaxCardSkillValue() const {
-    return std::min(kReferenceScoreBoostCap, max_card_skill_value_);
+  float ReferenceBoostCappedMaxCardSkillValue(int origin_skill_level) const {
+    return std::min(kReferenceScoreBoostCaps[origin_skill_level], max_card_skill_value_);
   }
+
+  int level() const { return skill_level_; }
 
  private:
   SkillEffectType skill_effect_type_;
@@ -48,6 +50,7 @@ class Skill {
 
   // Reference score up related
   float reference_score_up_rate_ = 0;
+  float reference_score_up_cap_ = 0;
 
   int skill_level_ = 0;
 

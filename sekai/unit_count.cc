@@ -18,7 +18,18 @@ void UnitCount::PopulateUnitCount() {
     ++unit_count_[card->db_primary_unit()];
     units_present_.set(card->db_primary_unit());
     skill_value_total_ += card->MaxSkillValue();
-    reference_boost_capped_skill_value_total_ += card->ReferenceBoostCappedMaxSkillValue();
+    float other_skill_value_total = 0;
+    for (const Card* other_card : cards_) {
+      if (card == other_card) continue;
+      other_skill_value_total +=
+          other_card->ReferenceBoostCappedMaxSkillValue(card->skill().level());
+    }
+    if (cards_.size() > 1) {
+      reference_boost_average_capped_skill_value_.push_back(other_skill_value_total /
+                                                            (cards_.size() - 1));
+    } else {
+      reference_boost_average_capped_skill_value_.push_back(0);
+    }
   }
 }
 

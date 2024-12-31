@@ -60,6 +60,10 @@ input:invalid
     vertical-align: top
     padding: 0 1em
 
+  .team-builder-parking-cell
+    vertical-align: top
+    padding: 0 1em
+
   .team-builder-id-row
     height: 23.5px
 
@@ -87,7 +91,7 @@ input:invalid
   .support-team-thumb:last-child
     width: auto
 
-.team-builder-stats
+.team-builder-stats, .team-builder-parking
   font-family: monospace
   font-size: smaller
 
@@ -142,3 +146,26 @@ summary
   &, tr, td, th
     border: none
     border-collapse: collapse
+
+.new
+  display: block
+  margin-bottom: 1ex
+
+.new::before
+  content: "New! "
+  color: red
+  font-weight: bold
+
+.new-inline
+  background: #ffc
+
+.new-inline::before
+  content: "(New!) "
+  color: red
+  font-weight: bold
+
+.parking-params
+  label
+    margin-right: 1ex
+  input
+    margin-right: 1em

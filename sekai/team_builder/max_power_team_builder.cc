@@ -54,7 +54,7 @@ std::vector<Team> RecommendTeamsForState(
 
   std::vector<const Card*> sorted_pool =
       SortCardsByPower(filtered_pool, attr_match, primary_unit_match, secondary_unit_match);
-  GreedyTeamBuilder team_builder(OptimizationObjective::kOptimizePower);
+  GreedyTeamBuilder team_builder{OptimizePower::Get()};
   team_builder.AddConstraints(constraints);
   std::vector<Team> teams =
       team_builder.RecommendTeams(sorted_pool, profile, event_bonus, estimator, deadline);
