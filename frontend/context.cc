@@ -247,6 +247,23 @@ RarityContext CreateRarityContext(CardRarityType rarity) {
   return context;
 }
 
+ParkingStrategyContext CreateParkingStrategyContext(const sekai::ParkingStrategy& strategy) {
+  ParkingStrategyContext strategy_context;
+  strategy_context.set_boost(strategy.boost());
+  strategy_context.set_multiplier(strategy.multiplier());
+  strategy_context.set_base_ep(strategy.base_ep());
+  strategy_context.set_total_ep(strategy.total_ep());
+  strategy_context.set_score_lb(strategy.score_lb());
+  strategy_context.set_score_ub(strategy.score_ub());
+  if (strategy.has_plays()) {
+    strategy_context.set_plays(strategy.plays());
+  }
+  if (strategy.has_total_multiplier()) {
+    strategy_context.set_total_multiplier(strategy.total_multiplier());
+  }
+  return strategy_context;
+}
+
 TeamContext CreateTeamContext(const sekai::TeamProto& team) {
   TeamContext context;
   for (const sekai::CardProto& card : team.cards()) {
@@ -267,6 +284,17 @@ TeamContext CreateTeamContext(const sekai::TeamProto& team) {
     context.set_support_bonus(team.support_bonus());
     context.set_main_bonus(team.main_bonus());
   }
+  if (team.has_target_ep()) {
+    ParkingContext& parking_context = *context.mutable_parking_details();
+    parking_context.set_target(team.target_ep());
+    parking_context.set_max_score(team.max_solo_ebi_score());
+    for (const sekai::ParkingStrategy& strategy : team.parking_strategies()) {
+      *parking_context.add_strategies() = CreateParkingStrategyContext(strategy);
+    }
+    for (const sekai::ParkingStrategy& strategy : team.multi_turn_parking()) {
+      *parking_context.add_multi_turn_strategies() = CreateParkingStrategyContext(strategy);
+    }
+  }
   return context;
 }
 
@@ -279,6 +307,10 @@ TeamBuilderContext CreateTeamBuilderContext() {
   default_event_context.set_selected(true);
 
   for (const Event& event : MasterDb::GetAll<Event>()) {
+    std::string event_name = event.name();
+    if (absl::FromUnixMillis(event.start_at()) > absl::Now()) {
+      event_name = "TBA (Spoiler Warning)";
+    }
     if (event.event_type() == Event::WORLD_BLOOM) {
       for (const WorldBloom* world_bloom : MasterDb::FindAll<WorldBloom>(event.id())) {
         auto character = MasterDb::FindFirst<GameCharacter>(world_bloom->game_character_id());
@@ -286,7 +318,7 @@ TeamBuilderContext CreateTeamBuilderContext() {
         event_context.set_event_id(event.id());
         event_context.set_chapter_id(world_bloom->chapter_no());
         event_context.set_display_text(absl::StrFormat("%d-%d - %s - %s", event.id(),
-                                                       world_bloom->chapter_no(), event.name(),
+                                                       world_bloom->chapter_no(), event_name,
                                                        character.given_name()));
         event_context.set_event_str(
             absl::StrFormat("%d-%d", event.id(), world_bloom->chapter_no()));
@@ -294,7 +326,7 @@ TeamBuilderContext CreateTeamBuilderContext() {
     } else {
       TeamBuilderContext::EventContext& event_context = *context.add_events();
       event_context.set_event_id(event.id());
-      event_context.set_display_text(absl::StrFormat("%d - %s", event.id(), event.name()));
+      event_context.set_display_text(absl::StrFormat("%d - %s", event.id(), event_name));
       event_context.set_event_str(std::to_string(event.id()));
     }
   }

@@ -7,24 +7,12 @@ load("@rules_python//python:defs.bzl", "py_binary")
 wasm_cc_binary(
     name = "sajii_wasm",
     cc_target = "//frontend:sajii",
-    outputs = [
-        "sajii.html",
-        "sajii.js",
-        "sajii.data",
-        "sajii.wasm",
-    ],
     threads = "emscripten",
 )
 
 wasm_cc_binary(
     name = "ohnyajii_wasm",
     cc_target = "//frontend:ohnyajii",
-    outputs = [
-        "ohnyajii.html",
-        "ohnyajii.js",
-        "ohnyajii.data",
-        "ohnyajii.wasm",
-    ],
     threads = "emscripten",
 )
 

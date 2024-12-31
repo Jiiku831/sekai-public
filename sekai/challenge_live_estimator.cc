@@ -3,6 +3,7 @@
 #include <functional>
 #include <vector>
 
+#include "absl/base/no_destructor.h"
 #include "absl/container/flat_hash_set.h"
 #include "absl/log/absl_check.h"
 #include "sekai/db/master_db.h"
@@ -33,6 +34,17 @@ std::string DifficultyToDisplayText(db::Difficulty diff) {
       return "AP";
     default:
       ABSL_CHECK(false) << "unhandled case";
+  }
+}
+
+void SafeAddMetas(std::span<absl::Nonnull<const db::MusicMeta* const>> metas,
+                  std::vector<ChallengeLiveSongEstimator>& dst) {
+  for (const db::MusicMeta* meta : metas) {
+    if (MasterDb::SafeFindFirst<db::Music>(meta->music_id()) == nullptr) {
+      LOG(WARNING) << "Music " << meta->music_id() << " not found in master db. skipping";
+      continue;
+    }
+    dst.emplace_back(meta);
   }
 }
 
@@ -73,13 +85,12 @@ ChallengeLiveEstimator::ChallengeLiveEstimator() {
       MasterDb::GetIf<db::MusicMeta>([&](const db::MusicMeta& meta) {
         return meta_songs.contains(std::make_pair(meta.music_id(), meta.difficulty()));
       });
-  for (const db::MusicMeta* meta : metas) {
-    if (MasterDb::SafeFindFirst<db::Music>(meta->music_id()) == nullptr) {
-      LOG(WARNING) << "Music " << meta->music_id() << " not found in master db. skipping";
-      continue;
-    }
-    metas_.emplace_back(meta);
-  }
+  SafeAddMetas(metas, metas_);
+}
+
+ChallengeLiveEstimator::ChallengeLiveEstimator(
+    std::span<absl::Nonnull<const db::MusicMeta* const>> songs) {
+  SafeAddMetas(songs, metas_);
 }
 
 ChallengeLiveEstimator::ValueDetail ChallengeLiveEstimator::ExpectedValueImpl(
@@ -126,6 +137,14 @@ void ChallengeLiveEstimator::AnnotateTeamProto(const Profile& profile,
   team_proto.set_expected_score(detail.value);
   team_proto.set_best_song_name(
       absl::StrFormat("%s %s", music.title(), DifficultyToDisplayText(detail.meta->difficulty())));
+}
+
+const EstimatorBase& SoloEbiMasEstimator() {
+  static const absl::NoDestructor<ChallengeLiveEstimator> kEstimator(
+      MasterDb::GetIf<db::MusicMeta>([](const db::MusicMeta& meta) {
+        return meta.difficulty() == db::DIFF_MASTER && meta.music_id() == 74;
+      }));
+  return *kEstimator;
 }
 
 }  // namespace sekai

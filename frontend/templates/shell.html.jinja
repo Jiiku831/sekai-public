@@ -20,10 +20,21 @@
     <div class="team-builder" id="team-builder">
     </div>
 
-    <p>
+    <p style="max-width: 50em;">
       <b>Instructions</b>: Mark cards as owned in the list below and customize
       stats. Enter card ID in the table above to add to team.
+      &nbsp;<span class="new-inline">
+        To use the untrained skill of a bloomfes card, add "U" to the end of
+        the card ID (for example, "1058U"). The team builder no longer switches
+        between trained and untrained skills for you.
+      </span>
     </p>
+
+    <ul>
+      <li>
+        Slot 2 is special in that it will never have support cards added.
+      </li>
+    </ul>
 
     <p>
       <b>Other instances</b>:&nbsp;
@@ -34,51 +45,6 @@
       <a href="https://dev.jiiku.pages.dev/sajii" target="_blank">Testing</a>
     </p>
 
-    <details open>
-      <summary>Save Profile</summary>
-
-      <div>
-        This will save most stuff that matters. The teams and the challenge
-        live character selection are not saved.
-        <table class="save-table">
-          <tr>
-            <th>
-              Local browser storage
-            </th>
-            <td>
-              <input type="button" value="Load" onclick="controller.ReadSaveData();">
-              <input type="button" value="Save" onclick="controller.WriteSaveData();">
-              <input type="button" value="Delete" onclick="controller.DeleteSaveData();">
-            </td>
-          </tr>
-          <tr>
-            <th>
-              Load from external source
-            </th>
-            <td>
-              <input id="upload-cards" type="file" name="upload-cards" size=30><br>
-              <input type="button" value="Import cards from CSV" onclick="ImportCsv();">
-              <input type="button" value="Import from .binaryproto" onclick="ImportBinaryProto();">
-              <input type="button" value="Import from .textproto" onclick="ImportTextProto();">
-              <div id="upload-cards-output-area"></div>
-            </td>
-          </tr>
-          <tr>
-            <th>
-              Export save data
-            </th>
-            <td>
-              <input type="button" value="Export as .binaryproto" onclick="ExportBinaryProto();">
-              <input type="button" value="Export as .textproto" onclick="ExportTextProto();">
-              <br>
-              Exporting as .binaryproto is more forwards-compatible. Exporting
-              as .textproto is human readable.
-            </td>
-          </tr>
-        </table>
-      </div>
-    </details>
-
     <hr>
 
     <details open>
@@ -86,7 +52,7 @@
 
       <div>
         <h4>Important Notes</h4>
-        <ul>
+        <ul style="max-width: 50em">
           <li>
             The optimizer is probabilistic and may not be the true optimal team. Check the&nbsp;
             <a href="https://github.com/Jiiku831/sekai-public" target="_blank">source repo</a>
@@ -98,10 +64,39 @@
               this spreadsheet</a>. Download the sheet as a CSV and then import
             it using the file select above.
           </li>
+          <li>
+            Parking targets above a certain threshold is done with limited
+            compute budget and may not be the optimal path to parking. If
+            a park fails, you can attempt to retry the computation by clicking
+            the "Retry Park" button.
+          </li>
         </ul>
 
-        <input type="button" value="Recommend Event Team (Slot 0)" onclick="controller.BuildEventTeam();">
-        <input type="button" value="Recommend Challenge Live Team (Slot 1)" onclick="BuildChallengeLiveTeam();">
+        <b>Recommend:</b>&nbsp;
+        <input type="button" value="Event Team (Slot 0)" onclick="controller.BuildEventTeam();">
+        <input type="button" value="Challenge Live Team (Slot 1)" onclick="BuildChallengeLiveTeam();">
+        <input type="button" value="Single-Turn Parking Team (Slot 2)" onclick="controller.BuildParkingTeam(false);">
+        <input type="button" value="Single-Turn Parking Team Ignoring Constraints (Slot 2)" onclick="controller.BuildParkingTeam(true);">
+        <fieldset class="parking-params">
+          <legend>Parking Parameters</legend>
+
+          <small class="new">
+            The parking feature is new and experimental! Please cross
+            check with other sources or do a few test runs to ensure accuracy
+            before you commit to your final park. Report any inaccuracies you
+            find.
+          </small>
+
+          <label for="park-target">Target Points</label>
+          <input type="number" style="width: 7em;" min="100" step="1"
+                 name="park-target" pattern="[0-9]" onchange="SetTargetPoints(this);">
+          <label for="park-accuracy">Play Accuracy (%)*</label>
+          <input type="number" style="width: 7em;" min="1" max="100" step="1" value="95"
+                 name="park-accuracy" pattern="[0-9]" onchange="SetParkAccuracy(this);">
+          <input type="button" value="Retry Park (see notes)" onclick="controller.RefreshTeams();">
+
+          <small>* Only affects parking related calculations.</small>
+        </fieldset>
 
         <div id="team-recommender-output">
         </div>
@@ -215,6 +210,53 @@
           <div id="use-old-subunitless-bonus-container">
           </div>
         </details>
+      </div>
+    </details>
+
+    <hr>
+
+    <details open>
+      <summary>Save Profile</summary>
+
+      <div>
+        This will save most stuff that matters. The teams and the challenge
+        live character selection are not saved.
+        <table class="save-table">
+          <tr>
+            <th>
+              Local browser storage
+            </th>
+            <td>
+              <input type="button" value="Load" onclick="controller.ReadSaveData();">
+              <input type="button" value="Save" onclick="controller.WriteSaveData();">
+              <input type="button" value="Delete" onclick="controller.DeleteSaveData();">
+            </td>
+          </tr>
+          <tr>
+            <th>
+              Load from external source
+            </th>
+            <td>
+              <input id="upload-cards" type="file" name="upload-cards" size=30><br>
+              <input type="button" value="Import cards from CSV" onclick="ImportCsv();">
+              <input type="button" value="Import from .binaryproto" onclick="ImportBinaryProto();">
+              <input type="button" value="Import from .textproto" onclick="ImportTextProto();">
+              <div id="upload-cards-output-area"></div>
+            </td>
+          </tr>
+          <tr>
+            <th>
+              Export save data
+            </th>
+            <td>
+              <input type="button" value="Export as .binaryproto" onclick="ExportBinaryProto();">
+              <input type="button" value="Export as .textproto" onclick="ExportTextProto();">
+              <br>
+              Exporting as .binaryproto is more forwards-compatible. Exporting
+              as .textproto is human readable.
+            </td>
+          </tr>
+        </table>
       </div>
     </details>
 

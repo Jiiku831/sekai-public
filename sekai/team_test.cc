@@ -3,6 +3,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include "gmock/gmock.h"
 #include "sekai/bitset.h"
 #include "sekai/card.h"
 #include "sekai/db/master_db.h"
@@ -15,9 +16,12 @@
 namespace sekai {
 namespace {
 
+using ::testing::ElementsAreArray;
 using ::testing::Eq;
+using ::testing::Pair;
 using ::testing::ParseTextProto;
 using ::testing::Pointwise;
+using ::testing::UnorderedElementsAre;
 
 ProfileProto TestProfile() {
   // clang-format off
@@ -323,6 +327,56 @@ TEST_F(TeamTest, ExampleTeam2EventBonus) {
   }
   Team team = MakeTeam(cards);
   EXPECT_FLOAT_EQ(team.EventBonus(bonus), 310);
+}
+
+TEST_F(TeamTest, ExampleTeam1SoloEbiPoints) {
+  std::array cards = {
+      CreateCard(profile_, /*card_id=*/116, /*level=*/60, /*master_rank=*/5),
+      CreateCard(profile_, /*card_id=*/423, /*level=*/60, /*master_rank=*/2),
+      CreateCard(profile_, /*card_id=*/162, /*level=*/60),
+      CreateCard(profile_, /*card_id=*/242, /*level=*/60),
+      CreateCard(profile_, /*card_id=*/483, /*level=*/60),
+  };
+  auto event_id = ParseTextProto<EventId>(R"pb(event_id: 111)pb");
+  EventBonus bonus(event_id);
+  EventBonusProto bonus_proto = bonus.ToProto();
+  for (Card& card : cards) {
+    card.ApplyEventBonus(bonus);
+  }
+  Team team = MakeTeam(cards);
+  EXPECT_FLOAT_EQ(team.EventBonus(bonus), 295);
+  Team::SoloEbiBasePoints result = team.GetSoloEbiBasePoints(profile_, bonus, 0.9);
+  EXPECT_THAT(
+      result.possible_points,
+      ElementsAreArray({395, 398, 402, 406, 410, 414, 418, 422, 426, 430, 434, 438, 442, 446,
+                        450, 454, 458, 462, 466, 470, 474, 477, 481, 485, 489, 493, 497, 501,
+                        505, 509, 513, 517, 521, 525, 529, 533, 537, 541, 545, 549, 553, 556,
+                        560, 564, 568, 572, 576, 580, 584, 588, 592, 596, 600, 604, 608, 612,
+                        616, 620, 624, 628, 632, 635, 639, 643, 647, 651, 655, 659, 663, 667,
+                        671, 675, 679, 683, 687, 691, 695, 699, 703, 707, 711, 714, 718}));
+  EXPECT_THAT(result.score_threshold,
+              UnorderedElementsAre(
+                  Pair(395, 0), Pair(398, 20000), Pair(402, 40000), Pair(406, 60000),
+                  Pair(410, 80000), Pair(414, 100000), Pair(418, 120000), Pair(422, 140000),
+                  Pair(426, 160000), Pair(430, 180000), Pair(434, 200000), Pair(438, 220000),
+                  Pair(442, 240000), Pair(446, 260000), Pair(450, 280000), Pair(454, 300000),
+                  Pair(458, 320000), Pair(462, 340000), Pair(466, 360000), Pair(470, 380000),
+                  Pair(474, 400000), Pair(477, 420000), Pair(481, 440000), Pair(485, 460000),
+                  Pair(489, 480000), Pair(493, 500000), Pair(497, 520000), Pair(501, 540000),
+                  Pair(505, 560000), Pair(509, 580000), Pair(513, 600000), Pair(517, 620000),
+                  Pair(521, 640000), Pair(525, 660000), Pair(529, 680000), Pair(533, 700000),
+                  Pair(537, 720000), Pair(541, 740000), Pair(545, 760000), Pair(549, 780000),
+                  Pair(553, 800000), Pair(556, 820000), Pair(560, 840000), Pair(564, 860000),
+                  Pair(568, 880000), Pair(572, 900000), Pair(576, 920000), Pair(580, 940000),
+                  Pair(584, 960000), Pair(588, 980000), Pair(592, 1000000), Pair(596, 1020000),
+                  Pair(600, 1040000), Pair(604, 1060000), Pair(608, 1080000), Pair(612, 1100000),
+                  Pair(616, 1120000), Pair(620, 1140000), Pair(624, 1160000), Pair(628, 1180000),
+                  Pair(632, 1200000), Pair(635, 1220000), Pair(639, 1240000), Pair(643, 1260000),
+                  Pair(647, 1280000), Pair(651, 1300000), Pair(655, 1320000), Pair(659, 1340000),
+                  Pair(663, 1360000), Pair(667, 1380000), Pair(671, 1400000), Pair(675, 1420000),
+                  Pair(679, 1440000), Pair(683, 1460000), Pair(687, 1480000), Pair(691, 1500000),
+                  Pair(695, 1520000), Pair(699, 1540000), Pair(703, 1560000), Pair(707, 1580000),
+                  Pair(711, 1600000), Pair(714, 1620000), Pair(718, 1640000)));
 }
 
 TEST_F(TeamTest, FillSupportUnit) {

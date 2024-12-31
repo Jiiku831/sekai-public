@@ -21,5 +21,5 @@ message CardProto {
   // Only makes sense in a team
   optional int32 team_power_contrib = 4;
   optional float team_bonus_contrib = 5;
-  optional int32 team_skill_contrib = 6;
+  optional float team_skill_contrib = 6;
 }

@@ -66,9 +66,12 @@ Skill::Skill(const db::Skill& skill, int skill_level) {
     } else if (skill_effect.skill_effect_type() ==
                db::SkillEffect::OTHER_MEMBER_SCORE_UP_REFERENCE_RATE) {
       for (const db::SkillEffect::Details& details : skill_effect.skill_effect_details()) {
-        reference_score_up_rate_ = static_cast<float>(details.activate_effect_value()) / 100;
-        found = true;
-        break;
+        if (details.level() == skill_level) {
+          reference_score_up_rate_ = static_cast<float>(details.activate_effect_value()) / 100;
+          reference_score_up_cap_ = details.activate_effect_value2();
+          found = true;
+          break;
+        }
       }
     }
   }
@@ -79,7 +82,7 @@ Skill::Skill(const db::Skill& skill, int skill_level) {
   max_card_skill_value_ = max_skill_value_ = MaxSkillValueImpl();
 }
 
-float Skill::SkillValue(UnitCountBase& unit_count) const {
+float Skill::SkillValue(int card_index, UnitCountBase& unit_count) const {
   if (db_skill_enhance_unit_) {
     int count = unit_count.CharacterCount(db_skill_enhance_unit_);
     int factor = count == 5 ? 5 : count - 1;
@@ -93,9 +96,8 @@ float Skill::SkillValue(UnitCountBase& unit_count) const {
     return skill_value_ + character_rank_profile_enhance_value_;
   }
   if (skill_effect_type_.test(db::SkillEffect::OTHER_MEMBER_SCORE_UP_REFERENCE_RATE)) {
-    return skill_value_ + (unit_count.ReferenceBoostCappedSkillValueTotal() -
-                           ReferenceBoostCappedMaxCardSkillValue()) /
-                              8;
+    return skill_value_ +
+           unit_count.ReferenceBoostAverageCappedSkillValue(card_index) * reference_score_up_rate_;
   }
   return skill_value_;
 }
@@ -120,7 +122,7 @@ float Skill::MaxSkillValueImpl() const {
                               static_cast<int>(kMaxBonusCharacterRank / kBonusCharacterRankStep);
   }
   if (skill_effect_type_.test(db::SkillEffect::OTHER_MEMBER_SCORE_UP_REFERENCE_RATE)) {
-    return skill_value_ + kReferenceScoreBoostCap / 2;
+    return skill_value_ + reference_score_up_cap_;
   }
   return skill_value_;
 }

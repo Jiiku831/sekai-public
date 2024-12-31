@@ -13,16 +13,45 @@ target_pkg=frontend/build
 target=server
 output=sajii.html
 
+src_root="$(mktemp).tar"
+
 echo "$fg[blue]Building binary //$target_pkg:$target$reset_color"
-BAZEL_CXXOPTS=-std=c++20 bazelisk build --config=wasm -c opt "//$target_pkg:$target" || exit $?
+if [[ "$1" = "--ubsan" ]]; then
+  include_src=1
+  build_opts=(
+    --config=wasm-ubsan
+    -c dbg
+  )
+elif [[ "$1" = "--asan" ]]; then
+  include_src=1
+  build_opts=(
+    --config=wasm-asan
+    -c dbg
+  )
+elif [[ "$1" = "--dbg" ]]; then
+  include_src=1
+  build_opts=(
+    --config=wasm-dbg
+    -c dbg
+  )
+else
+  build_opts=(
+    --config=wasm
+    -c opt
+  )
+fi
+BAZEL_CXXOPTS=-std=c++20 bazelisk build "${build_opts[@]}" "//$target_pkg:$target" || exit $?
 
 echo "$fg[blue]Extracting server root...$reset_color"
-server_root="$(bazelisk info --config=wasm -c opt bazel-bin)/$target_pkg/$target.runfiles/_main/$target_pkg/server_root"
+server_root="$(bazelisk info "${build_opts[@]}" bazel-bin)/$target_pkg/$target.runfiles/_main/$target_pkg/server_root"
 if [[ -d "$server_root" ]]; then
     rm -rf "$server_root" || exit 1
 fi
 mkdir "$server_root"
 tar -xvf "$server_root.tar" -C "$server_root" || exit 1
+if (( include_src )); then
+  ln -s "$root" "$server_root/src"
+fi
 
 if (( build_only )); then
     exit 0

@@ -28,7 +28,7 @@ std::vector<Team> MaxBonusTeamBuilder::RecommendTeamsImpl(std::span<const Card* 
                                                           std::optional<absl::Time> deadline) {
   // TODO: this doesnt work for world link. need optimizer that looks only at rainbow teams.
   std::vector<const Card*> sorted_pool = SortCardsByBonus(pool);
-  GreedyTeamBuilder team_builder(OptimizationObjective::kOptimizeBonus);
+  GreedyTeamBuilder team_builder{OptimizeBonus::Get()};
   team_builder.AddConstraints(constraints_);
   std::vector<Team> teams =
       team_builder.RecommendTeams(sorted_pool, profile, event_bonus, estimator, deadline);
