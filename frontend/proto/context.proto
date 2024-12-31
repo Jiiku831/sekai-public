@@ -32,7 +32,7 @@ message CardStateContext {
   // Makes sense only within a team.
   int32 team_power_contrib = 4;
   float team_bonus_contrib = 5;
-  int32 team_skill_contrib = 6;
+  float team_skill_contrib = 6;
 }
 
 message CardContext {

@@ -28,10 +28,10 @@ class Card : public CardBase {
   int card_id() const { return card_id_; }
   int character_id() const { return character_id_; }
 
-  float SkillValue(UnitCountBase& unit_count) const;
+  float SkillValue(int card_index, UnitCountBase& unit_count) const;
   float MaxSkillValue() const;
-  float ReferenceBoostCappedMaxSkillValue() const {
-    return std::min(kReferenceScoreBoostCap, MaxSkillValue());
+  float ReferenceBoostCappedMaxSkillValue(int origin_skill_level) const {
+    return std::min(kReferenceScoreBoostCaps[origin_skill_level], MaxSkillValue());
   }
 
   void ApplyEventBonus(const EventBonus& event_bonus, const EventBonus& support_bonus);
@@ -65,6 +65,16 @@ class Card : public CardBase {
   CardProto ToProto(UnitCountBase& unit_count) const;
   CardState state() const { return state_; }
 
+  bool HasSecondarySkill() const { return has_secondary_skill_; }
+  void UseSecondarySkill(bool use_secondary_skill) {
+    if (has_secondary_skill_) {
+      use_secondary_skill_ = use_secondary_skill;
+    }
+  }
+  bool UseSecondarySkill() const { return use_secondary_skill_; }
+
+  const Skill& skill() const { return use_secondary_skill_ ? secondary_skill_ : skill_; }
+
  private:
   // Card state
   CardState state_;
@@ -78,6 +88,7 @@ class Card : public CardBase {
   Skill skill_;
   Skill secondary_skill_;
   bool has_secondary_skill_ = false;
+  bool use_secondary_skill_ = false;
 
   float GetBonus(const EventBonus& event_bonus) const;
   float event_bonus_ = 0;

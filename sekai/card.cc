@@ -187,7 +187,7 @@ CardProto Card::ToProto(UnitCountBase& unit_count) const {
   *proto.mutable_db_card() = db_card_;
   *proto.mutable_state() = state_;
   if (has_secondary_skill_) {
-    if (secondary_skill_.SkillValue(unit_count) >= skill_.SkillValue(unit_count)) {
+    if (use_secondary_skill_) {
       proto.set_skill_state(CardProto::USE_SECONDARY_SKILL);
     } else {
       proto.set_skill_state(CardProto::USE_PRIMARY_SKILL);
@@ -213,16 +213,16 @@ CardState CreateMaxCardState(int card_id) {
   return state;
 }
 
-float Card::SkillValue(UnitCountBase& unit_count) const {
-  if (has_secondary_skill_) {
-    return std::max(skill_.SkillValue(unit_count), secondary_skill_.SkillValue(unit_count));
+float Card::SkillValue(int card_index, UnitCountBase& unit_count) const {
+  if (use_secondary_skill_) {
+    return secondary_skill_.SkillValue(card_index, unit_count);
   }
-  return skill_.SkillValue(unit_count);
+  return skill_.SkillValue(card_index, unit_count);
 }
 
 float Card::MaxSkillValue() const {
-  if (has_secondary_skill_) {
-    return std::max(skill_.MaxSkillValue(), secondary_skill_.MaxSkillValue());
+  if (use_secondary_skill_) {
+    return secondary_skill_.MaxSkillValue();
   }
   return skill_.MaxSkillValue();
 }

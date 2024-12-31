@@ -49,8 +49,8 @@ int Team::CardPowerContrib(const Card* card) const {
 
 float Team::CardBonusContrib(const Card* card) const { return card->event_bonus(); }
 
-float Team::CardSkillContrib(const Card* card, UnitCount& unit_count) const {
-  return card->SkillValue(unit_count);
+float Team::CardSkillContrib(const Card* card, int card_index, UnitCount& unit_count) const {
+  return card->SkillValue(card_index, unit_count);
 }
 
 int Team::Power(const Profile& profile) const {
@@ -119,8 +119,8 @@ float Team::SkillValue() const {
   float skill_value = 0;
   int skill_factor = 1;
   UnitCount unit_count(cards_);
-  for (const Card* card : cards_) {
-    skill_value += CardSkillContrib(card, unit_count) / skill_factor;
+  for (std::size_t i = 0; i < cards_.size(); ++i) {
+    skill_value += CardSkillContrib(cards_[i], i, unit_count) / skill_factor;
     skill_factor = 5;
   }
   return skill_value;
@@ -130,8 +130,8 @@ float Team::MaxSkillValue() const {
   float total_skill = 0;
   float max_skill = 0;
   UnitCount unit_count(cards_);
-  for (const Card* card : cards_) {
-    float skill_value = CardSkillContrib(card, unit_count);
+  for (std::size_t i = 0; i < cards_.size(); ++i) {
+    float skill_value = CardSkillContrib(cards_[i], i, unit_count);
     max_skill = std::max(skill_value, max_skill);
     total_skill += skill_value;
   }
@@ -142,10 +142,10 @@ Team::SkillValueDetail Team::ConstrainedMaxSkillValue(Character eligible_leads) 
   float total_skill = 0;
   float max_skill = 0;
   UnitCount unit_count(cards_);
-  for (const Card* card : cards_) {
-    float skill_value = CardSkillContrib(card, unit_count);
+  for (std::size_t i = 0; i < cards_.size(); ++i) {
+    float skill_value = CardSkillContrib(cards_[i], i, unit_count);
     total_skill += skill_value;
-    if (eligible_leads.test(card->character_id())) {
+    if (eligible_leads.test(cards_[i]->character_id())) {
       max_skill = std::max(skill_value, max_skill);
     }
   }
@@ -177,7 +177,7 @@ void Team::ReorderTeamForOptimalSkillValue(Character eligible_leads) {
   float max_skill = 0;
   UnitCount unit_count(cards_);
   for (std::size_t i = 0; i < cards_.size(); ++i) {
-    float skill_value = CardSkillContrib(cards_[i], unit_count);
+    float skill_value = CardSkillContrib(cards_[i], i, unit_count);
     if (skill_value > max_skill && eligible_leads.test(cards_[i]->character_id())) {
       max_skill_index = i;
       max_skill = skill_value;
@@ -205,8 +205,8 @@ void Team::ReorderTeamForKizuna(std::span<const Character> kizuna_pairs) {
 std::vector<int> Team::GetSkillValues() const {
   std::vector<int> skills;
   UnitCount unit_count(cards_);
-  for (const Card* card : cards_) {
-    skills.push_back(CardSkillContrib(card, unit_count));
+  for (std::size_t i = 0; i < cards_.size(); ++i) {
+    skills.push_back(CardSkillContrib(cards_[i], i, unit_count));
   }
   return skills;
 }
@@ -221,12 +221,12 @@ TeamProto Team::ToProto(const Profile& profile, const class EventBonus& event_bo
                         const EstimatorBase& estimator) const {
   TeamProto team;
   UnitCount unit_count(cards_);
-  for (const Card* card : cards_) {
+  for (std::size_t i = 0; i < cards_.size(); ++i) {
     CardProto* card_proto = team.add_cards();
-    *card_proto = card->ToProto(unit_count);
-    card_proto->set_team_power_contrib(CardPowerContrib(card));
-    card_proto->set_team_bonus_contrib(CardBonusContrib(card));
-    card_proto->set_team_skill_contrib(CardSkillContrib(card, unit_count));
+    *card_proto = cards_[i]->ToProto(unit_count);
+    card_proto->set_team_power_contrib(CardPowerContrib(cards_[i]));
+    card_proto->set_team_bonus_contrib(CardBonusContrib(cards_[i]));
+    card_proto->set_team_skill_contrib(CardSkillContrib(cards_[i], i, unit_count));
   }
   float support_bonus = 0;
   for (const Card* card : support_cards_) {

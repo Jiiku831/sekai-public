@@ -556,6 +556,7 @@ cc_library(
     deps = [
         ":bitset",
         ":card",
+        ":config",
         ":unit_count_base",
         "//sekai/db/proto:all",
     ],
@@ -567,7 +568,9 @@ cc_library(
     hdrs = ["unit_count_base.h"],
     deps = [
         ":bitset",
+        ":config",
         "//sekai/db/proto:all",
+        "@abseil-cpp//absl/log:absl_check",
     ],
 )
 

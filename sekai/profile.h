@@ -1,7 +1,6 @@
 #pragma once
 
 #include <array>
-#include <cstddef>
 #include <filesystem>
 #include <span>
 #include <vector>
@@ -9,7 +8,6 @@
 #include "absl/base/nullability.h"
 #include "absl/container/flat_hash_map.h"
 #include "absl/status/status.h"
-#include "absl/strings/str_format.h"
 #include "sekai/card.h"
 #include "sekai/db/proto/all.h"
 #include "sekai/profile_bonus.h"
@@ -35,21 +33,17 @@ class Profile : public ProfileBonus {
   std::span<const BonusRate> unit_bonus() const override { return unit_bonus_; }
   int bonus_power() const override { return bonus_power_; }
   int character_rank(int char_id) const override;
-  std::vector<const Card*> CardPtrs() const {
-    // TODO: just change team builder to use ref.
-    std::vector<const Card*> out;
-    out.reserve(cards_.size());
-    for (const auto& [unused_id, card] : cards_) {
-      out.push_back(&card);
-    }
-    return out;
-  }
+  std::vector<const Card*> TeamBuilderCardPool() const;
+  std::vector<const Card*> PrimaryCardPool() const;
   absl::Nullable<const Card*> GetCard(int card_id) const;
+  absl::Nullable<const Card*> GetSecondaryCard(int card_id) const;
   std::span<const Card* const> sorted_support() const { return sorted_support_; }
 
   ProfileProto CardsToProto() const;
 
  private:
+  void ApplyProfileBonus();
+
   std::array<BonusRate, db::Attr_ARRAYSIZE> attr_bonus_;
   std::vector<BonusRate> char_bonus_;
   std::vector<BonusRate> cr_bonus_;
@@ -57,6 +51,7 @@ class Profile : public ProfileBonus {
   std::array<BonusRate, db::Unit_ARRAYSIZE> unit_bonus_;
   int bonus_power_ = 0;
   absl::flat_hash_map<int, Card> cards_;
+  absl::flat_hash_map<int, Card> secondary_cards_;
   std::vector<const Card*> sorted_support_;
 };
 

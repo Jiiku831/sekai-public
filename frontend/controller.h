@@ -77,7 +77,7 @@ class Controller : public ControllerBase {
   void BuildParkingTeam(bool ignore_constraints);
 
   bool IsValidCard(int card_id) const;
-  void SetTeamCard(int team_index, int card_index, int card_id);
+  void SetTeamCard(int team_index, int card_index, int card_id, bool use_untrained_skill);
   void ClearTeamCard(int team_index, int card_index);
 
   void RefreshTeams() const;
@@ -89,7 +89,11 @@ class Controller : public ControllerBase {
 
  private:
   FilterState card_list_filter_state_;
-  std::array<std::array<int, kTeamSize>, kNumTeams> teams_{};
+  struct TeamCard {
+    int card_id = 0;
+    bool use_untrained_skill = false;
+  };
+  std::array<std::array<TeamCard, kTeamSize>, kNumTeams> teams_{};
   sekai::Estimator::Mode estimator_mode_ = sekai::Estimator::Mode::kMulti;
   sekai::Estimator estimator_ = sekai::RandomExEstimator(sekai::Estimator::Mode::kMulti);
   sekai::Estimator cc_estimator_ = sekai::RandomExEstimator(sekai::Estimator::Mode::kCheerful);
@@ -117,6 +121,7 @@ class Controller : public ControllerBase {
   sekai::CardState* GetCardState(int card_id);
   void RefreshTeam(int team_index) const;
   float park_accuracy() const { return park_accuracy_ / 100.f; }
+  void SetTeamCardFromCard(int team_index, int card_index, absl::Nullable<const sekai::Card*> card);
 };
 
 }  // namespace frontend

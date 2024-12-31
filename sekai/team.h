@@ -72,7 +72,7 @@ class Team {
  private:
   int CardPowerContrib(const Card* card) const;
   float CardBonusContrib(const Card* card) const;
-  float CardSkillContrib(const Card* card, UnitCount& unit_count) const;
+  float CardSkillContrib(const Card* card, int card_index, UnitCount& unit_count) const;
   float EventBonus() const { return event_bonus_base_ + support_bonus_base_; }
 
   std::vector<const Card*> cards_;

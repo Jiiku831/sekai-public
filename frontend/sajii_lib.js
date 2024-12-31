@@ -681,7 +681,7 @@ function CreateTeamBuilder(index) {
 
     const input = document.createElement("input");
     input.id = `team-builder-${index}-${i}-id`;
-    input.type = "number";
+    input.type = "input";
     input.min = 0;
     input.max = 9999;
     input.classList.add("team-builder-id");
@@ -689,15 +689,31 @@ function CreateTeamBuilder(index) {
     input.addEventListener("change", function (e) {
       this.setCustomValidity("");
       let isValid = true;
+
+      let cardId = this.value;
+      let useUntrained = false;
+      let parsedCardId = 0;
+      if (cardId.endsWith("U")) {
+        cardId = cardId.substr(0, cardId.length - 1);
+        useUntrained = true;
+      }
+
       if (!this.validity.valid || this.value == "") {
         isValid = false;
-      } else if (!controller.IsValidCard(parseInt(this.value))) {
-        this.setCustomValidity("Invalid card ID.");
-        isValid = false;
+      } else {
+        parsedCardId = parseInt(cardId);
+        if (!parsedCardId || !controller.IsValidCard(parsedCardId)) {
+          this.setCustomValidity("Invalid card ID.");
+          isValid = false;
+        }
       }
       if (isValid) {
-        controller.SetTeamCard(index, i, parseInt(this.value));
+        this.dataset.cardId = parsedCardId;
+        this.dataset.useUntrained = useUntrained;
+        controller.SetTeamCard(index, i, parsedCardId, useUntrained);
       } else {
+        this.dataset.cardId = 0;
+        this.dataset.useUntrained = false;
         controller.ClearTeamCard(index, i);
       }
     });
@@ -832,7 +848,7 @@ function RenderTeamImpl(teamIndex, context) {
     const idInput = document.getElementById(`team-builder-${teamIndex}-${i}-id`);
     if (context.cards != undefined && (i + offset) < context.cards.length) {
       const card = context.cards[i + offset];
-      if (card.cardId != idInput.value) {
+      if (card.cardId != idInput.dataset.cardId) {
         --offset;
         continue;
       }
@@ -840,7 +856,7 @@ function RenderTeamImpl(teamIndex, context) {
       cardStatsNode.innerText =
         `Lv ${card.state.level}/MR ${card.state.masterRank}/SL ${card.state.skillLevel}\n` +
         `Power: ${card.state.teamPowerContrib}\n` +
-        `Skill: ${card.state.teamSkillContrib}%\n` +
+        `Skill: ${card.state.teamSkillContrib.toFixed(2).replace(/\.?0+$/,'')}%\n` +
         `Bonus: ${bonusContrib}%\n`;
       thumbNode.appendChild(CreateCardThumb(card));
     }

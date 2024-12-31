@@ -147,9 +147,11 @@ EM_JS(void, SetTitleBonus, (int value), {
   document.getElementById("title-bonus").value = value;
 });
 
-EM_JS(void, SetTeamCardId, (int team_index, int card_index, int card_id), {
-  document.getElementById(`team-builder-${team_index}-${card_index}-id`).value =
-    card_id == 0 ? "" : card_id;
+EM_JS(void, SetTeamCardId, (int team_index, int card_index, int card_id, bool use_untrained_skill), {
+  let card = document.getElementById(`team-builder-${team_index}-${card_index}-id`);
+  card.value = (card_id == 0 ? "" : card_id) + (use_untrained_skill ? "U" : "");
+  card.dataset.cardId = card_id;
+  card.dataset.useUntrained = use_untrained_skill;
 });
 
 EM_JS(void, SetTeamBuilderOutput, (const char * output), {
@@ -367,7 +369,7 @@ WorldBloomVersion GetWorldBloomVersion(const ProfileProto& profile) {
   return static_cast<WorldBloomVersion>(version);
 }
 
-}  // namespace
+}  // namespace frontend
 
 bool FilterState::Eval(const Card& card, bool owned) const {
   absl::Time release_time = absl::FromUnixMillis(card.release_at());
@@ -648,15 +650,14 @@ void Controller::BuildChallengeLiveTeam(int char_id) {
   ChallengeLiveTeamBuilder builder{char_id};
 
   std::vector<sekai::Team> teams =
-      builder.RecommendTeams(profile_.CardPtrs(), profile_, event_bonus_, cl_estimator_);
+      builder.RecommendTeams(profile_.TeamBuilderCardPool(), profile_, event_bonus_, cl_estimator_);
   if (teams.empty()) {
     SetTeamBuilderOutput("WARNING: no teams built.");
   } else {
     teams[0].ReorderTeamForOptimalSkillValue();
     for (int i = 0; i < kTeamSize; ++i) {
-      teams_[kTeamBuilderOutputSlot][i] =
-          i < teams[0].cards().size() ? teams[0].cards()[i]->card_id() : 0;
-      SetTeamCardId(kTeamBuilderOutputSlot, i, teams_[kTeamBuilderOutputSlot][i]);
+      SetTeamCardFromCard(kTeamBuilderOutputSlot, i,
+                          i < teams[0].cards().size() ? teams[0].cards()[i] : nullptr);
     }
     SetTeamBuilderOutput("Done.");
   }
@@ -673,15 +674,14 @@ void Controller::BuildEventTeam() {
   builder.AddConstraints(constraints_);
 
   std::vector<sekai::Team> teams =
-      builder.RecommendTeams(profile_.CardPtrs(), profile_, event_bonus_, estimator());
+      builder.RecommendTeams(profile_.TeamBuilderCardPool(), profile_, event_bonus_, estimator());
   if (teams.empty()) {
     SetTeamBuilderOutput("WARNING: no teams built.");
   } else {
     teams[0].ReorderTeamForOptimalSkillValue(builder.constraints());
     for (int i = 0; i < kTeamSize; ++i) {
-      teams_[kTeamBuilderOutputSlot][i] =
-          i < teams[0].cards().size() ? teams[0].cards()[i]->card_id() : 0;
-      SetTeamCardId(kTeamBuilderOutputSlot, i, teams_[kTeamBuilderOutputSlot][i]);
+      SetTeamCardFromCard(kTeamBuilderOutputSlot, i,
+                          i < teams[0].cards().size() ? teams[0].cards()[i] : nullptr);
     }
     SetTeamBuilderOutput("Done.");
   }
@@ -695,15 +695,33 @@ void Controller::OnSaveDataRead() {
 
 bool Controller::IsValidCard(int card_id) const { return profile_.GetCard(card_id) != nullptr; }
 
-void Controller::SetTeamCard(int team_index, int card_index, int card_id) {
-  if (teams_[team_index][card_index] == card_id) return;
-  teams_[team_index][card_index] = card_id;
+void Controller::SetTeamCard(int team_index, int card_index, int card_id,
+                             bool use_untrained_skill) {
+  if (teams_[team_index][card_index].card_id == card_id &&
+      teams_[team_index][card_index].use_untrained_skill == use_untrained_skill)
+    return;
+  teams_[team_index][card_index] = {
+      .card_id = card_id,
+      .use_untrained_skill = use_untrained_skill,
+  };
   RefreshTeam(team_index);
 }
 
+void Controller::SetTeamCardFromCard(int team_index, int card_index,
+                                     absl::Nullable<const sekai::Card*> card) {
+  if (card == nullptr) {
+    SetTeamCardId(team_index, card_index, 0, false);
+    SetTeamCard(team_index, card_index, 0, false);
+  } else {
+    bool use_untrained_skill = card->HasSecondarySkill() && !card->UseSecondarySkill();
+    SetTeamCardId(team_index, card_index, card->card_id(), use_untrained_skill);
+    SetTeamCard(team_index, card_index, card->card_id(), use_untrained_skill);
+  }
+}
+
 void Controller::ClearTeamCard(int team_index, int card_index) {
-  if (teams_[team_index][card_index] == 0) return;
-  teams_[team_index][card_index] = 0;
+  if (teams_[team_index][card_index].card_id == 0) return;
+  teams_[team_index][card_index] = {};
   RefreshTeam(team_index);
 }
 
@@ -716,9 +734,16 @@ void Controller::RefreshTeams() const {
 void Controller::RefreshTeam(int team_index) const {
   std::vector<const sekai::Card*> cards;
   for (int i = 0; i < kTeamSize; ++i) {
-    int card_id = teams_[team_index][i];
-    if (card_id == 0) continue;
-    const sekai::Card* card = profile_.GetCard(card_id);
+    const TeamCard& team_card = teams_[team_index][i];
+    if (team_card.card_id == 0) continue;
+    const sekai::Card* card = profile_.GetCard(team_card.card_id);
+    if (card->HasSecondarySkill() && card->state().special_training() &&
+        !team_card.use_untrained_skill) {
+      card = profile_.GetSecondaryCard(team_card.card_id);
+      // This should never be null here. Note that the secondary card is only
+      // inserted if it is eligible.
+      ABSL_CHECK_NE(card, nullptr);
+    }
     if (card == nullptr) continue;
     cards.push_back(card);
   }
@@ -904,7 +929,7 @@ sekai::OptimizeExactPoints Controller::UnsafeGetParkingObjective() const {
 
 void Controller::BuildParkingTeam(bool ignore_constraints) {
   constexpr int kTeamBuilderOutputSlot = 2;
-  teams_[kTeamBuilderOutputSlot].fill(0);
+  teams_[kTeamBuilderOutputSlot].fill({});
   if (!target_points_.has_value()) {
     SetTeamBuilderOutput("ERROR: no target points set");
     return;
@@ -922,7 +947,7 @@ void Controller::BuildParkingTeam(bool ignore_constraints) {
   }
 
   std::vector<sekai::Team> teams =
-      builder.RecommendTeams(profile_.CardPtrs(), profile_, event_bonus_, estimator());
+      builder.RecommendTeams(profile_.TeamBuilderCardPool(), profile_, event_bonus_, estimator());
   sekai::Character all_chars;
   all_chars.set();
   if (teams.empty()) {
@@ -933,9 +958,8 @@ void Controller::BuildParkingTeam(bool ignore_constraints) {
   } else {
     teams[0].ReorderTeamForOptimalSkillValue(builder.constraints());
     for (int i = 0; i < kTeamSize; ++i) {
-      teams_[kTeamBuilderOutputSlot][i] =
-          i < teams[0].cards().size() ? teams[0].cards()[i]->card_id() : 0;
-      SetTeamCardId(kTeamBuilderOutputSlot, i, teams_[kTeamBuilderOutputSlot][i]);
+      SetTeamCardFromCard(kTeamBuilderOutputSlot, i,
+                          i < teams[0].cards().size() ? teams[0].cards()[i] : nullptr);
     }
     SetTeamBuilderOutput("Done.");
   }

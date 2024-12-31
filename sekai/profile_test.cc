@@ -204,7 +204,7 @@ TEST(ProfileTest, CheckTestProfileUnitBonus) {
 TEST(ProfileTest, LoadCardsFromCsv) {
   Profile profile(TestProfile());
   profile.LoadCardsFromCsv(SekaiRunfilesRoot() / "data/profile/cards.csv");
-  EXPECT_THAT(profile.CardPtrs(), IsEmpty());
+  EXPECT_THAT(profile.PrimaryCardPool(), IsEmpty());
 }
 
 TEST(ProfileTest, ApplySkillCharacterRanks) {
@@ -217,12 +217,26 @@ TEST(ProfileTest, ApplySkillCharacterRanks) {
   profile_proto.MergeFrom(TestProfile());
   profile_proto.set_character_ranks(25, 120);
   Profile profile(profile_proto);
-  const Card* card = profile.GetCard(950);
+  const Card* card = profile.GetSecondaryCard(950);
   ASSERT_NE(card, nullptr);
 
   std::vector<const Card*> cards = {card};
   UnitCount unit_count{cards};
-  EXPECT_FLOAT_EQ(card->SkillValue(unit_count), 160);
+  EXPECT_FLOAT_EQ(card->SkillValue(0, unit_count), 160);
+}
+
+TEST(ProfileTest, NoSecondaryCardIfNoSpecialTraining) {
+  auto profile_proto = ParseTextProto<ProfileProto>(R"pb(
+    cards: {
+      key: 950
+      value: {level: 60 master_rank: 5 skill_level: 4 special_training: false}
+    }
+  )pb");
+  profile_proto.MergeFrom(TestProfile());
+  profile_proto.set_character_ranks(25, 120);
+  Profile profile(profile_proto);
+  const Card* card = profile.GetSecondaryCard(950);
+  EXPECT_EQ(card, nullptr);
 }
 
 TEST(ProfileTest, SortedSupport) {

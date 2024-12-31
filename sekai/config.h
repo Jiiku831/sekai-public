@@ -19,7 +19,7 @@ inline constexpr int kMaxEventBonus = 750;
 inline constexpr int kMinSkillValue = 20 + (20 / 5) * 4;
 inline constexpr int kMaxSkillValue = 160 + (160 / 5) * 4;
 
-inline constexpr float kReferenceScoreBoostCap = 140.0;
+inline constexpr std::array kReferenceScoreBoostCaps = {0.f, 120.f, 130.f, 140.f, 140.f};
 
 inline constexpr int kMaxCharacterRank = 160;
 
