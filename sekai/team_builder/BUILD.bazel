@@ -298,6 +298,7 @@ cc_library(
     deps = [
         ":constraints",
         ":pool_utils",
+        ":skill_selector",
         ":team_builder",
     ],
 )
@@ -378,5 +379,44 @@ cc_test(
         "@abseil-cpp//absl/functional:any_invocable",
         "@ctml",
         "@google_benchmark//:benchmark_main",
+    ],
+)
+
+cc_library(
+    name = "skill_selector",
+    srcs = ["skill_selector.cc"],
+    hdrs = ["skill_selector.h"],
+    deps = [
+        "//sekai:card",
+        "//sekai:combinations",
+        "//sekai:estimator_base",
+        "//sekai:event_bonus",
+        "//sekai:profile",
+        "//sekai:team",
+        "@abseil-cpp//absl/base",
+    ],
+)
+
+cc_test(
+    name = "skill_selector_test",
+    srcs = ["skill_selector_test.cc"],
+    data = [
+        "//data:flat-db",
+    ],
+    deps = [
+        ":skill_selector",
+        "//sekai:card",
+        "//sekai:challenge_live_estimator",
+        "//sekai:estimator",
+        "//sekai:event_bonus",
+        "//sekai:profile",
+        "//sekai:team",
+        "//sekai:unit_count",
+        "//sekai/db:master_db",
+        "//sekai/proto:card_state_cc_proto",
+        "//sekai/proto:profile_cc_proto",
+        "//testing:test_main",
+        "//testing:util",
+        "@googletest//:gtest",
     ],
 )
