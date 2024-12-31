@@ -49,8 +49,8 @@ std::vector<Team> RecommendTeamsImplNoConstraints(
 std::vector<Team> RecommendTeamsImplWithConstraints(
     std::span<const Card* const> sorted_pool, std::span<const Card* const> support_pool,
     const Profile& profile, const EventBonus& event_bonus, const EstimatorBase& estimator,
-    std::optional<absl::Time> deadline, const Constraints& constraints, OptimizationObjective obj,
-    TeamBuilder::Stats& stats) {
+    std::optional<absl::Time> deadline, const Constraints& constraints,
+    const OptimizationObjective& obj, TeamBuilder::Stats& stats) {
   ObjectiveFunction obj_fn = GetObjectiveFunction(obj);
   std::array<std::vector<const Card*>, kCharacterArraySize> char_pools =
       PartitionCardPoolByCharacters(sorted_pool);

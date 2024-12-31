@@ -176,6 +176,7 @@ cc_test(
         ":constraints",
         ":neighbor_teams",
         "//sekai:card",
+        "//sekai:challenge_live_estimator",
         "//sekai:team",
         "//sekai/db:master_db",
         "//sekai/db/proto:all",
@@ -258,11 +259,36 @@ cc_library(
     deps = [
         "//sekai:bitset",
         "//sekai:card",
+        "//sekai:challenge_live_estimator",
         "//sekai:estimator_base",
         "//sekai:event_bonus",
+        "//sekai:points",
         "//sekai:profile",
         "//sekai:team",
+        "@abseil-cpp//absl/container:flat_hash_map",
         "@abseil-cpp//absl/functional:any_invocable",
+        "@abseil-cpp//absl/log",
+        "@abseil-cpp//absl/log:absl_check",
+    ],
+)
+
+cc_test(
+    name = "optimization_objective_test",
+    srcs = ["optimization_objective_test.cc"],
+    data = [
+        "//data:flat-db",
+    ],
+    deps = [
+        ":constraints",
+        ":optimization_objective",
+        "//sekai:card",
+        "//sekai:estimator",
+        "//sekai:team",
+        "//sekai/db:master_db",
+        "//sekai/db/proto:all",
+        "//testing:test_main",
+        "//testing:util",
+        "@googletest//:gtest",
     ],
 )
 

@@ -62,14 +62,29 @@ void LoadCharacterRankBonus(const ProfileProto& profile, std::vector<BonusRate>&
   }
 }
 
-void LoadCards(const ProfileProto& profile, absl::flat_hash_map<int, Card>& cards) {
+// Returns true if the card was successfully inserted.
+bool AddCard(const db::Card& card, const CardState& state, absl::flat_hash_map<int, Card>& cards,
+             absl::flat_hash_map<int, Card>& secondary_cards) {
+  auto [new_card, inserted] = cards.emplace(card.id(), Card{card, state});
+  if (!inserted) {
+    return inserted;
+  }
+  if (new_card->second.HasSecondarySkill() && state.special_training()) {
+    auto [secondary_card, unused] = secondary_cards.emplace(card.id(), Card{card, state});
+    secondary_card->second.UseSecondarySkill(true);
+  }
+  return inserted;
+}
+
+void LoadCards(const ProfileProto& profile, absl::flat_hash_map<int, Card>& cards,
+               absl::flat_hash_map<int, Card>& secondary_cards) {
   for (const auto& [card_id, state] : profile.cards()) {
     const db::Card* card = MasterDb::SafeFindFirst<db::Card>(card_id);
     if (card == nullptr) {
       LOG(INFO) << "Card not found, skipping: " << card_id;
       continue;
     }
-    cards.emplace(card_id, Card{*card, state});
+    AddCard(*card, state, cards, secondary_cards);
   }
 }
 
@@ -102,8 +117,15 @@ Profile::Profile(const ProfileProto& profile) : Profile() {
     character_rank_[char_id] = profile.character_ranks(char_id);
   }
 
-  LoadCards(profile, cards_);
+  LoadCards(profile, cards_, secondary_cards_);
+  ApplyProfileBonus();
+}
+
+void Profile::ApplyProfileBonus() {
   for (auto& [unused_id, card] : cards_) {
+    card.ApplyProfilePowerBonus(*this);
+  }
+  for (auto& [unused_id, card] : secondary_cards_) {
     card.ApplyProfilePowerBonus(*this);
   }
 }
@@ -170,13 +192,13 @@ absl::Status Profile::LoadCardsFromCsv(std::stringstream& ss) {
     CardState state = CreateMaxCardState(card_id);
     state.set_master_rank(master_rank);
     state.set_skill_level(skill_level);
-    auto [new_card, success] = cards_.emplace(card_id, Card{*card, state});
+    bool success = AddCard(*card, state, cards_, secondary_cards_);
     if (!success) {
       LOG(WARNING) << "Found duplicate card ID " << card_id << ". skipping";
       continue;
     }
-    new_card->second.ApplyProfilePowerBonus(*this);
   }
+  ApplyProfileBonus();
   return absl::OkStatus();
 }
 
@@ -184,12 +206,21 @@ void Profile::ApplyEventBonus(const EventBonus& event_bonus) {
   for (auto& [unused_id, card] : cards_) {
     card.ApplyEventBonus(event_bonus);
   }
-  sorted_support_ = GetSortedSupportPool(CardPtrs());
+  for (auto& [unused_id, card] : secondary_cards_) {
+    card.ApplyEventBonus(event_bonus);
+  }
+  sorted_support_ = GetSortedSupportPool(PrimaryCardPool());
 }
 
 absl::Nullable<const Card*> Profile::GetCard(int card_id) const {
   auto card = cards_.find(card_id);
   if (card == cards_.end()) return nullptr;
+  return &card->second;
+}
+
+absl::Nullable<const Card*> Profile::GetSecondaryCard(int card_id) const {
+  auto card = secondary_cards_.find(card_id);
+  if (card == secondary_cards_.end()) return nullptr;
   return &card->second;
 }
 
@@ -199,6 +230,27 @@ ProfileProto Profile::CardsToProto() const {
     (*profile.mutable_cards())[card_id] = card.state();
   }
   return profile;
+}
+
+std::vector<const Card*> Profile::TeamBuilderCardPool() const {
+  std::vector<const Card*> out;
+  out.reserve(cards_.size());
+  for (const auto& [unused_id, card] : cards_) {
+    out.push_back(&card);
+  }
+  for (const auto& [unused_id, card] : secondary_cards_) {
+    out.push_back(&card);
+  }
+  return out;
+}
+
+std::vector<const Card*> Profile::PrimaryCardPool() const {
+  std::vector<const Card*> out;
+  out.reserve(cards_.size());
+  for (const auto& [unused_id, card] : cards_) {
+    out.push_back(&card);
+  }
+  return out;
 }
 
 ProfileProto EmptyProfileProto() {

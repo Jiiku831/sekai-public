@@ -182,7 +182,7 @@ TEST(CardTest, TestCard707SkillUnitBonus) {
     }
 
     UnitCount unit_count(cards);
-    EXPECT_EQ(card.SkillValue(unit_count), expected[i]);
+    EXPECT_EQ(card.SkillValue(0, unit_count), expected[i]);
     EXPECT_EQ(unit_count.CharacterCount(db::UNIT_WXS), i + 1);
     EXPECT_EQ(unit_count.CharacterCount(db::UNIT_LN), 4 - i);
   }
@@ -299,6 +299,7 @@ TEST(CardTest, SecondarySkillWithUnitCountPrimary) {
   state.set_special_training(true);
 
   Card card_special{MasterDb::FindFirst<db::Card>(950), state};
+  card_special.UseSecondarySkill(true);
   Card card_wxs{MasterDb::FindFirst<db::Card>(707), state};
   Card card_ln{MasterDb::FindFirst<db::Card>(622), state};
   Card card_vbs{MasterDb::FindFirst<db::Card>(600), state};
@@ -306,16 +307,12 @@ TEST(CardTest, SecondarySkillWithUnitCountPrimary) {
   std::vector<const Card*> cards = {
       &card_special, &card_wxs, &card_wxs, &card_vbs, &card_ln,
   };
-  UnitCount unit_count(cards);
-  EXPECT_EQ(card_special.SkillValue(unit_count), 150);
-  EXPECT_EQ(card_special.MaxSkillValue(), 160);
-
   ProfileProto profile_proto = TestProfile();
   profile_proto.set_character_ranks(25, 82);
   Profile profile(profile_proto);
   card_special.ApplyProfilePowerBonus(profile);
-  unit_count = UnitCount(cards);
-  EXPECT_EQ(card_special.SkillValue(unit_count), 151);
+  UnitCount unit_count{cards};
+  EXPECT_EQ(card_special.SkillValue(0, unit_count), 151);
   EXPECT_EQ(card_special.MaxSkillValue(), 160);
 }
 
@@ -333,15 +330,7 @@ TEST(CardTest, SecondarySkillWithUnitCountPrimaryNoSpecialTraining) {
       &card_special, &card_wxs, &card_wxs, &card_vbs, &card_ln,
   };
   UnitCount unit_count(cards);
-  EXPECT_EQ(card_special.SkillValue(unit_count), 150);
-  EXPECT_EQ(card_special.MaxSkillValue(), 150);
-
-  ProfileProto profile_proto = TestProfile();
-  profile_proto.set_character_ranks(25, 82);
-  Profile profile(profile_proto);
-  card_special.ApplyProfilePowerBonus(profile);
-  unit_count = UnitCount(cards);
-  EXPECT_EQ(card_special.SkillValue(unit_count), 150);
+  EXPECT_EQ(card_special.SkillValue(0, unit_count), 150);
   EXPECT_EQ(card_special.MaxSkillValue(), 150);
 }
 
@@ -351,6 +340,7 @@ TEST(CardTest, SecondarySkillWithReferenceBoostPrimary) {
   state.set_special_training(true);
 
   Card card_special{MasterDb::FindFirst<db::Card>(949), state};
+  card_special.UseSecondarySkill(true);
   Card card_1{MasterDb::FindFirst<db::Card>(4), state};    // 100%
   Card card_2{MasterDb::FindFirst<db::Card>(88), state};   // 120%
   Card card_3{MasterDb::FindFirst<db::Card>(622), state};  // 150%
@@ -359,16 +349,12 @@ TEST(CardTest, SecondarySkillWithReferenceBoostPrimary) {
   std::vector<const Card*> cards = {
       &card_special, &card_1, &card_2, &card_3, &card_4,
   };
-  UnitCount unit_count(cards);
-  EXPECT_FLOAT_EQ(card_special.SkillValue(unit_count), 80 + 57.5);
-  EXPECT_EQ(card_special.MaxSkillValue(), 160);
-
   ProfileProto profile_proto = TestProfile();
   profile_proto.set_character_ranks(17, 56);
   Profile profile(profile_proto);
   card_special.ApplyProfilePowerBonus(profile);
-  unit_count = UnitCount(cards);
-  EXPECT_EQ(card_special.SkillValue(unit_count), 80 + 58);
+  UnitCount unit_count{cards};
+  EXPECT_EQ(card_special.SkillValue(0, unit_count), 80 + 58);
   EXPECT_EQ(card_special.MaxSkillValue(), 160);
 }
 
@@ -387,15 +373,8 @@ TEST(CardTest, SecondarySkillWithReferenceBoostPrimaryNoSpecialTraining) {
       &card_special, &card_1, &card_2, &card_3, &card_4,
   };
   UnitCount unit_count(cards);
-  EXPECT_FLOAT_EQ(card_special.SkillValue(unit_count), 80 + 57.5);
-  EXPECT_EQ(card_special.MaxSkillValue(), 150);
-
-  ProfileProto profile_proto = TestProfile();
-  profile_proto.set_character_ranks(17, 56);
-  Profile profile(profile_proto);
-  card_special.ApplyProfilePowerBonus(profile);
-  unit_count = UnitCount(cards);
-  EXPECT_FLOAT_EQ(card_special.SkillValue(unit_count), 80 + 57.5);
+  EXPECT_FLOAT_EQ(card_special.SkillValue(0, unit_count),
+                  80 + static_cast<float>(100 + 120 + 140 + 100) / 8);
   EXPECT_EQ(card_special.MaxSkillValue(), 150);
 }
 

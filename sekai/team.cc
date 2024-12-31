@@ -14,6 +14,7 @@
 #include "sekai/db/master_db.h"
 #include "sekai/db/proto/all.h"
 #include "sekai/event_bonus.h"
+#include "sekai/points.h"
 #include "sekai/profile.h"
 #include "sekai/proto/card.pb.h"
 #include "sekai/proto/team.pb.h"
@@ -21,6 +22,9 @@
 #include "sekai/unit_count.h"
 
 namespace sekai {
+
+// Forward decls from challenge_live_estimator.h
+const EstimatorBase& SoloEbiMasEstimator();
 
 Team::Team(std::span<const Card* const> cards) {
   cards_.reserve(cards.size());
@@ -45,8 +49,8 @@ int Team::CardPowerContrib(const Card* card) const {
 
 float Team::CardBonusContrib(const Card* card) const { return card->event_bonus(); }
 
-float Team::CardSkillContrib(const Card* card, UnitCount& unit_count) const {
-  return card->SkillValue(unit_count);
+float Team::CardSkillContrib(const Card* card, int card_index, UnitCount& unit_count) const {
+  return card->SkillValue(card_index, unit_count);
 }
 
 int Team::Power(const Profile& profile) const {
@@ -115,8 +119,8 @@ float Team::SkillValue() const {
   float skill_value = 0;
   int skill_factor = 1;
   UnitCount unit_count(cards_);
-  for (const Card* card : cards_) {
-    skill_value += CardSkillContrib(card, unit_count) / skill_factor;
+  for (std::size_t i = 0; i < cards_.size(); ++i) {
+    skill_value += CardSkillContrib(cards_[i], i, unit_count) / skill_factor;
     skill_factor = 5;
   }
   return skill_value;
@@ -126,8 +130,8 @@ float Team::MaxSkillValue() const {
   float total_skill = 0;
   float max_skill = 0;
   UnitCount unit_count(cards_);
-  for (const Card* card : cards_) {
-    float skill_value = CardSkillContrib(card, unit_count);
+  for (std::size_t i = 0; i < cards_.size(); ++i) {
+    float skill_value = CardSkillContrib(cards_[i], i, unit_count);
     max_skill = std::max(skill_value, max_skill);
     total_skill += skill_value;
   }
@@ -138,10 +142,10 @@ Team::SkillValueDetail Team::ConstrainedMaxSkillValue(Character eligible_leads) 
   float total_skill = 0;
   float max_skill = 0;
   UnitCount unit_count(cards_);
-  for (const Card* card : cards_) {
-    float skill_value = CardSkillContrib(card, unit_count);
+  for (std::size_t i = 0; i < cards_.size(); ++i) {
+    float skill_value = CardSkillContrib(cards_[i], i, unit_count);
     total_skill += skill_value;
-    if (eligible_leads.test(card->character_id())) {
+    if (eligible_leads.test(cards_[i]->character_id())) {
       max_skill = std::max(skill_value, max_skill);
     }
   }
@@ -173,7 +177,7 @@ void Team::ReorderTeamForOptimalSkillValue(Character eligible_leads) {
   float max_skill = 0;
   UnitCount unit_count(cards_);
   for (std::size_t i = 0; i < cards_.size(); ++i) {
-    float skill_value = CardSkillContrib(cards_[i], unit_count);
+    float skill_value = CardSkillContrib(cards_[i], i, unit_count);
     if (skill_value > max_skill && eligible_leads.test(cards_[i]->character_id())) {
       max_skill_index = i;
       max_skill = skill_value;
@@ -201,8 +205,8 @@ void Team::ReorderTeamForKizuna(std::span<const Character> kizuna_pairs) {
 std::vector<int> Team::GetSkillValues() const {
   std::vector<int> skills;
   UnitCount unit_count(cards_);
-  for (const Card* card : cards_) {
-    skills.push_back(CardSkillContrib(card, unit_count));
+  for (std::size_t i = 0; i < cards_.size(); ++i) {
+    skills.push_back(CardSkillContrib(cards_[i], i, unit_count));
   }
   return skills;
 }
@@ -217,12 +221,12 @@ TeamProto Team::ToProto(const Profile& profile, const class EventBonus& event_bo
                         const EstimatorBase& estimator) const {
   TeamProto team;
   UnitCount unit_count(cards_);
-  for (const Card* card : cards_) {
+  for (std::size_t i = 0; i < cards_.size(); ++i) {
     CardProto* card_proto = team.add_cards();
-    *card_proto = card->ToProto(unit_count);
-    card_proto->set_team_power_contrib(CardPowerContrib(card));
-    card_proto->set_team_bonus_contrib(CardBonusContrib(card));
-    card_proto->set_team_skill_contrib(CardSkillContrib(card, unit_count));
+    *card_proto = cards_[i]->ToProto(unit_count);
+    card_proto->set_team_power_contrib(CardPowerContrib(cards_[i]));
+    card_proto->set_team_bonus_contrib(CardBonusContrib(cards_[i]));
+    card_proto->set_team_skill_contrib(CardSkillContrib(cards_[i], i, unit_count));
   }
   float support_bonus = 0;
   for (const Card* card : support_cards_) {
@@ -253,7 +257,9 @@ void Team::FillSupportCards(std::span<const Card* const> sorted_pool, WorldBloom
     cards_present.set(card->card_id());
   }
   for (std::size_t i = 0;
-       i < sorted_pool.size() && support_cards_.size() < wl_config.support_team_size(); ++i) {
+       i < sorted_pool.size() &&
+       support_cards_.size() < static_cast<std::size_t>(wl_config.support_team_size());
+       ++i) {
     const Card* candidate_card = sorted_pool[i];
     if (cards_present.test(candidate_card->card_id())) {
       continue;
@@ -261,6 +267,20 @@ void Team::FillSupportCards(std::span<const Card* const> sorted_pool, WorldBloom
     support_cards_.push_back(candidate_card);
     support_bonus_base_ += candidate_card->support_bonus();
   }
+}
+
+Team::SoloEbiBasePoints Team::GetSoloEbiBasePoints(const Profile& profile,
+                                                   const class EventBonus& event_bonus,
+                                                   float accuracy) const {
+  SoloEbiBasePoints points;
+  double max_score = SoloEbiMasEstimator().ExpectedValue(profile, event_bonus, *this) * accuracy;
+  double eb = Team::EventBonus(event_bonus);
+  for (int score = 0; score < max_score; score += kSoloScoreStep) {
+    int ep = SoloEbiPoints(score, eb);
+    points.possible_points.push_back(ep);
+    points.score_threshold[ep] = score;
+  }
+  return points;
 }
 
 }  // namespace sekai
