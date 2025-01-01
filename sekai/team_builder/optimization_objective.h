@@ -90,6 +90,15 @@ class OptimizeExactPoints : public OptimizationObjective {
   std::vector<int> viable_bonuses_;
 };
 
+class OptimizeFillTeam : public OptimizationObjective {
+ public:
+  OptimizeFillTeam() = default;
+
+  ObjectiveFunction GetObjectiveFunction() const override;
+
+  static const OptimizationObjective& Get();
+};
+
 ObjectiveFunction GetObjectiveFunction(const OptimizationObjective& obj);
 
 }  // namespace sekai

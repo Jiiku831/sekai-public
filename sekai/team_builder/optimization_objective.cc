@@ -177,6 +177,23 @@ void OptimizeExactPoints::AnnotateTeamProto(const Team& team, const Profile& pro
   }
 }
 
+ObjectiveFunction OptimizeFillTeam::GetObjectiveFunction() const {
+  return [](const Team& team, const Profile& profile, const EventBonus& event_bonus,
+            const EstimatorBase& estimator, Character lead_chars) {
+    double skill_factor =
+        10.0 * static_cast<int>(team.ConstrainedMaxSkillValue(lead_chars).skill_value);
+    double point_factor =
+        estimator.MaxExpectedValue(profile, event_bonus, team, lead_chars) / kMaxBaseEventPoint;
+
+    return skill_factor + point_factor;
+  };
+}
+
+const OptimizationObjective& OptimizeFillTeam::Get() {
+  static const absl::NoDestructor<OptimizeFillTeam> kObj;
+  return *kObj;
+}
+
 ObjectiveFunction GetObjectiveFunction(const OptimizationObjective& obj) {
   return obj.GetObjectiveFunction();
 }
