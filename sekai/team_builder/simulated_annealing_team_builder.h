@@ -49,6 +49,8 @@ class SimulatedAnnealingTeamBuilder : public TeamBuilderBase {
                                          const OptimizationObjective& obj = OptimizePoints::Get())
       : opts_(options), obj_(obj) {}
 
+  const OptimizationObjective& obj() const { return obj_; }
+
  protected:
   Options opts_;
   const OptimizationObjective& obj_;
@@ -76,5 +78,14 @@ class SimulatedAnnealingSkillTeamBuilder : public SimulatedAnnealingTeamBuilder 
   explicit SimulatedAnnealingSkillTeamBuilder()
       : SimulatedAnnealingTeamBuilder(OptimizeSkill::Get()) {}
 };
+
+// Build team by partitioning card pools into attr/unit matching pools. May be
+// necessary if your objective function is has huge gaps that occur when attr
+// and unit matches (it's hard for the optimizer to jump from one attr/unit to
+// another).
+std::vector<Team> PartitionedBuildTeam(SimulatedAnnealingTeamBuilder& builder,
+                                       std::span<const Card* const> pool, const Profile& profile,
+                                       const EventBonus& event_bonus,
+                                       const EstimatorBase& estimator);
 
 }  // namespace sekai

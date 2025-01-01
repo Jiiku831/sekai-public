@@ -196,6 +196,9 @@ TYPED_TEST(ConstraintCorrectnessTest, NoKizunaPairs) {
   this->AddCard(135);                         // Kohane
   this->AddCard(155);                         // Honami
   this->AddCard(157);                         // Ichika
+  this->constraints_.AddLeadChar(1);          // Ichika
+  this->constraints_.AddLeadChar(2);          // Saki
+  this->constraints_.AddLeadChar(21);         // Miku
   this->constraints_.AddKizunaPair({1, 21});  // Miku, Ichika
   this->constraints_.AddKizunaPair({2, 21});  // Miku, Saki
   EXPECT_THAT(this->GetTeams(), IsEmpty());
@@ -227,9 +230,9 @@ TYPED_TEST(ConstraintCorrectnessTest, HasKizunaPairsButNoLead) {
   this->AddCard(155);                         // Honami
   this->AddCard(157);                         // Ichika
   this->AddCard(116);                         // Miku
+  this->constraints_.AddLeadChar(2);          // Saki
   this->constraints_.AddKizunaPair({1, 21});  // Miku, Ichika
   this->constraints_.AddKizunaPair({2, 21});  // Miku, Saki
-  this->constraints_.AddLeadChar(2);          // Saki
   EXPECT_THAT(this->GetTeams(), IsEmpty());
 }
 
@@ -243,9 +246,9 @@ TYPED_TEST(ConstraintCorrectnessTest, HasKizunaPairsAndLead) {
   this->AddCard(155);                         // Honami
   this->AddCard(157);                         // Ichika
   this->AddCard(116);                         // Miku
+  this->constraints_.AddLeadChar(21);         // Miku
   this->constraints_.AddKizunaPair({1, 21});  // Miku, Ichika
   this->constraints_.AddKizunaPair({2, 21});  // Miku, Saki
-  this->constraints_.AddLeadChar(21);         // Miku
   EXPECT_THAT(this->GetTeams(), Not(IsEmpty()));
 }
 
@@ -298,6 +301,8 @@ TYPED_TEST(ConstraintCorrectnessTest, HasMinLeadSkillButNoKizuna) {
   this->AddCard(14);   // Shiho 2*
   this->AddCard(622);  // Miku LN uscorer
   this->constraints_.SetMinLeadSkill(100);
+  this->constraints_.AddLeadChar(1);         // Ichika
+  this->constraints_.AddLeadChar(2);         // Saki
   this->constraints_.AddKizunaPair({1, 2});  // Saki, Ichika
   EXPECT_THAT(this->GetTeams(), IsEmpty());
 }
@@ -309,6 +314,8 @@ TYPED_TEST(ConstraintCorrectnessTest, HasMinLeadSkillAndKizuna) {
   this->AddCard(14);   // Shiho 2*
   this->AddCard(622);  // Miku LN uscorer
   this->constraints_.SetMinLeadSkill(100);
+  this->constraints_.AddLeadChar(2);          // Saki
+  this->constraints_.AddLeadChar(21);         // Miku
   this->constraints_.AddKizunaPair({21, 2});  // Miku, Saki
   EXPECT_THAT(this->GetTeams(), Not(IsEmpty()));
 }

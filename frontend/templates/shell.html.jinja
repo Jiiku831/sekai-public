@@ -72,11 +72,25 @@
           </li>
         </ul>
 
-        <b>Recommend:</b>&nbsp;
-        <input type="button" value="Event Team (Slot 0)" onclick="controller.BuildEventTeam();">
-        <input type="button" value="Challenge Live Team (Slot 1)" onclick="BuildChallengeLiveTeam();">
-        <input type="button" value="Single-Turn Parking Team (Slot 2)" onclick="controller.BuildParkingTeam(false);">
-        <input type="button" value="Single-Turn Parking Team Ignoring Constraints (Slot 2)" onclick="controller.BuildParkingTeam(true);">
+        <b>Recommend Team:</b>&nbsp;
+        <input type="button" value="Event (Slot 0)" onclick="controller.BuildEventTeam();">
+        <input type="button" value="Fill (Slot 1)" onclick="BuildFillTeam(false);">
+        <input type="button" value="Fill* (Slot 1)" onclick="BuildFillTeam(true);">
+        <input type="button" value="Challenge Live (Slot 1)" onclick="BuildChallengeLiveTeam();">
+        <input type="button" value="Single-Turn Park (Slot 2)" onclick="controller.BuildParkingTeam(false);">
+        <input type="button" value="Single-Turn Park* (Slot 2)" onclick="controller.BuildParkingTeam(true);">
+        &nbsp;<small>* Ignores team constraints.</small>
+
+        <fieldset class="fill-params">
+          <legend class="new">Fill Team Parameters</legend>
+
+          <label for="fill-min-power">Minimum Power<sup>&dagger;</sup></label>
+          <input type="number" style="width: 7em;" min="0" step="1"
+                 name="fill-min-power" id="fill-min-power" pattern="[0-9]">
+
+          <small><sup>&dagger;</sup>&nbsp;May take a while to find a team.</small>
+        </fieldset>
+
         <fieldset class="parking-params">
           <legend>Parking Parameters</legend>
 
@@ -90,12 +104,43 @@
           <label for="park-target">Target Points</label>
           <input type="number" style="width: 7em;" min="100" step="1"
                  name="park-target" pattern="[0-9]" onchange="SetTargetPoints(this);">
-          <label for="park-accuracy">Play Accuracy (%)*</label>
+          <label for="park-accuracy">Play Accuracy (%)<sup>&ddagger;</sup></label>
           <input type="number" style="width: 7em;" min="1" max="100" step="1" value="95"
                  name="park-accuracy" pattern="[0-9]" onchange="SetParkAccuracy(this);">
           <input type="button" value="Retry Park (see notes)" onclick="controller.RefreshTeams();">
 
-          <small>* Only affects parking related calculations.</small>
+          <small><sup>&ddagger;</sup>&nbsp;Only affects parking related calculations.</small>
+
+          <details style="max-width: 50em; margin-top: 1ex;">
+            <summary style="font-size: initial;">How to Park</summary>
+
+            <p>
+              Keep playing on your event team until you are about 1 boosted
+              play away from your EP target (100~10,000). At this point, enter
+              the amount of points you still need into Target Points. Enter
+              your team in any of the slots (I recommend using slot 2 during WL
+              to remove the support team), select the current event, and it
+              will tell you how to reach your target.
+            </p>
+
+            <p>
+              Play solo ebi games on any difficulty (I recommend at least hard)
+              until you reach the specified score range. Once you reach the
+              target score range, stop playing and let the game finish (it does
+              not matter if you lose all your health). If it says single-turn
+              park, play&nbsp;<b>only one</b>&nbsp;of the shown strategies. If it says
+              multi-turn park you need to play all of the listed games.
+            </p>
+
+            <p>
+              If the target points is quite low (0~1000). You can try click on
+              the recommend parking team button to generate a team that will
+              get you exactly that many points for you in one game. The
+              recommended parking team will never have fractional event bonus
+              and will never use support teams. Clear your support team if you
+              are on WL!
+            </p>
+          </details>
         </fieldset>
 
         <div id="team-recommender-output">

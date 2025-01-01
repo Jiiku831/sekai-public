@@ -143,6 +143,8 @@ TEST(SimpleNeighborsTest, RespectsKizunaConstraints) {
   Team starting_team{starting_cards};
 
   Constraints constraints;
+  constraints.AddLeadChar(cards[0].character_id());
+  constraints.AddLeadChar(cards[2].character_id());
   constraints.AddKizunaPair({cards[0].character_id(), cards[2].character_id()});
   std::vector<Team> new_teams =
       SimpleNeighbors(card_ptrs, &constraints).GetNeighbors(starting_team);

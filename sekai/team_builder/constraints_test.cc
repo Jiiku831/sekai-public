@@ -40,6 +40,7 @@ TEST(ConstraintsTest, ConstraintsWithLeadConstraintsIsNotEmpty) {
 
 TEST(ConstraintsTest, ConstraintsWithKizunaConstraintsIsNotEmpty) {
   Constraints constraints(ParseTextProto<TeamConstraints>(R"pb(
+    lead_char_ids: 1
     kizuna_pairs {char_1: 1 char_2: 2}
   )pb"));
   EXPECT_FALSE(constraints.empty());
@@ -90,6 +91,7 @@ TEST(ConstraintsTest, TestCharacterSetLeadConstraints) {
 
 TEST(ConstraintsTest, TestCharacterSetKizunaConstraints) {
   Constraints constraints(ParseTextProto<TeamConstraints>(R"pb(
+    lead_char_ids: 1
     kizuna_pairs {char_1: 1 char_2: 2}
     kizuna_pairs {char_1: 1 char_2: 3}
   )pb"));
@@ -148,6 +150,7 @@ TEST(ConstraintsTest, GetCharactersEligibleForLeadWithLeadsConstraint) {
 
 TEST(ConstraintsTest, GetCharactersEligibleForLeadWithKizunaConstraint) {
   Constraints constraints(ParseTextProto<TeamConstraints>(R"pb(
+    lead_char_ids: 1
     kizuna_pairs {char_1: 1 char_2: 2}
     kizuna_pairs {char_1: 1 char_2: 3}
     kizuna_pairs {char_1: 1 char_2: 4}
@@ -162,9 +165,6 @@ TEST(ConstraintsTest, GetCharactersEligibleForLeadWithKizunaConstraint) {
 
   Character expected_leads;
   expected_leads.set(1);
-  expected_leads.set(2);
-  expected_leads.set(3);
-
   EXPECT_EQ(eligible_leads, expected_leads);
 }
 
@@ -282,6 +282,8 @@ TEST(ConstraintsTest, TestHasLeadSkillConstraint) {
 
 TEST(ConstraintsTest, AddKizunaPair) {
   Constraints constraints(ParseTextProto<TeamConstraints>(R"pb(
+    lead_char_ids: 1
+    lead_char_ids: 2
     kizuna_pairs {char_1: 1 char_2: 3}
     kizuna_pairs {char_1: 2 char_2: 4}
     kizuna_pairs {char_1: 2 char_2: 5}
@@ -301,11 +303,63 @@ TEST(ConstraintsTest, AddKizunaPair) {
   EXPECT_THAT(constraints.kizuna_pairs(), UnorderedElementsAre(pair1, pair2, pair3));
 }
 
+TEST(ConstraintsTest, AddKizunaPairExcludesInfeasible) {
+  Constraints constraints(ParseTextProto<TeamConstraints>(R"pb(
+    lead_char_ids: 2
+    kizuna_pairs {char_1: 1 char_2: 3}
+    kizuna_pairs {char_1: 2 char_2: 4}
+    kizuna_pairs {char_1: 2 char_2: 5}
+  )pb"));
+  EXPECT_THAT(constraints.kizuna_std_pairs(), UnorderedElementsAre(Pair(2, 4), Pair(2, 5)));
+
+  Character pair2;
+  pair2.set(2);
+  pair2.set(4);
+  Character pair3;
+  pair3.set(2);
+  pair3.set(5);
+  EXPECT_THAT(constraints.kizuna_pairs(), UnorderedElementsAre(pair2, pair3));
+}
+
+TEST(ConstraintsTest, AddKizunaPairExcludesInfeasibleAlt) {
+  Constraints constraints(ParseTextProto<TeamConstraints>(R"pb(
+    lead_char_ids: 2
+  )pb"));
+  constraints.AddKizunaPair({1, 3});
+  constraints.AddKizunaPair({2, 4});
+  constraints.AddKizunaPair({2, 5});
+  EXPECT_THAT(constraints.kizuna_std_pairs(), UnorderedElementsAre(Pair(2, 4), Pair(2, 5)));
+
+  Character pair2;
+  pair2.set(2);
+  pair2.set(4);
+  Character pair3;
+  pair3.set(2);
+  pair3.set(5);
+  EXPECT_THAT(constraints.kizuna_pairs(), UnorderedElementsAre(pair2, pair3));
+}
+
 TEST(ConstraintsTest, AddLeadChar) {
   Constraints constraints(ParseTextProto<TeamConstraints>(R"pb(
     lead_char_ids: 1 lead_char_ids: 3
   )pb"));
   EXPECT_THAT(constraints.lead_char_ids(), UnorderedElementsAre(1, 3));
+}
+
+TEST(ConstraintsTest, TestExample) {
+  Constraints constraints(ParseTextProto<TeamConstraints>(R"pb(
+    lead_char_ids: 21
+    kizuna_pairs {char_1: 2 char_2: 7}
+    kizuna_pairs {char_1: 1 char_2: 21}
+  )pb"));
+
+  Character chars_present;
+  chars_present.set(2);
+  chars_present.set(7);
+  chars_present.set(26);
+  chars_present.set(11);
+  chars_present.set(21);
+  EXPECT_FALSE(constraints.CharacterSetSatisfiesConstraint(chars_present));
 }
 
 }  // namespace

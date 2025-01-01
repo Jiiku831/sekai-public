@@ -4,6 +4,7 @@
 
 #include <Eigen/Eigen>
 
+#include "absl/strings/str_format.h"
 #include "sekai/bitset.h"
 #include "sekai/card_base.h"
 #include "sekai/config.h"
@@ -74,6 +75,12 @@ class Card : public CardBase {
   bool UseSecondarySkill() const { return use_secondary_skill_; }
 
   const Skill& skill() const { return use_secondary_skill_ ? secondary_skill_ : skill_; }
+
+  template <typename Sink>
+  friend void AbslStringify(Sink& sink, const Card& card) {
+    absl::Format(&sink, "Card %d (Lv%d/MR%d/SL%d)", card.card_id(), card.state().level(),
+                 card.state().master_rank(), card.state().skill_level());
+  }
 
  private:
   // Card state

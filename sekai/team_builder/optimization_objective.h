@@ -90,6 +90,16 @@ class OptimizeExactPoints : public OptimizationObjective {
   std::vector<int> viable_bonuses_;
 };
 
+class OptimizeFillTeam : public OptimizationObjective {
+ public:
+  OptimizeFillTeam(int min_power = 0) : min_power_(min_power) {}
+
+  ObjectiveFunction GetObjectiveFunction() const override;
+
+ private:
+  int min_power_;
+};
+
 ObjectiveFunction GetObjectiveFunction(const OptimizationObjective& obj);
 
 }  // namespace sekai
