@@ -35,7 +35,7 @@ const OptimizationObjective& OptimizePoints::Get() {
 ObjectiveFunction OptimizePower::GetObjectiveFunction() const {
   return [](const Team& team, const Profile& profile, const EventBonus& event_bonus,
             const EstimatorBase& estimator,
-            Character lead_chars) { return static_cast<double>(team.Power(profile)); };
+            Character lead_chars) { return static_cast<double>(team.Power(profile)) / 100; };
 }
 
 const OptimizationObjective& OptimizePower::Get() {
@@ -178,8 +178,14 @@ void OptimizeExactPoints::AnnotateTeamProto(const Team& team, const Profile& pro
 }
 
 ObjectiveFunction OptimizeFillTeam::GetObjectiveFunction() const {
-  return [](const Team& team, const Profile& profile, const EventBonus& event_bonus,
-            const EstimatorBase& estimator, Character lead_chars) {
+  return [min_power = min_power_](const Team& team, const Profile& profile,
+                                  const EventBonus& event_bonus, const EstimatorBase& estimator,
+                                  Character lead_chars) {
+    int team_power = team.Power(profile);
+    if (team_power < min_power) {
+      return static_cast<double>(team_power - min_power) / 100;
+    }
+
     double skill_factor =
         10.0 * static_cast<int>(team.ConstrainedMaxSkillValue(lead_chars).skill_value);
     double point_factor =
@@ -187,11 +193,6 @@ ObjectiveFunction OptimizeFillTeam::GetObjectiveFunction() const {
 
     return skill_factor + point_factor;
   };
-}
-
-const OptimizationObjective& OptimizeFillTeam::Get() {
-  static const absl::NoDestructor<OptimizeFillTeam> kObj;
-  return *kObj;
 }
 
 ObjectiveFunction GetObjectiveFunction(const OptimizationObjective& obj) {

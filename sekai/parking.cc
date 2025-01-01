@@ -155,7 +155,7 @@ absl::StatusOr<absl::flat_hash_map<int, int>> ProbabilisticSubsetSumWithRepetiti
   int max_steps = 10'000'000;
   int early_exit_steps = 500'000;
   float min_temp = 0.0001;
-  float return_prob = 0.1;
+  float return_prob = 0.05;
   for (int i = 0; i < max_steps; ++i) {
     Sum next_sum = current_sum.Mutate(values, target, prob, value_dist, g);
     float next_val = GetValue(next_sum, target, max_count, value_count);

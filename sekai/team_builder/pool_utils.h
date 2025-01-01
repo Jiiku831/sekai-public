@@ -26,6 +26,9 @@ std::vector<const Card*> FilterCardsByUnit(db::Unit unit, std::span<const Card* 
 
 std::vector<const Card*> FilterCardsByAttr(db::Attr attr, std::span<const Card* const> pool);
 
+std::vector<const Card*> FilterCards(db::Attr attr, db::Unit unit,
+                                     std::span<const Card* const> pool);
+
 std::vector<const Card*> GetSortedSupportPool(std::span<const Card* const> pool);
 
 }  // namespace sekai

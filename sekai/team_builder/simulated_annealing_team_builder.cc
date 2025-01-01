@@ -14,6 +14,7 @@
 #include "sekai/bitset.h"
 #include "sekai/combinations.h"
 #include "sekai/estimator_base.h"
+#include "sekai/proto_util.h"
 #include "sekai/team.h"
 #include "sekai/team_builder/constraints.h"
 #include "sekai/team_builder/neighbor_teams.h"
@@ -225,7 +226,7 @@ std::vector<Team> SimulatedAnnealingTeamBuilder::RecommendTeamsImpl(
       if (prob(g) < transition_prob) {
         current_team = *new_team;
         current_val = new_val;
-      } else if (transition_prob = TransitionProbability(best_val, new_val, current_temp) * 0.1;
+      } else if (transition_prob = TransitionProbability(best_val, new_val, current_temp) * 0.05;
                  prob(g) < transition_prob) {
         // Always small chance to return to best state.
         current_team = *best_team;
@@ -262,6 +263,29 @@ std::vector<Team> SimulatedAnnealingTeamBuilder::RecommendTeamsImpl(
     return {*best_team};
   }
   return {};
+}
+
+std::vector<Team> PartitionedBuildTeam(SimulatedAnnealingTeamBuilder& builder,
+                                       std::span<const Card* const> pool, const Profile& profile,
+                                       const EventBonus& event_bonus,
+                                       const EstimatorBase& estimator) {
+  std::vector<Team> teams;
+  for (const db::Attr attr : EnumValues<db::Attr, db::Attr_descriptor>()) {
+    for (const db::Unit unit : EnumValues<db::Unit, db::Unit_descriptor>()) {
+      std::vector<const Card*> new_pool = FilterCards(attr, unit, pool);
+      std::vector<Team> generated_teams =
+          builder.RecommendTeams(new_pool, profile, event_bonus, estimator);
+      teams.insert(teams.end(), generated_teams.begin(), generated_teams.end());
+    }
+  }
+  ObjectiveFunction obj = builder.obj().GetObjectiveFunction();
+  std::sort(teams.begin(), teams.end(), [&](const Team& lhs, const Team& rhs) {
+    return obj(lhs, profile, event_bonus, estimator,
+               builder.constraints().GetCharactersEligibleForLead(lhs.chars_present())) >
+           obj(rhs, profile, event_bonus, estimator,
+               builder.constraints().GetCharactersEligibleForLead(rhs.chars_present()));
+  });
+  return teams;
 }
 
 }  // namespace sekai

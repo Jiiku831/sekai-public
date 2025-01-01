@@ -92,11 +92,12 @@ class OptimizeExactPoints : public OptimizationObjective {
 
 class OptimizeFillTeam : public OptimizationObjective {
  public:
-  OptimizeFillTeam() = default;
+  OptimizeFillTeam(int min_power = 0) : min_power_(min_power) {}
 
   ObjectiveFunction GetObjectiveFunction() const override;
 
-  static const OptimizationObjective& Get();
+ private:
+  int min_power_;
 };
 
 ObjectiveFunction GetObjectiveFunction(const OptimizationObjective& obj);

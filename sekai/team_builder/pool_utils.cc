@@ -105,6 +105,18 @@ std::vector<const Card*> FilterCardsByAttr(db::Attr attr, std::span<const Card* 
   return new_pool;
 }
 
+std::vector<const Card*> FilterCards(db::Attr attr, db::Unit unit,
+                                     std::span<const Card* const> pool) {
+  std::vector<const Card*> new_pool;
+  for (const Card* card : pool) {
+    if ((attr == db::ATTR_UNKNOWN || card->db_attr() == attr) &&
+        (unit == db::UNIT_NONE || card->IsUnit(unit))) {
+      new_pool.push_back(card);
+    }
+  }
+  return new_pool;
+}
+
 std::vector<const Card*> GetSortedSupportPool(std::span<const Card* const> pool) {
   std::vector<const Card*> new_pool;
   new_pool.reserve(pool.size());

@@ -276,6 +276,7 @@ cc_library(
         "//sekai:estimator_base",
         "//sekai:event_bonus",
         "//sekai:profile",
+        "//sekai:proto_util",
         "//sekai:team",
         "//sekai/proto:world_bloom_cc_proto",
         "@abseil-cpp//absl/log:absl_check",

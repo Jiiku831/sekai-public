@@ -974,3 +974,9 @@ function SetParkAccuracy(e) {
     controller.SetParkAccuracy(value);
   }
 }
+
+function BuildFillTeam(ignoreConstraints) {
+  const minPower = document.getElementById("fill-min-power");
+  const parsedMinPower = minPower.value == "" ? 0 : parseInt(minPower.value);
+  controller.BuildFillTeam(ignoreConstraints, parsedMinPower);
+}

@@ -74,12 +74,22 @@
 
         <b>Recommend Team:</b>&nbsp;
         <input type="button" value="Event (Slot 0)" onclick="controller.BuildEventTeam();">
-        <input type="button" value="Fill (Slot 1)" onclick="controller.BuildFillTeam(false);">
-        <input type="button" value="Fill* (Slot 1)" onclick="controller.BuildFillTeam(true);">
+        <input type="button" value="Fill (Slot 1)" onclick="BuildFillTeam(false);">
+        <input type="button" value="Fill* (Slot 1)" onclick="BuildFillTeam(true);">
         <input type="button" value="Challenge Live (Slot 1)" onclick="BuildChallengeLiveTeam();">
         <input type="button" value="Single-Turn Park (Slot 2)" onclick="controller.BuildParkingTeam(false);">
         <input type="button" value="Single-Turn Park* (Slot 2)" onclick="controller.BuildParkingTeam(true);">
         &nbsp;<small>* Ignores team constraints.</small>
+
+        <fieldset class="fill-params">
+          <legend>Fill Team Parameters</legend>
+
+          <label for="fill-min-power">Minimum Power<sup>&dagger;</sup></label>
+          <input type="number" style="width: 7em;" min="0" step="1"
+                 name="fill-min-power" id="fill-min-power" pattern="[0-9]">
+
+          <small><sup>&dagger;</sup>&nbsp;May take a while to find a team.</small>
+        </fieldset>
 
         <fieldset class="parking-params">
           <legend>Parking Parameters</legend>
@@ -94,12 +104,12 @@
           <label for="park-target">Target Points</label>
           <input type="number" style="width: 7em;" min="100" step="1"
                  name="park-target" pattern="[0-9]" onchange="SetTargetPoints(this);">
-          <label for="park-accuracy">Play Accuracy (%)**</label>
+          <label for="park-accuracy">Play Accuracy (%)<sup>&ddagger;</sup></label>
           <input type="number" style="width: 7em;" min="1" max="100" step="1" value="95"
                  name="park-accuracy" pattern="[0-9]" onchange="SetParkAccuracy(this);">
           <input type="button" value="Retry Park (see notes)" onclick="controller.RefreshTeams();">
 
-          <small>** Only affects parking related calculations.</small>
+          <small><sup>&ddagger;</sup>&nbsp;Only affects parking related calculations.</small>
 
           <details style="max-width: 50em; margin-top: 1ex;">
             <summary style="font-size: initial;">How to Park</summary>
