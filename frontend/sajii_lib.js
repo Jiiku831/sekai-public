@@ -369,6 +369,7 @@ function CreateTitleBonusRow(chunkSize) {
     CreateBonusPowerRow(tbody, row, chunkSize - 1, (item) => {
       return CreateNode("td",
         CreateNumberInput(
+            // TODO: make the max update automatically
             0, 310, 'title-bonus',
             function(e) {
                 if (!this.validity.valid || this.value == "") {
