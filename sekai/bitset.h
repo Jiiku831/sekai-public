@@ -106,7 +106,8 @@ class ProtoEnumBitset {
         values.push_back(absl::StrFormat("%s (%d)", value->name(), value->number()));
       }
     }
-    absl::Format(&sink, "%s: %s", bitset.data_.to_string('-'), absl::StrJoin(values, " | "));
+    absl::Format(&sink, "%s = %s", bitset.data_.to_string('-'),
+                 values.empty() ? "<empty>" : absl::StrJoin(values, " | "));
   }
 
  private:

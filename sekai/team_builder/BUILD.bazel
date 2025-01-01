@@ -43,6 +43,52 @@ cc_library(
         "//sekai/proto:constraints_cc_proto",
         "@abseil-cpp//absl/base:nullability",
         "@abseil-cpp//absl/log:absl_check",
+        "@abseil-cpp//absl/strings:str_format",
+    ],
+)
+
+cc_test(
+    name = "constraints_test",
+    srcs = ["constraints_test.cc"],
+    data = [
+        "//data:flat-db",
+    ],
+    deps = [
+        ":constraints",
+        "//sekai:array_size",
+        "//sekai:bitset",
+        "//sekai/db:master_db",
+        "//sekai/proto:constraints_cc_proto",
+        "//testing:test_main",
+        "//testing:util",
+        "@googletest//:gtest",
+    ],
+)
+
+cc_test(
+    name = "constraint_correctness_test",
+    srcs = ["constraint_correctness_test.cc"],
+    data = [
+        "//data:flat-db",
+    ],
+    deps = [
+        ":constraints",
+        ":event_team_builder",
+        ":max_bonus_team_builder",
+        ":max_power_team_builder",
+        ":naive_team_builder",
+        ":simulated_annealing_team_builder",
+        "//sekai:card",
+        "//sekai:estimator",
+        "//sekai:profile",
+        "//sekai:team",
+        "//sekai/db:master_db",
+        "//sekai/proto:constraints_cc_proto",
+        "//sekai/proto:event_id_cc_proto",
+        "//sekai/proto:profile_cc_proto",
+        "//testing:test_main",
+        "//testing:util",
+        "@googletest//:gtest",
     ],
 )
 
@@ -158,7 +204,6 @@ cc_library(
     hdrs = ["neighbor_teams.h"],
     deps = [
         ":constraints",
-        "//sekai:array_size",
         "//sekai:bitset",
         "//sekai:card",
         "//sekai:team",
@@ -300,51 +345,6 @@ cc_library(
         ":pool_utils",
         ":skill_selector",
         ":team_builder",
-    ],
-)
-
-cc_test(
-    name = "constraints_test",
-    srcs = ["constraints_test.cc"],
-    data = [
-        "//data:flat-db",
-    ],
-    deps = [
-        ":constraints",
-        "//sekai:array_size",
-        "//sekai:bitset",
-        "//sekai/db:master_db",
-        "//sekai/proto:constraints_cc_proto",
-        "//testing:test_main",
-        "//testing:util",
-        "@googletest//:gtest",
-    ],
-)
-
-cc_test(
-    name = "constraint_correctness_test",
-    srcs = ["constraint_correctness_test.cc"],
-    data = [
-        "//data:flat-db",
-    ],
-    deps = [
-        ":constraints",
-        ":event_team_builder",
-        ":max_bonus_team_builder",
-        ":max_power_team_builder",
-        ":naive_team_builder",
-        ":simulated_annealing_team_builder",
-        "//sekai:card",
-        "//sekai:estimator",
-        "//sekai:profile",
-        "//sekai:team",
-        "//sekai/db:master_db",
-        "//sekai/proto:constraints_cc_proto",
-        "//sekai/proto:event_id_cc_proto",
-        "//sekai/proto:profile_cc_proto",
-        "//testing:test_main",
-        "//testing:util",
-        "@googletest//:gtest",
     ],
 )
 

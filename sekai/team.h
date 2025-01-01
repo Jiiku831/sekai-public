@@ -69,6 +69,16 @@ class Team {
   SoloEbiBasePoints GetSoloEbiBasePoints(const Profile& profile,
                                          const class EventBonus& event_bonus, float accuracy) const;
 
+  template <typename Sink>
+  friend void AbslStringify(Sink& sink, const Team& team) {
+    absl::Format(
+        &sink, "Team\n%s%s", absl::StrJoin(team.cards(), "\n", absl::DereferenceFormatter()),
+        team.support_cards_.empty()
+            ? ""
+            : (absl::StrCat("\nSupport Cards\n", absl::StrJoin(team.support_cards_, "\n",
+                                                               absl::DereferenceFormatter()))));
+  }
+
  private:
   int CardPowerContrib(const Card* card) const;
   float CardBonusContrib(const Card* card) const;
