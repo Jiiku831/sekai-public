@@ -585,10 +585,14 @@ TEST_F(TeamTest, TeamSatisfiesLeadKizunaConstraint) {
   };
   Team team = MakeTeam(cards);
   Constraints constraints1;
+  constraints1.AddLeadChar(cards[2].character_id());
+  constraints1.AddLeadChar(cards[4].character_id());
   constraints1.AddKizunaPair({cards[2].character_id(), cards[4].character_id()});
   EXPECT_TRUE(team.SatisfiesConstraints(constraints1));
 
   Constraints constraints2;
+  constraints2.AddLeadChar(1);
+  constraints2.AddLeadChar(20);
   constraints2.AddKizunaPair({1, 20});
   EXPECT_FALSE(team.SatisfiesConstraints(constraints2));
 }

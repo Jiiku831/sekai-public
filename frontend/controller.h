@@ -75,10 +75,12 @@ class Controller : public ControllerBase {
   void BuildEventTeam();
   void BuildChallengeLiveTeam(int char_id);
   void BuildParkingTeam(bool ignore_constraints);
+  void BuildFillTeam(bool ignore_constraints, int min_power);
 
   bool IsValidCard(int card_id) const;
   void SetTeamCard(int team_index, int card_index, int card_id, bool use_untrained_skill);
   void ClearTeamCard(int team_index, int card_index);
+  void ClearTeam(int team_index);
 
   void RefreshTeams() const;
 
@@ -122,6 +124,7 @@ class Controller : public ControllerBase {
   void RefreshTeam(int team_index) const;
   float park_accuracy() const { return park_accuracy_ / 100.f; }
   void SetTeamCardFromCard(int team_index, int card_index, absl::Nullable<const sekai::Card*> card);
+  void SetTeam(int team_index, const sekai::Team& team);
 };
 
 }  // namespace frontend

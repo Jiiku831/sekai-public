@@ -369,7 +369,8 @@ function CreateTitleBonusRow(chunkSize) {
     CreateBonusPowerRow(tbody, row, chunkSize - 1, (item) => {
       return CreateNode("td",
         CreateNumberInput(
-            0, 300, 'title-bonus',
+            // TODO: make the max update automatically
+            0, 310, 'title-bonus',
             function(e) {
                 if (!this.validity.valid || this.value == "") {
                     return;
@@ -807,7 +808,7 @@ function RenderTeamImpl(teamIndex, context) {
     parkingNode.innerText +=
       `Target EP: ${context.parkingDetails.target}\n`;
     if (context.parkingDetails.strategies) {
-      parkingNode.innerText += "\nSingle-Turn Park Found (choose one)\n";
+      parkingNode.innerText += "\nSingle-Turn Solo Ebi Park Found (choose one)\n";
       parkingNode.innerText += "\nCan           Score Range    EP Mult";
       parkingNode.innerText += "\n------------------------------------\n";
       Array.from(context.parkingDetails.strategies).forEach((s) => {
@@ -820,7 +821,7 @@ function RenderTeamImpl(teamIndex, context) {
 
       parkingNode.innerText += `\nMax Solo Ebi Score: ${context.parkingDetails.maxScore.toLocaleString()}`;
     } else if (context.parkingDetails.multiTurnStrategies) {
-      parkingNode.innerText += "\nMulti-Turn Park Found (play all)\n";
+      parkingNode.innerText += "\nMulti-Turn Solo Ebi Park Found (play all)\n";
       parkingNode.innerText += "\nCan           Score Range    EP Mult Plays";
       parkingNode.innerText += "\n------------------------------------------\n";
       Array.from(context.parkingDetails.multiTurnStrategies).forEach((s) => {
@@ -972,4 +973,10 @@ function SetParkAccuracy(e) {
   } else {
     controller.SetParkAccuracy(value);
   }
+}
+
+function BuildFillTeam(ignoreConstraints) {
+  const minPower = document.getElementById("fill-min-power");
+  const parsedMinPower = minPower.value == "" ? 0 : parseInt(minPower.value);
+  controller.BuildFillTeam(ignoreConstraints, parsedMinPower);
 }

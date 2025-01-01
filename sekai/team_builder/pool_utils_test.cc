@@ -200,6 +200,84 @@ TEST(FilterCardsByUnitTest, FiltersVs) {
   EXPECT_THAT(filtered_pool, ElementsAreArray(expected_pool));
 }
 
+TEST(FilterCardsByUnitTest, FiltersPureVs) {
+  CardState state;
+  state.set_master_rank(0);
+  state.set_skill_level(1);
+
+  std::vector<Card> cards = {
+      {MasterDb::FindFirst<db::Card>(4), state},    // 0 - Ichika
+      {MasterDb::FindFirst<db::Card>(88), state},   // 1 - Miku - MMJ
+      {MasterDb::FindFirst<db::Card>(92), state},   // 2 - Rin - VBS
+      {MasterDb::FindFirst<db::Card>(109), state},  // 3 - Saki
+      {MasterDb::FindFirst<db::Card>(126), state},  // 4 - Miku - WXS
+      {MasterDb::FindFirst<db::Card>(289), state},  // 5 - Miku - Subunitless
+  };
+
+  std::vector<int> expected_order = {2, 4};
+
+  std::vector<const Card*> expected_pool;
+  for (int index : expected_order) {
+    expected_pool.push_back(&cards[index]);
+  }
+
+  std::vector<const Card*> filtered_pool =
+      FilterCards(db::ATTR_PURE, db::UNIT_VS, GetCardPtrs(cards));
+  EXPECT_THAT(filtered_pool, ElementsAreArray(expected_pool));
+}
+
+TEST(FilterCardsByUnitTest, FiltersCuteAlt) {
+  CardState state;
+  state.set_master_rank(0);
+  state.set_skill_level(1);
+
+  std::vector<Card> cards = {
+      {MasterDb::FindFirst<db::Card>(4), state},    // 0 - Ichika - Cute
+      {MasterDb::FindFirst<db::Card>(88), state},   // 1 - Miku - MMJ - Cute
+      {MasterDb::FindFirst<db::Card>(92), state},   // 2 - Rin - VBS - Pure
+      {MasterDb::FindFirst<db::Card>(109), state},  // 3 - Saki - Myst
+      {MasterDb::FindFirst<db::Card>(126), state},  // 4 - Miku - WXS - Pure
+      {MasterDb::FindFirst<db::Card>(289), state},  // 5 - Miku - Subunitless - Myst
+  };
+
+  std::vector<int> expected_order = {0, 1};
+
+  std::vector<const Card*> expected_pool;
+  for (int index : expected_order) {
+    expected_pool.push_back(&cards[index]);
+  }
+
+  std::vector<const Card*> filtered_pool =
+      FilterCards(db::ATTR_CUTE, db::UNIT_NONE, GetCardPtrs(cards));
+  EXPECT_THAT(filtered_pool, ElementsAreArray(expected_pool));
+}
+
+TEST(FilterCardsByUnitTest, FiltersVsAlt) {
+  CardState state;
+  state.set_master_rank(0);
+  state.set_skill_level(1);
+
+  std::vector<Card> cards = {
+      {MasterDb::FindFirst<db::Card>(4), state},    // 0 - Ichika - Cute
+      {MasterDb::FindFirst<db::Card>(88), state},   // 1 - Miku - MMJ - Cute
+      {MasterDb::FindFirst<db::Card>(92), state},   // 2 - Rin - VBS - Pure
+      {MasterDb::FindFirst<db::Card>(109), state},  // 3 - Saki - Myst
+      {MasterDb::FindFirst<db::Card>(126), state},  // 4 - Miku - WXS - Pure
+      {MasterDb::FindFirst<db::Card>(289), state},  // 5 - Miku - Subunitless - Myst
+  };
+
+  std::vector<int> expected_order = {1, 2, 4, 5};
+
+  std::vector<const Card*> expected_pool;
+  for (int index : expected_order) {
+    expected_pool.push_back(&cards[index]);
+  }
+
+  std::vector<const Card*> filtered_pool =
+      FilterCards(db::ATTR_UNKNOWN, db::UNIT_VS, GetCardPtrs(cards));
+  EXPECT_THAT(filtered_pool, ElementsAreArray(expected_pool));
+}
+
 TEST(FilterCardsByUnitTest, FiltersNonVs1) {
   CardState state;
   state.set_master_rank(0);

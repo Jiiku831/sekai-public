@@ -2,6 +2,7 @@
 
 #include "sekai/team_builder/constraints.h"
 #include "sekai/team_builder/pool_utils.h"
+#include "sekai/team_builder/skill_selector.h"
 #include "sekai/team_builder/team_builder.h"
 
 namespace sekai {
@@ -14,8 +15,15 @@ class TeamBuilderBase : public TeamBuilder {
                                    const EventBonus& event_bonus, const EstimatorBase& estimator,
                                    std::optional<absl::Time> deadline = std::nullopt) override {
     support_pool_ = GetSortedSupportPool(pool);
-    return RecommendTeamsImpl(constraints_.FilterCardPool(pool), profile, event_bonus, estimator,
-                              deadline);
+    std::vector<Team> teams = RecommendTeamsImpl(constraints_.FilterCardPool(pool), profile,
+                                                 event_bonus, estimator, deadline);
+    std::vector<Team> finalized_teams;
+    finalized_teams.reserve(teams.size());
+    for (const Team& team : teams) {
+      finalized_teams.push_back(
+          OptimizeSkillSelection(team.cards(), profile, event_bonus, estimator));
+    }
+    return finalized_teams;
   }
 
   const TeamBuilder::Stats& stats() const override { return stats_; }

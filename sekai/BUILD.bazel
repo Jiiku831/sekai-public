@@ -91,6 +91,7 @@ cc_library(
         "//sekai/proto:card_cc_proto",
         "//sekai/proto:card_state_cc_proto",
         "@abseil-cpp//absl/base:nullability",
+        "@abseil-cpp//absl/strings:str_format",
         "@eigen",
     ],
 )
@@ -504,6 +505,7 @@ cc_library(
         "//sekai/proto:team_cc_proto",
         "//sekai/proto:world_bloom_cc_proto",
         "//sekai/team_builder:constraints",
+        "@abseil-cpp//absl/strings:str_format",
         "@eigen",
     ],
 )

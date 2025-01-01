@@ -62,6 +62,8 @@ using ::sekai::CreateMaxCardState;
 using ::sekai::EventBonus;
 using ::sekai::EventId;
 using ::sekai::OptimizeExactPoints;
+using ::sekai::OptimizeFillTeam;
+using ::sekai::PartitionedBuildTeam;
 using ::sekai::ProfileProto;
 using ::sekai::ReadBinaryProtoFile;
 using ::sekai::SafeParseBinaryProto;
@@ -655,10 +657,7 @@ void Controller::BuildChallengeLiveTeam(int char_id) {
     SetTeamBuilderOutput("WARNING: no teams built.");
   } else {
     teams[0].ReorderTeamForOptimalSkillValue();
-    for (int i = 0; i < kTeamSize; ++i) {
-      SetTeamCardFromCard(kTeamBuilderOutputSlot, i,
-                          i < teams[0].cards().size() ? teams[0].cards()[i] : nullptr);
-    }
+    SetTeam(kTeamBuilderOutputSlot, teams[0]);
     SetTeamBuilderOutput("Done.");
   }
   RefreshTeam(kTeamBuilderOutputSlot);
@@ -679,10 +678,7 @@ void Controller::BuildEventTeam() {
     SetTeamBuilderOutput("WARNING: no teams built.");
   } else {
     teams[0].ReorderTeamForOptimalSkillValue(builder.constraints());
-    for (int i = 0; i < kTeamSize; ++i) {
-      SetTeamCardFromCard(kTeamBuilderOutputSlot, i,
-                          i < teams[0].cards().size() ? teams[0].cards()[i] : nullptr);
-    }
+    SetTeam(kTeamBuilderOutputSlot, teams[0]);
     SetTeamBuilderOutput("Done.");
   }
   RefreshTeam(kTeamBuilderOutputSlot);
@@ -719,9 +715,23 @@ void Controller::SetTeamCardFromCard(int team_index, int card_index,
   }
 }
 
+void Controller::SetTeam(int team_index, const sekai::Team& team) {
+  for (int i = 0; i < kTeamSize; ++i) {
+    SetTeamCardFromCard(team_index, i, i < team.cards().size() ? team.cards()[i] : nullptr);
+  }
+}
+
 void Controller::ClearTeamCard(int team_index, int card_index) {
   if (teams_[team_index][card_index].card_id == 0) return;
   teams_[team_index][card_index] = {};
+  RefreshTeam(team_index);
+}
+
+void Controller::ClearTeam(int team_index) {
+  teams_[team_index].fill({});
+  for (int i = 0; i < kTeamSize; ++i) {
+    SetTeamCardId(team_index, i, 0, false);
+  }
   RefreshTeam(team_index);
 }
 
@@ -929,7 +939,6 @@ sekai::OptimizeExactPoints Controller::UnsafeGetParkingObjective() const {
 
 void Controller::BuildParkingTeam(bool ignore_constraints) {
   constexpr int kTeamBuilderOutputSlot = 2;
-  teams_[kTeamBuilderOutputSlot].fill({});
   if (!target_points_.has_value()) {
     SetTeamBuilderOutput("ERROR: no target points set");
     return;
@@ -951,16 +960,51 @@ void Controller::BuildParkingTeam(bool ignore_constraints) {
   sekai::Character all_chars;
   all_chars.set();
   if (teams.empty()) {
+    ClearTeam(kTeamBuilderOutputSlot);
     SetTeamBuilderOutput("WARNING: no teams built.");
   } else if (objective.GetObjectiveFunction()(teams[0], profile_, event_bonus_, estimator(),
                                               all_chars) < 0) {
+    LOG(INFO) << "Closest found:\n" << teams[0];
+    ClearTeam(kTeamBuilderOutputSlot);
     SetTeamBuilderOutput("WARNING: no viable teams.");
   } else {
     teams[0].ReorderTeamForOptimalSkillValue(builder.constraints());
-    for (int i = 0; i < kTeamSize; ++i) {
-      SetTeamCardFromCard(kTeamBuilderOutputSlot, i,
-                          i < teams[0].cards().size() ? teams[0].cards()[i] : nullptr);
-    }
+    SetTeam(kTeamBuilderOutputSlot, teams[0]);
+    SetTeamBuilderOutput("Done.");
+  }
+  RefreshTeam(kTeamBuilderOutputSlot);
+}
+
+void Controller::BuildFillTeam(bool ignore_constraints, int min_power) {
+  constexpr int kTeamBuilderOutputSlot = 1;
+
+  OptimizeFillTeam objective{min_power};
+  SimulatedAnnealingTeamBuilder builder{
+      {
+          .early_exit_steps = min_power > 0 ? 200'000 : 2'000'000,
+          .enable_progress = false,
+          .world_bloom_version = GetWorldBloomVersion(profile_proto_),
+      },
+      objective};
+  if (!ignore_constraints) {
+    builder.AddConstraints(constraints_);
+  }
+
+  std::vector<sekai::Team> teams =
+      min_power > 0 ? PartitionedBuildTeam(builder, profile_.TeamBuilderCardPool(), profile_,
+                                           event_bonus_, estimator())
+                    : builder.RecommendTeams(profile_.TeamBuilderCardPool(), profile_, event_bonus_,
+                                             estimator());
+  if (teams.empty()) {
+    ClearTeam(kTeamBuilderOutputSlot);
+    SetTeamBuilderOutput("WARNING: no teams built.");
+  } else if (teams[0].Power(profile_) < min_power) {
+    LOG(INFO) << "Closest found:\n" << teams[0];
+    ClearTeam(kTeamBuilderOutputSlot);
+    SetTeamBuilderOutput("WARNING: no viable teams.");
+  } else {
+    teams[0].ReorderTeamForOptimalSkillValue(builder.constraints());
+    SetTeam(kTeamBuilderOutputSlot, teams[0]);
     SetTeamBuilderOutput("Done.");
   }
   RefreshTeam(kTeamBuilderOutputSlot);
@@ -971,6 +1015,7 @@ EMSCRIPTEN_BINDINGS(controller) {
       .constructor<>()
       .function("BuildChallengeLiveTeam", &Controller::BuildChallengeLiveTeam)
       .function("BuildEventTeam", &Controller::BuildEventTeam)
+      .function("BuildFillTeam", &Controller::BuildFillTeam)
       .function("BuildParkingTeam", &Controller::BuildParkingTeam)
       .function("ClearTeamCard", &Controller::ClearTeamCard)
       .function("ImportCardsFromCsv", &Controller::ImportCardsFromCsv)

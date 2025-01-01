@@ -6,7 +6,6 @@
 #include <random>
 #include <vector>
 
-#include "absl/log/log.h"
 #include "sekai/array_size.h"
 #include "sekai/bitset.h"
 #include "sekai/team.h"
