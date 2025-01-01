@@ -369,7 +369,7 @@ function CreateTitleBonusRow(chunkSize) {
     CreateBonusPowerRow(tbody, row, chunkSize - 1, (item) => {
       return CreateNode("td",
         CreateNumberInput(
-            0, 300, 'title-bonus',
+            0, 310, 'title-bonus',
             function(e) {
                 if (!this.validity.valid || this.value == "") {
                     return;
