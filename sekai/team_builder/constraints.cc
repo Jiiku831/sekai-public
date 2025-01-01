@@ -39,6 +39,10 @@ void Constraints::AddKizunaPair(std::pair<int, int> chars) {
   ABSL_CHECK_GT(chars.second, 0) << "invalid char2";
   ABSL_CHECK_LT(chars.second, static_cast<int>(lead_chars_.size())) << "invalid char2";
   ABSL_CHECK_NE(chars.first, chars.second) << "chars in kizuna pair must be distinct";
+  if (!lead_chars_.test(chars.first) && !lead_chars_.test(chars.second)) {
+    // Never able to satisfy this kizuna pairing due to lead constraint.
+    return;
+  }
   Character kizuna_pair;
   kizuna_pair.set(chars.first);
   kizuna_pair.set(chars.second);

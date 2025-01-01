@@ -5,9 +5,7 @@
 
 #include "absl/base/attributes.h"
 #include "absl/base/nullability.h"
-#include "sekai/array_size.h"
 #include "sekai/card.h"
-#include "sekai/config.h"
 #include "sekai/team.h"
 #include "sekai/team_builder/constraints.h"
 

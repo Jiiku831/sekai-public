@@ -1,10 +1,10 @@
 #pragma once
 
-#include <optional>
 #include <span>
 #include <vector>
 
 #include "absl/base/nullability.h"
+#include "absl/strings/str_format.h"
 #include "sekai/bitset.h"
 #include "sekai/card.h"
 #include "sekai/db/proto/enums.pb.h"
@@ -20,6 +20,8 @@ class Constraints {
   bool empty() const { return empty_; }
 
   void AddLeadChar(int char_id);
+  // If using this function, you must add all the lead character first or else
+  // no kizuna will be added.
   void AddKizunaPair(std::pair<int, int> chars);
   void SetMinLeadSkill(int min_skill);
   void AddExcludedRarity(db::CardRarityType rarity);
@@ -46,6 +48,16 @@ class Constraints {
   std::span<const int> lead_char_ids() const { return lead_chars_vector_; }
   std::span<const Character> kizuna_pairs() const { return kizuna_pairs_; }
   std::span<const std::pair<int, int>> kizuna_std_pairs() const { return kizuna_std_pairs_; }
+
+  template <typename Sink>
+  friend void AbslStringify(Sink& sink, const Constraints& constraints) {
+    absl::Format(
+        &sink,
+        "Constraints\nRequired leads: %s\nRequired kizuna: %s\nExcluded rarity: %v\nMin Skill: %d",
+        absl::StrJoin(constraints.lead_chars_vector_, ", "),
+        absl::StrJoin(constraints.kizuna_std_pairs_, ", ", absl::PairFormatter(":")),
+        constraints.excluded_rarities_, constraints.min_lead_skill_);
+  }
 
  private:
   bool empty_ = true;
