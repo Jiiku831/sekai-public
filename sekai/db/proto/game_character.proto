@@ -29,4 +29,6 @@ message GameCharacter {
   optional string model_name                 = 13 [(json_name) = "modelName"];
   optional Unit unit                         = 14 [(json_name) = "unit"];
   optional SupportUnitType support_unit_type = 15 [(json_name) = "supportUnitType"];
+  optional string first_name_english         = 16 [(json_name) = "firstNameEnglish"];
+  optional string given_name_english         = 17 [(json_name) = "givenNameEnglish"];
 }
