@@ -1,5 +1,6 @@
 #include "sekai/profile.h"
 
+#include <cstddef>
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
@@ -172,7 +173,7 @@ absl::Status Profile::LoadCardsFromCsv(std::stringstream& ss) {
     }
     if (parts[0] != "TRUE") continue;
     if (parts.empty()) continue;
-    if (parts.size() <= 7 + offset) {
+    if (parts.size() <= static_cast<std::size_t>(7 + offset)) {
       return absl::InvalidArgumentError(absl::StrCat("Invalid input row: ", row));
     }
     int card_id = 0;
@@ -204,6 +205,10 @@ absl::Status Profile::LoadCardsFromCsv(std::stringstream& ss) {
       LOG(WARNING) << "Clamping skill level for card " << card_id << " to 4";
       skill_level = 4;
     }
+    bool canvas_crafted = false;
+    if (offset > 0 && parts[3] == "TRUE") {
+      canvas_crafted = true;
+    }
     const db::Card* card = MasterDb::SafeFindFirst<db::Card>(card_id);
     if (card == nullptr) {
       LOG(WARNING) << "Card " << card_id << " not found in master db. skipping";
@@ -212,6 +217,7 @@ absl::Status Profile::LoadCardsFromCsv(std::stringstream& ss) {
     CardState state = CreateMaxCardState(card_id);
     state.set_master_rank(master_rank);
     state.set_skill_level(skill_level);
+    state.set_canvas_crafted(canvas_crafted);
     bool success = AddCard(*card, state, cards_, secondary_cards_);
     if (!success) {
       LOG(WARNING) << "Found duplicate card ID " << card_id << ". skipping";

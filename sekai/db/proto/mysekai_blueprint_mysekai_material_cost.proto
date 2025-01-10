@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message MysekaiBlueprintMysekaiMaterialCost {
+  option (master_db_file) = "mysekaiBlueprintMysekaiMaterialCosts.json";
+  enum MysekaiBlueprintType {
+    UNKNOWN_MYSEKAI_BLUEPRINT_TYPE = 0;
+    NORMAL                         = 1 [(json_value) = "normal"];
+  }
+
+  optional int32 id                                    = 1 [(json_name) = "id"];
+  optional MysekaiBlueprintType mysekai_blueprint_type = 2 [(json_name) = "mysekaiBlueprintType"];
+  optional int32 mysekai_blueprint_id                  = 3 [(json_name) = "mysekaiBlueprintId"];
+  optional int32 mysekai_material_id                   = 4 [(json_name) = "mysekaiMaterialId"];
+  optional int32 seq                                   = 5 [(json_name) = "seq"];
+  optional int32 quantity                              = 6 [(json_name) = "quantity"];
+}

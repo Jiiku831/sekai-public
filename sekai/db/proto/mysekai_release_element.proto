@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message MysekaiReleaseElement {
+  option (master_db_file) = "mysekaiReleaseElements.json";
+  enum MysekaiReleaseElementType {
+    UNKNOWN_MYSEKAI_RELEASE_ELEMENT_TYPE = 0;
+    MYSEKAI_RANDOM_VISIT                 = 1 [(json_value) = "mysekai_random_visit"];
+  }
+
+  optional int32 id                                               = 1 [(json_name) = "id"];
+  optional MysekaiReleaseElementType mysekai_release_element_type = 2 [(json_name) = "mysekaiReleaseElementType"];
+}

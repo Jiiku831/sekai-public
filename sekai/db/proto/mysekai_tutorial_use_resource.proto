@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message MysekaiTutorialUseResource {
+  option (master_db_file) = "mysekaiTutorialUseResources.json";
+  enum ResourceType {
+    UNKNOWN_RESOURCE_TYPE = 0;
+    MYSEKAI_BLUEPRINT     = 1 [(json_value) = "mysekai_blueprint"];
+    MYSEKAI_FIXTURE       = 2 [(json_value) = "mysekai_fixture"];
+  }
+
+  optional int32 id                   = 1 [(json_name) = "id"];
+  optional ResourceType resource_type = 2 [(json_name) = "resourceType"];
+  optional int32 resource_id          = 3 [(json_name) = "resourceId"];
+  optional int32 possession_limit     = 4 [(json_name) = "possessionLimit"];
+}

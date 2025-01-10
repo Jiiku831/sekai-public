@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message MysekaiMusicRecord {
+  option (master_db_file) = "mysekaiMusicRecords.json";
+  enum MysekaiMusicTrackType {
+    UNKNOWN_MYSEKAI_MUSIC_TRACK_TYPE = 0;
+    MUSIC                            = 1 [(json_value) = "music"];
+    MUSIC_SOUND_TRACK                = 2 [(json_value) = "music_sound_track"];
+  }
+
+  optional int32 id                                       = 1 [(json_name) = "id"];
+  optional MysekaiMusicTrackType mysekai_music_track_type = 2 [(json_name) = "mysekaiMusicTrackType"];
+  optional int32 external_id                              = 3 [(json_name) = "externalId"];
+}

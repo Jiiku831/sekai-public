@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message MysekaiGameCharacterUnitGroup {
+  option (master_db_file)                = "mysekaiGameCharacterUnitGroups.json";
+  optional int32 id                      = 1 [(json_name) = "id"];
+  optional int32 game_character_unit_id1 = 2 [(json_name) = "gameCharacterUnitId1"];
+  optional int32 game_character_unit_id2 = 3 [(json_name) = "gameCharacterUnitId2"];
+  optional int32 game_character_unit_id3 = 4 [(json_name) = "gameCharacterUnitId3"];
+  optional int32 game_character_unit_id4 = 5 [(json_name) = "gameCharacterUnitId4"];
+  optional int32 game_character_unit_id5 = 6 [(json_name) = "gameCharacterUnitId5"];
+}

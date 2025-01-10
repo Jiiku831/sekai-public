@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message MysekaiRecycleResource {
+  option (master_db_file) = "mysekaiRecycleResources.json";
+  enum ResourceType {
+    UNKNOWN_RESOURCE_TYPE = 0;
+    MYSEKAI_MATERIAL      = 1 [(json_value) = "mysekai_material"];
+    MYSEKAI_TOOL          = 2 [(json_value) = "mysekai_tool"];
+  }
+
+  optional int32 id                   = 1 [(json_name) = "id"];
+  optional ResourceType resource_type = 2 [(json_name) = "resourceType"];
+  optional int32 resource_id          = 3 [(json_name) = "resourceId"];
+  optional int32 resource_box_id      = 4 [(json_name) = "resourceBoxId"];
+}

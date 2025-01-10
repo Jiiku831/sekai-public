@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message MysekaiColorfulPas {
+  option (master_db_file)                                              = "mysekaiColorfulPass.json";
+  optional int32 id                                                    = 1 [(json_name) = "id"];
+  optional int32 expire_days                                           = 2 [(json_name) = "expireDays"];
+  optional float mysekai_convert_fixture_convert_minutes_decrease_rate = 3
+      [(json_name) = "mysekaiConvertFixtureConvertMinutesDecreaseRate"];
+  optional int32 mysekai_site_housing_preset_slot_expire_days = 4
+      [(json_name) = "mysekaiSiteHousingPresetSlotExpireDays"];
+}

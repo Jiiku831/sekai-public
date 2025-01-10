@@ -1,0 +1,108 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message MysekaiFixture {
+  option (master_db_file) = "mysekaiFixtures.json";
+  enum MysekaiFixtureType {
+    UNKNOWN_MYSEKAI_FIXTURE_TYPE = 0;
+    CANVAS                       = 1 [(json_value) = "canvas"];
+    CUSTOM                       = 2 [(json_value) = "custom"];
+    GATE                         = 3 [(json_value) = "gate"];
+    HOUSE_PLANT                  = 4 [(json_value) = "house_plant"];
+    NORMAL                       = 5 [(json_value) = "normal"];
+    PLANT                        = 6 [(json_value) = "plant"];
+    SURFACE_APPEARANCE           = 7 [(json_value) = "surface_appearance"];
+    SYSTEM                       = 8 [(json_value) = "system"];
+  }
+
+  message GridSize {
+    optional int32 width  = 1 [(json_name) = "width"];
+    optional int32 depth  = 2 [(json_name) = "depth"];
+    optional int32 height = 3 [(json_name) = "height"];
+  }
+
+  enum MysekaiFixtureHandleType {
+    UNKNOWN_MYSEKAI_FIXTURE_HANDLE_TYPE = 0;
+    CLOCK                               = 1 [(json_value) = "clock"];
+    FENCE                               = 2 [(json_value) = "fence"];
+    LIGHT                               = 3 [(json_value) = "light"];
+    NONE                                = 4 [(json_value) = "none"];
+    ROAD                                = 5 [(json_value) = "road"];
+    WINDOWPANE                          = 6 [(json_value) = "windowpane"];
+  }
+
+  enum MysekaiSettableSiteType {
+    UNKNOWN_MYSEKAI_SETTABLE_SITE_TYPE = 0;
+    ANY                                = 1 [(json_value) = "any"];
+    HOME                               = 2 [(json_value) = "home"];
+    ROOM                               = 3 [(json_value) = "room"];
+  }
+
+  enum MysekaiSettableLayoutType {
+    UNKNOWN_MYSEKAI_SETTABLE_LAYOUT_TYPE = 0;
+    FLOOR                                = 1 [(json_value) = "floor"];
+    FLOOR_APPEARANCE                     = 2 [(json_value) = "floor_appearance"];
+    ROAD                                 = 3 [(json_value) = "road"];
+    RUG                                  = 4 [(json_value) = "rug"];
+    WALL                                 = 5 [(json_value) = "wall"];
+    WALL_APPEARANCE                      = 6 [(json_value) = "wall_appearance"];
+  }
+
+  enum MysekaiFixturePutType {
+    UNKNOWN_MYSEKAI_FIXTURE_PUT_TYPE = 0;
+    NONE                             = 1 [(json_value) = "none"];
+    PUT_BASE                         = 2 [(json_value) = "put_base"];
+    PUT_TARGET                       = 3 [(json_value) = "put_target"];
+  }
+
+  message MysekaiFixtureTagGroup {
+    optional int32 id                      = 1 [(json_name) = "id"];
+    optional int32 mysekai_fixture_tag_id1 = 2 [(json_name) = "mysekaiFixtureTagId1"];
+    optional int32 mysekai_fixture_tag_id2 = 3 [(json_name) = "mysekaiFixtureTagId2"];
+    optional int32 mysekai_fixture_tag_id3 = 4 [(json_name) = "mysekaiFixtureTagId3"];
+    optional int32 mysekai_fixture_tag_id4 = 5 [(json_name) = "mysekaiFixtureTagId4"];
+  }
+
+  enum MysekaiFixturePlayerActionType {
+    UNKNOWN_MYSEKAI_FIXTURE_PLAYER_ACTION_TYPE = 0;
+    LOOP                                       = 1 [(json_value) = "loop"];
+    NO_ACTION                                  = 2 [(json_value) = "no_action"];
+    ONE_SHOT                                   = 3 [(json_value) = "one_shot"];
+    TIMELINE                                   = 4 [(json_value) = "timeline"];
+  }
+
+  message MysekaiFixtureAnotherColor {
+    optional int32 texture_id  = 1 [(json_name) = "textureId"];
+    optional string color_code = 2 [(json_name) = "colorCode"];
+  }
+
+  optional int32 id                                               = 1 [(json_name) = "id"];
+  optional MysekaiFixtureType mysekai_fixture_type                = 2 [(json_name) = "mysekaiFixtureType"];
+  optional string name                                            = 3 [(json_name) = "name"];
+  optional string pronunciation                                   = 4 [(json_name) = "pronunciation"];
+  optional string flavor_text                                     = 5 [(json_name) = "flavorText"];
+  optional int32 seq                                              = 6 [(json_name) = "seq"];
+  optional GridSize grid_size                                     = 7 [(json_name) = "gridSize"];
+  optional int32 mysekai_fixture_main_genre_id                    = 8 [(json_name) = "mysekaiFixtureMainGenreId"];
+  optional int32 mysekai_fixture_sub_genre_id                     = 9 [(json_name) = "mysekaiFixtureSubGenreId"];
+  optional MysekaiFixtureHandleType mysekai_fixture_handle_type   = 10 [(json_name) = "mysekaiFixtureHandleType"];
+  optional MysekaiSettableSiteType mysekai_settable_site_type     = 11 [(json_name) = "mysekaiSettableSiteType"];
+  optional MysekaiSettableLayoutType mysekai_settable_layout_type = 12 [(json_name) = "mysekaiSettableLayoutType"];
+  optional MysekaiFixturePutType mysekai_fixture_put_type         = 13 [(json_name) = "mysekaiFixturePutType"];
+  optional int32 mysekai_fixture_put_sound_id                     = 14 [(json_name) = "mysekaiFixturePutSoundId"];
+  optional int32 mysekai_fixture_footstep_id                      = 15 [(json_name) = "mysekaiFixtureFootstepId"];
+  optional MysekaiFixtureTagGroup mysekai_fixture_tag_group       = 16 [(json_name) = "mysekaiFixtureTagGroup"];
+  optional bool is_assembled                                      = 17 [(json_name) = "isAssembled"];
+  optional bool is_disassembled                                   = 18 [(json_name) = "isDisassembled"];
+  optional MysekaiFixturePlayerActionType mysekai_fixture_player_action_type = 19
+      [(json_name) = "mysekaiFixturePlayerActionType"];
+  optional bool is_game_character_action                             = 20 [(json_name) = "isGameCharacterAction"];
+  optional string assetbundle_name                                   = 21 [(json_name) = "assetbundleName"];
+  optional string color_code                                         = 22 [(json_name) = "colorCode"];
+  repeated MysekaiFixtureAnotherColor mysekai_fixture_another_colors = 23 [(json_name) = "mysekaiFixtureAnotherColors"];
+  optional int32 mysekai_fixture_game_character_group_performance_bonus_id = 24
+      [(json_name) = "mysekaiFixtureGameCharacterGroupPerformanceBonusId"];
+}

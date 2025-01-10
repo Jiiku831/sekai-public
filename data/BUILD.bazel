@@ -28,6 +28,11 @@ filegroup(
 )
 
 filegroup(
+    name = "profile/cards_v2",
+    srcs = ["profile/cards_v2.csv"],
+)
+
+filegroup(
     name = "profile/constraints",
     srcs = ["profile/constraints.textproto"],
 )

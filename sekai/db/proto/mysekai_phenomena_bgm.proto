@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message MysekaiPhenomenaBgm {
+  option (master_db_file)             = "mysekaiPhenomenaBgms.json";
+  optional int32 id                   = 1 [(json_name) = "id"];
+  optional int32 mysekai_phenomena_id = 2 [(json_name) = "mysekaiPhenomenaId"];
+  optional string assetbundle_name    = 3 [(json_name) = "assetbundleName"];
+  optional string cue                 = 4 [(json_name) = "cue"];
+}

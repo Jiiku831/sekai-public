@@ -11,6 +11,9 @@ RUNFILES_DIR="$(bazelisk info bazel-bin)/sekai/db/proto/tools/generate_proto.run
 for file in $RUNFILES_DIR/sekai-master-db~/*.json; do
     echo "processing: $file"
     should_skip=0
+    skip_files = (
+      assetList.json
+    )
     for skip_file in "${skip_files[@]}"; do
       if [[ "$(basename $file)" = "$skip_file" ]]; then
           should_skip=1
@@ -24,7 +27,6 @@ for file in $RUNFILES_DIR/sekai-master-db~/*.json; do
 
     should_reprocess=0
     reprocess_files=(
-      skills.json
     )
     reprocess_args=""
     for reprocess_file in "${reprocess_files[@]}"; do

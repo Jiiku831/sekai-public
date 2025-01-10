@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message MysekaiCharacterTalkPreAction {
+  option (master_db_file)                                         = "mysekaiCharacterTalkPreActions.json";
+  optional int32 id                                               = 1 [(json_name) = "id"];
+  optional int32 mysekai_character_talk_id                        = 2 [(json_name) = "mysekaiCharacterTalkId"];
+  optional int32 mysekai_character_talk_tweet_id                  = 3 [(json_name) = "mysekaiCharacterTalkTweetId"];
+  optional int32 mysekai_character_talk_fixture_timeline_group_id = 4
+      [(json_name) = "mysekaiCharacterTalkFixtureTimelineGroupId"];
+  optional int32 mysekai_character_talk_fixture_together_communication_id = 5
+      [(json_name) = "mysekaiCharacterTalkFixtureTogetherCommunicationId"];
+}

@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message BillingShopTabChildren {
+  option (master_db_file) = "billingShopTabChildren.json";
+  enum BillingShopItemType {
+    UNKNOWN_BILLING_SHOP_ITEM_TYPE = 0;
+    COLORFUL_PASS                  = 1 [(json_value) = "colorful_pass"];
+    COSTUME_3D                     = 2 [(json_value) = "costume_3d"];
+    JEWEL                          = 3 [(json_value) = "jewel"];
+    LIVE_MISSION_PASS              = 4 [(json_value) = "live_mission_pass"];
+    MYSEKAI_COLORFUL_PASS          = 5 [(json_value) = "mysekai_colorful_pass"];
+    MYSEKAI_MISSION_PASS           = 6 [(json_value) = "mysekai_mission_pass"];
+    VALUE_SET                      = 7 [(json_value) = "value_set"];
+  }
+
+  optional int32 id                                   = 1 [(json_name) = "id"];
+  optional int32 seq                                  = 2 [(json_name) = "seq"];
+  optional int32 billing_shop_tab_parent_id           = 3 [(json_name) = "billingShopTabParentId"];
+  optional BillingShopItemType billing_shop_item_type = 4 [(json_name) = "billingShopItemType"];
+  optional string name                                = 5 [(json_name) = "name"];
+}

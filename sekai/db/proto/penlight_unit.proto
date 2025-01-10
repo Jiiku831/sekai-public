@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message PenlightUnit {
+  option (master_db_file) = "penlightUnits.json";
+  enum Unit {
+    UNKNOWN_UNIT   = 0;
+    IDOL           = 1 [(json_value) = "idol"];
+    LIGHT_SOUND    = 2 [(json_value) = "light_sound"];
+    NONE           = 3 [(json_value) = "none"];
+    PIAPRO         = 4 [(json_value) = "piapro"];
+    SCHOOL_REFUSAL = 5 [(json_value) = "school_refusal"];
+    STREET         = 6 [(json_value) = "street"];
+    THEME_PARK     = 7 [(json_value) = "theme_park"];
+  }
+
+  optional int32 id          = 1 [(json_name) = "id"];
+  optional int32 penlight_id = 2 [(json_name) = "penlightId"];
+  optional Unit unit         = 3 [(json_name) = "unit"];
+}

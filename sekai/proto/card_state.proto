@@ -8,4 +8,5 @@ message CardState {
   optional int32 skill_level        = 3;
   repeated int32 card_episodes_read = 4;
   optional bool special_training    = 5;
+  optional bool canvas_crafted      = 6;
 }

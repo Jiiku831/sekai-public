@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message MysekaiGate {
+  option (master_db_file) = "mysekaiGates.json";
+  enum Unit {
+    UNKNOWN_UNIT   = 0;
+    IDOL           = 1 [(json_value) = "idol"];
+    LIGHT_SOUND    = 2 [(json_value) = "light_sound"];
+    SCHOOL_REFUSAL = 3 [(json_value) = "school_refusal"];
+    STREET         = 4 [(json_value) = "street"];
+    THEME_PARK     = 5 [(json_value) = "theme_park"];
+  }
+
+  optional int32 id                = 1 [(json_name) = "id"];
+  optional Unit unit               = 2 [(json_name) = "unit"];
+  optional string name             = 3 [(json_name) = "name"];
+  optional string assetbundle_name = 4 [(json_name) = "assetbundleName"];
+}
