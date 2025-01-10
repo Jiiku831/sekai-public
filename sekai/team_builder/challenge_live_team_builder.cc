@@ -27,9 +27,17 @@ std::vector<Team> NaiveRecommendTeams(std::span<const Card* const> pool, const P
   double best_val = 0;
   std::optional<Team> best_team = std::nullopt;
 
+  std::bitset<kCardArraySize> cards_present;
   Combinations<const Card*, 5>{
       pool,
       [&](std::span<const Card* const> candidate_cards) {
+        cards_present.reset();
+        for (const Card* card : candidate_cards) {
+          if (cards_present.test(card->card_id())) {
+            return true;
+          }
+          cards_present.set(card->card_id());
+        }
         ++stats.teams_considered;
         Team candidate_team{candidate_cards};
         ++stats.teams_evaluated;
