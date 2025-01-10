@@ -387,6 +387,7 @@ cc_library(
         ":card",
         ":character",
         ":profile_bonus",
+        "//base:util",
         "//sekai/db:master_db",
         "//sekai/db/proto:all",
         "//sekai/proto:profile_cc_proto",
