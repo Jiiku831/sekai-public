@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
+#include <span>
 #include <sstream>
 #include <string>
 #include <string_view>
@@ -13,6 +14,7 @@
 #include "absl/log/log.h"
 #include "absl/strings/numbers.h"
 #include "absl/strings/str_split.h"
+#include "base/util.h"
 #include "sekai/array_size.h"
 #include "sekai/card.h"
 #include "sekai/db/master_db.h"
@@ -148,17 +150,35 @@ absl::Status Profile::LoadCardsFromCsvString(std::string_view contents) {
   return LoadCardsFromCsv(ss);
 }
 
+absl::StatusOr<int> TryGetOffset(std::span<const std::string> header) {
+  if (header.size() <= 4) {
+    return absl::InvalidArgumentError(absl::StrCat(
+        "Header row has invalid length, expected at least 4 columns got: ", header.size()));
+  }
+  if (header[3] == "canvas") {
+    return 1;
+  }
+  return 0;
+}
+
 absl::Status Profile::LoadCardsFromCsv(std::stringstream& ss) {
+  int row = 0;
+  int offset = 0;
   for (std::string line; std::getline(ss, line);) {
+    ++row;
     std::vector<std::string> parts = absl::StrSplit(line, ',');
+    if (row == 1) {
+      ASSIGN_OR_RETURN(offset, TryGetOffset(parts));
+    }
     if (parts[0] != "TRUE") continue;
     if (parts.empty()) continue;
-    if (parts.size() <= 7) {
-      return absl::InvalidArgumentError(absl::StrCat("Invalid input line: ", line));
+    if (parts.size() <= 7 + offset) {
+      return absl::InvalidArgumentError(absl::StrCat("Invalid input row: ", row));
     }
     int card_id = 0;
-    if (!TryParseInt(parts[7], card_id)) {
-      return absl::InvalidArgumentError(absl::StrCat("Failed to parse as int: ", parts[7]));
+    if (!TryParseInt(parts[7 + offset], card_id)) {
+      return absl::InvalidArgumentError(
+          absl::StrCat("Failed to parse as int: ", parts[7 + offset]));
     }
     int master_rank = 0;
     int skill_level = 1;
