@@ -1,8 +1,10 @@
 #include "sekai/card.h"
 
+#include <array>
 #include <span>
 
 #include "absl/base/nullability.h"
+#include "absl/log/absl_check.h"
 #include "sekai/array_size.h"
 #include "sekai/character.h"
 #include "sekai/db/master_db.h"
@@ -24,6 +26,20 @@ template <typename T>
 Eigen::Vector3i GetBonusPower(const T& msg) {
   return Eigen::Vector3i(msg.power1_bonus_fixed(), msg.power2_bonus_fixed(),
                          msg.power3_bonus_fixed());
+}
+
+const Eigen::Vector3i& GetCanvasBonusPower(db::CardRarityType rarity) {
+  static const std::array<Eigen::Vector3i, db::CardRarityType_ARRAYSIZE>* const kBonus = [] {
+    auto bonuses = new std::array<Eigen::Vector3i, db::CardRarityType_ARRAYSIZE>;
+    bonuses->fill(Eigen::Vector3i(0, 0, 0));
+    for (const auto& bonus : MasterDb::GetAll<db::CardMySekaiCanvasBonus>()) {
+      (*bonuses)[bonus.card_rarity_type()] = Eigen::Vector3i(
+          bonus.power1_bonus_fixed(), bonus.power2_bonus_fixed(), bonus.power3_bonus_fixed());
+    }
+    return bonuses;
+  }();
+  ABSL_CHECK(db::CardRarityType_IsValid(rarity));
+  return (*kBonus)[rarity];
 }
 
 Eigen::Vector3i GetBasePower(const db::Card& card, int level) {
@@ -84,6 +100,9 @@ Eigen::Vector3i GetCardPower(const db::Card& card, const CardState& state) {
   Eigen::Vector3i power = GetBasePower(card, state.has_level() ? state.level() : 1);
   if (state.special_training()) {
     power += GetSpecialTrainingBonus(card);
+  }
+  if (state.canvas_crafted()) {
+    power += GetCanvasBonusPower(card.card_rarity_type());
   }
   power += GetMasterRankBonus(card.card_rarity_type(), state.master_rank());
   power += GetCardEpisodeBonus(card.id(), state);

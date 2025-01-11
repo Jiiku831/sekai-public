@@ -109,6 +109,22 @@ TEST(CardTest, TestCard1Power) {
             Eigen::Vector3i(2663 + 300 + 150, 2325 + 300 + 150, 2587 + 300 + 150));
 }
 
+TEST(CardTest, TestCard1PowerWithCanvas) {
+  const db::Card& card1 = MasterDb::FindFirst<db::Card>(1);
+  auto state = ParseTextProto<CardState>(R"pb(
+    level: 20
+    master_rank: 3
+    card_episodes_read: 1
+    card_episodes_read: 2
+    special_training: false
+    canvas_crafted: true
+  )pb");
+  Card card{card1, state};
+  EXPECT_EQ(card.power_vec().sum(), 7575 + (300 + 150) * 3 + 300);
+  EXPECT_EQ(card.power_vec(), Eigen::Vector3i(2663 + 300 + 150 + 100, 2325 + 300 + 150 + 100,
+                                              2587 + 300 + 150 + 100));
+}
+
 TEST(CardTest, TestCard801Power) {
   const db::Card& card1 = MasterDb::FindFirst<db::Card>(801);
   auto state = ParseTextProto<CardState>(R"pb(
@@ -122,6 +138,23 @@ TEST(CardTest, TestCard801Power) {
   EXPECT_EQ(card.power_vec().sum(), 37292);
   EXPECT_EQ(card.power_vec(), Eigen::Vector3i(9254 + 1000 + 850 + 400, 10129 + 1000 + 850 + 400,
                                               11159 + 1000 + 850 + 400));
+}
+
+TEST(CardTest, TestCard801PowerWithCanvas) {
+  const db::Card& card1 = MasterDb::FindFirst<db::Card>(801);
+  auto state = ParseTextProto<CardState>(R"pb(
+    level: 60
+    master_rank: 5
+    card_episodes_read: 1599
+    card_episodes_read: 1600
+    special_training: true
+    canvas_crafted: true
+  )pb");
+  Card card{card1, state};
+  EXPECT_EQ(card.power_vec().sum(), 37292 + 1500);
+  EXPECT_EQ(card.power_vec(),
+            Eigen::Vector3i(9254 + 1000 + 850 + 400 + 500, 10129 + 1000 + 850 + 400 + 500,
+                            11159 + 1000 + 850 + 400 + 500));
 }
 
 TEST(CardTest, TestCard1Skill) {
