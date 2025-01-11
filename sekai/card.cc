@@ -101,9 +101,6 @@ Eigen::Vector3i GetCardPower(const db::Card& card, const CardState& state) {
   if (state.special_training()) {
     power += GetSpecialTrainingBonus(card);
   }
-  if (state.canvas_crafted()) {
-    power += GetCanvasBonusPower(card.card_rarity_type());
-  }
   power += GetMasterRankBonus(card.card_rarity_type(), state.master_rank());
   power += GetCardEpisodeBonus(card.id(), state);
   return power;
@@ -148,6 +145,10 @@ Card::Card(const db::Card& card, const CardState& state) : CardBase(card), state
 
   power_vec_ = GetCardPower(card, state);
   power_ = power_vec_.sum();
+  if (state.canvas_crafted()) {
+    unboosted_power_vec_ = GetCanvasBonusPower(card.card_rarity_type());
+  }
+  unboosted_power_ = unboosted_power_vec_.sum();
   const db::Skill& skill = MasterDb::Get().Get<db::Skill>().FindFirst(card.skill_id());
   skill_ = Skill(skill, skill_level_);
   if (card.has_special_training_skill_id() && state.special_training()) {
@@ -194,7 +195,7 @@ void Card::ApplyProfilePowerBonus(const ProfileBonus& profile) {
         area_item_bonus_[attr_matching][primary_unit_matching][secondary_unit_matching] =
             area_item_bonus;
         precomputed_power_[attr_matching][primary_unit_matching][secondary_unit_matching] =
-            power_ + cr_power_bonus_ + area_item_bonus;
+            power_ + unboosted_power_ + cr_power_bonus_ + area_item_bonus;
       }
     }
   }

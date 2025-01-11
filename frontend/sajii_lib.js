@@ -233,6 +233,17 @@ function CreateCardList(list) {
           : document.createTextNode("")));
     row.appendChild(
       CreateNode("td",
+          CreateCheckbox(
+            `card-list-canvas-crafted-${card.cardId}`,
+            ['card-canvas-crafted-checkbox'],
+            "",
+            function (e) {
+              controller.SetCardCanvasCrafted(card.cardId, this.checked);
+            },
+            false,
+            true)));
+    row.appendChild(
+      CreateNode("td",
         CreateNumberInput(0, 5, `card-list-master-rank-${card.cardId}`,
           function (e) {
             if (!this.validity.valid || this.value == "") {

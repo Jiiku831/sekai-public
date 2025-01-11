@@ -120,9 +120,11 @@ TEST(CardTest, TestCard1PowerWithCanvas) {
     canvas_crafted: true
   )pb");
   Card card{card1, state};
-  EXPECT_EQ(card.power_vec().sum(), 7575 + (300 + 150) * 3 + 300);
-  EXPECT_EQ(card.power_vec(), Eigen::Vector3i(2663 + 300 + 150 + 100, 2325 + 300 + 150 + 100,
-                                              2587 + 300 + 150 + 100));
+  EXPECT_EQ(card.power_vec().sum(), 7575 + (300 + 150) * 3);
+  EXPECT_EQ(card.power_vec(),
+            Eigen::Vector3i(2663 + 300 + 150, 2325 + 300 + 150, 2587 + 300 + 150));
+  EXPECT_EQ(card.unboosted_power_vec().sum(), 300);
+  EXPECT_EQ(card.unboosted_power_vec(), Eigen::Vector3i(100, 100, 100));
 }
 
 TEST(CardTest, TestCard801Power) {
@@ -151,10 +153,11 @@ TEST(CardTest, TestCard801PowerWithCanvas) {
     canvas_crafted: true
   )pb");
   Card card{card1, state};
-  EXPECT_EQ(card.power_vec().sum(), 37292 + 1500);
-  EXPECT_EQ(card.power_vec(),
-            Eigen::Vector3i(9254 + 1000 + 850 + 400 + 500, 10129 + 1000 + 850 + 400 + 500,
-                            11159 + 1000 + 850 + 400 + 500));
+  EXPECT_EQ(card.power_vec().sum(), 37292);
+  EXPECT_EQ(card.power_vec(), Eigen::Vector3i(9254 + 1000 + 850 + 400, 10129 + 1000 + 850 + 400,
+                                              11159 + 1000 + 850 + 400));
+  EXPECT_EQ(card.unboosted_power_vec().sum(), 1500);
+  EXPECT_EQ(card.unboosted_power_vec(), Eigen::Vector3i(500, 500, 500));
 }
 
 TEST(CardTest, TestCard1Skill) {
