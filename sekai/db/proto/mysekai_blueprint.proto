@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message MysekaiBlueprint {
+  option (master_db_file) = "mysekaiBlueprints.json";
+  enum MysekaiCraftType {
+    UNKNOWN_MYSEKAI_CRAFT_TYPE = 0;
+    MYSEKAI_CANVAS             = 1 [(json_value) = "mysekai_canvas"];
+    MYSEKAI_FIXTURE            = 2 [(json_value) = "mysekai_fixture"];
+    MYSEKAI_TOOL               = 3 [(json_value) = "mysekai_tool"];
+  }
+
+  optional int32 id                            = 1 [(json_name) = "id"];
+  optional MysekaiCraftType mysekai_craft_type = 2 [(json_name) = "mysekaiCraftType"];
+  optional int32 craft_target_id               = 3 [(json_name) = "craftTargetId"];
+  optional bool is_enable_sketch               = 4 [(json_name) = "isEnableSketch"];
+  optional bool is_obtained_by_convert         = 5 [(json_name) = "isObtainedByConvert"];
+  optional int32 craft_count_limit             = 6 [(json_name) = "craftCountLimit"];
+}

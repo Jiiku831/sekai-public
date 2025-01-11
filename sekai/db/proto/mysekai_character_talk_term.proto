@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message MysekaiCharacterTalkTerm {
+  option (master_db_file) = "mysekaiCharacterTalkTerms.json";
+  optional int32 id       = 1 [(json_name) = "id"];
+  optional int64 start_at = 2 [(json_name) = "startAt"];
+}

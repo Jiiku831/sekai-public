@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message MysekaiCharacterTalkTweet {
+  option (master_db_file)               = "mysekaiCharacterTalkTweets.json";
+  optional int32 id                     = 1 [(json_name) = "id"];
+  optional string motion_name           = 2 [(json_name) = "motionName"];
+  optional string expression_eye_name   = 3 [(json_name) = "expressionEyeName"];
+  optional string expression_mouth_name = 4 [(json_name) = "expressionMouthName"];
+  optional string text                  = 5 [(json_name) = "text"];
+  optional string emoticon_name         = 6 [(json_name) = "emoticonName"];
+}

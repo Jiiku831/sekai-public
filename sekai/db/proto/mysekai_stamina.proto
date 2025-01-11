@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message MysekaiStamina {
+  option (master_db_file) = "mysekaiStaminas.json";
+  enum MysekaiStaminaType {
+    UNKNOWN_MYSEKAI_STAMINA_TYPE = 0;
+    BOOST                        = 1 [(json_value) = "boost"];
+    ENHANCE                      = 2 [(json_value) = "enhance"];
+    NORMAL                       = 3 [(json_value) = "normal"];
+  }
+
+  optional int32 id                                = 1 [(json_name) = "id"];
+  optional MysekaiStaminaType mysekai_stamina_type = 2 [(json_name) = "mysekaiStaminaType"];
+  optional int32 max_stamina                       = 3 [(json_name) = "maxStamina"];
+}

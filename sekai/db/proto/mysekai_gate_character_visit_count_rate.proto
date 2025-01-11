@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message MysekaiGateCharacterVisitCountRate {
+  option (master_db_file)                    = "mysekaiGateCharacterVisitCountRates.json";
+  optional int32 id                          = 1 [(json_name) = "id"];
+  optional float character_count1_spawn_rate = 2 [(json_name) = "characterCount1SpawnRate"];
+  optional float character_count2_spawn_rate = 3 [(json_name) = "characterCount2SpawnRate"];
+  optional float character_count3_spawn_rate = 4 [(json_name) = "characterCount3SpawnRate"];
+  optional float character_count4_spawn_rate = 5 [(json_name) = "characterCount4SpawnRate"];
+  optional float character_count5_spawn_rate = 6 [(json_name) = "characterCount5SpawnRate"];
+}

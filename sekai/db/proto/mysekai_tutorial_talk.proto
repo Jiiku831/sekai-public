@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message MysekaiTutorialTalk {
+  option (master_db_file)                        = "mysekaiTutorialTalks.json";
+  optional int32 id                              = 1 [(json_name) = "id"];
+  optional string assetbundle_name               = 2 [(json_name) = "assetbundleName"];
+  optional string lua                            = 3 [(json_name) = "lua"];
+  optional int32 mysekai_character_talk_tweet_id = 4 [(json_name) = "mysekaiCharacterTalkTweetId"];
+}

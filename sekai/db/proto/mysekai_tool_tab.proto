@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message MysekaiToolTab {
+  option (master_db_file) = "mysekaiToolTabs.json";
+  enum MysekaiToolType {
+    UNKNOWN_MYSEKAI_TOOL_TYPE = 0;
+    AXE                       = 1 [(json_value) = "axe"];
+    NONE                      = 2 [(json_value) = "none"];
+    PICKAXE                   = 3 [(json_value) = "pickaxe"];
+  }
+
+  optional int32 id                          = 1 [(json_name) = "id"];
+  optional MysekaiToolType mysekai_tool_type = 2 [(json_name) = "mysekaiToolType"];
+  optional string name                       = 3 [(json_name) = "name"];
+  optional string assetbundle_name           = 4 [(json_name) = "assetbundleName"];
+}

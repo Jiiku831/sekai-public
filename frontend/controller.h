@@ -59,6 +59,7 @@ class Controller : public ControllerBase {
   void SetCardSkillLevel(int card_id, int level);
   void SetCardTrained(int card_id, bool state);
   void SetCardEpisodeRead(int card_id, int episode_id, bool state);
+  void SetCardCanvasCrafted(int card_id, bool state);
 
   void SetEventBonusByEvent(int event_id, int chapter_id);
   void SetCustomEventAttr(int attr);

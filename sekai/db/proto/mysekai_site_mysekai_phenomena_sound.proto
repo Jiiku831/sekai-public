@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message MysekaiSiteMysekaiPhenomenaSound {
+  option (master_db_file) = "mysekaiSiteMysekaiPhenomenaSounds.json";
+  enum MysekaiPhenomenaSoundConditionType {
+    UNKNOWN_MYSEKAI_PHENOMENA_SOUND_CONDITION_TYPE = 0;
+    OTHER                                          = 1 [(json_value) = "other"];
+    SPECIFIC                                       = 2 [(json_value) = "specific"];
+  }
+
+  optional int32 id              = 1 [(json_name) = "id"];
+  optional int32 mysekai_site_id = 2 [(json_name) = "mysekaiSiteId"];
+  optional MysekaiPhenomenaSoundConditionType mysekai_phenomena_sound_condition_type = 3
+      [(json_name) = "mysekaiPhenomenaSoundConditionType"];
+  optional string cue                 = 4 [(json_name) = "cue"];
+  optional int32 mysekai_phenomena_id = 5 [(json_name) = "mysekaiPhenomenaId"];
+}

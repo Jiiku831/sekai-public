@@ -129,6 +129,10 @@ EM_JS(void, SetCardTrained, (int card_id, bool state), {
   document.getElementById(`card-list-trained-${card_id}`).checked = state;
 });
 
+EM_JS(void, SetCardCanvasCrafted, (int card_id, bool state), {
+  document.getElementById(`card-list-canvas-crafted-${card_id}`).checked = state;
+});
+
 EM_JS(void, SetCardEpisode1, (int card_id, bool state), {
   document.getElementById(`card-list-episode-1-${card_id}`).checked = state;
 });
@@ -214,6 +218,7 @@ void UpdateCardState(int card_id, const CardState& state) {
   if (sekai::TrainableCard(MasterDb::FindFirst<Card>(card_id).card_rarity_type())) {
     SetCardTrained(card_id, state.special_training());
   }
+  SetCardCanvasCrafted(card_id, state.canvas_crafted());
   for (const CardEpisode* episode : MasterDb::FindAll<CardEpisode>(card_id)) {
     bool read = absl::c_linear_search(state.card_episodes_read(), episode->id());
     switch (episode->card_episode_part_type()) {
@@ -602,6 +607,17 @@ void Controller::SetCardTrained(int card_id, bool state) {
   }
   if (card_state->special_training() == state) return;
   card_state->set_special_training(state);
+  UpdateProfile();
+}
+
+void Controller::SetCardCanvasCrafted(int card_id, bool state) {
+  CardState* card_state = GetCardState(card_id);
+  if (card_state == nullptr) {
+    LOG(ERROR) << "Invalid card_id: " << card_id;
+    return;
+  }
+  if (card_state->canvas_crafted() == state) return;
+  card_state->set_canvas_crafted(state);
   UpdateProfile();
 }
 
@@ -1026,6 +1042,7 @@ EMSCRIPTEN_BINDINGS(controller) {
       .function("SerializeStateToDebugString", &Controller::SerializeStateToDebugString)
       .function("SerializeStateToString", &Controller::SerializeStateToString)
       .function("SetAreaItemLevel", &Controller::SetAreaItemLevel)
+      .function("SetCardCanvasCrafted", &Controller::SetCardCanvasCrafted)
       .function("SetAttrFilterState", &Controller::SetAttrFilterState)
       .function("SetCardEpisodeRead", &Controller::SetCardEpisodeRead)
       .function("SetCardLevel", &Controller::SetCardLevel)

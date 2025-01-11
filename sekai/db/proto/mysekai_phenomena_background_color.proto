@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message MysekaiPhenomenaBackgroundColor {
+  option (master_db_file)                = "mysekaiPhenomenaBackgroundColors.json";
+  optional int32 id                      = 1 [(json_name) = "id"];
+  optional string base_color             = 2 [(json_name) = "baseColor"];
+  optional string ground_color           = 3 [(json_name) = "groundColor"];
+  optional string gradation_color        = 4 [(json_name) = "gradationColor"];
+  optional string corner_color           = 5 [(json_name) = "cornerColor"];
+  optional string ground_highlight_color = 6 [(json_name) = "groundHighlightColor"];
+}

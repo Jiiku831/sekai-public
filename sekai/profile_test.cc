@@ -3,7 +3,6 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "absl/log/log.h"
 #include "sekai/config.h"
 #include "sekai/proto_util.h"
 #include "sekai/unit_count.h"
@@ -15,15 +14,24 @@ namespace {
 using ::testing::_;
 using ::testing::DescribeMatcher;
 using ::testing::ElementsAre;
+using ::testing::Eq;
 using ::testing::FloatEq;
 using ::testing::IsEmpty;
 using ::testing::ParseTextProto;
+using ::testing::Pointee;
+using ::testing::ProtoEquals;
+using ::testing::SizeIs;
 
 MATCHER_P2(BonusRateIs, rate, matching_rate,
            "rate that " + DescribeMatcher<float>(rate, negation) + (negation ? " or" : " and") +
                " matching rate that " + DescribeMatcher<float>(matching_rate, negation)) {
   return testing::ExplainMatchResult(rate, arg.rate, result_listener) &&
          testing::ExplainMatchResult(matching_rate, arg.matching_rate, result_listener);
+}
+
+MATCHER_P(CardStateThat, matcher,
+          "card state that " + DescribeMatcher<CardState>(matcher, negation)) {
+  return testing::ExplainMatchResult(matcher, arg.state(), result_listener);
 }
 
 ProfileProto TestProfile() {
@@ -205,6 +213,34 @@ TEST(ProfileTest, LoadCardsFromCsv) {
   Profile profile(TestProfile());
   profile.LoadCardsFromCsv(SekaiRunfilesRoot() / "data/profile/cards.csv");
   EXPECT_THAT(profile.PrimaryCardPool(), IsEmpty());
+}
+
+TEST(ProfileTest, LoadCardsFromCsvV2Format) {
+  Profile profile(TestProfile());
+  profile.LoadCardsFromCsv(SekaiRunfilesRoot() / "data/profile/cards_v2.csv");
+  EXPECT_THAT(profile.PrimaryCardPool(), SizeIs(2));
+  auto expected_card1_state = ParseTextProto<CardState>(
+      R"pb(
+        level: 20
+        master_rank: 1
+        skill_level: 2
+        card_episodes_read: 1
+        card_episodes_read: 2
+        canvas_crafted: false
+      )pb");
+  EXPECT_THAT(profile.GetCard(1), Pointee(CardStateThat(ProtoEquals(expected_card1_state))));
+  EXPECT_THAT(profile.GetCard(2), Eq(nullptr));
+  auto expected_card3_state = ParseTextProto<CardState>(R"pb(
+    level: 50
+    master_rank: 2
+    skill_level: 3
+    card_episodes_read: 5
+    card_episodes_read: 6
+    special_training: true
+    canvas_crafted: true
+  )pb");
+  EXPECT_THAT(profile.GetCard(3), Pointee(CardStateThat(ProtoEquals(expected_card3_state))));
+  EXPECT_THAT(profile.GetCard(4), Eq(nullptr));
 }
 
 TEST(ProfileTest, ApplySkillCharacterRanks) {

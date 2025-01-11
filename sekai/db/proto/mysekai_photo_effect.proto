@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message MysekaiPhotoEffect {
+  option (master_db_file) = "mysekaiPhotoEffects.json";
+  enum MysekaiPhotoEffectType {
+    UNKNOWN_MYSEKAI_PHOTO_EFFECT_TYPE = 0;
+    MONOCHROME                        = 1 [(json_value) = "monochrome"];
+    NONE                              = 2 [(json_value) = "none"];
+    SEPIA                             = 3 [(json_value) = "sepia"];
+  }
+
+  optional int32 id                                         = 1 [(json_name) = "id"];
+  optional MysekaiPhotoEffectType mysekai_photo_effect_type = 2 [(json_name) = "mysekaiPhotoEffectType"];
+  optional string assetbundle_name                          = 3 [(json_name) = "assetbundleName"];
+}

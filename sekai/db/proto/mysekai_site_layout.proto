@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message MysekaiSiteLayout {
+  option (master_db_file) = "mysekaiSiteLayouts.json";
+  enum MysekaiLayoutType {
+    UNKNOWN_MYSEKAI_LAYOUT_TYPE = 0;
+    FLOOR                       = 1 [(json_value) = "floor"];
+    ROAD                        = 2 [(json_value) = "road"];
+    RUG                         = 3 [(json_value) = "rug"];
+    WALL_BACK                   = 4 [(json_value) = "wall_back"];
+    WALL_FRONT                  = 5 [(json_value) = "wall_front"];
+    WALL_LEFT                   = 6 [(json_value) = "wall_left"];
+    WALL_RIGHT                  = 7 [(json_value) = "wall_right"];
+  }
+
+  optional int32 id                              = 1 [(json_name) = "id"];
+  optional int32 mysekai_site_level_id           = 2 [(json_name) = "mysekaiSiteLevelId"];
+  optional MysekaiLayoutType mysekai_layout_type = 3 [(json_name) = "mysekaiLayoutType"];
+  optional int32 width                           = 4 [(json_name) = "width"];
+  optional int32 height                          = 5 [(json_name) = "height"];
+  optional int32 depth                           = 6 [(json_name) = "depth"];
+}

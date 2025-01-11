@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message MysekaiConvertItemTab {
+  option (master_db_file) = "mysekaiConvertItemTabs.json";
+  enum MysekaiConvertItemTabType {
+    UNKNOWN_MYSEKAI_CONVERT_ITEM_TAB_TYPE = 0;
+    LIMITED                               = 1 [(json_value) = "limited"];
+    MYSEKAI_BLUEPRINT                     = 2 [(json_value) = "mysekai_blueprint"];
+    MYSEKAI_MUSIC_RECORD                  = 3 [(json_value) = "mysekai_music_record"];
+    NORMAL                                = 4 [(json_value) = "normal"];
+    TONE                                  = 5 [(json_value) = "tone"];
+  }
+
+  optional int32 id                                                = 1 [(json_name) = "id"];
+  optional MysekaiConvertItemTabType mysekai_convert_item_tab_type = 2 [(json_name) = "mysekaiConvertItemTabType"];
+  optional int32 seq                                               = 3 [(json_name) = "seq"];
+  optional string name                                             = 4 [(json_name) = "name"];
+  optional string assetbundle_name                                 = 5 [(json_name) = "assetbundleName"];
+}

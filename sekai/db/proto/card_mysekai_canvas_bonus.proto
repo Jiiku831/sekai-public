@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+import "sekai/db/proto/enums.proto";
+
+message CardMySekaiCanvasBonus {
+  option (master_db_file)                  = "cardMysekaiCanvasBonuses.json";
+
+  optional int32 id                        = 1 [(json_name) = "id"];
+  optional CardRarityType card_rarity_type = 2 [(json_name) = "cardRarityType"];
+  optional int32 power1_bonus_fixed        = 3 [(json_name) = "power1BonusFixed"];
+  optional int32 power2_bonus_fixed        = 4 [(json_name) = "power2BonusFixed"];
+  optional int32 power3_bonus_fixed        = 5 [(json_name) = "power3BonusFixed"];
+}

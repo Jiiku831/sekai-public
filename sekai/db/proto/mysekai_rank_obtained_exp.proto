@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message MysekaiRankObtainedExp {
+  option (master_db_file) = "mysekaiRankObtainedExps.json";
+  enum MysekaiRankObtainedExpType {
+    UNKNOWN_MYSEKAI_RANK_OBTAINED_EXP_TYPE = 0;
+    CRAFT_MYSEKAI_FIXTURE_FIRST_BONUS      = 1 [(json_value) = "craft_mysekai_fixture_first_bonus"];
+  }
+
+  optional int32 id                                                  = 1 [(json_name) = "id"];
+  optional MysekaiRankObtainedExpType mysekai_rank_obtained_exp_type = 2 [(json_name) = "mysekaiRankObtainedExpType"];
+  optional int32 quantity                                            = 3 [(json_name) = "quantity"];
+}

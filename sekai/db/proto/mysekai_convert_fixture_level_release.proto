@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message MysekaiConvertFixtureLevelRelease {
+  option (master_db_file) = "mysekaiConvertFixtureLevelReleases.json";
+  enum MysekaiConvertFixtureLevelReleaseType {
+    UNKNOWN_MYSEKAI_CONVERT_FIXTURE_LEVEL_RELEASE_TYPE = 0;
+    CONVERT_TIME_SHORTEN                               = 1 [(json_value) = "convert_time_shorten"];
+  }
+
+  optional int32 id                            = 1 [(json_name) = "id"];
+  optional int32 mysekai_convert_fixture_level = 2 [(json_name) = "mysekaiConvertFixtureLevel"];
+  optional MysekaiConvertFixtureLevelReleaseType mysekai_convert_fixture_level_release_type = 3
+      [(json_name) = "mysekaiConvertFixtureLevelReleaseType"];
+}

@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message MysekaiGateSkin {
+  option (master_db_file) = "mysekaiGateSkins.json";
+  enum MysekaiGateSkinType {
+    UNKNOWN_MYSEKAI_GATE_SKIN_TYPE = 0;
+    COMMON                         = 1 [(json_value) = "common"];
+    UNIT                           = 2 [(json_value) = "unit"];
+  }
+
+  optional int32 id                                   = 1 [(json_name) = "id"];
+  optional MysekaiGateSkinType mysekai_gate_skin_type = 2 [(json_name) = "mysekaiGateSkinType"];
+  optional int32 mysekai_gate_skin_type_id            = 3 [(json_name) = "mysekaiGateSkinTypeId"];
+  optional int32 mysekai_gate_material_group_id       = 4 [(json_name) = "mysekaiGateMaterialGroupId"];
+}

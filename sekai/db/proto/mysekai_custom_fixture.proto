@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message MysekaiCustomFixture {
+  option (master_db_file) = "mysekaiCustomFixtures.json";
+  enum MysekaiCustomFixtureType {
+    UNKNOWN_MYSEKAI_CUSTOM_FIXTURE_TYPE = 0;
+    COLLECTION_BOARD                    = 1 [(json_value) = "collection_board"];
+    COLLECTION_STAGE                    = 2 [(json_value) = "collection_stage"];
+    COLLECTION_STAND                    = 3 [(json_value) = "collection_stand"];
+    MUSIC_RECORD_JACKET                 = 4 [(json_value) = "music_record_jacket"];
+    PHOTO_FRAME                         = 5 [(json_value) = "photo_frame"];
+    TITLE_PANEL                         = 6 [(json_value) = "title_panel"];
+    TITLE_STAND                         = 7 [(json_value) = "title_stand"];
+  }
+
+  enum MysekaiCustomFixtureOrnamentType {
+    UNKNOWN_MYSEKAI_CUSTOM_FIXTURE_ORNAMENT_TYPE = 0;
+    BONDS_HONOR                                  = 1 [(json_value) = "bonds_honor"];
+    CUSTOM_PROFILE_RESOURCE_COLLECTION           = 2 [(json_value) = "custom_profile_resource_collection"];
+    HONOR                                        = 3 [(json_value) = "honor"];
+    MYSEKAI_MUSIC_RECORD                         = 4 [(json_value) = "mysekai_music_record"];
+    MYSEKAI_PHOTO                                = 5 [(json_value) = "mysekai_photo"];
+    PENLIGHT                                     = 6 [(json_value) = "penlight"];
+  }
+
+  enum CustomProfileResourceCollectionType {
+    UNKNOWN_CUSTOM_PROFILE_RESOURCE_COLLECTION_TYPE = 0;
+    ACRYLIC_STAND                                   = 1 [(json_value) = "acrylic_stand"];
+    CAN_BADGE                                       = 2 [(json_value) = "can_badge"];
+    KEYHOLDER                                       = 3 [(json_value) = "keyholder"];
+    SILVER_TAPE                                     = 4 [(json_value) = "silver_tape"];
+    STICKER                                         = 5 [(json_value) = "sticker"];
+    TAPESTRY                                        = 6 [(json_value) = "tapestry"];
+    TICKET_HOLDER                                   = 7 [(json_value) = "ticket_holder"];
+    TOWEL                                           = 8 [(json_value) = "towel"];
+  }
+
+  optional int32 id                                             = 1 [(json_name) = "id"];
+  optional int32 mysekai_fixture_id                             = 2 [(json_name) = "mysekaiFixtureId"];
+  optional MysekaiCustomFixtureType mysekai_custom_fixture_type = 3 [(json_name) = "mysekaiCustomFixtureType"];
+  optional MysekaiCustomFixtureOrnamentType mysekai_custom_fixture_ornament_type = 4
+      [(json_name) = "mysekaiCustomFixtureOrnamentType"];
+  optional CustomProfileResourceCollectionType custom_profile_resource_collection_type = 5
+      [(json_name) = "customProfileResourceCollectionType"];
+  optional int32 width                       = 6 [(json_name) = "width"];
+  optional int32 height                      = 7 [(json_name) = "height"];
+  optional int32 depth                       = 8 [(json_name) = "depth"];
+  optional string base_asset_bundle_name     = 9 [(json_name) = "baseAssetBundleName"];
+  optional string ornament_asset_bundle_name = 10 [(json_name) = "ornamentAssetBundleName"];
+}

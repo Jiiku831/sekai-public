@@ -178,12 +178,13 @@ Team MakeTeam(std::span<const Card> cards) {
 class TeamTest : public ::testing::Test {
  protected:
   Card CreateCard(const Profile& profile, int card_id, int level, int master_rank = 0,
-                  int skill_level = 1) {
+                  int skill_level = 1, bool canvas_crafted = false) {
     CardState state;
     state.set_level(level);
     state.set_master_rank(master_rank);
     state.set_skill_level(skill_level);
     state.set_special_training(true);
+    state.set_canvas_crafted(canvas_crafted);
     for (const auto* episode : db::MasterDb::FindAll<db::CardEpisode>(card_id)) {
       state.add_card_episodes_read(episode->id());
     }
@@ -222,6 +223,28 @@ TEST_F(TeamTest, ExampleTeam1Power) {
   EXPECT_THAT(team.PowerDetailed(alt_profile_), Pointwise(Eq(), expected));
   // Actual power is 279747
   EXPECT_EQ(team.Power(alt_profile_), 279750);
+  EXPECT_EQ(team.Power(alt_profile_), team.PowerDetailed(alt_profile_).sum());
+}
+
+TEST_F(TeamTest, ExampleTeam1PowerWithCanvas) {
+  std::array cards = {
+      CreateCard(alt_profile_, /*card_id=*/404, /*level=*/60, /*master_rank=*/5, /*skill_level=*/1,
+                 /*canvas_crafted=*/true),
+      CreateCard(alt_profile_, /*card_id=*/139, /*level=*/60, /*master_rank=*/0, /*skill_level=*/1,
+                 /*canvas_crafted=*/true),
+      CreateCard(alt_profile_, /*card_id=*/115, /*level=*/60, /*master_rank=*/0, /*skill_level=*/1,
+                 /*canvas_crafted=*/true),
+      CreateCard(alt_profile_, /*card_id=*/511, /*level=*/60, /*master_rank=*/0, /*skill_level=*/1,
+                 /*canvas_crafted=*/true),
+      CreateCard(alt_profile_, /*card_id=*/787, /*level=*/60, /*master_rank=*/0, /*skill_level=*/1,
+                 /*canvas_crafted=*/true),
+  };
+  Team team = MakeTeam(cards);
+  // Actual area item bonus is 97097
+  std::array expected = {174455 + 1500 * 5, 97100, 7925, 270};
+  EXPECT_THAT(team.PowerDetailed(alt_profile_), Pointwise(Eq(), expected));
+  // Actual power is 279747
+  EXPECT_EQ(team.Power(alt_profile_), 279750 + 1500 * 5);
   EXPECT_EQ(team.Power(alt_profile_), team.PowerDetailed(alt_profile_).sum());
 }
 
@@ -291,6 +314,29 @@ TEST_F(TeamTest, ExampleTeam5Power) {
   // Actual team power is 346337
   EXPECT_EQ(team.Power(profile_), 346337);
   EXPECT_EQ(team.Power(profile_), team.PowerDetailed(profile_).sum());
+}
+
+TEST_F(TeamTest, ExampleTeam6Power) {
+  std::array cards = {
+      CreateCard(alt_profile_, /*card_id=*/509, /*level=*/60, /*master_rank=*/5, /*skill_level=*/4,
+                 /*canvas_crafted=*/true),
+      CreateCard(alt_profile_, /*card_id=*/875, /*level=*/60, /*master_rank=*/5, /*skill_level=*/4,
+                 /*canvas_crafted=*/true),
+      CreateCard(alt_profile_, /*card_id=*/198, /*level=*/60, /*master_rank=*/5, /*skill_level=*/4,
+                 /*canvas_crafted=*/true),
+      CreateCard(alt_profile_, /*card_id=*/149, /*level=*/60, /*master_rank=*/5, /*skill_level=*/4,
+                 /*canvas_crafted=*/true),
+      CreateCard(alt_profile_, /*card_id=*/126, /*level=*/60, /*master_rank=*/5, /*skill_level=*/4,
+                 /*canvas_crafted=*/true),
+  };
+  Team team = MakeTeam(cards);
+  // Actual area item bonus is 168356
+  // Actual CR bonus is 9436
+  std::array expected = {194573, 168360, 9347, 270};
+  EXPECT_THAT(team.PowerDetailed(alt_profile_), Pointwise(Eq(), expected));
+  // Actual power is 372545
+  EXPECT_EQ(team.Power(alt_profile_), 194573 + 168360 + 9347 + 270);
+  EXPECT_EQ(team.Power(alt_profile_), team.PowerDetailed(alt_profile_).sum());
 }
 
 TEST_F(TeamTest, ExampleTeam1EventBonus) {

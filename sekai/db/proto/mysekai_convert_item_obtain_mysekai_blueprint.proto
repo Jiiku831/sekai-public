@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message MysekaiConvertItemObtainMysekaiBlueprint {
+  option (master_db_file) = "mysekaiConvertItemObtainMysekaiBlueprints.json";
+  enum MysekaiConvertItemObtainMysekaiBlueprintType {
+    UNKNOWN_MYSEKAI_CONVERT_ITEM_OBTAIN_MYSEKAI_BLUEPRINT_TYPE = 0;
+    MYSEKAI_FIXTURE_MAIN_GENRE_CHOICE                          = 1 [(json_value) = "mysekai_fixture_main_genre_choice"];
+    RANDOM                                                     = 2 [(json_value) = "random"];
+    WHITE_BLUEPRINT                                            = 3 [(json_value) = "white_blueprint"];
+  }
+
+  optional int32 id = 1 [(json_name) = "id"];
+  optional MysekaiConvertItemObtainMysekaiBlueprintType mysekai_convert_item_obtain_mysekai_blueprint_type = 2
+      [(json_name) = "mysekaiConvertItemObtainMysekaiBlueprintType"];
+  optional int32 quantity = 3 [(json_name) = "quantity"];
+}
