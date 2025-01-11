@@ -404,6 +404,7 @@ cc_test(
     data = [
         "//data:flat-db",
         "//data:profile/cards",
+        "//data:profile/cards_v2",
     ],
     deps = [
         ":profile",

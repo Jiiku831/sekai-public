@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message MysekaiBlueprintShop {
+  option (master_db_file) = "mysekaiBlueprintShops.json";
+  enum MysekaiBlueprintShopItemLotteryType {
+    UNKNOWN_MYSEKAI_BLUEPRINT_SHOP_ITEM_LOTTERY_TYPE = 0;
+    DAILY                                            = 1 [(json_value) = "daily"];
+    WEEKLY                                           = 2 [(json_value) = "weekly"];
+  }
+
+  optional MysekaiBlueprintShopItemLotteryType mysekai_blueprint_shop_item_lottery_type = 1
+      [(json_name) = "mysekaiBlueprintShopItemLotteryType"];
+  optional int32 consume_jewel_quantity = 2 [(json_name) = "consumeJewelQuantity"];
+  optional int32 purchase_limit         = 3 [(json_name) = "purchaseLimit"];
+}

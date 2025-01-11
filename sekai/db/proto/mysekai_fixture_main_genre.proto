@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message MysekaiFixtureMainGenre {
+  option (master_db_file) = "mysekaiFixtureMainGenres.json";
+  enum MysekaiFixtureMainGenreType {
+    UNKNOWN_MYSEKAI_FIXTURE_MAIN_GENRE_TYPE = 0;
+    FENCE                                   = 1 [(json_value) = "fence"];
+    HOME                                    = 2 [(json_value) = "home"];
+    NONE                                    = 3 [(json_value) = "none"];
+    ROAD                                    = 4 [(json_value) = "road"];
+  }
+
+  optional int32 id                                                    = 1 [(json_name) = "id"];
+  optional string name                                                 = 2 [(json_name) = "name"];
+  optional MysekaiFixtureMainGenreType mysekai_fixture_main_genre_type = 3
+      [(json_name) = "mysekaiFixtureMainGenreType"];
+  optional string assetbundle_name = 4 [(json_name) = "assetbundleName"];
+  optional int32 group_id          = 5 [(json_name) = "groupId"];
+}

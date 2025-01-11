@@ -1,0 +1,5 @@
+owned,master_rank,skill_level,canvas,,,character,unit,id,seq,characterId,cardRarityType,attr,supportUnit,skillId,cardSkillName,prefix,assetbundleName,releaseAt,type,,0
+TRUE,1,2,,,,星乃一歌,ln,1,10,1,1,cool,none,1,足元の小さな花,クールだけど友達想い,res001_no001,2019-01-01 15:00,perm,,
+FALSE,,,,,,星乃一歌,ln,2,20,1,2,happy,none,2,精一杯の韻を踏んで,Leo/need,res001_no002,2019-01-01 15:00,perm,,
+TRUE,2,3,TRUE,,,星乃一歌,ln,3,30,1,3,mysterious,none,6,踏み出した一歩,見上げる先に,res001_no003,2019-01-01 15:00,perm,,
+FALSE,,,,,,星乃一歌,ln,4,40,1,4,cute,none,10,不安を拭い去って,夜明け前の語らい,res001_no004,2019-01-01 15:00,perm,,

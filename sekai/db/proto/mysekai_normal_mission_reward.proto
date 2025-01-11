@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message MysekaiNormalMissionReward {
+  option (master_db_file) = "mysekaiNormalMissionRewards.json";
+  enum MysekaiNormalMissionRewardType {
+    UNKNOWN_MYSEKAI_NORMAL_MISSION_REWARD_TYPE = 0;
+    MYSEKAI_CONVERT_FIXTURE_LEVEL              = 1 [(json_value) = "mysekai_convert_fixture_level"];
+    MYSEKAI_FIXTURE_POSSESSION                 = 2 [(json_value) = "mysekai_fixture_possession"];
+    MYSEKAI_MATERIAL_POSSESSION                = 3 [(json_value) = "mysekai_material_possession"];
+    MYSEKAI_RANK_OBTAINED_EXP                  = 4 [(json_value) = "mysekai_rank_obtained_exp"];
+    MYSEKAI_RELEASE_ELEMENT                    = 5 [(json_value) = "mysekai_release_element"];
+    RESOURCE_BOX                               = 6 [(json_value) = "resource_box"];
+  }
+
+  optional int32 id                        = 1 [(json_name) = "id"];
+  optional int32 mysekai_normal_mission_id = 2 [(json_name) = "mysekaiNormalMissionId"];
+  optional int32 seq                       = 3 [(json_name) = "seq"];
+  optional MysekaiNormalMissionRewardType mysekai_normal_mission_reward_type = 4
+      [(json_name) = "mysekaiNormalMissionRewardType"];
+  optional int32 external_id = 5 [(json_name) = "externalId"];
+}

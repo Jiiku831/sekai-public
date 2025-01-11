@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message MysekaiFixturePutSound {
+  option (master_db_file)          = "mysekaiFixturePutSounds.json";
+  optional int32 id                = 1 [(json_name) = "id"];
+  optional string assetbundle_name = 2 [(json_name) = "assetbundleName"];
+}

@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message MysekaiSite {
+  option (master_db_file) = "mysekaiSites.json";
+  enum MysekaiSiteType {
+    UNKNOWN_MYSEKAI_SITE_TYPE = 0;
+    FIRST_FLOOR               = 1 [(json_value) = "first_floor"];
+    FLOWER_GARDEN             = 2 [(json_value) = "flower_garden"];
+    GRASSLAND                 = 3 [(json_value) = "grassland"];
+    HOME_SITE                 = 4 [(json_value) = "home_site"];
+    MEMORIAL_PLACE            = 5 [(json_value) = "memorial_place"];
+    SECOND_FLOOR              = 6 [(json_value) = "second_floor"];
+    SHORE                     = 7 [(json_value) = "shore"];
+    THIRD_FLOOR               = 8 [(json_value) = "third_floor"];
+  }
+
+  optional int32 id                          = 1 [(json_name) = "id"];
+  optional MysekaiSiteType mysekai_site_type = 2 [(json_name) = "mysekaiSiteType"];
+  optional string mysekai_site_category      = 3 [(json_name) = "mysekaiSiteCategory"];
+  optional string assetbundle_name           = 4 [(json_name) = "assetbundleName"];
+  optional string name                       = 5 [(json_name) = "name"];
+  optional int32 position_x                  = 6 [(json_name) = "positionX"];
+  optional int32 position_y                  = 7 [(json_name) = "positionY"];
+  optional int32 position_z                  = 8 [(json_name) = "positionZ"];
+  optional bool is_base                      = 9 [(json_name) = "isBase"];
+  optional bool is_enabled_for_multi         = 10 [(json_name) = "isEnabledForMulti"];
+  optional int32 preset_group_id             = 11 [(json_name) = "presetGroupId"];
+}

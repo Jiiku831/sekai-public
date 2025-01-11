@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message MysekaiMaterialTab {
+  option (master_db_file) = "mysekaiMaterialTabs.json";
+  enum MysekaiMaterialType {
+    UNKNOWN_MYSEKAI_MATERIAL_TYPE = 0;
+    MINERAL                       = 1 [(json_value) = "mineral"];
+    NONE                          = 2 [(json_value) = "none"];
+    OTHER                         = 3 [(json_value) = "other"];
+    PLANT                         = 4 [(json_value) = "plant"];
+    WOOD                          = 5 [(json_value) = "wood"];
+  }
+
+  optional int32 id                                  = 1 [(json_name) = "id"];
+  optional MysekaiMaterialType mysekai_material_type = 2 [(json_name) = "mysekaiMaterialType"];
+  optional string name                               = 3 [(json_name) = "name"];
+  optional string assetbundle_name                   = 4 [(json_name) = "assetbundleName"];
+}

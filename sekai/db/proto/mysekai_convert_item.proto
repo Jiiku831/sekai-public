@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message MysekaiConvertItem {
+  option (master_db_file) = "mysekaiConvertItems.json";
+  enum MysekaiConvertItemObtainType {
+    UNKNOWN_MYSEKAI_CONVERT_ITEM_OBTAIN_TYPE = 0;
+    MYSEKAI_BLUEPRINT                        = 1 [(json_value) = "mysekai_blueprint"];
+    MYSEKAI_MUSIC_RECORD                     = 2 [(json_value) = "mysekai_music_record"];
+    RESOURCE_BOX                             = 3 [(json_value) = "resource_box"];
+  }
+
+  optional int32 id                                                      = 1 [(json_name) = "id"];
+  optional int32 mysekai_convert_item_tab_id                             = 2 [(json_name) = "mysekaiConvertItemTabId"];
+  optional int32 consume_resource_box_id                                 = 3 [(json_name) = "consumeResourceBoxId"];
+  optional MysekaiConvertItemObtainType mysekai_convert_item_obtain_type = 4
+      [(json_name) = "mysekaiConvertItemObtainType"];
+  optional int32 external_id                    = 5 [(json_name) = "externalId"];
+  optional int32 required_convert_fixture_level = 6 [(json_name) = "requiredConvertFixtureLevel"];
+  optional int32 convert_minutes                = 7 [(json_name) = "convertMinutes"];
+  optional string refresh_cycle                 = 8 [(json_name) = "refreshCycle"];
+  optional int32 once_convert_limit             = 9 [(json_name) = "onceConvertLimit"];
+  optional int32 convert_limit                  = 10 [(json_name) = "convertLimit"];
+  optional int64 start_at                       = 11 [(json_name) = "startAt"];
+  optional int64 end_at                         = 12 [(json_name) = "endAt"];
+}

@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message MysekaiCharacterTalkSoloAction {
+  option (master_db_file)               = "mysekaiCharacterTalkSoloActions.json";
+  optional int32 id                     = 1 [(json_name) = "id"];
+  optional int32 game_character_unit_id = 2 [(json_name) = "gameCharacterUnitId"];
+  optional string lua                   = 3 [(json_name) = "lua"];
+}

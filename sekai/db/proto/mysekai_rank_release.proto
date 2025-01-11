@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message MysekaiRankRelease {
+  option (master_db_file) = "mysekaiRankReleases.json";
+  enum MysekaiRankRelaseType {
+    UNKNOWN_MYSEKAI_RANK_RELASE_TYPE = 0;
+    MYSEKAI_FIXTURE_PUT_LIMIT        = 1 [(json_value) = "mysekai_fixture_put_limit"];
+    MYSEKAI_SITE_LEVEL               = 2 [(json_value) = "mysekai_site_level"];
+  }
+
+  optional int32 id                                       = 1 [(json_name) = "id"];
+  optional int32 mysekai_rank                             = 2 [(json_name) = "mysekaiRank"];
+  optional MysekaiRankRelaseType mysekai_rank_relase_type = 3 [(json_name) = "mysekaiRankRelaseType"];
+  optional int32 external_id                              = 4 [(json_name) = "externalId"];
+}

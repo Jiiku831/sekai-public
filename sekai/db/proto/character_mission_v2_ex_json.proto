@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message CharacterMissionV2ExJson {
+  option (master_db_file) = "characterMissionV2ExJsons.json";
+  enum CharacterMissionExType {
+    UNKNOWN_CHARACTER_MISSION_EX_TYPE = 0;
+    PLAY_LIVE_EX                      = 1 [(json_value) = "play_live_ex"];
+    WAITING_ROOM_EX                   = 2 [(json_value) = "waiting_room_ex"];
+  }
+
+  enum CharacterMissionType {
+    UNKNOWN_CHARACTER_MISSION_TYPE = 0;
+    PLAY_LIVE                      = 1 [(json_value) = "play_live"];
+    WAITING_ROOM                   = 2 [(json_value) = "waiting_room"];
+  }
+
+  enum ResourceType {
+    UNKNOWN_RESOURCE_TYPE = 0;
+    MATERIAL              = 1 [(json_value) = "material"];
+  }
+
+  optional int32 id                                         = 1 [(json_name) = "id"];
+  optional CharacterMissionExType character_mission_ex_type = 2 [(json_name) = "characterMissionExType"];
+  optional CharacterMissionType character_mission_type      = 3 [(json_name) = "characterMissionType"];
+  optional ResourceType resource_type                       = 4 [(json_name) = "resourceType"];
+}

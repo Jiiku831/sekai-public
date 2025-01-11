@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message MysekaiSystemFixture {
+  option (master_db_file) = "mysekaiSystemFixtures.json";
+  enum MysekaiSystemFixtureType {
+    UNKNOWN_MYSEKAI_SYSTEM_FIXTURE_TYPE = 0;
+    AVATAR_DRESS_UP                     = 1 [(json_value) = "avatar_dress_up"];
+    BLUEPRINT_SHOP                      = 2 [(json_value) = "blueprint_shop"];
+    CHEST                               = 3 [(json_value) = "chest"];
+    CONVERT                             = 4 [(json_value) = "convert"];
+    CRAFT_TOOL                          = 5 [(json_value) = "craft_tool"];
+    HOME                                = 6 [(json_value) = "home"];
+    MUSIC_PLAY                          = 7 [(json_value) = "music_play"];
+    MYSEKAI_INFORMATION                 = 8 [(json_value) = "mysekai_information"];
+  }
+
+  optional int32 id                                             = 1 [(json_name) = "id"];
+  optional int32 mysekai_fixture_id                             = 2 [(json_name) = "mysekaiFixtureId"];
+  optional MysekaiSystemFixtureType mysekai_system_fixture_type = 3 [(json_name) = "mysekaiSystemFixtureType"];
+}

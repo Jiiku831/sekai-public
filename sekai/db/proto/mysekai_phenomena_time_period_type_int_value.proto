@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message MysekaiPhenomenaTimePeriodTypeIntValue {
+  option (master_db_file) = "mysekaiPhenomenaTimePeriodTypeIntValues.json";
+  enum MysekaiPhenomenaTimePeriodType {
+    UNKNOWN_MYSEKAI_PHENOMENA_TIME_PERIOD_TYPE = 0;
+    DAYTIME                                    = 1 [(json_value) = "daytime"];
+    EVENING                                    = 2 [(json_value) = "evening"];
+    NIGHT                                      = 3 [(json_value) = "night"];
+  }
+
+  optional int32 id                                                          = 1 [(json_name) = "id"];
+  optional MysekaiPhenomenaTimePeriodType mysekai_phenomena_time_period_type = 2
+      [(json_name) = "mysekaiPhenomenaTimePeriodType"];
+}

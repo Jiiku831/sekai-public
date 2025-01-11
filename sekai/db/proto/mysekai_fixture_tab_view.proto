@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message MysekaiFixtureTabView {
+  option (master_db_file) = "mysekaiFixtureTabViews.json";
+  enum MysekaiFixtureTabViewType {
+    UNKNOWN_MYSEKAI_FIXTURE_TAB_VIEW_TYPE   = 0;
+    CHEST_MYSEKAI_FIXTURE                   = 1 [(json_value) = "chest_mysekai_fixture"];
+    CRAFT_TOOL_MYSEKAI_FIXTURE              = 2 [(json_value) = "craft_tool_mysekai_fixture"];
+    CRAFT_TOOL_MYSEKAI_TOOL                 = 3 [(json_value) = "craft_tool_mysekai_tool"];
+    EDIT_LAYOUT_HOME                        = 4 [(json_value) = "edit_layout_home"];
+    EDIT_LAYOUT_HOME_PHENOMENA              = 5 [(json_value) = "edit_layout_home_phenomena"];
+    EDIT_LAYOUT_HOME_ROAD                   = 6 [(json_value) = "edit_layout_home_road"];
+    EDIT_LAYOUT_ROOM_FLOOR                  = 7 [(json_value) = "edit_layout_room_floor"];
+    EDIT_LAYOUT_ROOM_WALL                   = 8 [(json_value) = "edit_layout_room_wall"];
+    SELECT_CANVAS_CARD                      = 9 [(json_value) = "select_canvas_card"];
+    SET_CUSTOM_FIXTURE_COLLECTION           = 10 [(json_value) = "set_custom_fixture_collection"];
+    SET_CUSTOM_FIXTURE_HONOR                = 11 [(json_value) = "set_custom_fixture_honor"];
+    SET_CUSTOM_FIXTURE_MYSEKAI_MUSIC_RECORD = 12 [(json_value) = "set_custom_fixture_mysekai_music_record"];
+    SET_CUSTOM_FIXTURE_PENLIGHT             = 13 [(json_value) = "set_custom_fixture_penlight"];
+  }
+
+  optional int32 id                                                = 1 [(json_name) = "id"];
+  optional MysekaiFixtureTabViewType mysekai_fixture_tab_view_type = 2 [(json_name) = "mysekaiFixtureTabViewType"];
+  optional int32 mysekai_fixture_main_genre_id                     = 3 [(json_name) = "mysekaiFixtureMainGenreId"];
+  optional int32 seq                                               = 4 [(json_name) = "seq"];
+  optional int32 mysekai_fixture_sub_genre_id                      = 5 [(json_name) = "mysekaiFixtureSubGenreId"];
+}

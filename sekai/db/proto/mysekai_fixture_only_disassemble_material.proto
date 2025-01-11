@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message MysekaiFixtureOnlyDisassembleMaterial {
+  option (master_db_file)            = "mysekaiFixtureOnlyDisassembleMaterials.json";
+  optional int32 id                  = 1 [(json_name) = "id"];
+  optional int32 mysekai_fixture_id  = 2 [(json_name) = "mysekaiFixtureId"];
+  optional int32 mysekai_material_id = 3 [(json_name) = "mysekaiMaterialId"];
+  optional int32 seq                 = 4 [(json_name) = "seq"];
+  optional int32 quantity            = 5 [(json_name) = "quantity"];
+}

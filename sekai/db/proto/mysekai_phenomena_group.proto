@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message MysekaiPhenomenaGroup {
+  option (master_db_file)             = "mysekaiPhenomenaGroups.json";
+  optional int32 group_id             = 1 [(json_name) = "groupId"];
+  optional int32 mysekai_phenomena_id = 2 [(json_name) = "mysekaiPhenomenaId"];
+}

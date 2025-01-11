@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message MysekaiPhenomena {
+  option (master_db_file) = "mysekaiPhenomenas.json";
+  enum MysekaiPhenomenaBrightnessType {
+    UNKNOWN_MYSEKAI_PHENOMENA_BRIGHTNESS_TYPE = 0;
+    BRIGHT                                    = 1 [(json_value) = "bright"];
+    DARK                                      = 2 [(json_value) = "dark"];
+    NONE                                      = 3 [(json_value) = "none"];
+    NORMAL                                    = 4 [(json_value) = "normal"];
+  }
+
+  enum MysekaiPhenomenaTimePeriodType {
+    UNKNOWN_MYSEKAI_PHENOMENA_TIME_PERIOD_TYPE = 0;
+    DAYTIME                                    = 1 [(json_value) = "daytime"];
+    EVENING                                    = 2 [(json_value) = "evening"];
+    NIGHT                                      = 3 [(json_value) = "night"];
+  }
+
+  optional int32 id                                                         = 1 [(json_name) = "id"];
+  optional MysekaiPhenomenaBrightnessType mysekai_phenomena_brightness_type = 2
+      [(json_name) = "mysekaiPhenomenaBrightnessType"];
+  optional string name                                                       = 3 [(json_name) = "name"];
+  optional string english_name                                               = 4 [(json_name) = "englishName"];
+  optional string description                                                = 5 [(json_name) = "description"];
+  optional MysekaiPhenomenaTimePeriodType mysekai_phenomena_time_period_type = 6
+      [(json_name) = "mysekaiPhenomenaTimePeriodType"];
+  optional int32 mysekai_phenomena_background_color_id = 7 [(json_name) = "mysekaiPhenomenaBackgroundColorId"];
+  optional string assetbundle_name                     = 8 [(json_name) = "assetbundleName"];
+  optional string ramp_texture_assetbundle_name        = 9 [(json_name) = "rampTextureAssetbundleName"];
+  optional string icon_assetbundle_name                = 10 [(json_name) = "iconAssetbundleName"];
+}

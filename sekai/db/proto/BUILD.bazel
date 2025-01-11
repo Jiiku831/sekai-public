@@ -10,6 +10,7 @@ cc_library(
         ":area_item_level_cc_proto",
         ":card_cc_proto",
         ":card_episode_cc_proto",
+        ":card_mysekai_canvas_bonus_cc_proto",
         ":challenge_live_stage_cc_proto",
         ":character2d_cc_proto",
         ":character_archive_voice_cc_proto",
@@ -2654,4 +2655,1492 @@ proto_library(
 cc_proto_library(
     name = "world_bloom_support_deck_bonus_cc_proto",
     deps = [":world_bloom_support_deck_bonus_proto"],
+)
+
+proto_library(
+    name = "billing_shop_tab_children_proto",
+    srcs = ["billing_shop_tab_children.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "billing_shop_tab_children_cc_proto",
+    deps = [":billing_shop_tab_children_proto"],
+)
+
+proto_library(
+    name = "billing_shop_tab_parent_proto",
+    srcs = ["billing_shop_tab_parent.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "billing_shop_tab_parent_cc_proto",
+    deps = [":billing_shop_tab_parent_proto"],
+)
+
+proto_library(
+    name = "card_mysekai_canvas_bonus_proto",
+    srcs = ["card_mysekai_canvas_bonus.proto"],
+    deps = [
+        ":descriptor_proto",
+        ":enums_proto",
+    ],
+)
+
+cc_proto_library(
+    name = "card_mysekai_canvas_bonus_cc_proto",
+    deps = [":card_mysekai_canvas_bonus_proto"],
+)
+
+proto_library(
+    name = "character_mission_v2_ex_json_proto",
+    srcs = ["character_mission_v2_ex_json.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "character_mission_v2_ex_json_cc_proto",
+    deps = [":character_mission_v2_ex_json_proto"],
+)
+
+proto_library(
+    name = "costume3d_model_default_hair_proto",
+    srcs = ["costume3d_model_default_hair.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "costume3d_model_default_hair_cc_proto",
+    deps = [":costume3d_model_default_hair_proto"],
+)
+
+proto_library(
+    name = "costume3d_model_not_available_pattern_proto",
+    srcs = ["costume3d_model_not_available_pattern.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "costume3d_model_not_available_pattern_cc_proto",
+    deps = [":costume3d_model_not_available_pattern_proto"],
+)
+
+proto_library(
+    name = "custom_profile_collection_resource_unit_proto",
+    srcs = ["custom_profile_collection_resource_unit.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "custom_profile_collection_resource_unit_cc_proto",
+    deps = [":custom_profile_collection_resource_unit_proto"],
+)
+
+proto_library(
+    name = "music_newly_written_instrumental_proto",
+    srcs = ["music_newly_written_instrumental.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "music_newly_written_instrumental_cc_proto",
+    deps = [":music_newly_written_instrumental_proto"],
+)
+
+proto_library(
+    name = "music_sound_track_category_proto",
+    srcs = ["music_sound_track_category.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "music_sound_track_category_cc_proto",
+    deps = [":music_sound_track_category_proto"],
+)
+
+proto_library(
+    name = "music_sound_track_proto",
+    srcs = ["music_sound_track.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "music_sound_track_cc_proto",
+    deps = [":music_sound_track_proto"],
+)
+
+proto_library(
+    name = "mysekai_blueprint_mysekai_canvas_relation_proto",
+    srcs = ["mysekai_blueprint_mysekai_canvas_relation.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_blueprint_mysekai_canvas_relation_cc_proto",
+    deps = [":mysekai_blueprint_mysekai_canvas_relation_proto"],
+)
+
+proto_library(
+    name = "mysekai_blueprint_mysekai_material_cost_proto",
+    srcs = ["mysekai_blueprint_mysekai_material_cost.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_blueprint_mysekai_material_cost_cc_proto",
+    deps = [":mysekai_blueprint_mysekai_material_cost_proto"],
+)
+
+proto_library(
+    name = "mysekai_blueprint_shop_proto",
+    srcs = ["mysekai_blueprint_shop.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_blueprint_shop_cc_proto",
+    deps = [":mysekai_blueprint_shop_proto"],
+)
+
+proto_library(
+    name = "mysekai_blueprint_proto",
+    srcs = ["mysekai_blueprint.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_blueprint_cc_proto",
+    deps = [":mysekai_blueprint_proto"],
+)
+
+proto_library(
+    name = "mysekai_character_talk_action_point_proto",
+    srcs = ["mysekai_character_talk_action_point.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_character_talk_action_point_cc_proto",
+    deps = [":mysekai_character_talk_action_point_proto"],
+)
+
+proto_library(
+    name = "mysekai_character_talk_condition_group_proto",
+    srcs = ["mysekai_character_talk_condition_group.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_character_talk_condition_group_cc_proto",
+    deps = [":mysekai_character_talk_condition_group_proto"],
+)
+
+proto_library(
+    name = "mysekai_character_talk_condition_proto",
+    srcs = ["mysekai_character_talk_condition.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_character_talk_condition_cc_proto",
+    deps = [":mysekai_character_talk_condition_proto"],
+)
+
+proto_library(
+    name = "mysekai_character_talk_fixture_common_mysekai_fixture_group_proto",
+    srcs = ["mysekai_character_talk_fixture_common_mysekai_fixture_group.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_character_talk_fixture_common_mysekai_fixture_group_cc_proto",
+    deps = [":mysekai_character_talk_fixture_common_mysekai_fixture_group_proto"],
+)
+
+proto_library(
+    name = "mysekai_character_talk_fixture_common_proto",
+    srcs = ["mysekai_character_talk_fixture_common.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_character_talk_fixture_common_cc_proto",
+    deps = [":mysekai_character_talk_fixture_common_proto"],
+)
+
+proto_library(
+    name = "mysekai_character_talk_fixture_common_tweet_group_proto",
+    srcs = ["mysekai_character_talk_fixture_common_tweet_group.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_character_talk_fixture_common_tweet_group_cc_proto",
+    deps = [":mysekai_character_talk_fixture_common_tweet_group_proto"],
+)
+
+proto_library(
+    name = "mysekai_character_talk_fixture_timeline_proto",
+    srcs = ["mysekai_character_talk_fixture_timeline.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_character_talk_fixture_timeline_cc_proto",
+    deps = [":mysekai_character_talk_fixture_timeline_proto"],
+)
+
+proto_library(
+    name = "mysekai_character_talk_fixture_together_communication_proto",
+    srcs = ["mysekai_character_talk_fixture_together_communication.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_character_talk_fixture_together_communication_cc_proto",
+    deps = [":mysekai_character_talk_fixture_together_communication_proto"],
+)
+
+proto_library(
+    name = "mysekai_character_talk_motion_proto",
+    srcs = ["mysekai_character_talk_motion.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_character_talk_motion_cc_proto",
+    deps = [":mysekai_character_talk_motion_proto"],
+)
+
+proto_library(
+    name = "mysekai_character_talk_no_talk_mysekai_fixture_action_proto",
+    srcs = ["mysekai_character_talk_no_talk_mysekai_fixture_action.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_character_talk_no_talk_mysekai_fixture_action_cc_proto",
+    deps = [":mysekai_character_talk_no_talk_mysekai_fixture_action_proto"],
+)
+
+proto_library(
+    name = "mysekai_character_talk_pre_action_proto",
+    srcs = ["mysekai_character_talk_pre_action.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_character_talk_pre_action_cc_proto",
+    deps = [":mysekai_character_talk_pre_action_proto"],
+)
+
+proto_library(
+    name = "mysekai_character_talk_proto",
+    srcs = ["mysekai_character_talk.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_character_talk_cc_proto",
+    deps = [":mysekai_character_talk_proto"],
+)
+
+proto_library(
+    name = "mysekai_character_talk_solo_action_proto",
+    srcs = ["mysekai_character_talk_solo_action.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_character_talk_solo_action_cc_proto",
+    deps = [":mysekai_character_talk_solo_action_proto"],
+)
+
+proto_library(
+    name = "mysekai_character_talk_some_character_talk_proto",
+    srcs = ["mysekai_character_talk_some_character_talk.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_character_talk_some_character_talk_cc_proto",
+    deps = [":mysekai_character_talk_some_character_talk_proto"],
+)
+
+proto_library(
+    name = "mysekai_character_talk_term_proto",
+    srcs = ["mysekai_character_talk_term.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_character_talk_term_cc_proto",
+    deps = [":mysekai_character_talk_term_proto"],
+)
+
+proto_library(
+    name = "mysekai_character_talk_together_communication_proto",
+    srcs = ["mysekai_character_talk_together_communication.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_character_talk_together_communication_cc_proto",
+    deps = [":mysekai_character_talk_together_communication_proto"],
+)
+
+proto_library(
+    name = "mysekai_character_talk_tweet_after_edit_housing_layout_proto",
+    srcs = ["mysekai_character_talk_tweet_after_edit_housing_layout.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_character_talk_tweet_after_edit_housing_layout_cc_proto",
+    deps = [":mysekai_character_talk_tweet_after_edit_housing_layout_proto"],
+)
+
+proto_library(
+    name = "mysekai_character_talk_tweet_greeting_condition_proto",
+    srcs = ["mysekai_character_talk_tweet_greeting_condition.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_character_talk_tweet_greeting_condition_cc_proto",
+    deps = [":mysekai_character_talk_tweet_greeting_condition_proto"],
+)
+
+proto_library(
+    name = "mysekai_character_talk_tweet_greeting_proto",
+    srcs = ["mysekai_character_talk_tweet_greeting.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_character_talk_tweet_greeting_cc_proto",
+    deps = [":mysekai_character_talk_tweet_greeting_proto"],
+)
+
+proto_library(
+    name = "mysekai_character_talk_tweet_housing_room_site_entrie_proto",
+    srcs = ["mysekai_character_talk_tweet_housing_room_site_entrie.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_character_talk_tweet_housing_room_site_entrie_cc_proto",
+    deps = [":mysekai_character_talk_tweet_housing_room_site_entrie_proto"],
+)
+
+proto_library(
+    name = "mysekai_character_talk_tweet_proto",
+    srcs = ["mysekai_character_talk_tweet.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_character_talk_tweet_cc_proto",
+    deps = [":mysekai_character_talk_tweet_proto"],
+)
+
+proto_library(
+    name = "mysekai_character_talk_tweet_without_related_talk_proto",
+    srcs = ["mysekai_character_talk_tweet_without_related_talk.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_character_talk_tweet_without_related_talk_cc_proto",
+    deps = [":mysekai_character_talk_tweet_without_related_talk_proto"],
+)
+
+proto_library(
+    name = "mysekai_colorful_pas_proto",
+    srcs = ["mysekai_colorful_pas.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_colorful_pas_cc_proto",
+    deps = [":mysekai_colorful_pas_proto"],
+)
+
+proto_library(
+    name = "mysekai_convert_fixture_level_release_proto",
+    srcs = ["mysekai_convert_fixture_level_release.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_convert_fixture_level_release_cc_proto",
+    deps = [":mysekai_convert_fixture_level_release_proto"],
+)
+
+proto_library(
+    name = "mysekai_convert_fixture_level_proto",
+    srcs = ["mysekai_convert_fixture_level.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_convert_fixture_level_cc_proto",
+    deps = [":mysekai_convert_fixture_level_proto"],
+)
+
+proto_library(
+    name = "mysekai_convert_fixture_slot_proto",
+    srcs = ["mysekai_convert_fixture_slot.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_convert_fixture_slot_cc_proto",
+    deps = [":mysekai_convert_fixture_slot_proto"],
+)
+
+proto_library(
+    name = "mysekai_convert_item_obtain_mysekai_blueprint_choice_proto",
+    srcs = ["mysekai_convert_item_obtain_mysekai_blueprint_choice.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_convert_item_obtain_mysekai_blueprint_choice_cc_proto",
+    deps = [":mysekai_convert_item_obtain_mysekai_blueprint_choice_proto"],
+)
+
+proto_library(
+    name = "mysekai_convert_item_obtain_mysekai_blueprint_proto",
+    srcs = ["mysekai_convert_item_obtain_mysekai_blueprint.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_convert_item_obtain_mysekai_blueprint_cc_proto",
+    deps = [":mysekai_convert_item_obtain_mysekai_blueprint_proto"],
+)
+
+proto_library(
+    name = "mysekai_convert_item_obtain_mysekai_music_record_proto",
+    srcs = ["mysekai_convert_item_obtain_mysekai_music_record.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_convert_item_obtain_mysekai_music_record_cc_proto",
+    deps = [":mysekai_convert_item_obtain_mysekai_music_record_proto"],
+)
+
+proto_library(
+    name = "mysekai_convert_item_proto",
+    srcs = ["mysekai_convert_item.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_convert_item_cc_proto",
+    deps = [":mysekai_convert_item_proto"],
+)
+
+proto_library(
+    name = "mysekai_convert_item_tab_proto",
+    srcs = ["mysekai_convert_item_tab.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_convert_item_tab_cc_proto",
+    deps = [":mysekai_convert_item_tab_proto"],
+)
+
+proto_library(
+    name = "mysekai_custom_fixture_proto",
+    srcs = ["mysekai_custom_fixture.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_custom_fixture_cc_proto",
+    deps = [":mysekai_custom_fixture_proto"],
+)
+
+proto_library(
+    name = "mysekai_cut_scene_proto",
+    srcs = ["mysekai_cut_scene.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_cut_scene_cc_proto",
+    deps = [":mysekai_cut_scene_proto"],
+)
+
+proto_library(
+    name = "mysekai_fixture_footstep_proto",
+    srcs = ["mysekai_fixture_footstep.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_fixture_footstep_cc_proto",
+    deps = [":mysekai_fixture_footstep_proto"],
+)
+
+proto_library(
+    name = "mysekai_fixture_game_character_group_performance_bonus_proto",
+    srcs = ["mysekai_fixture_game_character_group_performance_bonus.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_fixture_game_character_group_performance_bonus_cc_proto",
+    deps = [":mysekai_fixture_game_character_group_performance_bonus_proto"],
+)
+
+proto_library(
+    name = "mysekai_fixture_game_character_group_proto",
+    srcs = ["mysekai_fixture_game_character_group.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_fixture_game_character_group_cc_proto",
+    deps = [":mysekai_fixture_game_character_group_proto"],
+)
+
+proto_library(
+    name = "mysekai_fixture_game_character_performance_bonus_limit_proto",
+    srcs = ["mysekai_fixture_game_character_performance_bonus_limit.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_fixture_game_character_performance_bonus_limit_cc_proto",
+    deps = [":mysekai_fixture_game_character_performance_bonus_limit_proto"],
+)
+
+proto_library(
+    name = "mysekai_fixture_label_proto",
+    srcs = ["mysekai_fixture_label.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_fixture_label_cc_proto",
+    deps = [":mysekai_fixture_label_proto"],
+)
+
+proto_library(
+    name = "mysekai_fixture_main_genre_proto",
+    srcs = ["mysekai_fixture_main_genre.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_fixture_main_genre_cc_proto",
+    deps = [":mysekai_fixture_main_genre_proto"],
+)
+
+proto_library(
+    name = "mysekai_fixture_mysekai_fixture_label_relation_proto",
+    srcs = ["mysekai_fixture_mysekai_fixture_label_relation.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_fixture_mysekai_fixture_label_relation_cc_proto",
+    deps = [":mysekai_fixture_mysekai_fixture_label_relation_proto"],
+)
+
+proto_library(
+    name = "mysekai_fixture_only_disassemble_material_proto",
+    srcs = ["mysekai_fixture_only_disassemble_material.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_fixture_only_disassemble_material_cc_proto",
+    deps = [":mysekai_fixture_only_disassemble_material_proto"],
+)
+
+proto_library(
+    name = "mysekai_fixture_plant_proto",
+    srcs = ["mysekai_fixture_plant.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_fixture_plant_cc_proto",
+    deps = [":mysekai_fixture_plant_proto"],
+)
+
+proto_library(
+    name = "mysekai_fixture_player_timeline_proto",
+    srcs = ["mysekai_fixture_player_timeline.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_fixture_player_timeline_cc_proto",
+    deps = [":mysekai_fixture_player_timeline_proto"],
+)
+
+proto_library(
+    name = "mysekai_fixture_possession_proto",
+    srcs = ["mysekai_fixture_possession.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_fixture_possession_cc_proto",
+    deps = [":mysekai_fixture_possession_proto"],
+)
+
+proto_library(
+    name = "mysekai_fixture_put_limit_level_proto",
+    srcs = ["mysekai_fixture_put_limit_level.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_fixture_put_limit_level_cc_proto",
+    deps = [":mysekai_fixture_put_limit_level_proto"],
+)
+
+proto_library(
+    name = "mysekai_fixture_put_sound_proto",
+    srcs = ["mysekai_fixture_put_sound.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_fixture_put_sound_cc_proto",
+    deps = [":mysekai_fixture_put_sound_proto"],
+)
+
+proto_library(
+    name = "mysekai_fixture_proto",
+    srcs = ["mysekai_fixture.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_fixture_cc_proto",
+    deps = [":mysekai_fixture_proto"],
+)
+
+proto_library(
+    name = "mysekai_fixture_sub_genre_proto",
+    srcs = ["mysekai_fixture_sub_genre.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_fixture_sub_genre_cc_proto",
+    deps = [":mysekai_fixture_sub_genre_proto"],
+)
+
+proto_library(
+    name = "mysekai_fixture_tab_view_proto",
+    srcs = ["mysekai_fixture_tab_view.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_fixture_tab_view_cc_proto",
+    deps = [":mysekai_fixture_tab_view_proto"],
+)
+
+proto_library(
+    name = "mysekai_fixture_tag_proto",
+    srcs = ["mysekai_fixture_tag.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_fixture_tag_cc_proto",
+    deps = [":mysekai_fixture_tag_proto"],
+)
+
+proto_library(
+    name = "mysekai_game_character_unit_group_proto",
+    srcs = ["mysekai_game_character_unit_group.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_game_character_unit_group_cc_proto",
+    deps = [":mysekai_game_character_unit_group_proto"],
+)
+
+proto_library(
+    name = "mysekai_gate_character_lotterie_proto",
+    srcs = ["mysekai_gate_character_lotterie.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_gate_character_lotterie_cc_proto",
+    deps = [":mysekai_gate_character_lotterie_proto"],
+)
+
+proto_library(
+    name = "mysekai_gate_character_visit_count_rate_proto",
+    srcs = ["mysekai_gate_character_visit_count_rate.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_gate_character_visit_count_rate_cc_proto",
+    deps = [":mysekai_gate_character_visit_count_rate_proto"],
+)
+
+proto_library(
+    name = "mysekai_gate_common_skin_proto",
+    srcs = ["mysekai_gate_common_skin.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_gate_common_skin_cc_proto",
+    deps = [":mysekai_gate_common_skin_proto"],
+)
+
+proto_library(
+    name = "mysekai_gate_level_proto",
+    srcs = ["mysekai_gate_level.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_gate_level_cc_proto",
+    deps = [":mysekai_gate_level_proto"],
+)
+
+proto_library(
+    name = "mysekai_gate_material_group_proto",
+    srcs = ["mysekai_gate_material_group.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_gate_material_group_cc_proto",
+    deps = [":mysekai_gate_material_group_proto"],
+)
+
+proto_library(
+    name = "mysekai_gate_refresh_schedule_proto",
+    srcs = ["mysekai_gate_refresh_schedule.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_gate_refresh_schedule_cc_proto",
+    deps = [":mysekai_gate_refresh_schedule_proto"],
+)
+
+proto_library(
+    name = "mysekai_gate_proto",
+    srcs = ["mysekai_gate.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_gate_cc_proto",
+    deps = [":mysekai_gate_proto"],
+)
+
+proto_library(
+    name = "mysekai_gate_skin_proto",
+    srcs = ["mysekai_gate_skin.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_gate_skin_cc_proto",
+    deps = [":mysekai_gate_skin_proto"],
+)
+
+proto_library(
+    name = "mysekai_gate_unit_skin_proto",
+    srcs = ["mysekai_gate_unit_skin.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_gate_unit_skin_cc_proto",
+    deps = [":mysekai_gate_unit_skin_proto"],
+)
+
+proto_library(
+    name = "mysekai_housing_exhibition_proto",
+    srcs = ["mysekai_housing_exhibition.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_housing_exhibition_cc_proto",
+    deps = [":mysekai_housing_exhibition_proto"],
+)
+
+proto_library(
+    name = "mysekai_item_proto",
+    srcs = ["mysekai_item.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_item_cc_proto",
+    deps = [":mysekai_item_proto"],
+)
+
+proto_library(
+    name = "mysekai_item_tab_proto",
+    srcs = ["mysekai_item_tab.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_item_tab_cc_proto",
+    deps = [":mysekai_item_tab_proto"],
+)
+
+proto_library(
+    name = "mysekai_limited_blueprint_proto",
+    srcs = ["mysekai_limited_blueprint.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_limited_blueprint_cc_proto",
+    deps = [":mysekai_limited_blueprint_proto"],
+)
+
+proto_library(
+    name = "mysekai_live_mission_reward_game_character_proto",
+    srcs = ["mysekai_live_mission_reward_game_character.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_live_mission_reward_game_character_cc_proto",
+    deps = [":mysekai_live_mission_reward_game_character_proto"],
+)
+
+proto_library(
+    name = "mysekai_live_mission_reward_mysekai_fixture_proto",
+    srcs = ["mysekai_live_mission_reward_mysekai_fixture.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_live_mission_reward_mysekai_fixture_cc_proto",
+    deps = [":mysekai_live_mission_reward_mysekai_fixture_proto"],
+)
+
+proto_library(
+    name = "mysekai_material_game_character_relation_proto",
+    srcs = ["mysekai_material_game_character_relation.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_material_game_character_relation_cc_proto",
+    deps = [":mysekai_material_game_character_relation_proto"],
+)
+
+proto_library(
+    name = "mysekai_material_possession_proto",
+    srcs = ["mysekai_material_possession.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_material_possession_cc_proto",
+    deps = [":mysekai_material_possession_proto"],
+)
+
+proto_library(
+    name = "mysekai_material_proto",
+    srcs = ["mysekai_material.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_material_cc_proto",
+    deps = [":mysekai_material_proto"],
+)
+
+proto_library(
+    name = "mysekai_material_tab_proto",
+    srcs = ["mysekai_material_tab.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_material_tab_cc_proto",
+    deps = [":mysekai_material_tab_proto"],
+)
+
+proto_library(
+    name = "mysekai_mission_mysekai_fixture_group_proto",
+    srcs = ["mysekai_mission_mysekai_fixture_group.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_mission_mysekai_fixture_group_cc_proto",
+    deps = [":mysekai_mission_mysekai_fixture_group_proto"],
+)
+
+proto_library(
+    name = "mysekai_mission_pass_proto",
+    srcs = ["mysekai_mission_pass.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_mission_pass_cc_proto",
+    deps = [":mysekai_mission_pass_proto"],
+)
+
+proto_library(
+    name = "mysekai_music_record_category_proto",
+    srcs = ["mysekai_music_record_category.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_music_record_category_cc_proto",
+    deps = [":mysekai_music_record_category_proto"],
+)
+
+proto_library(
+    name = "mysekai_music_record_proto",
+    srcs = ["mysekai_music_record.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_music_record_cc_proto",
+    deps = [":mysekai_music_record_proto"],
+)
+
+proto_library(
+    name = "mysekai_normal_mission_reward_mysekai_rank_obtained_exp_proto",
+    srcs = ["mysekai_normal_mission_reward_mysekai_rank_obtained_exp.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_normal_mission_reward_mysekai_rank_obtained_exp_cc_proto",
+    deps = [":mysekai_normal_mission_reward_mysekai_rank_obtained_exp_proto"],
+)
+
+proto_library(
+    name = "mysekai_normal_mission_reward_proto",
+    srcs = ["mysekai_normal_mission_reward.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_normal_mission_reward_cc_proto",
+    deps = [":mysekai_normal_mission_reward_proto"],
+)
+
+proto_library(
+    name = "mysekai_normal_mission_sheet_proto",
+    srcs = ["mysekai_normal_mission_sheet.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_normal_mission_sheet_cc_proto",
+    deps = [":mysekai_normal_mission_sheet_proto"],
+)
+
+proto_library(
+    name = "mysekai_normal_mission_proto",
+    srcs = ["mysekai_normal_mission.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_normal_mission_cc_proto",
+    deps = [":mysekai_normal_mission_proto"],
+)
+
+proto_library(
+    name = "mysekai_phenomena_background_color_proto",
+    srcs = ["mysekai_phenomena_background_color.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_phenomena_background_color_cc_proto",
+    deps = [":mysekai_phenomena_background_color_proto"],
+)
+
+proto_library(
+    name = "mysekai_phenomena_bgm_proto",
+    srcs = ["mysekai_phenomena_bgm.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_phenomena_bgm_cc_proto",
+    deps = [":mysekai_phenomena_bgm_proto"],
+)
+
+proto_library(
+    name = "mysekai_phenomena_group_proto",
+    srcs = ["mysekai_phenomena_group.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_phenomena_group_cc_proto",
+    deps = [":mysekai_phenomena_group_proto"],
+)
+
+proto_library(
+    name = "mysekai_phenomena_proto",
+    srcs = ["mysekai_phenomena.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_phenomena_cc_proto",
+    deps = [":mysekai_phenomena_proto"],
+)
+
+proto_library(
+    name = "mysekai_phenomena_time_period_type_int_value_proto",
+    srcs = ["mysekai_phenomena_time_period_type_int_value.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_phenomena_time_period_type_int_value_cc_proto",
+    deps = [":mysekai_phenomena_time_period_type_int_value_proto"],
+)
+
+proto_library(
+    name = "mysekai_photo_decoration_proto",
+    srcs = ["mysekai_photo_decoration.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_photo_decoration_cc_proto",
+    deps = [":mysekai_photo_decoration_proto"],
+)
+
+proto_library(
+    name = "mysekai_photo_effect_proto",
+    srcs = ["mysekai_photo_effect.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_photo_effect_cc_proto",
+    deps = [":mysekai_photo_effect_proto"],
+)
+
+proto_library(
+    name = "mysekai_photo_game_character_unit_call_proto",
+    srcs = ["mysekai_photo_game_character_unit_call.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_photo_game_character_unit_call_cc_proto",
+    deps = [":mysekai_photo_game_character_unit_call_proto"],
+)
+
+proto_library(
+    name = "mysekai_rank_obtained_exp_proto",
+    srcs = ["mysekai_rank_obtained_exp.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_rank_obtained_exp_cc_proto",
+    deps = [":mysekai_rank_obtained_exp_proto"],
+)
+
+proto_library(
+    name = "mysekai_rank_release_proto",
+    srcs = ["mysekai_rank_release.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_rank_release_cc_proto",
+    deps = [":mysekai_rank_release_proto"],
+)
+
+proto_library(
+    name = "mysekai_rank_proto",
+    srcs = ["mysekai_rank.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_rank_cc_proto",
+    deps = [":mysekai_rank_proto"],
+)
+
+proto_library(
+    name = "mysekai_recycle_resource_proto",
+    srcs = ["mysekai_recycle_resource.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_recycle_resource_cc_proto",
+    deps = [":mysekai_recycle_resource_proto"],
+)
+
+proto_library(
+    name = "mysekai_refresh_time_period_proto",
+    srcs = ["mysekai_refresh_time_period.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_refresh_time_period_cc_proto",
+    deps = [":mysekai_refresh_time_period_proto"],
+)
+
+proto_library(
+    name = "mysekai_release_condition_icon_proto",
+    srcs = ["mysekai_release_condition_icon.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_release_condition_icon_cc_proto",
+    deps = [":mysekai_release_condition_icon_proto"],
+)
+
+proto_library(
+    name = "mysekai_release_element_proto",
+    srcs = ["mysekai_release_element.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_release_element_cc_proto",
+    deps = [":mysekai_release_element_proto"],
+)
+
+proto_library(
+    name = "mysekai_site_bgm_proto",
+    srcs = ["mysekai_site_bgm.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_site_bgm_cc_proto",
+    deps = [":mysekai_site_bgm_proto"],
+)
+
+proto_library(
+    name = "mysekai_site_footstep_proto",
+    srcs = ["mysekai_site_footstep.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_site_footstep_cc_proto",
+    deps = [":mysekai_site_footstep_proto"],
+)
+
+proto_library(
+    name = "mysekai_site_group_proto",
+    srcs = ["mysekai_site_group.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_site_group_cc_proto",
+    deps = [":mysekai_site_group_proto"],
+)
+
+proto_library(
+    name = "mysekai_site_harvest_fixture_proto",
+    srcs = ["mysekai_site_harvest_fixture.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_site_harvest_fixture_cc_proto",
+    deps = [":mysekai_site_harvest_fixture_proto"],
+)
+
+proto_library(
+    name = "mysekai_site_harvest_unavailable_spot_proto",
+    srcs = ["mysekai_site_harvest_unavailable_spot.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_site_harvest_unavailable_spot_cc_proto",
+    deps = [":mysekai_site_harvest_unavailable_spot_proto"],
+)
+
+proto_library(
+    name = "mysekai_site_housing_layout_unavailable_zone_proto",
+    srcs = ["mysekai_site_housing_layout_unavailable_zone.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_site_housing_layout_unavailable_zone_cc_proto",
+    deps = [":mysekai_site_housing_layout_unavailable_zone_proto"],
+)
+
+proto_library(
+    name = "mysekai_site_housing_preset_group_proto",
+    srcs = ["mysekai_site_housing_preset_group.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_site_housing_preset_group_cc_proto",
+    deps = [":mysekai_site_housing_preset_group_proto"],
+)
+
+proto_library(
+    name = "mysekai_site_housing_preset_proto",
+    srcs = ["mysekai_site_housing_preset.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_site_housing_preset_cc_proto",
+    deps = [":mysekai_site_housing_preset_proto"],
+)
+
+proto_library(
+    name = "mysekai_site_layout_proto",
+    srcs = ["mysekai_site_layout.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_site_layout_cc_proto",
+    deps = [":mysekai_site_layout_proto"],
+)
+
+proto_library(
+    name = "mysekai_site_level_proto",
+    srcs = ["mysekai_site_level.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_site_level_cc_proto",
+    deps = [":mysekai_site_level_proto"],
+)
+
+proto_library(
+    name = "mysekai_site_mysekai_phenomena_sound_proto",
+    srcs = ["mysekai_site_mysekai_phenomena_sound.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_site_mysekai_phenomena_sound_cc_proto",
+    deps = [":mysekai_site_mysekai_phenomena_sound_proto"],
+)
+
+proto_library(
+    name = "mysekai_site_proto",
+    srcs = ["mysekai_site.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_site_cc_proto",
+    deps = [":mysekai_site_proto"],
+)
+
+proto_library(
+    name = "mysekai_stamina_recovery_proto",
+    srcs = ["mysekai_stamina_recovery.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_stamina_recovery_cc_proto",
+    deps = [":mysekai_stamina_recovery_proto"],
+)
+
+proto_library(
+    name = "mysekai_stamina_proto",
+    srcs = ["mysekai_stamina.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_stamina_cc_proto",
+    deps = [":mysekai_stamina_proto"],
+)
+
+proto_library(
+    name = "mysekai_system_fixture_proto",
+    srcs = ["mysekai_system_fixture.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_system_fixture_cc_proto",
+    deps = [":mysekai_system_fixture_proto"],
+)
+
+proto_library(
+    name = "mysekai_system_fixture_type_icon_proto",
+    srcs = ["mysekai_system_fixture_type_icon.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_system_fixture_type_icon_cc_proto",
+    deps = [":mysekai_system_fixture_type_icon_proto"],
+)
+
+proto_library(
+    name = "mysekai_tool_proto",
+    srcs = ["mysekai_tool.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_tool_cc_proto",
+    deps = [":mysekai_tool_proto"],
+)
+
+proto_library(
+    name = "mysekai_tool_tab_proto",
+    srcs = ["mysekai_tool_tab.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_tool_tab_cc_proto",
+    deps = [":mysekai_tool_tab_proto"],
+)
+
+proto_library(
+    name = "mysekai_tutorial_cut_scene_proto",
+    srcs = ["mysekai_tutorial_cut_scene.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_tutorial_cut_scene_cc_proto",
+    deps = [":mysekai_tutorial_cut_scene_proto"],
+)
+
+proto_library(
+    name = "mysekai_tutorial_mysekai_character_talk_fixture_unique_proto",
+    srcs = ["mysekai_tutorial_mysekai_character_talk_fixture_unique.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_tutorial_mysekai_character_talk_fixture_unique_cc_proto",
+    deps = [":mysekai_tutorial_mysekai_character_talk_fixture_unique_proto"],
+)
+
+proto_library(
+    name = "mysekai_tutorial_mysekai_site_harvest_fixture_group_proto",
+    srcs = ["mysekai_tutorial_mysekai_site_harvest_fixture_group.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_tutorial_mysekai_site_harvest_fixture_group_cc_proto",
+    deps = [":mysekai_tutorial_mysekai_site_harvest_fixture_group_proto"],
+)
+
+proto_library(
+    name = "mysekai_tutorial_mysekai_stamina_limit_proto",
+    srcs = ["mysekai_tutorial_mysekai_stamina_limit.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_tutorial_mysekai_stamina_limit_cc_proto",
+    deps = [":mysekai_tutorial_mysekai_stamina_limit_proto"],
+)
+
+proto_library(
+    name = "mysekai_tutorial_talk_proto",
+    srcs = ["mysekai_tutorial_talk.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_tutorial_talk_cc_proto",
+    deps = [":mysekai_tutorial_talk_proto"],
+)
+
+proto_library(
+    name = "mysekai_tutorial_use_resource_proto",
+    srcs = ["mysekai_tutorial_use_resource.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "mysekai_tutorial_use_resource_cc_proto",
+    deps = [":mysekai_tutorial_use_resource_proto"],
+)
+
+proto_library(
+    name = "penlight_unit_proto",
+    srcs = ["penlight_unit.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "penlight_unit_cc_proto",
+    deps = [":penlight_unit_proto"],
+)
+
+proto_library(
+    name = "serial_code_campaign_proto",
+    srcs = ["serial_code_campaign.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "serial_code_campaign_cc_proto",
+    deps = [":serial_code_campaign_proto"],
+)
+
+proto_library(
+    name = "unit_asset_proto",
+    srcs = ["unit_asset.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "unit_asset_cc_proto",
+    deps = [":unit_asset_proto"],
+)
+
+proto_library(
+    name = "virtual_shop_item_first_purchase_bonus_proto",
+    srcs = ["virtual_shop_item_first_purchase_bonus.proto"],
+    deps = [":descriptor_proto"],
+)
+
+cc_proto_library(
+    name = "virtual_shop_item_first_purchase_bonus_cc_proto",
+    deps = [":virtual_shop_item_first_purchase_bonus_proto"],
 )

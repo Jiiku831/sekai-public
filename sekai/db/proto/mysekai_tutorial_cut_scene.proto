@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message MysekaiTutorialCutScene {
+  option (master_db_file)                   = "mysekaiTutorialCutScenes.json";
+  optional int32 id                         = 1 [(json_name) = "id"];
+  optional string timeline_assetbundle_name = 2 [(json_name) = "timelineAssetbundleName"];
+}

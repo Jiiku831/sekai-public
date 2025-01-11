@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message MysekaiCharacterTalkFixtureCommon {
+  option (master_db_file) = "mysekaiCharacterTalkFixtureCommons.json";
+  enum MysekaiCharacterTalkFixtureCommonType {
+    UNKNOWN_MYSEKAI_CHARACTER_TALK_FIXTURE_COMMON_TYPE = 0;
+    NORMAL                                             = 1 [(json_value) = "normal"];
+    POSITIVE                                           = 2 [(json_value) = "positive"];
+  }
+
+  optional int32 id                     = 1 [(json_name) = "id"];
+  optional int32 game_character_unit_id = 2 [(json_name) = "gameCharacterUnitId"];
+  optional MysekaiCharacterTalkFixtureCommonType mysekai_character_talk_fixture_common_type = 3
+      [(json_name) = "mysekaiCharacterTalkFixtureCommonType"];
+  optional int32 mysekai_character_talk_fixture_common_mysekai_fixture_group_id = 4
+      [(json_name) = "mysekaiCharacterTalkFixtureCommonMysekaiFixtureGroupId"];
+  optional int32 mysekai_character_talk_fixture_common_tweet_group_id = 5
+      [(json_name) = "mysekaiCharacterTalkFixtureCommonTweetGroupId"];
+}

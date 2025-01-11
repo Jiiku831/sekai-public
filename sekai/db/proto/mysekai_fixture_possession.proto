@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message MysekaiFixturePossession {
+  option (master_db_file)         = "mysekaiFixturePossessions.json";
+  optional int32 id               = 1 [(json_name) = "id"];
+  optional int32 level            = 2 [(json_name) = "level"];
+  optional int32 possession_limit = 3 [(json_name) = "possessionLimit"];
+}

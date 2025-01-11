@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message MysekaiSiteBgm {
+  option (master_db_file) = "mysekaiSiteBgms.json";
+  enum MysekaiPhenomenaBrightnessType {
+    UNKNOWN_MYSEKAI_PHENOMENA_BRIGHTNESS_TYPE = 0;
+    BRIGHT                                    = 1 [(json_value) = "bright"];
+    DARK                                      = 2 [(json_value) = "dark"];
+    NONE                                      = 3 [(json_value) = "none"];
+    NORMAL                                    = 4 [(json_value) = "normal"];
+  }
+
+  optional int32 id                                                         = 1 [(json_name) = "id"];
+  optional int32 mysekai_site_id                                            = 2 [(json_name) = "mysekaiSiteId"];
+  optional MysekaiPhenomenaBrightnessType mysekai_phenomena_brightness_type = 3
+      [(json_name) = "mysekaiPhenomenaBrightnessType"];
+  optional string assetbundle_name = 4 [(json_name) = "assetbundleName"];
+  optional string cue              = 5 [(json_name) = "cue"];
+}

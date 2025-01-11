@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message MysekaiCharacterTalkActionPoint {
+  option (master_db_file)                             = "mysekaiCharacterTalkActionPoints.json";
+  optional int32 id                                   = 1 [(json_name) = "id"];
+  optional int32 game_character_unit_id1_action_point = 2 [(json_name) = "gameCharacterUnitId1ActionPoint"];
+  optional int32 game_character_unit_id2_action_point = 3 [(json_name) = "gameCharacterUnitId2ActionPoint"];
+  optional int32 game_character_unit_id3_action_point = 4 [(json_name) = "gameCharacterUnitId3ActionPoint"];
+  optional int32 game_character_unit_id4_action_point = 5 [(json_name) = "gameCharacterUnitId4ActionPoint"];
+}

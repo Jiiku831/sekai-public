@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message MysekaiCharacterTalkCondition {
+  option (master_db_file) = "mysekaiCharacterTalkConditions.json";
+  enum MysekaiCharacterTalkConditionType {
+    UNKNOWN_MYSEKAI_CHARACTER_TALK_CONDITION_TYPE = 0;
+    MYSEKAI_CHARACTER_VISIT_COUNT                 = 1 [(json_value) = "mysekai_character_visit_count"];
+    MYSEKAI_FIXTURE_ID                            = 2 [(json_value) = "mysekai_fixture_id"];
+    MYSEKAI_PHENOMENA_ID                          = 3 [(json_value) = "mysekai_phenomena_id"];
+    READ_EVENT_STORY_EPISODE_ID                   = 4 [(json_value) = "read_event_story_episode_id"];
+  }
+
+  optional int32 id                                                                = 1 [(json_name) = "id"];
+  optional MysekaiCharacterTalkConditionType mysekai_character_talk_condition_type = 2
+      [(json_name) = "mysekaiCharacterTalkConditionType"];
+  optional int32 mysekai_character_talk_condition_type_value = 3
+      [(json_name) = "mysekaiCharacterTalkConditionTypeValue"];
+}

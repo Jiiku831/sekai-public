@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message MysekaiTutorialMysekaiCharacterTalkFixtureUnique {
+  option (master_db_file)                  = "mysekaiTutorialMysekaiCharacterTalkFixtureUniques.json";
+  optional int32 id                        = 1 [(json_name) = "id"];
+  optional int32 mysekai_character_talk_id = 2 [(json_name) = "mysekaiCharacterTalkId"];
+}

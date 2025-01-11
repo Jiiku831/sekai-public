@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message MysekaiNormalMission {
+  option (master_db_file) = "mysekaiNormalMissions.json";
+  enum MysekaiNormalMissionType {
+    UNKNOWN_MYSEKAI_NORMAL_MISSION_TYPE                        = 0;
+    CHANGE_SPECIFIC_MYSEKAI_GATE                               = 1 [(json_value) = "change_specific_mysekai_gate"];
+    COLLECT_ANY_MYSEKAI_MUSIC_RECORD                           = 2 [(json_value) = "collect_any_mysekai_music_record"];
+    COMPLETE_SHEET                                             = 3 [(json_value) = "complete_sheet"];
+    CONSUME_SPECIFIC_MYSEKAI_ITEM                              = 4 [(json_value) = "consume_specific_mysekai_item"];
+    CREATE_ANY_MYSEKAI_FIXTURE                                 = 5 [(json_value) = "create_any_mysekai_fixture"];
+    CREATE_MYSEKAI_FIXTURE_SPECIFIC_MYSEKAI_FIXTURE_MAIN_GENRE = 6
+        [(json_value) = "create_mysekai_fixture_specific_mysekai_fixture_main_genre"];
+    CREATE_MYSEKAI_FIXTURE_SPECIFIC_TAG = 7 [(json_value) = "create_mysekai_fixture_specific_tag"];
+    CREATE_SPECIFIC_MYSEKAI_FIXTURE     = 8 [(json_value) = "create_specific_mysekai_fixture"];
+    DO_MYSEKAI_PHOTO_SHOT               = 9 [(json_value) = "do_mysekai_photo_shot"];
+    GATHER_ANY_MYSEKAI_MATERIAL         = 10 [(json_value) = "gather_any_mysekai_material"];
+    GATHER_MYSEKAI_MATERIAL_SPECIFIC_MYSEKAI_MISSION_MYSEKAI_MATERIAL_GROUP = 11
+        [(json_value) = "gather_mysekai_material_specific_mysekai_mission_mysekai_material_group"];
+    GATHER_MYSEKAI_MATERIAL_SPECIFIC_TYPE = 12 [(json_value) = "gather_mysekai_material_specific_type"];
+    GATHER_SPECIFIC_MYSEKAI_MATERIAL      = 13 [(json_value) = "gather_specific_mysekai_material"];
+    MYSEKAI_LOGIN_TOTAL                   = 14 [(json_value) = "mysekai_login_total"];
+    PUT_MYSEKAI_FIXTURE_SPECIFIC_MYSEKAI_FIXTURE_MAIN_GENRE = 15
+        [(json_value) = "put_mysekai_fixture_specific_mysekai_fixture_main_genre"];
+    PUT_MYSEKAI_FIXTURE_SPECIFIC_TAG_SPECIFIC_MYSEKAI_SITE = 16
+        [(json_value) = "put_mysekai_fixture_specific_tag_specific_mysekai_site"];
+    PUT_SPECIFIC_MYSEKAI_FIXTURE                       = 17 [(json_value) = "put_specific_mysekai_fixture"];
+    PUT_SPECIFIC_MYSEKAI_FIXTURE_SPECIFIC_MYSEKAI_SITE = 18
+        [(json_value) = "put_specific_mysekai_fixture_specific_mysekai_site"];
+    REACH_MYSEKAI_RANK                     = 19 [(json_value) = "reach_mysekai_rank"];
+    RECEIVE_ANY_MYSEKAI_CONVERT_ITEM       = 20 [(json_value) = "receive_any_mysekai_convert_item"];
+    SET_ANY_MYSEKAI_PHENOMENA_AT_HOME_SITE = 21 [(json_value) = "set_any_mysekai_phenomena_at_home_site"];
+    SET_MYSEKAI_RECORD                     = 22 [(json_value) = "set_mysekai_record"];
+    VISIT_OTHER_PLAYER_MYSEKAI             = 23 [(json_value) = "visit_other_player_mysekai"];
+  }
+
+  optional int32 id                                             = 1 [(json_name) = "id"];
+  optional int32 mysekai_normal_mission_sheet_id                = 2 [(json_name) = "mysekaiNormalMissionSheetId"];
+  optional int32 seq                                            = 3 [(json_name) = "seq"];
+  optional string sentence                                      = 4 [(json_name) = "sentence"];
+  optional MysekaiNormalMissionType mysekai_normal_mission_type = 5 [(json_name) = "mysekaiNormalMissionType"];
+  optional string mysekai_normal_mission_category               = 6 [(json_name) = "mysekaiNormalMissionCategory"];
+  optional int32 requirement1                                   = 7 [(json_name) = "requirement1"];
+  optional int32 condition_value1                               = 8 [(json_name) = "conditionValue1"];
+  optional int32 condition_value2                               = 9 [(json_name) = "conditionValue2"];
+  optional int32 requirement2                                   = 10 [(json_name) = "requirement2"];
+}

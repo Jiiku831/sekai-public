@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message MysekaiReleaseConditionIcon {
+  option (master_db_file) = "mysekaiReleaseConditionIcons.json";
+  enum MysekaiReleaseConditionType {
+    UNKNOWN_MYSEKAI_RELEASE_CONDITION_TYPE    = 0;
+    HARVEST_SITE_RELEASE_NEW_SITE             = 1 [(json_value) = "harvest_site_release_new_site"];
+    HOME_SITE_SIZE_EXPAND                     = 2 [(json_value) = "home_site_size_expand"];
+    MYROOM_SITE_RELEASE_NEW_FLOOR             = 3 [(json_value) = "myroom_site_release_new_floor"];
+    MYROOM_SITE_SIZE_EXPAND                   = 4 [(json_value) = "myroom_site_size_expand"];
+    MYSEKAI_FIXTURE_RELEASE_POSSESSION_LIMIT  = 5 [(json_value) = "mysekai_fixture_release_possession_limit"];
+    MYSEKAI_FIXTURE_RELEASE_PUT_LIMIT         = 6 [(json_value) = "mysekai_fixture_release_put_limit"];
+    MYSEKAI_MATERIAL_RELEASE_POSSESSION_LIMIT = 7 [(json_value) = "mysekai_material_release_possession_limit"];
+  }
+
+  optional int32 id                                                   = 1 [(json_name) = "id"];
+  optional MysekaiReleaseConditionType mysekai_release_condition_type = 2 [(json_name) = "mysekaiReleaseConditionType"];
+  optional string assetbundle_name                                    = 3 [(json_name) = "assetbundleName"];
+}
