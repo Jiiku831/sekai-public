@@ -1,8 +1,10 @@
 #include "sekai/card.h"
 
+#include <array>
 #include <span>
 
 #include "absl/base/nullability.h"
+#include "absl/log/absl_check.h"
 #include "sekai/array_size.h"
 #include "sekai/character.h"
 #include "sekai/db/master_db.h"
@@ -24,6 +26,20 @@ template <typename T>
 Eigen::Vector3i GetBonusPower(const T& msg) {
   return Eigen::Vector3i(msg.power1_bonus_fixed(), msg.power2_bonus_fixed(),
                          msg.power3_bonus_fixed());
+}
+
+const Eigen::Vector3i& GetCanvasBonusPower(db::CardRarityType rarity) {
+  static const std::array<Eigen::Vector3i, db::CardRarityType_ARRAYSIZE>* const kBonus = [] {
+    auto bonuses = new std::array<Eigen::Vector3i, db::CardRarityType_ARRAYSIZE>;
+    bonuses->fill(Eigen::Vector3i(0, 0, 0));
+    for (const auto& bonus : MasterDb::GetAll<db::CardMySekaiCanvasBonus>()) {
+      (*bonuses)[bonus.card_rarity_type()] = Eigen::Vector3i(
+          bonus.power1_bonus_fixed(), bonus.power2_bonus_fixed(), bonus.power3_bonus_fixed());
+    }
+    return bonuses;
+  }();
+  ABSL_CHECK(db::CardRarityType_IsValid(rarity));
+  return (*kBonus)[rarity];
 }
 
 Eigen::Vector3i GetBasePower(const db::Card& card, int level) {
@@ -119,6 +135,10 @@ Card::Card(const db::Card& card, const CardState& state) : CardBase(card), state
 
   power_vec_ = GetCardPower(card, state);
   power_ = power_vec_.sum();
+  if (state.canvas_crafted()) {
+    unboosted_power_vec_ = GetCanvasBonusPower(card.card_rarity_type());
+  }
+  unboosted_power_ = unboosted_power_vec_.sum();
   const db::Skill& skill = MasterDb::Get().Get<db::Skill>().FindFirst(card.skill_id());
   skill_ = Skill(skill, skill_level_);
   if (card.has_special_training_skill_id() && state.special_training()) {
@@ -165,7 +185,7 @@ void Card::ApplyProfilePowerBonus(const ProfileBonus& profile) {
         area_item_bonus_[attr_matching][primary_unit_matching][secondary_unit_matching] =
             area_item_bonus;
         precomputed_power_[attr_matching][primary_unit_matching][secondary_unit_matching] =
-            power_ + cr_power_bonus_ + area_item_bonus;
+            power_ + unboosted_power_ + cr_power_bonus_ + area_item_bonus;
       }
     }
   }

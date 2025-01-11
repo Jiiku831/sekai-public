@@ -50,7 +50,9 @@ class Card : public CardBase {
   float support_bonus() const { return support_bonus_; }
 
   const Eigen::Vector3i& power_vec() const { return power_vec_; }
+  const Eigen::Vector3i& unboosted_power_vec() const { return unboosted_power_vec_; }
   int power() const { return power_; }
+  int unboosted_power() const { return unboosted_power_; }
   int cr_power_bonus() const { return cr_power_bonus_; }
   int area_item_power_bonus(bool attr_match, bool primary_unit_match,
                             bool secondary_unit_match) const {
@@ -64,7 +66,7 @@ class Card : public CardBase {
   db::CardRarityType db_rarity() const { return db_rarity_; }
 
   CardProto ToProto(UnitCountBase& unit_count) const;
-  CardState state() const { return state_; }
+  const CardState& state() const { return state_; }
 
   bool HasSecondarySkill() const { return has_secondary_skill_; }
   void UseSecondarySkill(bool use_secondary_skill) {
@@ -90,7 +92,10 @@ class Card : public CardBase {
 
   // Derived stats (power, skill, bonus) from card state
   Eigen::Vector3i power_vec_{0, 0, 0};
+  // Bonus power unaffected by area item
+  Eigen::Vector3i unboosted_power_vec_{0, 0, 0};
   int power_ = 0;
+  int unboosted_power_ = 0;
 
   Skill skill_;
   Skill secondary_skill_;

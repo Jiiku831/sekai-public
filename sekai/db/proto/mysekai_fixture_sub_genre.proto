@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message MysekaiFixtureSubGenre {
+  option (master_db_file) = "mysekaiFixtureSubGenres.json";
+  enum MysekaiFixtureSubGenreType {
+    UNKNOWN_MYSEKAI_FIXTURE_SUB_GENRE_TYPE           = 0;
+    CUSTOM_PROFILE_RESOURCE_COLLECTION_ACRYLIC_STAND = 1
+        [(json_value) = "custom_profile_resource_collection_acrylic_stand"];
+    CUSTOM_PROFILE_RESOURCE_COLLECTION_ALL       = 2 [(json_value) = "custom_profile_resource_collection_all"];
+    CUSTOM_PROFILE_RESOURCE_COLLECTION_CAN_BADGE = 3 [(json_value) = "custom_profile_resource_collection_can_badge"];
+    CUSTOM_PROFILE_RESOURCE_COLLECTION_OTHER     = 4 [(json_value) = "custom_profile_resource_collection_other"];
+    DOLL                                         = 5 [(json_value) = "doll"];
+    HONOR                                        = 6 [(json_value) = "honor"];
+    MYSEKAI_MUSIC_RECORD                         = 7 [(json_value) = "mysekai_music_record"];
+    MYSEKAI_PHOTO                                = 8 [(json_value) = "mysekai_photo"];
+    NONE                                         = 9 [(json_value) = "none"];
+    PENLIGHT                                     = 10 [(json_value) = "penlight"];
+  }
+
+  optional int32 id                                                  = 1 [(json_name) = "id"];
+  optional string name                                               = 2 [(json_name) = "name"];
+  optional MysekaiFixtureSubGenreType mysekai_fixture_sub_genre_type = 3 [(json_name) = "mysekaiFixtureSubGenreType"];
+  optional string assetbundle_name                                   = 4 [(json_name) = "assetbundleName"];
+}

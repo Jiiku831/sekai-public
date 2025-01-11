@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message MysekaiItemTab {
+  option (master_db_file)          = "mysekaiItemTabs.json";
+  optional int32 id                = 1 [(json_name) = "id"];
+  optional string name             = 2 [(json_name) = "name"];
+  optional string assetbundle_name = 3 [(json_name) = "assetbundleName"];
+}

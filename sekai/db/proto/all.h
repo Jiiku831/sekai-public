@@ -7,6 +7,7 @@
 #include "sekai/db/proto/area_item_level.pb.h"
 #include "sekai/db/proto/card.pb.h"
 #include "sekai/db/proto/card_episode.pb.h"
+#include "sekai/db/proto/card_mysekai_canvas_bonus.pb.h"
 #include "sekai/db/proto/challenge_live_stage.pb.h"
 #include "sekai/db/proto/character2d.pb.h"
 #include "sekai/db/proto/character_archive_voice.pb.h"
@@ -39,11 +40,12 @@
 namespace sekai::db {
 
 using AllRecordTypes =
-    std::tuple<ActionSet, AreaItem, AreaItemLevel, Card, CardEpisode, ChallengeLiveStage,
-               Character2D, CharacterArchiveVoice, CharacterMissionV2, CharacterMissionV2AreaItem,
-               CharacterMissionV2Ex, CharacterMissionV2ParameterGroup, CharacterRank, Costume3D,
-               Event, EventCard, EventDeckBonus, EventRarityBonusRate, GameCharacter,
-               GameCharacterUnit, MasterLesson, Music, MusicMeta, MusicVocal, Skill, Stamp, Version,
-               WorldBloom, WorldBloomDifferentAttributeBonus, WorldBloomSupportDeckBonus>;
+    std::tuple<ActionSet, AreaItem, AreaItemLevel, Card, CardEpisode, CardMySekaiCanvasBonus,
+               ChallengeLiveStage, Character2D, CharacterArchiveVoice, CharacterMissionV2,
+               CharacterMissionV2AreaItem, CharacterMissionV2Ex, CharacterMissionV2ParameterGroup,
+               CharacterRank, Costume3D, Event, EventCard, EventDeckBonus, EventRarityBonusRate,
+               GameCharacter, GameCharacterUnit, MasterLesson, Music, MusicMeta, MusicVocal, Skill,
+               Stamp, Version, WorldBloom, WorldBloomDifferentAttributeBonus,
+               WorldBloomSupportDeckBonus>;
 
 }  // namespace sekai::db

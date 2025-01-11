@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message MysekaiConvertItemObtainMysekaiMusicRecord {
+  option (master_db_file) = "mysekaiConvertItemObtainMysekaiMusicRecords.json";
+  enum MysekaiConvertItemObtainMysekaiMusicRecordType {
+    UNKNOWN_MYSEKAI_CONVERT_ITEM_OBTAIN_MYSEKAI_MUSIC_RECORD_TYPE = 0;
+    MYSEKAI_MUSIC_RECORD_CATEGORY_CHOICE = 1 [(json_value) = "mysekai_music_record_category_choice"];
+    RANDOM                               = 2 [(json_value) = "random"];
+  }
+
+  optional int32 id = 1 [(json_name) = "id"];
+  optional MysekaiConvertItemObtainMysekaiMusicRecordType mysekai_convert_item_obtain_mysekai_music_record_type = 2
+      [(json_name) = "mysekaiConvertItemObtainMysekaiMusicRecordType"];
+  optional int32 quantity = 3 [(json_name) = "quantity"];
+}

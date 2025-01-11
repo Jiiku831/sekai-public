@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message MysekaiSiteHousingLayoutUnavailableZone {
+  option (master_db_file)               = "mysekaiSiteHousingLayoutUnavailableZones.json";
+  optional int32 id                     = 1 [(json_name) = "id"];
+  optional int32 mysekai_site_layout_id = 2 [(json_name) = "mysekaiSiteLayoutId"];
+  optional int32 start_x                = 3 [(json_name) = "startX"];
+  optional int32 start_y                = 4 [(json_name) = "startY"];
+  optional int32 start_z                = 5 [(json_name) = "startZ"];
+  optional int32 width                  = 6 [(json_name) = "width"];
+  optional int32 height                 = 7 [(json_name) = "height"];
+  optional int32 depth                  = 8 [(json_name) = "depth"];
+}

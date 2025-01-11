@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message MusicSoundTrack {
+  option (master_db_file)                      = "musicSoundTracks.json";
+  optional int32 id                            = 1 [(json_name) = "id"];
+  optional int32 seq                           = 2 [(json_name) = "seq"];
+  optional string title                        = 3 [(json_name) = "title"];
+  optional string pronunciation                = 4 [(json_name) = "pronunciation"];
+  optional int32 music_sound_track_category_id = 5 [(json_name) = "musicSoundTrackCategoryId"];
+  optional string assetbundle_name             = 6 [(json_name) = "assetbundleName"];
+  optional string assetbundle_file_name        = 7 [(json_name) = "assetbundleFileName"];
+}

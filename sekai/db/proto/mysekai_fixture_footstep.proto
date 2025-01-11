@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message MysekaiFixtureFootstep {
+  option (master_db_file)  = "mysekaiFixtureFootsteps.json";
+  optional int32 id        = 1 [(json_name) = "id"];
+  optional string walk_cue = 2 [(json_name) = "walkCue"];
+  optional string run_cue  = 3 [(json_name) = "runCue"];
+}

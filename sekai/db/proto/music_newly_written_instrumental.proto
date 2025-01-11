@@ -1,0 +1,6 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message MusicNewlyWrittenInstrumental { option (master_db_file) = "musicNewlyWrittenInstrumentals.json"; }

@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message MysekaiMaterial {
+  option (master_db_file) = "mysekaiMaterials.json";
+  enum MysekaiMaterialType {
+    UNKNOWN_MYSEKAI_MATERIAL_TYPE = 0;
+    GAME_CHARACTER                = 1 [(json_value) = "game_character"];
+    JUNK                          = 2 [(json_value) = "junk"];
+    MINERAL                       = 3 [(json_value) = "mineral"];
+    PLANT                         = 4 [(json_value) = "plant"];
+    TONE                          = 5 [(json_value) = "tone"];
+    WOOD                          = 6 [(json_value) = "wood"];
+  }
+
+  enum MysekaiMaterialRarityType {
+    UNKNOWN_MYSEKAI_MATERIAL_RARITY_TYPE = 0;
+    RARITY_1                             = 1 [(json_value) = "rarity_1"];
+    RARITY_2                             = 2 [(json_value) = "rarity_2"];
+    RARITY_3                             = 3 [(json_value) = "rarity_3"];
+    RARITY_4                             = 4 [(json_value) = "rarity_4"];
+  }
+
+  optional int32 id                                               = 1 [(json_name) = "id"];
+  optional int32 seq                                              = 2 [(json_name) = "seq"];
+  optional MysekaiMaterialType mysekai_material_type              = 3 [(json_name) = "mysekaiMaterialType"];
+  optional string name                                            = 4 [(json_name) = "name"];
+  optional string pronunciation                                   = 5 [(json_name) = "pronunciation"];
+  optional string description                                     = 6 [(json_name) = "description"];
+  optional MysekaiMaterialRarityType mysekai_material_rarity_type = 7 [(json_name) = "mysekaiMaterialRarityType"];
+  optional string icon_assetbundle_name                           = 8 [(json_name) = "iconAssetbundleName"];
+  optional string model_assetbundle_name                          = 9 [(json_name) = "modelAssetbundleName"];
+  repeated int32 mysekai_site_ids                                 = 10 [(json_name) = "mysekaiSiteIds"];
+  optional int32 mysekai_phenomena_group_id                       = 11 [(json_name) = "mysekaiPhenomenaGroupId"];
+}

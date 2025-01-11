@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message MysekaiCharacterTalkMotion {
+  option (master_db_file)                    = "mysekaiCharacterTalkMotions.json";
+  optional int32 id                          = 1 [(json_name) = "id"];
+  optional int32 game_character_unit_id      = 2 [(json_name) = "gameCharacterUnitId"];
+  optional string walk_motion                = 3 [(json_name) = "walkMotion"];
+  optional string idle_motion                = 4 [(json_name) = "idleMotion"];
+  optional string run_motion                 = 5 [(json_name) = "runMotion"];
+  optional int32 pause_milli_seconds         = 6 [(json_name) = "pauseMilliSeconds"];
+  optional int32 change_motion_milli_seconds = 7 [(json_name) = "changeMotionMilliSeconds"];
+  optional float walk_speed                  = 8 [(json_name) = "walkSpeed"];
+  optional float run_speed                   = 9 [(json_name) = "runSpeed"];
+  optional float run_occur_rate              = 10 [(json_name) = "runOccurRate"];
+}

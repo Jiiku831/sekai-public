@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+message MysekaiCharacterTalkTweetAfterEditHousingLayout {
+  option (master_db_file) = "mysekaiCharacterTalkTweetAfterEditHousingLayouts.json";
+  optional int32 id       = 1 [(json_name) = "id"];
+  optional int32 mysekai_character_talk_tweet_without_related_talk_id = 2
+      [(json_name) = "mysekaiCharacterTalkTweetWithoutRelatedTalkId"];
+}

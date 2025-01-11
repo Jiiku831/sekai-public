@@ -73,7 +73,7 @@ Eigen::Vector4i Team::PowerDetailed(const Profile& profile) const {
   bool secondary_units_match = (secondary_units_.count() == 1);
 
   for (const Card* card : cards_) {
-    base_power += card->power();
+    base_power += card->power() + card->unboosted_power();
     area_item_bonus +=
         card->area_item_power_bonus(attr_match, primary_units_match, secondary_units_match);
     character_rank_bonus += card->cr_power_bonus();

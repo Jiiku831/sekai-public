@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message MysekaiCutScene {
+  option (master_db_file) = "mysekaiCutScenes.json";
+  enum MysekaiCutSceneConditionType {
+    UNKNOWN_MYSEKAI_CUT_SCENE_CONDITION_TYPE                       = 0;
+    MYSEKAI_CHARACTER_TALK_CHARACTER_INVITE_GAME_CHARACTER_UNIT_ID = 1
+        [(json_value) = "mysekai_character_talk_character_invite_game_character_unit_id"];
+    MYSEKAI_CHARACTER_TALK_CHARACTER_LEAVE_GAME_CHARACTER_UNIT_ID = 2
+        [(json_value) = "mysekai_character_talk_character_leave_game_character_unit_id"];
+    MYSEKAI_SITE_LEVEL = 3 [(json_value) = "mysekai_site_level"];
+  }
+
+  optional int32 id                                                      = 1 [(json_name) = "id"];
+  optional string timeline_assetbundle_name                              = 2 [(json_name) = "timelineAssetbundleName"];
+  optional MysekaiCutSceneConditionType mysekai_cut_scene_condition_type = 3
+      [(json_name) = "mysekaiCutSceneConditionType"];
+  optional int32 external_id = 4 [(json_name) = "externalId"];
+}

@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message MysekaiFixtureLabel {
+  option (master_db_file) = "mysekaiFixtureLabels.json";
+  enum MysekaiFixtureLabelType {
+    UNKNOWN_MYSEKAI_FIXTURE_LABEL_TYPE = 0;
+    SIZE                               = 1 [(json_value) = "size"];
+  }
+
+  optional int32 id                                           = 1 [(json_name) = "id"];
+  optional MysekaiFixtureLabelType mysekai_fixture_label_type = 2 [(json_name) = "mysekaiFixtureLabelType"];
+  optional string name                                        = 3 [(json_name) = "name"];
+}

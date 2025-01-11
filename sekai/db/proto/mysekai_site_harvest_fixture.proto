@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message MysekaiSiteHarvestFixture {
+  option (master_db_file) = "mysekaiSiteHarvestFixtures.json";
+  enum MysekaiSiteHarvestFixtureType {
+    UNKNOWN_MYSEKAI_SITE_HARVEST_FIXTURE_TYPE = 0;
+    DRIFTAGE                                  = 1 [(json_value) = "driftage"];
+    MINERAL                                   = 2 [(json_value) = "mineral"];
+    OTHER                                     = 3 [(json_value) = "other"];
+    PLANT                                     = 4 [(json_value) = "plant"];
+    TONE                                      = 5 [(json_value) = "tone"];
+    TOOLBOX                                   = 6 [(json_value) = "toolbox"];
+    TREASURE_BOX_FIXED                        = 7 [(json_value) = "treasure_box_fixed"];
+    TREASURE_BOX_TRANSPORT                    = 8 [(json_value) = "treasure_box_transport"];
+    WOOD                                      = 9 [(json_value) = "wood"];
+  }
+
+  enum MysekaiSiteHarvestFixtureRarityType {
+    UNKNOWN_MYSEKAI_SITE_HARVEST_FIXTURE_RARITY_TYPE = 0;
+    RARITY_1                                         = 1 [(json_value) = "rarity_1"];
+    RARITY_2                                         = 2 [(json_value) = "rarity_2"];
+  }
+
+  optional int32 id                                                        = 1 [(json_name) = "id"];
+  optional MysekaiSiteHarvestFixtureType mysekai_site_harvest_fixture_type = 2
+      [(json_name) = "mysekaiSiteHarvestFixtureType"];
+  optional int32 hp                  = 3 [(json_name) = "hp"];
+  optional int32 last_attack_stamina = 4 [(json_name) = "lastAttackStamina"];
+  optional MysekaiSiteHarvestFixtureRarityType mysekai_site_harvest_fixture_rarity_type = 5
+      [(json_name) = "mysekaiSiteHarvestFixtureRarityType"];
+  optional string assetbundle_name = 6 [(json_name) = "assetbundleName"];
+}

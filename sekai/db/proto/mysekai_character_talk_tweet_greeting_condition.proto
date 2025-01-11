@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message MysekaiCharacterTalkTweetGreetingCondition {
+  option (master_db_file) = "mysekaiCharacterTalkTweetGreetingConditions.json";
+  enum MysekaiCharacterTalkTweetGreetingConditionType {
+    UNKNOWN_MYSEKAI_CHARACTER_TALK_TWEET_GREETING_CONDITION_TYPE = 0;
+    MYSEKAI_CHARACTER_VISIT_COUNT                                = 1 [(json_value) = "mysekai_character_visit_count"];
+    MYSEKAI_PHENOMENA_TIME_PERIOD                                = 2 [(json_value) = "mysekai_phenomena_time_period"];
+  }
+
+  optional int32 id = 1 [(json_name) = "id"];
+  optional MysekaiCharacterTalkTweetGreetingConditionType mysekai_character_talk_tweet_greeting_condition_type = 2
+      [(json_name) = "mysekaiCharacterTalkTweetGreetingConditionType"];
+  optional int32 mysekai_character_talk_tweet_greeting_condition_value1 = 3
+      [(json_name) = "mysekaiCharacterTalkTweetGreetingConditionValue1"];
+  optional int32 mysekai_character_talk_tweet_greeting_condition_value2 = 4
+      [(json_name) = "mysekaiCharacterTalkTweetGreetingConditionValue2"];
+}

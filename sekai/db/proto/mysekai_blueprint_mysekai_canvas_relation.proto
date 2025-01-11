@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package sekai.db;
+
+import "sekai/db/proto/descriptor.proto";
+
+message MysekaiBlueprintMysekaiCanvasRelation {
+  option (master_db_file) = "mysekaiBlueprintMysekaiCanvasRelations.json";
+  enum CardRarityType {
+    UNKNOWN_CARD_RARITY_TYPE = 0;
+    RARITY_1                 = 1 [(json_value) = "rarity_1"];
+    RARITY_2                 = 2 [(json_value) = "rarity_2"];
+    RARITY_3                 = 3 [(json_value) = "rarity_3"];
+    RARITY_4                 = 4 [(json_value) = "rarity_4"];
+    RARITY_BIRTHDAY          = 5 [(json_value) = "rarity_birthday"];
+  }
+
+  optional int32 id                        = 1 [(json_name) = "id"];
+  optional int32 mysekai_blueprint_id      = 2 [(json_name) = "mysekaiBlueprintId"];
+  optional CardRarityType card_rarity_type = 3 [(json_name) = "cardRarityType"];
+  optional int32 quantity                  = 4 [(json_name) = "quantity"];
+}
