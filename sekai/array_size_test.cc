@@ -12,5 +12,9 @@ TEST(ArraySizeTest, TestCharacterArraySizeConstant) {
 
 TEST(ArraySizeTest, TestCardArraySizeConstant) { EXPECT_LE(CardArraySize(), kCardArraySize); }
 
+TEST(ArraySizeTest, TestMySekaiGateArraySizeConstant) {
+  EXPECT_LE(MySekaiGateArraySize(), kMySekaiGateArraySize);
+}
+
 }  // namespace
 }  // namespace sekai

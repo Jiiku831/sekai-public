@@ -323,12 +323,26 @@ function CreateAreaItemRow(tbody, items, padding) {
   CreateBonusPowerRow(tbody, items, padding, (item) => {
     return CreateNode("td",
       CreateNumberInput(
-          0, 15, `area-item-${item.areaItemId}`,
+          0, item.maxLevel, `area-item-${item.areaItemId}`,
           function(e) {
               if (!this.validity.valid || this.value == "") {
                   return;
               }
               controller.SetAreaItemLevel(item.areaItemId, parseInt(this.value));
+          }));
+  });
+}
+
+function CreateMySekaiGateRow(tbody, items, padding) {
+  CreateBonusPowerRow(tbody, items, padding, (item) => {
+    return CreateNode("td",
+      CreateNumberInput(
+          0, item.maxLevel, `mysekai-gate-${item.gateId}`,
+          function(e) {
+              if (!this.validity.valid || this.value == "") {
+                  return;
+              }
+              controller.SetMySekaiGateLevel(item.gateId, parseInt(this.value));
           }));
   });
 }
@@ -356,6 +370,46 @@ function CreatePowerBonusAreaItemRow(area, chunkSize) {
     CreateAreaItemRow(tbody, area.areaItems.slice(i, i + chunkSize),
       i + chunkSize - area.areaItems.length);
   }
+}
+
+function CreateMySekaiFixtureInputs(fixtureGroup) {
+  const node = document.createElement("div");
+  fixtureGroup.fixtures.forEach((fixture) => {
+    node.appendChild(
+      CreateNode("div",
+        CreateCheckbox(`mysekai-fixture-${fixture.fixtureId}`, "",
+          fixture.displayText, (e) => {
+            controller.SetMySekaiFixtureCrafted(fixture.fixtureId, e.target.checked);
+          }, false)));
+  });
+  return node;
+}
+
+function CreateMySekaiFixtureRow(tbody, items, padding) {
+  CreateBonusPowerRow(tbody, items, padding, (item) => {
+    return CreateNode("td", CreateMySekaiFixtureInputs(item));
+  });
+}
+
+function CreateMySekaiFixtureRows(fixtureGroups, chunkSize) {
+  const tbody = document.getElementById("power-bonus-table-body");
+  const headerCell = CreateNode("th", document.createTextNode("MySekai Furnitures"));
+  headerCell.colSpan = chunkSize;
+  tbody.appendChild(CreateNode("tr", headerCell));
+  fixtureGroups.forEach((group) => {
+    for (let i = 0; i < group.chars.length; i += chunkSize) {
+      CreateMySekaiFixtureRow(tbody, group.chars.slice(i, i + chunkSize),
+        i + chunkSize - group.chars.length);
+    }
+  });
+}
+
+function CreatePowerBonusMySekaiGateRow(gates, chunkSize) {
+  const tbody = document.getElementById("power-bonus-table-body");
+  const headerCell = CreateNode("th", document.createTextNode("MySekai Gates"));
+  headerCell.colSpan = chunkSize;
+  tbody.appendChild(CreateNode("tr", headerCell));
+  CreateMySekaiGateRow(tbody, gates, chunkSize - gates.length);
 }
 
 function CreateCharacterRankRows(rows, chunkSize) {
@@ -399,6 +453,9 @@ function CreatePowerBonusTable(context) {
   });
   CreateCharacterRankRows(context.charRows, chunkSize);
   CreateTitleBonusRow(chunkSize);
+  console.log(context.mySekaiFixtureGroups);
+  CreateMySekaiFixtureRows(context.mySekaiFixtureGroups, chunkSize);
+  CreatePowerBonusMySekaiGateRow(context.mySekaiGates, chunkSize);
 }
 
 function CreateEventBonusEventSelection(context, container) {
@@ -794,6 +851,8 @@ function RenderTeamImpl(teamIndex, context) {
     `- Area Item:   ${context.powerDetailed[1].toLocaleString().padStart(7)}\n` +
     `- Char Rank:   ${context.powerDetailed[2].toLocaleString().padStart(7)}\n` +
     `- Titles:      ${context.powerDetailed[3].toLocaleString().padStart(7)}\n` +
+    `- Furnitures:  ${context.powerDetailed[4].toLocaleString().padStart(7)}\n` +
+    `- Gates:       ${context.powerDetailed[5].toLocaleString().padStart(7)}\n` +
     `Skill Value:   ${context.skillValue.toLocaleString().padStart(6)}%\n` +
     `Event Bonus:   ${context.eventBonus.toLocaleString().padStart(6)}%\n` +
     `Est. EP:       ${context.expectedEp.toLocaleString().padStart(7)}\n`;

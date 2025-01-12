@@ -7,6 +7,7 @@
 
 #include "absl/log/log.h"
 #include "frontend/log.h"
+#include "sekai/array_size.h"
 #include "sekai/profile.h"
 #include "sekai/proto/profile.pb.h"
 #include "sekai/proto_util.h"
@@ -56,6 +57,9 @@ void ControllerBase::DeleteSaveData() const {
 }
 
 void ControllerBase::UpdateProfile() {
+  if (profile_proto_.mysekai_gate_levels_size() < sekai::kMySekaiGateArraySize) {
+    profile_proto_.mutable_mysekai_gate_levels()->Resize(sekai::kMySekaiGateArraySize, 0);
+  }
   profile_ = sekai::Profile(profile_proto_);
   OnProfileUpdate();
 }

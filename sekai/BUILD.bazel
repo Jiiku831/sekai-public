@@ -50,6 +50,27 @@ cc_test(
 )
 
 cc_library(
+    name = "bonus_limit",
+    hdrs = ["bonus_limit.h"],
+)
+
+cc_test(
+    name = "bonus_limit_test",
+    srcs = ["bonus_limit_test.cc"],
+    data = [
+        "//data:flat-db",
+    ],
+    deps = [
+        ":bonus_limit",
+        "//sekai/db:master_db",
+        "//sekai/db/proto:all",
+        "//testing:test_main",
+        "//testing:util",
+        "@googletest//:gtest",
+    ],
+)
+
+cc_library(
     name = "challenge_live",
     srcs = ["challenge_live.cc"],
     hdrs = ["challenge_live.h"],
@@ -290,6 +311,16 @@ cc_library(
 )
 
 cc_library(
+    name = "fixtures",
+    srcs = ["fixtures.cc"],
+    hdrs = ["fixtures.h"],
+    deps = [
+        "//sekai/db:master_db",
+        "//sekai/db/proto:all",
+    ],
+)
+
+cc_library(
     name = "max_character_rank",
     srcs = ["max_character_rank.cc"],
     hdrs = ["max_character_rank.h"],
@@ -315,6 +346,27 @@ cc_test(
     deps = [
         ":array_size",
         ":max_character_rank",
+        "//testing:test_main",
+        "//testing:util",
+        "@googletest//:gtest",
+    ],
+)
+
+cc_library(
+    name = "max_level",
+    hdrs = ["max_level.h"],
+)
+
+cc_test(
+    name = "max_level_test",
+    srcs = ["max_level_test.cc"],
+    data = [
+        "//data:flat-db",
+    ],
+    deps = [
+        ":max_level",
+        "//sekai/db:master_db",
+        "//sekai/db/proto:all",
         "//testing:test_main",
         "//testing:util",
         "@googletest//:gtest",
@@ -384,6 +436,7 @@ cc_library(
     hdrs = ["profile.h"],
     deps = [
         ":array_size",
+        ":bonus_limit",
         ":card",
         ":character",
         ":profile_bonus",
@@ -407,6 +460,7 @@ cc_test(
         "//data:profile/cards_v2",
     ],
     deps = [
+        ":array_size",
         ":profile",
         ":unit_count",
         "//sekai/db/proto:all",
