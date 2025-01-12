@@ -54,6 +54,7 @@ class Card : public CardBase {
   int power() const { return power_; }
   int unboosted_power() const { return unboosted_power_; }
   int cr_power_bonus() const { return cr_power_bonus_; }
+  int gate_power_bonus() const { return gate_power_bonus_; }
   int area_item_power_bonus(bool attr_match, bool primary_unit_match,
                             bool secondary_unit_match) const {
     return area_item_bonus_[attr_match][primary_unit_match][secondary_unit_match];
@@ -108,6 +109,7 @@ class Card : public CardBase {
 
   // Power bonus
   int cr_power_bonus_ = 0;
+  int gate_power_bonus_ = 0;
   // Index: (Attr, Primary Unit, Secondary Unit)
   std::array<std::array<std::array<int, 2>, 2>, 2> area_item_bonus_{};
   std::array<std::array<std::array<int, 2>, 2>, 2> precomputed_power_{};

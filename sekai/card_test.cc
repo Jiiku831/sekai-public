@@ -414,5 +414,74 @@ TEST(CardTest, SecondarySkillWithReferenceBoostPrimaryNoSpecialTraining) {
   EXPECT_EQ(card_special.MaxSkillValue(), 150);
 }
 
+TEST(CardTest, ApplyProfileGateBonus) {
+  // Ichika
+  CardState state;
+  state.set_level(60);
+  state.add_card_episodes_read(7);
+  state.add_card_episodes_read(8);
+  state.set_special_training(true);
+  Card card{MasterDb::FindFirst<db::Card>(4), state};
+
+  ProfileProto profile_proto = TestProfile();
+  profile_proto.mutable_mysekai_gate_levels()->Resize(6, 0);
+  profile_proto.set_mysekai_gate_levels(1, 7);
+  Profile profile(profile_proto);
+  card.ApplyProfilePowerBonus(profile);
+  EXPECT_EQ(card.gate_power_bonus(), 240);
+  EXPECT_EQ(card.power() + card.unboosted_power(), 34295);
+  EXPECT_EQ(card.precomputed_power(false, false, false), 56585 + 240);
+}
+
+TEST(CardTest, ApplyProfileGateBonusUnitVS) {
+  // LN Miku
+  CardState state;
+  state.set_level(60);
+  state.add_card_episodes_read(395);
+  state.add_card_episodes_read(396);
+  state.set_master_rank(5);
+  state.set_special_training(true);
+  state.set_canvas_crafted(true);
+  Card card{MasterDb::FindFirst<db::Card>(198), state};
+
+  ProfileProto profile_proto = TestProfile();
+  profile_proto.mutable_mysekai_gate_levels()->Resize(6, 0);
+  profile_proto.set_mysekai_gate_levels(1, 7);
+  profile_proto.set_mysekai_gate_levels(2, 1);
+  profile_proto.set_mysekai_gate_levels(3, 20);
+  profile_proto.set_mysekai_gate_levels(4, 3);
+  profile_proto.set_mysekai_gate_levels(5, 4);
+  Profile profile(profile_proto);
+  card.ApplyProfilePowerBonus(profile);
+  EXPECT_EQ(card.gate_power_bonus(), 273);
+  EXPECT_EQ(card.power() + card.unboosted_power(), 39098);
+  EXPECT_EQ(card.precomputed_power(false, false, false), 63534 + 273);
+}
+
+TEST(CardTest, ApplyProfileGateBonusSubunitlessVS) {
+  // Miku
+  CardState state;
+  state.set_level(60);
+  state.add_card_episodes_read(1015);
+  state.add_card_episodes_read(1016);
+  state.set_master_rank(5);
+  state.set_special_training(true);
+  state.set_canvas_crafted(true);
+  Card card{MasterDb::FindFirst<db::Card>(509), state};
+
+  ProfileProto profile_proto = TestProfile();
+  profile_proto.mutable_mysekai_gate_levels()->Resize(6, 0);
+  profile_proto.set_mysekai_gate_levels(1, 1);
+  profile_proto.set_mysekai_gate_levels(2, 2);
+  profile_proto.set_mysekai_gate_levels(3, 7);  // Use highest level gate
+  profile_proto.set_mysekai_gate_levels(4, 4);
+  profile_proto.set_mysekai_gate_levels(5, 3);
+  Profile profile(profile_proto);
+  card.ApplyProfilePowerBonus(profile);
+  EXPECT_EQ(card.gate_power_bonus(), 271);
+  EXPECT_EQ(card.power() + card.unboosted_power(), 38797);
+  EXPECT_EQ(card.precomputed_power(false, false, false), 61539 + 1500 + 271);
+}
+
 }  // namespace
 }  // namespace sekai
