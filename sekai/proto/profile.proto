@@ -9,10 +9,11 @@ import "sekai/proto/world_bloom.proto";
 import "sekai/db/proto/enums.proto";
 
 message ProfileProto {
-  repeated int32 area_item_levels = 1;
-  repeated int32 character_ranks  = 2;
-  optional int32 bonus_power      = 3;
-  map<int32, CardState> cards     = 4;
+  repeated int32 area_item_levels    = 1;
+  repeated int32 character_ranks     = 2;
+  optional int32 bonus_power         = 3;
+  map<int32, CardState> cards        = 4;
+  repeated int32 mysekai_gate_levels = 13;
 
   // No effect outside of frontend. Used for data persistence.
   optional bool use_old_subunitless_bonus = 5;

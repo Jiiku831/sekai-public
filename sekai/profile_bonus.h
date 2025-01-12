@@ -34,6 +34,7 @@ class ProfileBonus {
   virtual std::span<const BonusRate> char_bonus() const = 0;
   virtual std::span<const BonusRate> cr_bonus() const = 0;
   virtual std::span<const BonusRate> unit_bonus() const = 0;
+  virtual std::span<const float> mysekai_gate_bonus() const = 0;
   virtual int bonus_power() const = 0;
   virtual int character_rank(int char_id) const = 0;
 };

@@ -56,6 +56,27 @@ void LoadAreaItemBonus(const ProfileProto& profile,
   }
 }
 
+void LoadMySekaiGateBonus(const ProfileProto& profile,
+                          std::array<float, db::Unit_ARRAYSIZE>& gate_bonus) {
+  for (int gate_id = 0; gate_id < profile.mysekai_gate_levels_size(); ++gate_id) {
+    const int gate_level = profile.mysekai_gate_levels(gate_id);
+    if (gate_level <= 0) continue;
+    const db::MySekaiGate& gate = MasterDb::FindFirst<db::MySekaiGate>(gate_id);
+    std::vector<const db::MySekaiGateLevel*> levels =
+        MasterDb::FindAll<db::MySekaiGateLevel>(gate_id);
+    bool level_found = false;
+    for (const db::MySekaiGateLevel* level : levels) {
+      if (level->level() == gate_level) {
+        level_found = true;
+        gate_bonus[gate.unit()] = level->power_bonus_rate();
+        gate_bonus[db::UNIT_VS] = std::max(gate_bonus[db::UNIT_VS], level->power_bonus_rate());
+        break;
+      }
+    }
+    ABSL_CHECK(level_found) << "Invalid level " << gate_level << " for gate " << gate_id;
+  }
+}
+
 void LoadCharacterRankBonus(const ProfileProto& profile, std::vector<BonusRate>& cr_bonus) {
   for (const db::CharacterRank& rank : MasterDb::GetAll<db::CharacterRank>()) {
     ABSL_CHECK_LT(rank.character_id(), static_cast<int64_t>(profile.character_ranks_size()));
@@ -115,6 +136,7 @@ Profile::Profile(const ProfileProto& profile) : Profile() {
   bonus_power_ = profile.bonus_power();
   LoadAreaItemBonus(profile, attr_bonus_, char_bonus_, unit_bonus_);
   LoadCharacterRankBonus(profile, cr_bonus_);
+  LoadMySekaiGateBonus(profile, mysekai_gate_bonus_);
   for (int char_id : UniqueCharacterIds()) {
     ABSL_CHECK_LT(char_id, static_cast<int>(profile.character_ranks_size()));
     character_rank_[char_id] = profile.character_ranks(char_id);

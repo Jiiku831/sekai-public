@@ -37,6 +37,15 @@ int MaxCharacterId() {
   return max_id;
 }
 
+int MaxMySekaiGateId() {
+  int max_id = 0;
+  for (const auto& c : MasterDb::GetAll<db::MySekaiGate>()) {
+    max_id = std::max(max_id, c.id());
+  }
+  ABSL_CHECK_LT(max_id, 999);
+  return max_id;
+}
+
 }  // namespace
 
 int AreaItemArraySize() {
@@ -56,6 +65,11 @@ const std::vector<int>& UniqueCharacterIds() {
 
 int CharacterArraySize() {
   static const int kArraySize = MaxCharacterId() + 1;
+  return kArraySize;
+}
+
+int MySekaiGateArraySize() {
+  static const int kArraySize = MaxMySekaiGateId() + 1;
   return kArraySize;
 }
 
