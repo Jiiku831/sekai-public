@@ -14,12 +14,14 @@
 #include "sekai/character.h"
 #include "sekai/db/master_db.h"
 #include "sekai/db/proto/all.h"
+#include "sekai/fixtures.h"
 #include "sekai/max_level.h"
 #include "sekai/proto/world_bloom.pb.h"
 
 namespace frontend {
 namespace {
 
+using ::sekai::FixturesWithCharBonuses;
 using ::sekai::LookupCharacterUnit;
 using ::sekai::MaxLevelForRarity;
 using ::sekai::TrainableCard;
@@ -32,6 +34,9 @@ using ::sekai::db::CardRarityType;
 using ::sekai::db::Event;
 using ::sekai::db::GameCharacter;
 using ::sekai::db::MasterDb;
+using ::sekai::db::MySekaiFixture;
+using ::sekai::db::MySekaiFixtureGameCharacterGroup;
+using ::sekai::db::MySekaiFixtureGameCharacterGroupPerformanceBonus;
 using ::sekai::db::MySekaiGate;
 using ::sekai::db::Unit;
 using ::sekai::db::WorldBloom;
@@ -198,6 +203,36 @@ std::vector<PowerBonusContext::AreaContext> CreateAreaContext() {
     flattened_groups.push_back(group);
   }
   return flattened_groups;
+}
+
+std::vector<MySekaiFixtureCharGroupContext> CreateMySekaiFixtureContexts() {
+  std::map<int, std::map<int, std::vector<MySekaiFixtureContext>>> fixtures;
+  for (const MySekaiFixture* fixture : FixturesWithCharBonuses()) {
+    if (!fixture->has_mysekai_fixture_game_character_group_performance_bonus_id()) continue;
+    const MySekaiFixtureGameCharacterGroupPerformanceBonus& bonus =
+        MasterDb::FindFirst<MySekaiFixtureGameCharacterGroupPerformanceBonus>(
+            fixture->mysekai_fixture_game_character_group_performance_bonus_id());
+    const MySekaiFixtureGameCharacterGroup group =
+        MasterDb::FindFirst<MySekaiFixtureGameCharacterGroup>(
+            bonus.mysekai_fixture_game_character_group_id());
+    MySekaiFixtureContext context;
+    context.set_display_text(fixture->name());
+    context.set_fixture_id(fixture->id());
+    fixtures[LookupCharacterUnit(group.game_character_id())][group.game_character_id()].push_back(
+        context);
+  }
+  std::vector<MySekaiFixtureCharGroupContext> contexts;
+  for (const auto& [db_unit, unit_fixtures] : fixtures) {
+    MySekaiFixtureCharGroupContext unit_context;
+    for (const auto& [char_id, char_fixtures] : unit_fixtures) {
+      MySekaiFixtureCharContext& char_context = *unit_context.add_chars();
+      *char_context.mutable_character() = CreateCharacterContext(char_id);
+      *char_context.mutable_fixtures() = {char_fixtures.begin(), char_fixtures.end()};
+      char_context.set_display_text(char_context.character().display_text());
+    }
+    contexts.push_back(unit_context);
+  }
+  return contexts;
 }
 
 std::vector<MySekaiGateContext> CreateMySekaiGateContexts() {

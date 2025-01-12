@@ -10,6 +10,7 @@
 namespace frontend {
 
 std::vector<PowerBonusContext::AreaContext> CreateAreaContext();
+std::vector<MySekaiFixtureCharGroupContext> CreateMySekaiFixtureContexts();
 std::vector<MySekaiGateContext> CreateMySekaiGateContexts();
 AttrContext CreateAttrContext(sekai::db::Attr attr, bool short_name = false);
 CardContext CreateCardContext(const sekai::db::Card& card,

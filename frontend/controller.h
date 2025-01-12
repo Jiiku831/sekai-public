@@ -47,6 +47,7 @@ class Controller : public ControllerBase {
   void SetUnreleasedContentFilterState(bool state);
   void SetOwnedCardsFilterState(bool state);
   void SetAreaItemLevel(int area_item_id, int level);
+  void SetMySekaiFixtureCrafted(int fixture_id, bool state);
   void SetMySekaiGateLevel(int gate_id, int level);
   void SetCharacterRank(int char_id, int rank);
   void SetTitleBonus(int bonus);

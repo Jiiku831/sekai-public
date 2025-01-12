@@ -76,6 +76,9 @@ PowerBonusContext CreatePowerBonusContext() {
   std::vector<CharacterContextGroup> groups = CreateCharacterContextGroups();
   *context.mutable_char_rows() = {groups.begin(), groups.end()};
 
+  std::vector<MySekaiFixtureCharGroupContext> fixtures = CreateMySekaiFixtureContexts();
+  *context.mutable_my_sekai_fixture_groups() = {fixtures.begin(), fixtures.end()};
+
   std::vector<MySekaiGateContext> gates = CreateMySekaiGateContexts();
   *context.mutable_my_sekai_gates() = {gates.begin(), gates.end()};
   return context;

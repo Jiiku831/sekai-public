@@ -372,8 +372,39 @@ function CreatePowerBonusAreaItemRow(area, chunkSize) {
   }
 }
 
+function CreateMySekaiFixtureInputs(fixtureGroup) {
+  const node = document.createElement("div");
+  fixtureGroup.fixtures.forEach((fixture) => {
+    node.appendChild(
+      CreateNode("div",
+        CreateCheckbox(`mysekai-fixture-${fixture.fixtureId}`, "",
+          fixture.displayText, (e) => {
+            controller.SetMySekaiFixtureCrafted(fixture.fixtureId, e.target.checked);
+          }, false)));
+  });
+  return node;
+}
+
+function CreateMySekaiFixtureRow(tbody, items, padding) {
+  CreateBonusPowerRow(tbody, items, padding, (item) => {
+    return CreateNode("td", CreateMySekaiFixtureInputs(item));
+  });
+}
+
+function CreateMySekaiFixtureRows(fixtureGroups, chunkSize) {
+  const tbody = document.getElementById("power-bonus-table-body");
+  const headerCell = CreateNode("th", document.createTextNode("MySekai Furnitures"));
+  headerCell.colSpan = chunkSize;
+  tbody.appendChild(CreateNode("tr", headerCell));
+  fixtureGroups.forEach((group) => {
+    for (let i = 0; i < group.chars.length; i += chunkSize) {
+      CreateMySekaiFixtureRow(tbody, group.chars.slice(i, i + chunkSize),
+        i + chunkSize - group.chars.length);
+    }
+  });
+}
+
 function CreatePowerBonusMySekaiGateRow(gates, chunkSize) {
-  console.log(gates);
   const tbody = document.getElementById("power-bonus-table-body");
   const headerCell = CreateNode("th", document.createTextNode("MySekai Gates"));
   headerCell.colSpan = chunkSize;
@@ -422,6 +453,8 @@ function CreatePowerBonusTable(context) {
   });
   CreateCharacterRankRows(context.charRows, chunkSize);
   CreateTitleBonusRow(chunkSize);
+  console.log(context.mySekaiFixtureGroups);
+  CreateMySekaiFixtureRows(context.mySekaiFixtureGroups, chunkSize);
   CreatePowerBonusMySekaiGateRow(context.mySekaiGates, chunkSize);
 }
 

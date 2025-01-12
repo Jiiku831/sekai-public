@@ -311,6 +311,16 @@ cc_library(
 )
 
 cc_library(
+    name = "fixtures",
+    srcs = ["fixtures.cc"],
+    hdrs = ["fixtures.h"],
+    deps = [
+        "//sekai/db:master_db",
+        "//sekai/db/proto:all",
+    ],
+)
+
+cc_library(
     name = "max_character_rank",
     srcs = ["max_character_rank.cc"],
     hdrs = ["max_character_rank.h"],

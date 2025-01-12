@@ -34,6 +34,7 @@
 #include "sekai/db/proto/all.h"
 #include "sekai/estimator.h"
 #include "sekai/event_bonus.h"
+#include "sekai/fixtures.h"
 #include "sekai/max_level.h"
 #include "sekai/parking.h"
 #include "sekai/profile.h"
@@ -62,6 +63,7 @@ using ::sekai::CharacterArraySize;
 using ::sekai::CreateMaxCardState;
 using ::sekai::EventBonus;
 using ::sekai::EventId;
+using ::sekai::FixturesWithCharBonuses;
 using ::sekai::OptimizeExactPoints;
 using ::sekai::OptimizeFillTeam;
 using ::sekai::PartitionedBuildTeam;
@@ -80,6 +82,7 @@ using ::sekai::db::CardRarityType;
 using ::sekai::db::Event;
 using ::sekai::db::GameCharacter;
 using ::sekai::db::MasterDb;
+using ::sekai::db::MySekaiFixture;
 using ::sekai::db::MySekaiGate;
 using ::sekai::db::Unit;
 
@@ -145,6 +148,10 @@ EM_JS(void, SetCardEpisode2, (int card_id, bool state), {
 
 EM_JS(void, SetAreaItemLevel, (int area_item_id, int level), {
   document.getElementById(`area-item-${area_item_id}`).value = level;
+});
+
+EM_JS(void, SetMySekaiFixtureCrafted, (int fixture_id, int state), {
+  document.getElementById(`mysekai-fixture-${fixture_id}`).checked = state;
 });
 
 EM_JS(void, SetMySekaiGateLevel, (int gate_id, int level), {
@@ -251,6 +258,9 @@ void ResetView() {
   for (const AreaItem& area_item : MasterDb::GetAll<AreaItem>()) {
     SetAreaItemLevel(area_item.id(), 0);
   }
+  for (const MySekaiFixture* fixture : FixturesWithCharBonuses()) {
+    SetMySekaiFixtureCrafted(fixture->id(), false);
+  }
   for (const MySekaiGate& gate : MasterDb::GetAll<MySekaiGate>()) {
     SetMySekaiGateLevel(gate.id(), 0);
   }
@@ -298,11 +308,17 @@ void ResetView(const ProfileProto& profile) {
   for (const GameCharacter& game_char : MasterDb::GetAll<GameCharacter>()) {
     SetCharacterRankLevel(game_char.id(), profile.character_ranks(game_char.id()));
   }
-
   for (const AreaItem& area_item : MasterDb::GetAll<AreaItem>()) {
     SetAreaItemLevel(area_item.id(), profile.area_item_levels(area_item.id()));
   }
-
+  for (const MySekaiFixture* fixture : FixturesWithCharBonuses()) {
+    auto crafted = profile.mysekai_fixture_crafted().find(fixture->id());
+    if (crafted != profile.mysekai_fixture_crafted().end() && crafted->second) {
+      SetMySekaiFixtureCrafted(fixture->id(), true);
+    } else {
+      SetMySekaiFixtureCrafted(fixture->id(), false);
+    }
+  }
   for (const MySekaiGate& gate : MasterDb::GetAll<MySekaiGate>()) {
     SetMySekaiGateLevel(gate.id(), profile.mysekai_gate_levels(gate.id()));
   }
@@ -457,6 +473,13 @@ void Controller::SetAreaItemLevel(int area_item_id, int level) {
   }
   if (profile_proto_.area_item_levels(area_item_id) == level) return;
   profile_proto_.set_area_item_levels(area_item_id, level);
+  UpdateProfile();
+}
+
+void Controller::SetMySekaiFixtureCrafted(int fixture_id, bool state) {
+  bool& current_state = (*profile_proto_.mutable_mysekai_fixture_crafted())[fixture_id];
+  if (current_state == state) return;
+  current_state = state;
   UpdateProfile();
 }
 
@@ -1085,6 +1108,7 @@ EMSCRIPTEN_BINDINGS(controller) {
       .function("SetKizunaConstraint", &Controller::SetKizunaConstraint)
       .function("SetLeadConstraint", &Controller::SetLeadConstraint)
       .function("SetMinLeadSkill", &Controller::SetMinLeadSkill)
+      .function("SetMySekaiFixtureCrafted", &Controller::SetMySekaiFixtureCrafted)
       .function("SetMySekaiGateLevel", &Controller::SetMySekaiGateLevel)
       .function("SetOwnedCardsFilterState", &Controller::SetOwnedCardsFilterState)
       .function("SetParkAccuracy", &Controller::SetParkAccuracy)
