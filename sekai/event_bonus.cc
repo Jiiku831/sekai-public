@@ -82,7 +82,12 @@ EventBonus::EventBonus()
       diff_attr_bonus_() {}
 
 EventBonus::EventBonus(const EventId& event_id)
-    : EventBonus(MasterDb::FindFirst<db::Event>(event_id.event_id())) {
+    : EventBonus(MasterDb::SafeFindFirst<db::Event>(event_id.event_id())) {
+  const db::Event* event = MasterDb::SafeFindFirst<db::Event>(event_id.event_id());
+  if (event == nullptr) {
+    LOG(WARNING) << "Event not found: " << event_id.event_id();
+    return;
+  }
   if (event_id.chapter_id() > 0) {
     support_bonus_ = std::shared_ptr<EventBonus>(new SupportUnitEventBonus{event_id});
   }
@@ -119,7 +124,13 @@ EventBonus::EventBonus(const SimpleEventBonus& event_bonus) : EventBonus() {
   }
 }
 
+EventBonus::EventBonus(const db::Event* event)
+    : EventBonus(event != nullptr ? *event : db::Event::default_instance()) {}
+
 EventBonus::EventBonus(const db::Event& event) : EventBonus() {
+  if (event.id() == 0) {
+    return;
+  }
   for (const auto& bonus : MasterDb::FindAll<db::EventDeckBonus>(event.id())) {
     // Index: (Id, Attr, Unit)
     db::Attr attr = bonus->card_attr();

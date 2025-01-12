@@ -396,6 +396,7 @@ function CreateMySekaiFixtureRows(fixtureGroups, chunkSize) {
   const headerCell = CreateNode("th", document.createTextNode("MySekai Furnitures"));
   headerCell.colSpan = chunkSize;
   tbody.appendChild(CreateNode("tr", headerCell));
+  if (!fixtureGroups) return;
   fixtureGroups.forEach((group) => {
     for (let i = 0; i < group.chars.length; i += chunkSize) {
       CreateMySekaiFixtureRow(tbody, group.chars.slice(i, i + chunkSize),
@@ -409,7 +410,9 @@ function CreatePowerBonusMySekaiGateRow(gates, chunkSize) {
   const headerCell = CreateNode("th", document.createTextNode("MySekai Gates"));
   headerCell.colSpan = chunkSize;
   tbody.appendChild(CreateNode("tr", headerCell));
-  CreateMySekaiGateRow(tbody, gates, chunkSize - gates.length);
+  if (gates) {
+    CreateMySekaiGateRow(tbody, gates, chunkSize - gates.length);
+  }
 }
 
 function CreateCharacterRankRows(rows, chunkSize) {
@@ -453,7 +456,6 @@ function CreatePowerBonusTable(context) {
   });
   CreateCharacterRankRows(context.charRows, chunkSize);
   CreateTitleBonusRow(chunkSize);
-  console.log(context.mySekaiFixtureGroups);
   CreateMySekaiFixtureRows(context.mySekaiFixtureGroups, chunkSize);
   CreatePowerBonusMySekaiGateRow(context.mySekaiGates, chunkSize);
 }

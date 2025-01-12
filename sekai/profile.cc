@@ -137,7 +137,7 @@ void LoadCards(const ProfileProto& profile, absl::flat_hash_map<int, Card>& card
   for (const auto& [card_id, state] : profile.cards()) {
     const db::Card* card = MasterDb::SafeFindFirst<db::Card>(card_id);
     if (card == nullptr) {
-      LOG(INFO) << "Card not found, skipping: " << card_id;
+      LOG(WARNING) << "Card not found, skipping: " << card_id;
       continue;
     }
     AddCard(*card, state, cards, secondary_cards);
