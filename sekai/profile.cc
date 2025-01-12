@@ -17,6 +17,7 @@
 #include "absl/strings/str_split.h"
 #include "base/util.h"
 #include "sekai/array_size.h"
+#include "sekai/bonus_limit.h"
 #include "sekai/card.h"
 #include "sekai/db/master_db.h"
 #include "sekai/db/proto/all.h"
@@ -53,6 +54,58 @@ void LoadAreaItemBonus(const ProfileProto& profile,
       BonusRate& rate = char_bonus[area_item_level.target_game_character_id()];
       rate.rate += area_item_level.power1_bonus_rate();
     }
+  }
+}
+
+void LoadMySekaiFixtureBonus(const ProfileProto& profile,
+                             std::array<int, kCharacterArraySize>& fixture_bonus) {
+  fixture_bonus.fill(0);
+  for (const auto& [fixture_id, crafted] : profile.mysekai_fixture_crafted()) {
+    if (!crafted) continue;
+    const db::MySekaiFixture* fixture = MasterDb::SafeFindFirst<db::MySekaiFixture>(fixture_id);
+    if (fixture == nullptr) {
+      LOG(WARNING) << "Ignoring unknown fixture: " << fixture_id;
+      continue;
+    }
+    if (!fixture->has_mysekai_fixture_game_character_group_performance_bonus_id()) {
+      LOG(WARNING) << "Ignoring fixture with no bonus: " << fixture_id;
+      continue;
+    }
+    const db::MySekaiFixtureGameCharacterGroupPerformanceBonus& bonus =
+        MasterDb::FindFirst<db::MySekaiFixtureGameCharacterGroupPerformanceBonus>(
+            fixture->mysekai_fixture_game_character_group_performance_bonus_id());
+    const db::MySekaiFixtureGameCharacterGroup& group =
+        MasterDb::FindFirst<db::MySekaiFixtureGameCharacterGroup>(
+            bonus.mysekai_fixture_game_character_group_id());
+    fixture_bonus[group.game_character_id()] =
+        std::min(fixture_bonus[group.game_character_id()] + bonus.bonus_rate(),
+                 kMaxMySekaiFixtureBonusLimit);
+  }
+}
+
+void LoadMySekaiGateBonus(const ProfileProto& profile,
+                          std::array<float, db::Unit_ARRAYSIZE>& gate_bonus) {
+  gate_bonus.fill(0);
+  for (int gate_id = 0; gate_id < profile.mysekai_gate_levels_size(); ++gate_id) {
+    const int gate_level = profile.mysekai_gate_levels(gate_id);
+    if (gate_level <= 0) continue;
+    const db::MySekaiGate* gate = MasterDb::SafeFindFirst<db::MySekaiGate>(gate_id);
+    if (gate == nullptr) {
+      LOG(WARNING) << "Ignoring unknown gate: " << gate_id;
+      continue;
+    }
+    std::vector<const db::MySekaiGateLevel*> levels =
+        MasterDb::FindAll<db::MySekaiGateLevel>(gate_id);
+    bool level_found = false;
+    for (const db::MySekaiGateLevel* level : levels) {
+      if (level->level() == gate_level) {
+        level_found = true;
+        gate_bonus[gate->unit()] = level->power_bonus_rate();
+        gate_bonus[db::UNIT_VS] = std::max(gate_bonus[db::UNIT_VS], level->power_bonus_rate());
+        break;
+      }
+    }
+    ABSL_CHECK(level_found) << "Invalid level " << gate_level << " for gate " << gate_id;
   }
 }
 
@@ -115,6 +168,8 @@ Profile::Profile(const ProfileProto& profile) : Profile() {
   bonus_power_ = profile.bonus_power();
   LoadAreaItemBonus(profile, attr_bonus_, char_bonus_, unit_bonus_);
   LoadCharacterRankBonus(profile, cr_bonus_);
+  LoadMySekaiFixtureBonus(profile, mysekai_fixture_bonus_);
+  LoadMySekaiGateBonus(profile, mysekai_gate_bonus_);
   for (int char_id : UniqueCharacterIds()) {
     ABSL_CHECK_LT(char_id, static_cast<int>(profile.character_ranks_size()));
     character_rank_[char_id] = profile.character_ranks(char_id);

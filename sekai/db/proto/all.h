@@ -29,6 +29,12 @@
 #include "sekai/db/proto/music.pb.h"
 #include "sekai/db/proto/music_meta.pb.h"
 #include "sekai/db/proto/music_vocal.pb.h"
+#include "sekai/db/proto/mysekai_fixture.pb.h"
+#include "sekai/db/proto/mysekai_fixture_game_character_group.pb.h"
+#include "sekai/db/proto/mysekai_fixture_game_character_group_performance_bonus.pb.h"
+#include "sekai/db/proto/mysekai_fixture_game_character_performance_bonus_limit.pb.h"
+#include "sekai/db/proto/mysekai_gate.pb.h"
+#include "sekai/db/proto/mysekai_gate_level.pb.h"
 #include "sekai/db/proto/records.pb.h"
 #include "sekai/db/proto/skill.pb.h"
 #include "sekai/db/proto/stamp.pb.h"
@@ -39,13 +45,14 @@
 
 namespace sekai::db {
 
-using AllRecordTypes =
-    std::tuple<ActionSet, AreaItem, AreaItemLevel, Card, CardEpisode, CardMySekaiCanvasBonus,
-               ChallengeLiveStage, Character2D, CharacterArchiveVoice, CharacterMissionV2,
-               CharacterMissionV2AreaItem, CharacterMissionV2Ex, CharacterMissionV2ParameterGroup,
-               CharacterRank, Costume3D, Event, EventCard, EventDeckBonus, EventRarityBonusRate,
-               GameCharacter, GameCharacterUnit, MasterLesson, Music, MusicMeta, MusicVocal, Skill,
-               Stamp, Version, WorldBloom, WorldBloomDifferentAttributeBonus,
-               WorldBloomSupportDeckBonus>;
+using AllRecordTypes = std::tuple<
+    ActionSet, AreaItem, AreaItemLevel, Card, CardEpisode, CardMySekaiCanvasBonus,
+    ChallengeLiveStage, Character2D, CharacterArchiveVoice, CharacterMissionV2,
+    CharacterMissionV2AreaItem, CharacterMissionV2Ex, CharacterMissionV2ParameterGroup,
+    CharacterRank, Costume3D, Event, EventCard, EventDeckBonus, EventRarityBonusRate, GameCharacter,
+    GameCharacterUnit, MasterLesson, Music, MusicMeta, MusicVocal, MySekaiFixture,
+    MySekaiFixtureGameCharacterGroup, MySekaiFixtureGameCharacterGroupPerformanceBonus,
+    MySekaiFixtureGameCharacterPerformanceBonusLimit, MySekaiGate, MySekaiGateLevel, Skill, Stamp,
+    Version, WorldBloom, WorldBloomDifferentAttributeBonus, WorldBloomSupportDeckBonus>;
 
 }  // namespace sekai::db
