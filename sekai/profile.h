@@ -8,6 +8,7 @@
 #include "absl/base/nullability.h"
 #include "absl/container/flat_hash_map.h"
 #include "absl/status/status.h"
+#include "sekai/array_size.h"
 #include "sekai/card.h"
 #include "sekai/db/proto/all.h"
 #include "sekai/profile_bonus.h"
@@ -31,6 +32,7 @@ class Profile : public ProfileBonus {
   std::span<const BonusRate> char_bonus() const override { return char_bonus_; }
   std::span<const BonusRate> cr_bonus() const override { return cr_bonus_; }
   std::span<const BonusRate> unit_bonus() const override { return unit_bonus_; }
+  std::span<const int> mysekai_fixture_bonus() const override { return mysekai_fixture_bonus_; }
   std::span<const float> mysekai_gate_bonus() const override { return mysekai_gate_bonus_; }
   int bonus_power() const override { return bonus_power_; }
   int character_rank(int char_id) const override;
@@ -50,6 +52,7 @@ class Profile : public ProfileBonus {
   std::vector<BonusRate> cr_bonus_;
   std::vector<int> character_rank_;
   std::array<BonusRate, db::Unit_ARRAYSIZE> unit_bonus_;
+  std::array<int, kCharacterArraySize> mysekai_fixture_bonus_{};
   std::array<float, db::Unit_ARRAYSIZE> mysekai_gate_bonus_{};
   int bonus_power_ = 0;
   absl::flat_hash_map<int, Card> cards_;

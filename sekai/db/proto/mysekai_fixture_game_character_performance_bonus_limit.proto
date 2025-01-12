@@ -3,7 +3,8 @@ syntax = "proto3";
 package sekai.db;
 
 import "sekai/db/proto/descriptor.proto";
-message MysekaiFixtureGameCharacterPerformanceBonusLimit {
+
+message MySekaiFixtureGameCharacterPerformanceBonusLimit {
   option (master_db_file)         = "mysekaiFixtureGameCharacterPerformanceBonusLimit.json";
   optional int32 id               = 1 [(json_name) = "id"];
   optional int32 bonus_rate_limit = 2 [(json_name) = "bonusRateLimit"];

@@ -3,6 +3,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include "sekai/array_size.h"
 #include "sekai/config.h"
 #include "sekai/proto_util.h"
 #include "sekai/unit_count.h"
@@ -103,6 +104,32 @@ ProfileProto TestProfile() {
     ]
     bonus_power: 270
     mysekai_gate_levels: [0, 5, 10, 20, 30, 40]
+    # Ichika S/M/L
+    mysekai_fixture_crafted {
+    key: 342
+    value: true
+    }
+    mysekai_fixture_crafted {
+    key: 343
+    value: true
+    }
+    mysekai_fixture_crafted {
+    key: 344
+    value: true
+    }
+    # Saki S/M/L
+    mysekai_fixture_crafted {
+    key: 345
+    value: false
+    }
+    mysekai_fixture_crafted {
+    key: 346
+    value: false
+    }
+    mysekai_fixture_crafted {
+    key: 347
+    value: true
+    }
   )pb");
   // clang-format on
 }
@@ -208,6 +235,19 @@ TEST(ProfileTest, CheckTestProfileUnitBonus) {
                                       BonusRateIs(FloatEq(10), FloatEq(20)),  // 25ji
                                       BonusRateIs(FloatEq(15), FloatEq(30))   // VS
                                       ));
+}
+
+TEST(ProfileTest, CheckTestProfileFixtureBonus) {
+  Profile profile(TestProfile());
+  std::vector<float> fixture_bonus = {profile.mysekai_fixture_bonus().begin(),
+                                      profile.mysekai_fixture_bonus().end()};
+  EXPECT_EQ(fixture_bonus.size(), kCharacterArraySize);
+  EXPECT_EQ(fixture_bonus[0], 0);
+  EXPECT_EQ(fixture_bonus[1], 1 + 3 + 6);
+  EXPECT_EQ(fixture_bonus[2], 6);
+  for (int i = 3; i < kCharacterArraySize; ++i) {
+    EXPECT_EQ(fixture_bonus[i], 0) << i;
+  }
 }
 
 TEST(ProfileTest, CheckTestProfileGateBonus) {
