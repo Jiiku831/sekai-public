@@ -483,5 +483,56 @@ TEST(CardTest, ApplyProfileGateBonusSubunitlessVS) {
   EXPECT_EQ(card.precomputed_power(false, false, false), 61539 + 1500 + 271);
 }
 
+TEST(CardTest, ApplyProfileFixtureBonus) {
+  // Miku
+  CardState state;
+  state.set_level(60);
+  state.add_card_episodes_read(1015);
+  state.add_card_episodes_read(1016);
+  state.set_master_rank(5);
+  state.set_special_training(true);
+  state.set_canvas_crafted(true);
+  Card card{MasterDb::FindFirst<db::Card>(509), state};
+
+  ProfileProto profile_proto = TestProfile();
+  (*profile_proto.mutable_mysekai_fixture_crafted())[402] = true;
+  (*profile_proto.mutable_mysekai_fixture_crafted())[403] = false;
+  (*profile_proto.mutable_mysekai_fixture_crafted())[404] = true;
+  Profile profile(profile_proto);
+  card.ApplyProfilePowerBonus(profile);
+  EXPECT_EQ(card.fixture_power_bonus(), 271);
+  EXPECT_EQ(card.power() + card.unboosted_power(), 38797);
+  EXPECT_EQ(card.precomputed_power(false, false, false), 61539 + 1500 + 271);
+}
+
+TEST(CardTest, ApplyProfileFixtureAndGateBonus) {
+  // Miku
+  CardState state;
+  state.set_level(60);
+  state.add_card_episodes_read(1015);
+  state.add_card_episodes_read(1016);
+  state.set_master_rank(5);
+  state.set_special_training(true);
+  state.set_canvas_crafted(true);
+  Card card{MasterDb::FindFirst<db::Card>(509), state};
+
+  ProfileProto profile_proto = TestProfile();
+  (*profile_proto.mutable_mysekai_fixture_crafted())[402] = true;
+  (*profile_proto.mutable_mysekai_fixture_crafted())[403] = false;
+  (*profile_proto.mutable_mysekai_fixture_crafted())[404] = true;
+  profile_proto.mutable_mysekai_gate_levels()->Resize(6, 0);
+  profile_proto.set_mysekai_gate_levels(1, 1);
+  profile_proto.set_mysekai_gate_levels(2, 2);
+  profile_proto.set_mysekai_gate_levels(3, 7);  // Use highest level gate
+  profile_proto.set_mysekai_gate_levels(4, 4);
+  profile_proto.set_mysekai_gate_levels(5, 3);
+  Profile profile(profile_proto);
+  card.ApplyProfilePowerBonus(profile);
+  EXPECT_EQ(card.gate_power_bonus(), 271);
+  EXPECT_EQ(card.fixture_power_bonus(), 271);
+  EXPECT_EQ(card.power() + card.unboosted_power(), 38797);
+  EXPECT_EQ(card.precomputed_power(false, false, false), 61539 + 1500 + 271 + 271);
+}
+
 }  // namespace
 }  // namespace sekai

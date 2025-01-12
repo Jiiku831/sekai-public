@@ -67,6 +67,7 @@ Eigen::Vector<int, Team::kPowerDetailComponents> Team::PowerDetailed(const Profi
   int base_power = 0;
   int area_item_bonus = 0;
   int character_rank_bonus = 0;
+  int fixture_bonus = 0;
   int gate_bonus = 0;
 
   bool attr_match = (attrs_.count() == 1);
@@ -78,11 +79,13 @@ Eigen::Vector<int, Team::kPowerDetailComponents> Team::PowerDetailed(const Profi
     area_item_bonus +=
         card->area_item_power_bonus(attr_match, primary_units_match, secondary_units_match);
     character_rank_bonus += card->cr_power_bonus();
+    fixture_bonus += card->fixture_power_bonus();
     gate_bonus += card->gate_power_bonus();
   }
 
-  return Eigen::Vector<int, kPowerDetailComponents>{
-      base_power, area_item_bonus, character_rank_bonus, profile.bonus_power(), gate_bonus};
+  return Eigen::Vector<int, kPowerDetailComponents>{base_power,           area_item_bonus,
+                                                    character_rank_bonus, profile.bonus_power(),
+                                                    fixture_bonus,        gate_bonus};
 }
 
 int Team::MinPowerContrib(const Profile& profile) const {

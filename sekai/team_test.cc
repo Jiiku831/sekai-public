@@ -219,7 +219,7 @@ TEST_F(TeamTest, ExampleTeam1Power) {
   };
   Team team = MakeTeam(cards);
   // Actual area item bonus is 97097
-  std::array expected = {174455, 97100, 7925, 270, 0};
+  std::array expected = {174455, 97100, 7925, 270, 0, 0};
   EXPECT_THAT(team.PowerDetailed(alt_profile_), Pointwise(Eq(), expected));
   // Actual power is 279747
   EXPECT_EQ(team.Power(alt_profile_), 279750);
@@ -241,7 +241,7 @@ TEST_F(TeamTest, ExampleTeam1PowerWithCanvas) {
   };
   Team team = MakeTeam(cards);
   // Actual area item bonus is 97097
-  std::array expected = {174455 + 1500 * 5, 97100, 7925, 270, 0};
+  std::array expected = {174455 + 1500 * 5, 97100, 7925, 270, 0, 0};
   EXPECT_THAT(team.PowerDetailed(alt_profile_), Pointwise(Eq(), expected));
   // Actual power is 279747
   EXPECT_EQ(team.Power(alt_profile_), 279750 + 1500 * 5);
@@ -258,7 +258,7 @@ TEST_F(TeamTest, ExampleTeam2Power) {
   };
   Team team = MakeTeam(cards);
   // Actual area item bonus is 99142
-  std::array expected = {170495, 99142, 8514, 270, 0};
+  std::array expected = {170495, 99142, 8514, 270, 0, 0};
   EXPECT_THAT(team.PowerDetailed(profile_), Pointwise(Eq(), expected));
   // Actual team power is 278421
   EXPECT_EQ(team.Power(profile_), 278421);
@@ -275,7 +275,7 @@ TEST_F(TeamTest, ExampleTeam3Power) {
   };
   Team team = MakeTeam(cards);
   // Actual area item bonus is 95380
-  std::array expected = {176264, 95381, 8282, 270, 0};
+  std::array expected = {176264, 95381, 8282, 270, 0, 0};
   EXPECT_THAT(team.PowerDetailed(profile_), Pointwise(Eq(), expected));
   // Actual team power is 280196
   EXPECT_EQ(team.Power(profile_), 280197);
@@ -292,7 +292,7 @@ TEST_F(TeamTest, ExampleTeam4Power) {
   };
   Team team = MakeTeam(cards);
   // Actual area item bonus is 115109
-  std::array expected = {154589, 115112, 7719, 270, 0};
+  std::array expected = {154589, 115112, 7719, 270, 0, 0};
   EXPECT_THAT(team.PowerDetailed(profile_), Pointwise(Eq(), expected));
   // Actual team power is 277687
   EXPECT_EQ(team.Power(profile_), 277690);
@@ -309,7 +309,7 @@ TEST_F(TeamTest, ExampleTeam5Power) {
   };
   Team team = MakeTeam(cards);
   // Actual area item bonus is 159725
-  std::array expected = {177477, 159725, 8865, 270, 0};
+  std::array expected = {177477, 159725, 8865, 270, 0, 0};
   EXPECT_THAT(team.PowerDetailed(profile_), Pointwise(Eq(), expected));
   // Actual team power is 346337
   EXPECT_EQ(team.Power(profile_), 346337);
@@ -332,11 +332,47 @@ TEST_F(TeamTest, ExampleTeam6Power) {
   Team team = MakeTeam(cards);
   // Actual area item bonus is 168356
   // Actual CR bonus is 9436
-  std::array expected = {194573, 168360, 9347, 270, 0};
+  std::array expected = {194573, 168360, 9347, 270, 0, 0};
   EXPECT_THAT(team.PowerDetailed(alt_profile_), Pointwise(Eq(), expected));
   // Actual power is 372545
   EXPECT_EQ(team.Power(alt_profile_), 194573 + 168360 + 9347 + 270);
   EXPECT_EQ(team.Power(alt_profile_), team.PowerDetailed(alt_profile_).sum());
+}
+
+TEST_F(TeamTest, ExampleTeam6PowerWithFixtureBonus) {
+  ProfileProto profile_proto = AltTestProfile();
+  profile_proto.mutable_mysekai_gate_levels()->Resize(6, 0);
+  profile_proto.set_mysekai_gate_levels(1, 7);
+  profile_proto.set_mysekai_gate_levels(2, 2);
+  profile_proto.set_mysekai_gate_levels(3, 2);
+  profile_proto.set_mysekai_gate_levels(4, 2);
+  profile_proto.set_mysekai_gate_levels(5, 2);
+  (*profile_proto.mutable_mysekai_fixture_crafted())[402] = true;
+  (*profile_proto.mutable_mysekai_fixture_crafted())[403] = false;
+  (*profile_proto.mutable_mysekai_fixture_crafted())[404] = true;
+  Profile profile{profile_proto};
+  std::array cards = {
+      CreateCard(profile, /*card_id=*/509, /*level=*/60, /*master_rank=*/5, /*skill_level=*/4,
+                 /*canvas_crafted=*/true),
+      CreateCard(profile, /*card_id=*/875, /*level=*/60, /*master_rank=*/5, /*skill_level=*/4,
+                 /*canvas_crafted=*/true),
+      CreateCard(profile, /*card_id=*/198, /*level=*/60, /*master_rank=*/5, /*skill_level=*/4,
+                 /*canvas_crafted=*/true),
+      CreateCard(profile, /*card_id=*/149, /*level=*/60, /*master_rank=*/5, /*skill_level=*/4,
+                 /*canvas_crafted=*/true),
+      CreateCard(profile, /*card_id=*/126, /*level=*/60, /*master_rank=*/5, /*skill_level=*/4,
+                 /*canvas_crafted=*/true),
+  };
+  Team team = MakeTeam(cards);
+  // Actual area item bonus is 168356
+  // Actual CR bonus is 9436
+  // Actual fixture bonus is 1359
+  // Actual gate bonus is 776
+  std::array expected = {194573, 168360, 9347, 270, 1359, 776};
+  EXPECT_THAT(team.PowerDetailed(profile), Pointwise(Eq(), expected));
+  // Actual power is 374710
+  EXPECT_EQ(team.Power(profile), 194573 + 168360 + 9347 + 270 + 1359 + 776);
+  EXPECT_EQ(team.Power(profile), team.PowerDetailed(profile).sum());
 }
 
 TEST_F(TeamTest, ExampleTeam6PowerWithGateBonus) {
@@ -364,7 +400,7 @@ TEST_F(TeamTest, ExampleTeam6PowerWithGateBonus) {
   // Actual area item bonus is 168356
   // Actual CR bonus is 9436
   // Actual gate bonus is 776
-  std::array expected = {194573, 168360, 9347, 270, 776};
+  std::array expected = {194573, 168360, 9347, 270, 0, 776};
   EXPECT_THAT(team.PowerDetailed(profile), Pointwise(Eq(), expected));
   // Actual power is 374710
   EXPECT_EQ(team.Power(profile), 194573 + 168360 + 9347 + 270 + 776);

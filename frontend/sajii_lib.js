@@ -818,7 +818,8 @@ function RenderTeamImpl(teamIndex, context) {
     `- Area Item:   ${context.powerDetailed[1].toLocaleString().padStart(7)}\n` +
     `- Char Rank:   ${context.powerDetailed[2].toLocaleString().padStart(7)}\n` +
     `- Titles:      ${context.powerDetailed[3].toLocaleString().padStart(7)}\n` +
-    `- Gates:       ${context.powerDetailed[4].toLocaleString().padStart(7)}\n` +
+    `- Furnitures:  ${context.powerDetailed[4].toLocaleString().padStart(7)}\n` +
+    `- Gates:       ${context.powerDetailed[5].toLocaleString().padStart(7)}\n` +
     `Skill Value:   ${context.skillValue.toLocaleString().padStart(6)}%\n` +
     `Event Bonus:   ${context.eventBonus.toLocaleString().padStart(6)}%\n` +
     `Est. EP:       ${context.expectedEp.toLocaleString().padStart(7)}\n`;

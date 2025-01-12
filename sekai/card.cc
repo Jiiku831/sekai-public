@@ -180,6 +180,10 @@ void Card::ApplyProfilePowerBonus(const ProfileBonus& profile) {
   float char_power_factor = profile.char_bonus()[character_id_].rate / 100;
   float cr_power_factor = profile.cr_bonus()[character_id_].rate / 100;
   cr_power_bonus_ = (power_vec_.cast<float>() * cr_power_factor).cast<int>().sum();
+  float fixture_power_factor =
+      static_cast<float>(profile.mysekai_fixture_bonus()[character_id_]) / 1000;
+  fixture_power_bonus_ =
+      static_cast<int>((power_vec_ + unboosted_power_vec_).sum() * fixture_power_factor);
   float gate_power_factor = profile.mysekai_gate_bonus()[db_primary_unit_] / 100;
   gate_power_bonus_ =
       static_cast<int>((power_vec_ + unboosted_power_vec_).sum() * gate_power_factor);
@@ -198,7 +202,8 @@ void Card::ApplyProfilePowerBonus(const ProfileBonus& profile) {
         area_item_bonus_[attr_matching][primary_unit_matching][secondary_unit_matching] =
             area_item_bonus;
         precomputed_power_[attr_matching][primary_unit_matching][secondary_unit_matching] =
-            power_ + unboosted_power_ + cr_power_bonus_ + area_item_bonus + gate_power_bonus_;
+            power_ + unboosted_power_ + cr_power_bonus_ + area_item_bonus + fixture_power_bonus_ +
+            gate_power_bonus_;
       }
     }
   }
