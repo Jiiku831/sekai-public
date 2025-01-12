@@ -14,6 +14,7 @@
 #include "sekai/character.h"
 #include "sekai/db/master_db.h"
 #include "sekai/db/proto/all.h"
+#include "sekai/max_level.h"
 #include "sekai/proto/world_bloom.pb.h"
 
 namespace frontend {
@@ -31,6 +32,7 @@ using ::sekai::db::CardRarityType;
 using ::sekai::db::Event;
 using ::sekai::db::GameCharacter;
 using ::sekai::db::MasterDb;
+using ::sekai::db::MySekaiGate;
 using ::sekai::db::Unit;
 using ::sekai::db::WorldBloom;
 
@@ -189,12 +191,25 @@ std::vector<PowerBonusContext::AreaContext> CreateAreaContext() {
     context->set_display_text(area_item.name());
     context->set_area_id(area_item.area_id());
     context->set_area_item_id(area_item.id());
+    context->set_max_level(sekai::kMaxAreaItemLevel);
   }
   std::vector<PowerBonusContext::AreaContext> flattened_groups;
   for (const auto& [unused, group] : groups) {
     flattened_groups.push_back(group);
   }
   return flattened_groups;
+}
+
+std::vector<MySekaiGateContext> CreateMySekaiGateContexts() {
+  std::vector<MySekaiGateContext> contexts;
+  for (const MySekaiGate& gate : MasterDb::GetAll<MySekaiGate>()) {
+    MySekaiGateContext context;
+    context.set_display_text(gate.name());
+    context.set_gate_id(gate.id());
+    context.set_max_level(sekai::kMaxMySekaiGateLevel);
+    contexts.push_back(context);
+  }
+  return contexts;
 }
 
 CardContext CreateCardContext(const Card& card, std::optional<int> thumbnail_res, bool trained,

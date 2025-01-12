@@ -104,8 +104,14 @@ message AreaItemContext {
   optional string display_text = 1;
   optional int32 area_item_id  = 2;
   optional int32 area_id       = 3;
-  // TODO: add max level
+  optional int32 max_level     = 4;
   // TODO: add thumbnail
+}
+
+message MySekaiGateContext {
+  optional string display_text = 1;
+  optional int32 gate_id       = 2;
+  optional int32 max_level     = 3;
 }
 
 message PowerBonusContext {
@@ -113,8 +119,9 @@ message PowerBonusContext {
     optional string display_text        = 1;
     repeated AreaItemContext area_items = 2;
   }
-  repeated AreaContext areas               = 1;
-  repeated CharacterContextGroup char_rows = 2;
+  repeated AreaContext areas                 = 1;
+  repeated CharacterContextGroup char_rows   = 2;
+  repeated MySekaiGateContext my_sekai_gates = 3;
 }
 
 message KizunaContext {

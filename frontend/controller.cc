@@ -34,6 +34,7 @@
 #include "sekai/db/proto/all.h"
 #include "sekai/estimator.h"
 #include "sekai/event_bonus.h"
+#include "sekai/max_level.h"
 #include "sekai/parking.h"
 #include "sekai/profile.h"
 #include "sekai/proto/card_state.pb.h"
@@ -79,6 +80,7 @@ using ::sekai::db::CardRarityType;
 using ::sekai::db::Event;
 using ::sekai::db::GameCharacter;
 using ::sekai::db::MasterDb;
+using ::sekai::db::MySekaiGate;
 using ::sekai::db::Unit;
 
 EM_JS(void, SetCardVisibility, (const char * element_id, bool state), {
@@ -143,6 +145,10 @@ EM_JS(void, SetCardEpisode2, (int card_id, bool state), {
 
 EM_JS(void, SetAreaItemLevel, (int area_item_id, int level), {
   document.getElementById(`area-item-${area_item_id}`).value = level;
+});
+
+EM_JS(void, SetMySekaiGateLevel, (int gate_id, int level), {
+  document.getElementById(`mysekai-gate-${gate_id}`).value = level;
 });
 
 EM_JS(void, SetCharacterRankLevel, (int char_id, int level), {
@@ -245,6 +251,9 @@ void ResetView() {
   for (const AreaItem& area_item : MasterDb::GetAll<AreaItem>()) {
     SetAreaItemLevel(area_item.id(), 0);
   }
+  for (const MySekaiGate& gate : MasterDb::GetAll<MySekaiGate>()) {
+    SetMySekaiGateLevel(gate.id(), 0);
+  }
   SetTitleBonus(0);
 
   SetSelectedEventDropdown(0, 0);
@@ -292,6 +301,10 @@ void ResetView(const ProfileProto& profile) {
 
   for (const AreaItem& area_item : MasterDb::GetAll<AreaItem>()) {
     SetAreaItemLevel(area_item.id(), profile.area_item_levels(area_item.id()));
+  }
+
+  for (const MySekaiGate& gate : MasterDb::GetAll<MySekaiGate>()) {
+    SetMySekaiGateLevel(gate.id(), profile.mysekai_gate_levels(gate.id()));
   }
 
   SetSelectedEventDropdown(profile.event_id().event_id(), profile.event_id().chapter_id());
@@ -437,12 +450,24 @@ void Controller::SetOwnedCardsFilterState(bool state) {
 }
 
 void Controller::SetAreaItemLevel(int area_item_id, int level) {
-  if (level < 0 || level > 15 || area_item_id >= profile_proto_.area_item_levels_size()) {
-    LOG(ERROR) << "Invalid area item: " << area_item_id;
+  if (level < 0 || level > sekai::kMaxAreaItemLevel || area_item_id < 0 ||
+      area_item_id >= profile_proto_.area_item_levels_size()) {
+    LOG(ERROR) << "Invalid area item: " << area_item_id << " level " << level;
     return;
   }
   if (profile_proto_.area_item_levels(area_item_id) == level) return;
   profile_proto_.set_area_item_levels(area_item_id, level);
+  UpdateProfile();
+}
+
+void Controller::SetMySekaiGateLevel(int gate_id, int level) {
+  if (level < 0 || level > sekai::kMaxMySekaiGateLevel || gate_id < 0 ||
+      gate_id >= profile_proto_.mysekai_gate_levels_size()) {
+    LOG(ERROR) << "Invalid gate: " << gate_id << " level " << level;
+    return;
+  }
+  if (profile_proto_.mysekai_gate_levels(gate_id) == level) return;
+  profile_proto_.set_mysekai_gate_levels(gate_id, level);
   UpdateProfile();
 }
 
@@ -1060,6 +1085,7 @@ EMSCRIPTEN_BINDINGS(controller) {
       .function("SetKizunaConstraint", &Controller::SetKizunaConstraint)
       .function("SetLeadConstraint", &Controller::SetLeadConstraint)
       .function("SetMinLeadSkill", &Controller::SetMinLeadSkill)
+      .function("SetMySekaiGateLevel", &Controller::SetMySekaiGateLevel)
       .function("SetOwnedCardsFilterState", &Controller::SetOwnedCardsFilterState)
       .function("SetParkAccuracy", &Controller::SetParkAccuracy)
       .function("SetRarityFilterState", &Controller::SetRarityFilterState)

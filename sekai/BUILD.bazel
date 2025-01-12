@@ -322,6 +322,27 @@ cc_test(
 )
 
 cc_library(
+    name = "max_level",
+    hdrs = ["max_level.h"],
+)
+
+cc_test(
+    name = "max_level_test",
+    srcs = ["max_level_test.cc"],
+    data = [
+        "//data:flat-db",
+    ],
+    deps = [
+        ":max_level",
+        "//sekai/db:master_db",
+        "//sekai/db/proto:all",
+        "//testing:test_main",
+        "//testing:util",
+        "@googletest//:gtest",
+    ],
+)
+
+cc_library(
     name = "parking",
     srcs = ["parking.cc"],
     hdrs = ["parking.h"],
