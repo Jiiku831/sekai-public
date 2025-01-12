@@ -4,18 +4,18 @@ package sekai.db;
 
 import "sekai/db/proto/descriptor.proto";
 
-message MysekaiFixture {
+message MySekaiFixture {
   option (master_db_file) = "mysekaiFixtures.json";
   enum MysekaiFixtureType {
     UNKNOWN_MYSEKAI_FIXTURE_TYPE = 0;
-    CANVAS                       = 1 [(json_value) = "canvas"];
-    CUSTOM                       = 2 [(json_value) = "custom"];
-    GATE                         = 3 [(json_value) = "gate"];
-    HOUSE_PLANT                  = 4 [(json_value) = "house_plant"];
-    NORMAL                       = 5 [(json_value) = "normal"];
-    PLANT                        = 6 [(json_value) = "plant"];
-    SURFACE_APPEARANCE           = 7 [(json_value) = "surface_appearance"];
-    SYSTEM                       = 8 [(json_value) = "system"];
+    FIXTURE_CANVAS               = 1 [(json_value) = "canvas"];
+    FIXTURE_CUSTOM               = 2 [(json_value) = "custom"];
+    FIXTURE_GATE                 = 3 [(json_value) = "gate"];
+    FIXTURE_HOUSE_PLANT          = 4 [(json_value) = "house_plant"];
+    FIXTURE_NORMAL               = 5 [(json_value) = "normal"];
+    FIXTURE_PLANT                = 6 [(json_value) = "plant"];
+    FIXTURE_SURFACE_APPEARANCE   = 7 [(json_value) = "surface_appearance"];
+    FIXTURE_SYSTEM               = 8 [(json_value) = "system"];
   }
 
   message GridSize {
@@ -26,29 +26,29 @@ message MysekaiFixture {
 
   enum MysekaiFixtureHandleType {
     UNKNOWN_MYSEKAI_FIXTURE_HANDLE_TYPE = 0;
-    CLOCK                               = 1 [(json_value) = "clock"];
-    FENCE                               = 2 [(json_value) = "fence"];
-    LIGHT                               = 3 [(json_value) = "light"];
-    NONE                                = 4 [(json_value) = "none"];
-    ROAD                                = 5 [(json_value) = "road"];
-    WINDOWPANE                          = 6 [(json_value) = "windowpane"];
+    HANDLE_CLOCK                        = 1 [(json_value) = "clock"];
+    HANDLE_FENCE                        = 2 [(json_value) = "fence"];
+    HANDLE_LIGHT                        = 3 [(json_value) = "light"];
+    HANDLE_NONE                         = 4 [(json_value) = "none"];
+    HANDLE_ROAD                         = 5 [(json_value) = "road"];
+    HANDLE_WINDOWPANE                   = 6 [(json_value) = "windowpane"];
   }
 
   enum MysekaiSettableSiteType {
     UNKNOWN_MYSEKAI_SETTABLE_SITE_TYPE = 0;
-    ANY                                = 1 [(json_value) = "any"];
-    HOME                               = 2 [(json_value) = "home"];
-    ROOM                               = 3 [(json_value) = "room"];
+    SITE_ANY                           = 1 [(json_value) = "any"];
+    SITE_HOME                          = 2 [(json_value) = "home"];
+    SITE_ROOM                          = 3 [(json_value) = "room"];
   }
 
   enum MysekaiSettableLayoutType {
     UNKNOWN_MYSEKAI_SETTABLE_LAYOUT_TYPE = 0;
-    FLOOR                                = 1 [(json_value) = "floor"];
-    FLOOR_APPEARANCE                     = 2 [(json_value) = "floor_appearance"];
-    ROAD                                 = 3 [(json_value) = "road"];
-    RUG                                  = 4 [(json_value) = "rug"];
-    WALL                                 = 5 [(json_value) = "wall"];
-    WALL_APPEARANCE                      = 6 [(json_value) = "wall_appearance"];
+    LAYOUT_FLOOR                         = 1 [(json_value) = "floor"];
+    LAYOUT_FLOOR_APPEARANCE              = 2 [(json_value) = "floor_appearance"];
+    LAYOUT_ROAD                          = 3 [(json_value) = "road"];
+    LAYOUT_RUG                           = 4 [(json_value) = "rug"];
+    LAYOUT_WALL                          = 5 [(json_value) = "wall"];
+    LAYOUT_WALL_APPEARANCE               = 6 [(json_value) = "wall_appearance"];
   }
 
   enum MysekaiFixturePutType {
@@ -79,7 +79,7 @@ message MysekaiFixture {
     optional string color_code = 2 [(json_name) = "colorCode"];
   }
 
-  optional int32 id                                               = 1 [(json_name) = "id"];
+  optional int32 id                                               = 1 [(json_name) = "id", (primary_key) = true];
   optional MysekaiFixtureType mysekai_fixture_type                = 2 [(json_name) = "mysekaiFixtureType"];
   optional string name                                            = 3 [(json_name) = "name"];
   optional string pronunciation                                   = 4 [(json_name) = "pronunciation"];

@@ -32,6 +32,12 @@ cc_library(
         ":music_cc_proto",
         ":music_meta_cc_proto",
         ":music_vocal_cc_proto",
+        ":mysekai_fixture_cc_proto",
+        ":mysekai_fixture_game_character_group_cc_proto",
+        ":mysekai_fixture_game_character_group_performance_bonus_cc_proto",
+        ":mysekai_fixture_game_character_performance_bonus_limit_cc_proto",
+        ":mysekai_gate_cc_proto",
+        ":mysekai_gate_level_cc_proto",
         ":records_cc_proto",
         ":server_cc_proto",
         ":skill_cc_proto",
@@ -3444,7 +3450,10 @@ cc_proto_library(
 proto_library(
     name = "mysekai_gate_proto",
     srcs = ["mysekai_gate.proto"],
-    deps = [":descriptor_proto"],
+    deps = [
+        ":descriptor_proto",
+        ":enums_proto",
+    ],
 )
 
 cc_proto_library(

@@ -3,10 +3,11 @@ syntax = "proto3";
 package sekai.db;
 
 import "sekai/db/proto/descriptor.proto";
-message MysekaiGateLevel {
+
+message MySekaiGateLevel {
   option (master_db_file)                                   = "mysekaiGateLevels.json";
   optional int32 id                                         = 1 [(json_name) = "id"];
-  optional int32 mysekai_gate_id                            = 2 [(json_name) = "mysekaiGateId"];
+  optional int32 mysekai_gate_id                            = 2 [(json_name) = "mysekaiGateId", (primary_key) = true];
   optional int32 level                                      = 3 [(json_name) = "level"];
   optional int32 mysekai_gate_material_group_id             = 4 [(json_name) = "mysekaiGateMaterialGroupId"];
   optional int32 mysekai_gate_character_visit_count_rate_id = 5 [(json_name) = "mysekaiGateCharacterVisitCountRateId"];

@@ -63,10 +63,12 @@ int Team::Power(const Profile& profile) const {
   return power;
 }
 
-Eigen::Vector4i Team::PowerDetailed(const Profile& profile) const {
+Eigen::Vector<int, Team::kPowerDetailComponents> Team::PowerDetailed(const Profile& profile) const {
   int base_power = 0;
   int area_item_bonus = 0;
   int character_rank_bonus = 0;
+  int fixture_bonus = 0;
+  int gate_bonus = 0;
 
   bool attr_match = (attrs_.count() == 1);
   bool primary_units_match = (primary_units_.count() == 1);
@@ -77,14 +79,13 @@ Eigen::Vector4i Team::PowerDetailed(const Profile& profile) const {
     area_item_bonus +=
         card->area_item_power_bonus(attr_match, primary_units_match, secondary_units_match);
     character_rank_bonus += card->cr_power_bonus();
+    fixture_bonus += card->fixture_power_bonus();
+    gate_bonus += card->gate_power_bonus();
   }
 
-  return Eigen::Vector4i{
-      base_power,
-      area_item_bonus,
-      character_rank_bonus,
-      profile.bonus_power(),
-  };
+  return Eigen::Vector<int, kPowerDetailComponents>{base_power,           area_item_bonus,
+                                                    character_rank_bonus, profile.bonus_power(),
+                                                    fixture_bonus,        gate_bonus};
 }
 
 int Team::MinPowerContrib(const Profile& profile) const {
@@ -239,7 +240,7 @@ TeamProto Team::ToProto(const Profile& profile, const class EventBonus& event_bo
   team.set_event_bonus(EventBonus(event_bonus));
   team.set_skill_value(SkillValue());
   estimator.AnnotateTeamProto(profile, event_bonus, *this, team);
-  Eigen::Vector4i power_detailed = PowerDetailed(profile);
+  Eigen::Vector<int, kPowerDetailComponents> power_detailed = PowerDetailed(profile);
   *team.mutable_power_detailed() = {power_detailed.begin(), power_detailed.end()};
   if (!support_cards_.empty()) {
     team.set_support_bonus(support_bonus);

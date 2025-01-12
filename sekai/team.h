@@ -31,7 +31,8 @@ class Team {
   std::span<const Card* const> cards() const { return cards_; }
 
   int Power(const Profile& profile) const;
-  Eigen::Vector4i PowerDetailed(const Profile& profile) const;
+  static constexpr int kPowerDetailComponents = 6;
+  Eigen::Vector<int, kPowerDetailComponents> PowerDetailed(const Profile& profile) const;
   int MinPowerContrib(const Profile& profile) const;
 
   float EventBonus(const class EventBonus& event_bonus) const;

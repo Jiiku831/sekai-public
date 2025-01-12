@@ -3,9 +3,10 @@ syntax = "proto3";
 package sekai.db;
 
 import "sekai/db/proto/descriptor.proto";
-message MysekaiFixtureGameCharacterGroup {
+
+message MySekaiFixtureGameCharacterGroup {
   option (master_db_file)          = "mysekaiFixtureGameCharacterGroups.json";
   optional int32 id                = 1 [(json_name) = "id"];
-  optional int32 group_id          = 2 [(json_name) = "groupId"];
+  optional int32 group_id          = 2 [(json_name) = "groupId", (primary_key) = true];
   optional int32 game_character_id = 3 [(json_name) = "gameCharacterId"];
 }
