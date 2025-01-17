@@ -35,7 +35,7 @@ constexpr Version<4> kAnni2AssetVersion({2, 0, 0, 0});
 constexpr Version<4> kAnni3AssetVersion({3, 0, 0, 0});
 constexpr Version<4> kEndOfWlAssetVersion({3, 8, 0, 30});
 constexpr Version<4> kAnni4AssetVersion({4, 0, 0, 0});
-constexpr Version<4> kMovieAssetVersion({5, 0, 0, 0});  // TODO: set to actual
+constexpr Version<4> kMovieAssetVersion({5, 0, 0, 21});
 
 absl::Time Get4thAnniUncapResetTime() {
   return absl::FromCivil(absl::CivilSecond(2024, 9, 27, 19, 0, 0), absl::UTCTimeZone());
