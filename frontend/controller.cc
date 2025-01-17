@@ -115,51 +115,111 @@ EM_JS(void, RenderTeam, (int team_index, const char * context), {
 
 // clang-format off
 EM_JS(void, SetCardOwnership, (int card_id, bool state), {
-  document.getElementById(`card-list-owned-${card_id}`).checked = state;
+  const elem = document.getElementById(`card-list-owned-${card_id}`);
+  if (elem) {
+    elem.checked = state;
+  } else {
+    console.warn(`Card ${card_id} not found in card list`);
+  }
 });
 
 EM_JS(void, SetCardLevel, (int card_id, int level), {
-  document.getElementById(`card-list-level-${card_id}`).value = level;
+  const elem = document.getElementById(`card-list-level-${card_id}`);
+  if (elem) {
+    elem.value = level;
+  } else {
+    console.warn(`Card ${card_id} not found in card list`);
+  }
 });
 
 EM_JS(void, SetCardMasterRank, (int card_id, int level), {
-  document.getElementById(`card-list-master-rank-${card_id}`).value = level;
+  const elem = document.getElementById(`card-list-master-rank-${card_id}`);
+  if (elem) {
+    elem.value = level;
+  } else {
+    console.warn(`Card ${card_id} not found in card list`);
+  }
 });
 
 EM_JS(void, SetCardSkillLevel, (int card_id, int level), {
-  document.getElementById(`card-list-skill-level-${card_id}`).value = level;
+  const elem = document.getElementById(`card-list-skill-level-${card_id}`);
+  if (elem) {
+    elem.value = level;
+  } else {
+    console.warn(`Card ${card_id} not found in card list`);
+  }
 });
 
 EM_JS(void, SetCardTrained, (int card_id, bool state), {
-  document.getElementById(`card-list-trained-${card_id}`).checked = state;
+  const elem = document.getElementById(`card-list-trained-${card_id}`);
+  if (elem) {
+    elem.checked = state;
+  } else {
+    console.warn(`Card ${card_id} not found in card list`);
+  }
 });
 
 EM_JS(void, SetCardCanvasCrafted, (int card_id, bool state), {
-  document.getElementById(`card-list-canvas-crafted-${card_id}`).checked = state;
+  const elem = document.getElementById(`card-list-canvas-crafted-${card_id}`);
+  if (elem) {
+    elem.checked = state;
+  } else {
+    console.warn(`Card ${card_id} not found in card list`);
+  }
 });
 
 EM_JS(void, SetCardEpisode1, (int card_id, bool state), {
-  document.getElementById(`card-list-episode-1-${card_id}`).checked = state;
+  const elem = document.getElementById(`card-list-episode-1-${card_id}`);
+  if (elem) {
+    elem.checked = state;
+  } else {
+    console.warn(`Card ${card_id} not found in card list`);
+  }
 });
 
 EM_JS(void, SetCardEpisode2, (int card_id, bool state), {
-  document.getElementById(`card-list-episode-2-${card_id}`).checked = state;
+  const elem = document.getElementById(`card-list-episode-2-${card_id}`);
+  if (elem) {
+    elem.checked = state;
+  } else {
+    console.warn(`Card ${card_id} not found in card list`);
+  }
 });
 
 EM_JS(void, SetAreaItemLevel, (int area_item_id, int level), {
-  document.getElementById(`area-item-${area_item_id}`).value = level;
+  const elem = document.getElementById(`area-item-${area_item_id}`);
+  if (elem) {
+    elem.value = level;
+  } else {
+    console.warn(`Area item ${area_item_id} not found`);
+  }
 });
 
 EM_JS(void, SetMySekaiFixtureCrafted, (int fixture_id, int state), {
-  document.getElementById(`mysekai-fixture-${fixture_id}`).checked = state;
+  const elem = document.getElementById(`mysekai-fixture-${fixture_id}`);
+  if (elem) {
+    elem.checked = state;
+  } else {
+    console.warn(`Fixture ${fixture_id} not found in card list`);
+  }
 });
 
 EM_JS(void, SetMySekaiGateLevel, (int gate_id, int level), {
-  document.getElementById(`mysekai-gate-${gate_id}`).value = level;
+  const elem = document.getElementById(`mysekai-gate-${gate_id}`);
+  if (elem) {
+    elem.value = level;
+  } else {
+    console.warn(`Gate ${gate_id} not found`);
+  }
 });
 
 EM_JS(void, SetCharacterRankLevel, (int char_id, int level), {
-  document.getElementById(`character-rank-${char_id}`).value = level;
+  const elem = document.getElementById(`character-rank-${char_id}`);
+  if (elem) {
+    elem.value = level;
+  } else {
+    console.warn(`Character rank for character ${char_id} not found`);
+  }
 });
 
 EM_JS(void, SetTitleBonus, (int value), {
@@ -225,10 +285,15 @@ EM_JS(void, SetSelectedEventDropdown, (int event_id, int chapter_id), {
 // clang-format on
 
 void UpdateCardState(int card_id, const CardState& state) {
+  const Card* card = MasterDb::SafeFindFirst<Card>(card_id);
+  if (card == nullptr) {
+    LOG(WARNING) << "Card " << card_id << " not found, skipping update.";
+    return;
+  }
   SetCardLevel(card_id, state.level());
   SetCardMasterRank(card_id, state.master_rank());
   SetCardSkillLevel(card_id, state.skill_level());
-  if (sekai::TrainableCard(MasterDb::FindFirst<Card>(card_id).card_rarity_type())) {
+  if (sekai::TrainableCard(card->card_rarity_type())) {
     SetCardTrained(card_id, state.special_training());
   }
   SetCardCanvasCrafted(card_id, state.canvas_crafted());
@@ -522,8 +587,12 @@ void Controller::OnProfileUpdate() {
   absl::SetFlag(&FLAGS_subunitless_offset, profile_proto_.use_old_subunitless_bonus() ? 10 : 0);
 
   if (profile_proto_.event_id().event_id() > 0) {
-    const Event& event = MasterDb::FindFirst<Event>(profile_proto_.event_id().event_id());
-    if (event.event_type() == Event::CHEERFUL_CARNIVAL) {
+    const Event* event = MasterDb::SafeFindFirst<Event>(profile_proto_.event_id().event_id());
+    if (event == nullptr) {
+      LOG(WARNING) << "Event " << profile_proto_.event_id().event_id()
+                   << " not found. Falling back to multi estimator.";
+      estimator_mode_ = sekai::Estimator::Mode::kMulti;
+    } else if (event->event_type() == Event::CHEERFUL_CARNIVAL) {
       estimator_mode_ = sekai::Estimator::Mode::kCheerful;
     } else {
       estimator_mode_ = sekai::Estimator::Mode::kMulti;

@@ -52,9 +52,10 @@ message Card {
   optional CardParameter card_parameters             = 18 [(json_name) = "cardParameters"];
   repeated MasterLessonAchieveResource master_lesson_achieve_resources = 19
       [(json_name) = "masterLessonAchieveResources"];
-  repeated SpecialTrainingCost special_training_costs = 20 [(json_name) = "specialTrainingCosts"];
-  optional ArchiveDisplayType archive_display_type    = 21 [(json_name) = "archiveDisplayType"];
-  optional int32 special_training_skill_id            = 22 [(json_name) = "specialTrainingSkillId"];
-  optional string special_training_skill_name         = 23 [(json_name) = "specialTrainingSkillName"];
-  optional int32 card_supply_id                       = 24 [(json_name) = "cardSupplyId"];
+  repeated SpecialTrainingCost special_training_costs    = 20 [(json_name) = "specialTrainingCosts"];
+  optional ArchiveDisplayType archive_display_type       = 21 [(json_name) = "archiveDisplayType"];
+  optional int32 special_training_skill_id               = 22 [(json_name) = "specialTrainingSkillId"];
+  optional string special_training_skill_name            = 23 [(json_name) = "specialTrainingSkillName"];
+  optional int32 card_supply_id                          = 24 [(json_name) = "cardSupplyId"];
+  optional int32 special_training_reward_resource_box_id = 25 [(json_name) = "specialTrainingRewardResourceBoxId"];
 }
