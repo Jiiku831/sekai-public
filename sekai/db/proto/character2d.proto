@@ -14,11 +14,12 @@ message Character2D {
     SUB_GAME_CHARACTER     = 3 [(json_value) = "sub_game_character"];
   }
 
-  optional int32 id                     = 1 [(json_name) = "id", (primary_key) = true];
-  optional CharacterType character_type = 2 [(json_name) = "characterType"];
-  optional bool is_next_grade           = 3 [(json_name) = "isNextGrade"];
-  optional int32 character_id           = 4 [(json_name) = "characterId"];
-  optional Unit unit                    = 5 [(json_name) = "unit"];
-  optional bool is_enabled_flip_display = 6 [(json_name) = "isEnabledFlipDisplay"];
-  optional string asset_name            = 7 [(json_name) = "assetName"];
+  optional int32 id                               = 1 [(json_name) = "id", (primary_key) = true];
+  optional CharacterType character_type           = 2 [(json_name) = "characterType"];
+  optional bool is_next_grade                     = 3 [(json_name) = "isNextGrade"];
+  optional int32 character_id                     = 4 [(json_name) = "characterId"];
+  optional Unit unit                              = 5 [(json_name) = "unit"];
+  optional bool is_enabled_flip_display           = 6 [(json_name) = "isEnabledFlipDisplay"];
+  optional string asset_name                      = 7 [(json_name) = "assetName"];
+  optional string character_icon_assetbundle_name = 8 [(json_name) = "characterIconAssetbundleName"];
 }
