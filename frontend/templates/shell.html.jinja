@@ -17,35 +17,13 @@
     </script>
   </head>
   <body>
-    <div style="border: solid black thin; background: #fcc; padding: 1em; width: 40em; margin-bottom: 1ex;">
-      <b>Notice:</b>&nbsp;Version 5.0 (MySaki) introduced new BP boosting items.
-      These will be added incrementally over the next week. As a result, there
-      is a new format for the card list spreadsheet. Older spreadsheets will
-      continue to work but without MySaki support as long as the header row is
-      not modified.<br><br>
-      <b>Non-JP players:</b>&nbsp;MySekai related functions will not provide
-      any bonuses until your server catches up to 5.0. Please use the JP
-      instance if you want to try these features. Please report any bugs if you
-      encounter any issues caused by the MySaki update.
-      <hr>
-      <b>Current Status</b><br>
-      &#x2705; Import new spreadsheet format<br>
-      &#x2705; Character Nuis<br>
-      &#x2705; Unit Gates<br>
-      &#x2705; Card Canvas (please reimport CSV if you have canvas)<br>
-    </div>
-
     <div class="team-builder" id="team-builder">
     </div>
 
     <p style="max-width: 50em;">
       <b>Instructions</b>: Mark cards as owned in the list below and customize
-      stats. Enter card ID in the table above to add to team.
-      &nbsp;<span class="new-inline">
-        To use the untrained skill of a bloomfes card, add "U" to the end of
-        the card ID (for example, "1058U"). The team builder no longer switches
-        between trained and untrained skills for you.
-      </span>
+      stats. Enter card ID in the table above to add to team, add "U" to the
+      card ID (eg. 1058U) to use the untrained bloomfes skill.
     </p>
 
     <ul>
@@ -100,7 +78,7 @@
         &nbsp;<small>* Ignores team constraints.</small>
 
         <fieldset class="fill-params">
-          <legend class="new">Fill Team Parameters</legend>
+          <legend>Fill Team Parameters</legend>
 
           <label for="fill-min-power">Minimum Power<sup>&dagger;</sup></label>
           <input type="number" style="width: 7em;" min="0" step="1"
@@ -111,13 +89,6 @@
 
         <fieldset class="parking-params">
           <legend>Parking Parameters</legend>
-
-          <small class="new">
-            The parking feature is new and experimental! Please cross
-            check with other sources or do a few test runs to ensure accuracy
-            before you commit to your final park. Report any inaccuracies you
-            find.
-          </small>
 
           <label for="park-target">Target Points</label>
           <input type="number" style="width: 7em;" min="100" step="1"
