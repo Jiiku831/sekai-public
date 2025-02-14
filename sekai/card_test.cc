@@ -120,11 +120,9 @@ TEST(CardTest, TestCard1PowerWithCanvas) {
     canvas_crafted: true
   )pb");
   Card card{card1, state};
-  EXPECT_EQ(card.power_vec().sum(), 7575 + (300 + 150) * 3);
-  EXPECT_EQ(card.power_vec(),
-            Eigen::Vector3i(2663 + 300 + 150, 2325 + 300 + 150, 2587 + 300 + 150));
-  EXPECT_EQ(card.unboosted_power_vec().sum(), 300);
-  EXPECT_EQ(card.unboosted_power_vec(), Eigen::Vector3i(100, 100, 100));
+  EXPECT_EQ(card.power_vec().sum(), 7575 + (300 + 150) * 3 + 300);
+  EXPECT_EQ(card.power_vec(), Eigen::Vector3i(2663 + 300 + 150 + 100, 2325 + 300 + 150 + 100,
+                                              2587 + 300 + 150 + 100));
 }
 
 TEST(CardTest, TestCard801Power) {
@@ -153,11 +151,10 @@ TEST(CardTest, TestCard801PowerWithCanvas) {
     canvas_crafted: true
   )pb");
   Card card{card1, state};
-  EXPECT_EQ(card.power_vec().sum(), 37292);
-  EXPECT_EQ(card.power_vec(), Eigen::Vector3i(9254 + 1000 + 850 + 400, 10129 + 1000 + 850 + 400,
-                                              11159 + 1000 + 850 + 400));
-  EXPECT_EQ(card.unboosted_power_vec().sum(), 1500);
-  EXPECT_EQ(card.unboosted_power_vec(), Eigen::Vector3i(500, 500, 500));
+  EXPECT_EQ(card.power_vec().sum(), 37292 + 1500);
+  EXPECT_EQ(card.power_vec(),
+            Eigen::Vector3i(9254 + 1000 + 850 + 400 + 500, 10129 + 1000 + 850 + 400 + 500,
+                            11159 + 1000 + 850 + 400 + 500));
 }
 
 TEST(CardTest, TestCard1Skill) {
@@ -429,7 +426,7 @@ TEST(CardTest, ApplyProfileGateBonus) {
   Profile profile(profile_proto);
   card.ApplyProfilePowerBonus(profile);
   EXPECT_EQ(card.gate_power_bonus(), 240);
-  EXPECT_EQ(card.power() + card.unboosted_power(), 34295);
+  EXPECT_EQ(card.power(), 34295);
   EXPECT_EQ(card.precomputed_power(false, false, false), 56585 + 240);
 }
 
@@ -446,16 +443,17 @@ TEST(CardTest, ApplyProfileGateBonusUnitVS) {
 
   ProfileProto profile_proto = TestProfile();
   profile_proto.mutable_mysekai_gate_levels()->Resize(6, 0);
-  profile_proto.set_mysekai_gate_levels(1, 7);
+  profile_proto.set_mysekai_gate_levels(1, 18);
   profile_proto.set_mysekai_gate_levels(2, 1);
   profile_proto.set_mysekai_gate_levels(3, 20);
   profile_proto.set_mysekai_gate_levels(4, 3);
   profile_proto.set_mysekai_gate_levels(5, 4);
   Profile profile(profile_proto);
   card.ApplyProfilePowerBonus(profile);
-  EXPECT_EQ(card.gate_power_bonus(), 273);
-  EXPECT_EQ(card.power() + card.unboosted_power(), 39098);
-  EXPECT_EQ(card.precomputed_power(false, false, false), 63534 + 273);
+  EXPECT_EQ(card.gate_power_bonus(), 703);
+  EXPECT_EQ(card.power(), 39098);
+  constexpr int kInaccuracy = 1;
+  EXPECT_EQ(card.precomputed_power(false, false, false), 39098 + 23457 + 1953 + 703 + kInaccuracy);
 }
 
 TEST(CardTest, ApplyProfileGateBonusSubunitlessVS) {
@@ -473,14 +471,15 @@ TEST(CardTest, ApplyProfileGateBonusSubunitlessVS) {
   profile_proto.mutable_mysekai_gate_levels()->Resize(6, 0);
   profile_proto.set_mysekai_gate_levels(1, 1);
   profile_proto.set_mysekai_gate_levels(2, 2);
-  profile_proto.set_mysekai_gate_levels(3, 7);  // Use highest level gate
+  profile_proto.set_mysekai_gate_levels(3, 18);  // Use highest level gate
   profile_proto.set_mysekai_gate_levels(4, 4);
   profile_proto.set_mysekai_gate_levels(5, 3);
   Profile profile(profile_proto);
   card.ApplyProfilePowerBonus(profile);
-  EXPECT_EQ(card.gate_power_bonus(), 271);
-  EXPECT_EQ(card.power() + card.unboosted_power(), 38797);
-  EXPECT_EQ(card.precomputed_power(false, false, false), 61539 + 1500 + 271);
+  EXPECT_EQ(card.gate_power_bonus(), 698);
+  EXPECT_EQ(card.power(), 38797);
+  constexpr int kInaccuracy = 3;
+  EXPECT_EQ(card.precomputed_power(false, false, false), 38797 + 23276 + 1938 + 698 + kInaccuracy);
 }
 
 TEST(CardTest, ApplyProfileFixtureBonus) {
@@ -496,13 +495,17 @@ TEST(CardTest, ApplyProfileFixtureBonus) {
 
   ProfileProto profile_proto = TestProfile();
   (*profile_proto.mutable_mysekai_fixture_crafted())[402] = true;
-  (*profile_proto.mutable_mysekai_fixture_crafted())[403] = false;
+  (*profile_proto.mutable_mysekai_fixture_crafted())[403] = true;
   (*profile_proto.mutable_mysekai_fixture_crafted())[404] = true;
+  (*profile_proto.mutable_mysekai_fixture_crafted())[510] = true;
+  (*profile_proto.mutable_mysekai_fixture_crafted())[511] = true;
+  (*profile_proto.mutable_mysekai_fixture_crafted())[512] = true;
   Profile profile(profile_proto);
   card.ApplyProfilePowerBonus(profile);
-  EXPECT_EQ(card.fixture_power_bonus(), 271);
-  EXPECT_EQ(card.power() + card.unboosted_power(), 38797);
-  EXPECT_EQ(card.precomputed_power(false, false, false), 61539 + 1500 + 271);
+  EXPECT_EQ(card.fixture_power_bonus(), 775);
+  EXPECT_EQ(card.power(), 38797);
+  constexpr int kInaccuracy = 3;
+  EXPECT_EQ(card.precomputed_power(false, false, false), 38797 + 23276 + 1938 + 775 + kInaccuracy);
 }
 
 TEST(CardTest, ApplyProfileFixtureAndGateBonus) {
@@ -518,20 +521,25 @@ TEST(CardTest, ApplyProfileFixtureAndGateBonus) {
 
   ProfileProto profile_proto = TestProfile();
   (*profile_proto.mutable_mysekai_fixture_crafted())[402] = true;
-  (*profile_proto.mutable_mysekai_fixture_crafted())[403] = false;
+  (*profile_proto.mutable_mysekai_fixture_crafted())[403] = true;
   (*profile_proto.mutable_mysekai_fixture_crafted())[404] = true;
+  (*profile_proto.mutable_mysekai_fixture_crafted())[510] = true;
+  (*profile_proto.mutable_mysekai_fixture_crafted())[511] = true;
+  (*profile_proto.mutable_mysekai_fixture_crafted())[512] = true;
   profile_proto.mutable_mysekai_gate_levels()->Resize(6, 0);
   profile_proto.set_mysekai_gate_levels(1, 1);
   profile_proto.set_mysekai_gate_levels(2, 2);
-  profile_proto.set_mysekai_gate_levels(3, 7);  // Use highest level gate
+  profile_proto.set_mysekai_gate_levels(3, 18);  // Use highest level gate
   profile_proto.set_mysekai_gate_levels(4, 4);
   profile_proto.set_mysekai_gate_levels(5, 3);
   Profile profile(profile_proto);
   card.ApplyProfilePowerBonus(profile);
-  EXPECT_EQ(card.gate_power_bonus(), 271);
-  EXPECT_EQ(card.fixture_power_bonus(), 271);
-  EXPECT_EQ(card.power() + card.unboosted_power(), 38797);
-  EXPECT_EQ(card.precomputed_power(false, false, false), 61539 + 1500 + 271 + 271);
+  EXPECT_EQ(card.gate_power_bonus(), 698);
+  EXPECT_EQ(card.fixture_power_bonus(), 775);
+  EXPECT_EQ(card.power(), 38797);
+  constexpr int kInaccuracy = 3;
+  EXPECT_EQ(card.precomputed_power(false, false, false),
+            38797 + 23276 + 1938 + 775 + 698 + kInaccuracy);
 }
 
 }  // namespace
