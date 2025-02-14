@@ -144,11 +144,10 @@ Card::Card(const db::Card& card, const CardState& state) : CardBase(card), state
   ABSL_CHECK_LE(skill_level_, 4);
 
   power_vec_ = GetCardPower(card, state);
-  power_ = power_vec_.sum();
   if (state.canvas_crafted()) {
-    unboosted_power_vec_ = GetCanvasBonusPower(card.card_rarity_type());
+    power_vec_ += GetCanvasBonusPower(card.card_rarity_type());
   }
-  unboosted_power_ = unboosted_power_vec_.sum();
+  power_ = power_vec_.sum();
   const db::Skill& skill = MasterDb::Get().Get<db::Skill>().FindFirst(card.skill_id());
   skill_ = Skill(skill, skill_level_);
   if (card.has_special_training_skill_id() && state.special_training()) {
@@ -182,11 +181,9 @@ void Card::ApplyProfilePowerBonus(const ProfileBonus& profile) {
   cr_power_bonus_ = (power_vec_.cast<float>() * cr_power_factor).cast<int>().sum();
   float fixture_power_factor =
       static_cast<float>(profile.mysekai_fixture_bonus()[character_id_]) / 1000;
-  fixture_power_bonus_ =
-      static_cast<int>((power_vec_ + unboosted_power_vec_).sum() * fixture_power_factor);
+  fixture_power_bonus_ = static_cast<int>(power_vec_.sum() * fixture_power_factor);
   float gate_power_factor = profile.mysekai_gate_bonus()[db_primary_unit_] / 100;
-  gate_power_bonus_ =
-      static_cast<int>((power_vec_ + unboosted_power_vec_).sum() * gate_power_factor);
+  gate_power_bonus_ = static_cast<int>(power_vec_.sum() * gate_power_factor);
 
   // Index: (Attr, Primary Unit, Secondary Unit)
   for (int attr_matching : {0, 1}) {
@@ -202,8 +199,7 @@ void Card::ApplyProfilePowerBonus(const ProfileBonus& profile) {
         area_item_bonus_[attr_matching][primary_unit_matching][secondary_unit_matching] =
             area_item_bonus;
         precomputed_power_[attr_matching][primary_unit_matching][secondary_unit_matching] =
-            power_ + unboosted_power_ + cr_power_bonus_ + area_item_bonus + fixture_power_bonus_ +
-            gate_power_bonus_;
+            power_ + cr_power_bonus_ + area_item_bonus + fixture_power_bonus_ + gate_power_bonus_;
       }
     }
   }
