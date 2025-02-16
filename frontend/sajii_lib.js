@@ -930,7 +930,7 @@ function RenderTeamImpl(teamIndex, context) {
         `Lv ${card.state.level}/MR ${card.state.masterRank}/SL ${card.state.skillLevel}\n` +
         `Power: ${card.state.teamPowerContrib}\n` +
         `Skill: ${card.state.teamSkillContrib.toFixed(2).replace(/\.?0+$/,'')}%\n` +
-        `Bonus: ${bonusContrib}%\n`;
+        `Bonus: ${bonusContrib.toFixed(2)}%\n`;
       thumbNode.appendChild(CreateCardThumb(card));
     }
   }
