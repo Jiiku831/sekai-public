@@ -1,5 +1,13 @@
 var controller = null;
 
+const numberFmt = new Intl.NumberFormat(
+  undefined,
+  {
+    style: "decimal",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+  })
+
 const kMaxSupportTeamSize = 20;
 
 function InitPage () {
@@ -855,15 +863,15 @@ function RenderTeamImpl(teamIndex, context) {
     `- Titles:      ${context.powerDetailed[3].toLocaleString().padStart(7)}\n` +
     `- Furnitures:  ${context.powerDetailed[4].toLocaleString().padStart(7)}\n` +
     `- Gates:       ${context.powerDetailed[5].toLocaleString().padStart(7)}\n` +
-    `Skill Value:   ${context.skillValue.toLocaleString().padStart(6)}%\n` +
-    `Event Bonus:   ${context.eventBonus.toLocaleString().padStart(6)}%\n` +
+    `Skill Value:   ${numberFmt.format(context.skillValue).padStart(6)}%\n` +
+    `Event Bonus:   ${numberFmt.format(context.eventBonus).padStart(6)}%\n` +
     `Est. EP:       ${context.expectedEp.toLocaleString().padStart(7)}\n`;
   if (context.supportBonus) {
     statsNode.innerText +=
       `\nEvent Bonus Breakdown\n` +
-      `Main Bonus:    ${context.mainBonus.toLocaleString().padStart(6)}%\n` +
-      `Support Bonus: ${context.supportBonus.toLocaleString().padStart(6)}%\n` +
-      `Total Bonus:   ${context.eventBonus.toLocaleString().padStart(6)}%\n`;
+      `Main Bonus:    ${numberFmt.format(context.mainBonus).padStart(6)}%\n` +
+      `Support Bonus: ${numberFmt.format(context.supportBonus).padStart(6)}%\n` +
+      `Total Bonus:   ${numberFmt.format(context.eventBonus).padStart(6)}%\n`;
   }
   const parkingNode = document.getElementById(`team-builder-${teamIndex}-parking`);
   parkingNode.innerText = "";
@@ -929,8 +937,8 @@ function RenderTeamImpl(teamIndex, context) {
       cardStatsNode.innerText =
         `Lv ${card.state.level}/MR ${card.state.masterRank}/SL ${card.state.skillLevel}\n` +
         `Power: ${card.state.teamPowerContrib}\n` +
-        `Skill: ${card.state.teamSkillContrib.toFixed(2).replace(/\.?0+$/,'')}%\n` +
-        `Bonus: ${bonusContrib.toFixed(2)}%\n`;
+        `Skill: ${numberFmt.format(card.state.teamSkillContrib)}%\n` +
+        `Bonus: ${numberFmt.format(bonusContrib)}%\n`;
       thumbNode.appendChild(CreateCardThumb(card));
     }
   }
