@@ -880,6 +880,7 @@ void Controller::RefreshTeam(int team_index) const {
     const TeamCard& team_card = teams_[team_index][i];
     if (team_card.card_id == 0) continue;
     const sekai::Card* card = profile_.GetCard(team_card.card_id);
+    if (card == nullptr) continue;
     if (card->HasSecondarySkill() && card->state().special_training() &&
         !team_card.use_untrained_skill) {
       card = profile_.GetSecondaryCard(team_card.card_id);
@@ -887,7 +888,6 @@ void Controller::RefreshTeam(int team_index) const {
       // inserted if it is eligible.
       ABSL_CHECK_NE(card, nullptr);
     }
-    if (card == nullptr) continue;
     cards.push_back(card);
   }
   sekai::Team team(cards);
