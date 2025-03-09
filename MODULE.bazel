@@ -25,7 +25,7 @@ bazel_dep(name="zstd", version="1.5.6")
 bazel_dep(name="zstd_license", version="1.5.6")
 
 # Version override for TW
-single_version_override(module_name="sekai-master-db", version="3.4.2.8.2.tw")
+single_version_override(module_name="sekai-master-db", version="3.4.2.11.9.tw")
 
 # https://github.com/GZGavinZhao/gzgz_rules_sass
 sass = use_extension("@gzgz_rules_sass//sass:extensions.bzl", "sass")
