@@ -10,6 +10,7 @@
 #include "absl/log/log.h"
 #include "absl/strings/str_cat.h"
 #include "base/init.h"
+#include "sekai/db/master_db.h"
 #include "sekai/run_analysis/analyze_team_handler.h"
 #include "sekai/run_analysis/handler.h"
 
@@ -32,7 +33,7 @@ std::string HandleRequestImpl(std::string_view path, std::string_view request) {
 
 char* ToCStr(const std::string& str) {
   char* c_str = static_cast<char*>(std::malloc(str.size() + 1));
-  std::strcpy(c_str, str.c_str());
+  std::memcpy(c_str, str.c_str(), str.size() + 1);
   return c_str;
 }
 
@@ -50,11 +51,12 @@ int main(int argc, char** argv) {
   absl::SetStderrThreshold(absl::LogSeverityAtLeast::kInfo);
 
   LOG(INFO) << "Initializing server...";
+  LOG(INFO) << sekai::db::MasterDb::Get().DebugString();
 
-  LOG(INFO) << "Registered handlers:";
-  for (const auto& [path, unused_handler] : *kHandlers) {
-    LOG(INFO) << path;
-  }
+  LOG(INFO) << "Registered handlers:\n"
+            << absl::StrJoin(*kHandlers, "\n", [](std::string* out, const auto& handler) {
+                 absl::StrAppend(out, handler.first);
+               });
 
   LOG(INFO) << "Done!" << std::endl;
 

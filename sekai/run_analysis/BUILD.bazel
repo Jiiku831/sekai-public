@@ -9,11 +9,35 @@ cc_library(
     hdrs = ["analyze_team_handler.h"],
     deps = [
         ":handler",
+        "//base:util",
+        "//sekai:card",
+        "//sekai:challenge_live_estimator",
+        "//sekai:event_bonus",
+        "//sekai:team",
+        "//sekai/db:master_db",
+        "//sekai/proto:card_state_cc_proto",
         "//sekai/run_analysis/proto:service_cc_proto",
-        "@protobuf",
         "@abseil-cpp//absl/status:status",
         "@abseil-cpp//absl/status:statusor",
-        #"//sekai/db:master_db",
+        "@abseil-cpp//absl/strings:str_format",
+        "@protobuf",
+    ],
+)
+
+cc_test(
+    name = "analyze_team_handler_test",
+    srcs = ["analyze_team_handler_test.cc"],
+    data = [
+        "//data:flat-db",
+    ],
+    deps = [
+        ":analyze_team_handler",
+        "//sekai:proto_util",
+        "//sekai/run_analysis/proto:service_cc_proto",
+        "//testing:test_main",
+        "//testing:util",
+        "@abseil-cpp//absl/status:status_matchers",
+        "@googletest//:gtest",
     ],
 )
 
@@ -34,23 +58,28 @@ cc_binary(
     srcs = [
         "server_main.cc",
     ],
+    additional_linker_inputs = [
+        "//data:flat-db",
+    ],
     linkopts = [
         "--oformat=js",
+        "--embed-file $(location //data:flat-db)@data/flat-db",
         "-sEXPORTED_RUNTIME_METHODS=stringToUTF8,lengthBytesUTF8,UTF8ToString,getValue",
         "-sEXPORTED_FUNCTIONS=_main,_HandleRequest,_Malloc,_Free",
         "-sENVIRONMENT=web",
         "-sMODULARIZE",
         "-sUSE_PTHREADS=0",
+        "-sALLOW_MEMORY_GROWTH",
     ],
     deps = [
-        ":handler",
         ":analyze_team_handler",
-        "@abseil-cpp//absl/status:status",
-        "@abseil-cpp//absl/log",
-        "@abseil-cpp//absl/container:flat_hash_map",
-        #"//sekai/db:master_db",
+        ":handler",
         "//base",
+        "//sekai/db:master_db",
         "@abseil-cpp//absl/base:no_destructor",
+        "@abseil-cpp//absl/container:flat_hash_map",
+        "@abseil-cpp//absl/log",
+        "@abseil-cpp//absl/status:status",
     ],
 )
 

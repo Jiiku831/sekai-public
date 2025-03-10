@@ -7,6 +7,8 @@
 
 namespace sekai {
 
+inline constexpr int kTeamSize = 5;
+
 inline constexpr int kMasterRankMax = 5;
 inline constexpr int kMasterRankArraySize = kMasterRankMax + 1;
 

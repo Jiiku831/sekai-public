@@ -7,18 +7,22 @@ message Status {
   optional string msg = 2;
 }
 
-message Card {
+message DeckCard {
   optional int32 card_id     = 1;
   optional int32 master_rank = 2;
 }
 
 message AnalyzeTeamRequest {
   optional int32 event_id   = 1;
-  repeated Card cards       = 2;
+  repeated DeckCard cards   = 2;
   optional int32 team_power = 3;
 }
 
 message AnalyzeTeamResponse {
-  optional Status status     = 1;
+  optional Status status = 1;
+
+  // The main team event bonus.
+  //
+  // Note that for WL events, this does not include the support team bonus.
   optional float event_bonus = 2;
 }

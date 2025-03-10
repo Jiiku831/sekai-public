@@ -23,9 +23,8 @@ namespace sekai {
 // cards within a team must outlive the object.
 class Team {
  public:
+  // Cards must outlive this object.
   explicit Team(std::span<const Card* const> cards);
-
-  // For testing only.
   explicit Team(std::span<const Card> cards);
 
   std::span<const Card* const> cards() const { return cards_; }

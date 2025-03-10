@@ -160,6 +160,16 @@ class MasterDb {
   }
 
   template <typename T>
+  static absl::StatusOr<const T*> FindFirstOrError(int64_t key) {
+    auto res = SafeFindFirst<T>(key);
+    if (res == nullptr) {
+      return absl::NotFoundError(
+          absl::StrFormat("Failed to find %s with key %lld.", T::GetDescriptor()->name(), key));
+    }
+    return res;
+  }
+
+  template <typename T>
   static const std::vector<absl::Nonnull<const T*>>& FindAll(int64_t key) {
     return Get().template Get<T>().FindAll(key);
   }
