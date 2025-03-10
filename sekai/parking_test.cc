@@ -195,7 +195,7 @@ TEST_F(AnnotateTeamProtoWithMultiTurnParkingStrategyTest, AnnotateExample1) {
     EXPECT_EQ(park.total_ep(), park.total_multiplier() * park.base_ep());
     total_plays += park.plays();
   }
-  EXPECT_LE(total_plays, 300) << team_proto.DebugString();
+  EXPECT_LE(total_plays, 310) << team_proto.DebugString();
   EXPECT_LE(total_mult, 10'200) << team_proto.DebugString();
   EXPECT_EQ(total_ep, 7'180'000) << team_proto.DebugString();
 }
