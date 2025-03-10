@@ -13,6 +13,24 @@ genrule(
     tools = ["//sekai/db:generate_flat_db_main"],
 )
 
+minimal_types = [
+    "Card",
+    "CardEpisode",
+    "Event",
+    "EventCard",
+    "EventDeckBonus",
+    "EventRarityBonusRate",
+    "GameCharacter",
+    "GameCharacterUnit",
+    "Music",
+    "MusicMeta",
+    "Skill",
+    "Version",
+    "WorldBloom",
+    "WorldBloomDifferentAttributeBonus",
+    "WorldBloomSupportDeckBonus",
+]
+
 genrule(
     name = "flat-db-minimal.genrule",
     srcs = [
@@ -22,7 +40,7 @@ genrule(
     outs = [
         "flat-db-minimal",
     ],
-    cmd = "./$(execpath //sekai/db:generate_flat_db_main) --output=$@ --no_thumbnails",
+    cmd = "./$(execpath //sekai/db:generate_flat_db_main) --output=$@ --no_thumbnails --keep=" + ",".join(minimal_types),
     tools = ["//sekai/db:generate_flat_db_main"],
 )
 

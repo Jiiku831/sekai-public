@@ -20,6 +20,7 @@
 
 ABSL_FLAG(std::string, output, "", "output path");
 ABSL_FLAG(bool, no_thumbnails, false, "if true, thumbnails are not embedded");
+ABSL_FLAG(std::vector<std::string>, keep, {}, "if set, only keep these types");
 
 using namespace ::sekai::db;
 
@@ -32,8 +33,11 @@ class FlatDbGenerator {
 
   void Write(std::filesystem::path path) {
     Records records;
-    std::apply([&records](auto&&... items) { ((records.MergeFrom(items.ToRecords())), ...); },
-               items_);
+    std::apply(
+        [&records](auto&&... items) {
+          ((records.MergeFrom(items.ToRecords(absl::GetFlag(FLAGS_keep)))), ...);
+        },
+        items_);
     if (!absl::GetFlag(FLAGS_no_thumbnails)) {
       AddEmbeddedThumbnails(records);
     }

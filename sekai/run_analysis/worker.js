@@ -1,6 +1,7 @@
 import Module from "./server_main.js";
 
 var module = null;
+var moduleReady = initModule();
 async function initModule() {
   module = await Module({
     instantiateWasm: (imports, callback) => {
@@ -9,6 +10,8 @@ async function initModule() {
       return instance.exports;
     },
   });
+  console.log("WASM Module Initialized");
+  return true;
 }
 
 function stringToNewUTF8(str) {
@@ -53,8 +56,8 @@ function mapCode(code) {
 }
 
 async function handleRequest(request) {
+  await moduleReady;
   let output = "";
-
   const url = new URL(request.url);
   let body = request.text();
   let [code, result] = callHandler(url.pathname, await body);
@@ -63,10 +66,6 @@ async function handleRequest(request) {
   });
 }
 
-initModule()
-  .then(() => {
-    addEventListener("fetch", event => {
-      event.respondWith(handleRequest(event.request));
-    });
-    console.log("WASM Module Initialized");
-  });
+addEventListener("fetch", event => {
+  event.respondWith(handleRequest(event.request));
+});
