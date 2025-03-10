@@ -61,4 +61,5 @@ fi
 echo "$fg[blue]Running local server...$reset_color"
 echo "$fg[blue]Once running open the page with this link: http://localhost:8000/$output$reset_color"
 cd "$server_root"
+npx wrangler deploy --outdir bundled --dry-run
 npx wrangler dev

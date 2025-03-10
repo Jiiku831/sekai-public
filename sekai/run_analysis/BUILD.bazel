@@ -63,7 +63,7 @@ cc_binary(
     ],
     linkopts = [
         "--oformat=js",
-        "--embed-file $(location //data:flat-db)@data/flat-db",
+        "--embed-file $(location //data:flat-db-minimal)@data/flat-db",
         "-sEXPORTED_RUNTIME_METHODS=stringToUTF8,lengthBytesUTF8,UTF8ToString,getValue",
         "-sEXPORTED_FUNCTIONS=_main,_HandleRequest,_Malloc,_Free",
         "-sENVIRONMENT=web",

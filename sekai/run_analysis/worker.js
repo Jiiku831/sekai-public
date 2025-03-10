@@ -10,7 +10,6 @@ async function initModule() {
     },
   });
 }
-initModule().then(() => { console.log("WASM Module Initialized"); });
 
 function stringToNewUTF8(str) {
   let bufSize = module.lengthBytesUTF8(str) + 1;
@@ -64,6 +63,10 @@ async function handleRequest(request) {
   });
 }
 
-addEventListener("fetch", event => {
-	event.respondWith(handleRequest(event.request));
-});
+initModule()
+  .then(() => {
+    addEventListener("fetch", event => {
+      event.respondWith(handleRequest(event.request));
+    });
+    console.log("WASM Module Initialized");
+  });
