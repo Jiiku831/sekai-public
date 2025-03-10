@@ -51,7 +51,6 @@ class Handler : public HandlerBase {
     RequestType request_msg;
     if (auto status = google::protobuf::util::JsonStringToMessage(request, &request_msg);
         !status.ok()) {
-      LOG(ERROR) << "Request body:\n" << request;
       ResponseType response;
       internal::ToStatusProto(status, *response.mutable_status());
       return internal::SerializeResponse(response);

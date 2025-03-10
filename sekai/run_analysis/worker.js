@@ -55,14 +55,32 @@ function mapCode(code) {
   }[code] || 500;
 }
 
+async function handlePreflightRequest(request) {
+  let headers = new Headers();
+  headers.append("Access-Control-Allow-Origin", "*");
+  headers.append("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  headers.append("Access-Control-Max-Age", "86400");
+  return new Response(null, {
+    status: 204,
+    headers: headers
+  });
+}
+
 async function handleRequest(request) {
+  if (request.method == "OPTIONS") {
+    return handlePreflightRequest(request);
+  }
   await moduleReady;
   let output = "";
   const url = new URL(request.url);
   let body = request.text();
   let [code, result] = callHandler(url.pathname, await body);
+  let headers = new Headers();
+  headers.append("Access-Control-Allow-Origin", "*");
+  headers.append("Content-Type", "application/json; charset=UTF-8");
   return new Response(result, {
     status: mapCode(code),
+    headers: headers
   });
 }
 
