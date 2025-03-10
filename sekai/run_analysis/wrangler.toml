@@ -1,4 +1,4 @@
 compatibility_date = "2025-02-24"
 name = "run-analysis-service"
 main = "worker.js"
-wasm_modules = { WASM_MAIN = "./hello_world_main.wasm" }
+wasm_modules = { WASM_MAIN = "./server_main.wasm" }

@@ -13,3 +13,13 @@ cc_proto_library(
     name = "run_data_cc_proto",
     deps = [":run_data_proto"],
 )
+
+proto_library(
+    name = "service_proto",
+    srcs = ["service.proto"],
+)
+
+cc_proto_library(
+    name = "service_cc_proto",
+    deps = [":service_proto"],
+)

@@ -3,23 +3,60 @@ load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library", "cc_test")
 load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
 load("@rules_python//python:defs.bzl", "py_binary")
 
+cc_library(
+    name = "analyze_team_handler",
+    srcs = ["analyze_team_handler.cc"],
+    hdrs = ["analyze_team_handler.h"],
+    deps = [
+        ":handler",
+        "//sekai/run_analysis/proto:service_cc_proto",
+        "@protobuf",
+        "@abseil-cpp//absl/status:status",
+        "@abseil-cpp//absl/status:statusor",
+        #"//sekai/db:master_db",
+    ],
+)
+
+cc_library(
+    name = "handler",
+    hdrs = ["handler.h"],
+    deps = [
+        "//sekai/run_analysis/proto:service_cc_proto",
+        "@abseil-cpp//absl/log",
+        "@abseil-cpp//absl/status:status",
+        "@abseil-cpp//absl/status:statusor",
+        "@protobuf",
+    ],
+)
+
 cc_binary(
-    name = "hello_world_main",
+    name = "server_main",
     srcs = [
-        "hello_world_main.cc",
+        "server_main.cc",
     ],
     linkopts = [
         "--oformat=js",
-        "-s INVOKE_RUN=0",
-        "-s EXPORTED_RUNTIME_METHODS=[\"callMain\"]",
-        "-s ENVIRONMENT=\"web\"",
-        "-s MODULARIZE=1",
+        "-sEXPORTED_RUNTIME_METHODS=stringToUTF8,lengthBytesUTF8,UTF8ToString,getValue",
+        "-sEXPORTED_FUNCTIONS=_main,_HandleRequest,_Malloc,_Free",
+        "-sENVIRONMENT=web",
+        "-sMODULARIZE",
+        "-sUSE_PTHREADS=0",
+    ],
+    deps = [
+        ":handler",
+        ":analyze_team_handler",
+        "@abseil-cpp//absl/status:status",
+        "@abseil-cpp//absl/log",
+        "@abseil-cpp//absl/container:flat_hash_map",
+        #"//sekai/db:master_db",
+        "//base",
+        "@abseil-cpp//absl/base:no_destructor",
     ],
 )
 
 wasm_cc_binary(
-    name = "hello_world_wasm",
-    cc_target = ":hello_world_main",
+    name = "server_wasm",
+    cc_target = ":server_main",
 )
 
 pkg_tar(
@@ -27,7 +64,7 @@ pkg_tar(
     srcs = [
         "worker.js",
         "wrangler.toml",
-        ":hello_world_wasm",
+        ":server_wasm",
     ],
 )
 
