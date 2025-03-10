@@ -39,9 +39,8 @@ jobs:
     - name: Build files to deploy
       run: ./sekai/run_analysis/run_local_server.sh --build_only
     - name: Deploy to Cloudfare
-      uses: cloudflare/pages-action@v1.5.0
+      uses: cloudflare/wrangler-action@v3
       with:
         apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        projectName: run-analysis-service
-        directory: bazel-bin/sekai/run_analysis/server.wrangler_root
+        workingDirectory: bazel-bin/sekai/run_analysis/server.wrangler_root
