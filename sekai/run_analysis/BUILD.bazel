@@ -1,5 +1,5 @@
 load("@emsdk//emscripten_toolchain:wasm_rules.bzl", "wasm_cc_binary")
-load("@rules_cc//cc:defs.bzl", "cc_binary")
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library", "cc_test")
 load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
 load("@rules_python//python:defs.bzl", "py_binary")
 
@@ -28,5 +28,32 @@ pkg_tar(
         "worker.js",
         "wrangler.toml",
         ":hello_world_wasm",
+    ],
+)
+
+cc_library(
+    name = "parser",
+    srcs = ["parser.cc"],
+    hdrs = ["parser.h"],
+    deps = [
+        "//base:util",
+        "//sekai/db/json:parser",
+        "//sekai/run_analysis/proto:run_data_cc_proto",
+        "@abseil-cpp//absl/status:status",
+        "@abseil-cpp//absl/status:statusor",
+        "@abseil-cpp//absl/strings:str_format",
+    ],
+)
+
+cc_test(
+    name = "parser_test",
+    srcs = ["parser_test.cc"],
+    data = ["testdata/run_data_1.json"],
+    deps = [
+        ":parser",
+        "//sekai:file_util",
+        "//testing:test_main",
+        "@abseil-cpp//absl/status:status_matchers",
+        "@googletest//:gtest",
     ],
 )

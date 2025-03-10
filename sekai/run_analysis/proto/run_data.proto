@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+package sekai.run_analysis;
+
+import "sekai/db/proto/descriptor.proto";
+
+enum CardState {
+  CARD_STATE_UNKNOWN   = 0;
+  CARD_STATE_UNTRAINED = 1 [(sekai.db.json_value) = "not_doing"];
+  CARD_STATE_TRAINED   = 2 [(sekai.db.json_value) = "done"];
+}
+
+enum DisplayState {
+  DISPLAY_STATE_UNKNOWN   = 0;
+  DISPLAY_STATE_UNTRAINED = 1 [(sekai.db.json_value) = "original"];
+  DISPLAY_STATE_TRAINED   = 2 [(sekai.db.json_value) = "special_training"];
+}
+
+message Card {
+  optional int32 card_id             = 1 [(sekai.db.json_name) = "cardId"];
+  optional int32 level               = 2 [(sekai.db.json_name) = "level"];
+  optional int32 master_rank         = 3 [(sekai.db.json_name) = "masterRank"];
+  optional CardState trained         = 4 [(sekai.db.json_name) = "specialTrainingStatus"];
+  optional DisplayState displayState = 5 [(sekai.db.json_name) = "defaultImage"];
+  optional string asset              = 6 [(sekai.db.json_name) = "cardAsset"];
+}
+
+message TeamPower {
+  optional int32 total_power          = 1 [(sekai.db.json_name) = "totalPower"];
+  optional int32 base_power           = 2 [(sekai.db.json_name) = "basicCardTotalPower"];
+  optional int32 area_item_bonus      = 3 [(sekai.db.json_name) = "areaItemBonus"];
+  optional int32 character_rank_bonus = 4 [(sekai.db.json_name) = "characterRankBonus"];
+  optional int32 gate_bonus           = 5 [(sekai.db.json_name) = "mysekaiGateLevelBonus"];
+  optional int32 title_bonus          = 6 [(sekai.db.json_name) = "honorBonus"];
+  optional int32 fixture_bonus        = 7 [(sekai.db.json_name) = "mysekaiFixtureGameCharacterPerformanceBonus"];
+}
+
+message PointsGraph {
+  repeated int64 timestamp = 1 [(sekai.db.json_name) = "x"];
+  repeated int64 points    = 2 [(sekai.db.json_name) = "y"];
+}
+
+message EventPointsGraph {
+  optional PointsGraph overall  = 1 [(sekai.db.json_name) = "all"];
+  repeated PointsGraph chapters = 2 [(sekai.db.json_name) = "wl"];
+}
+
+message RunData {
+  optional string name                    = 1 [(sekai.db.json_name) = "profile_nickname"];
+  repeated Card team                      = 2 [(sekai.db.json_name) = "profile_decks"];
+  optional TeamPower team_power           = 3 [(sekai.db.json_name) = "profile_score"];
+  optional int64 last_updated             = 4 [(sekai.db.json_name) = "profile_updated"];
+  optional EventPointsGraph user_graph    = 5 [(sekai.db.json_name) = "profile_graph"];
+  optional EventPointsGraph border_graph  = 6 [(sekai.db.json_name) = "border_graph"];
+  optional EventPointsGraph compare_graph = 7 [(sekai.db.json_name) = "compare_graph"];
+}

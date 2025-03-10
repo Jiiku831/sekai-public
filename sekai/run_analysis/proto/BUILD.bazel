@@ -1,0 +1,15 @@
+load("@rules_proto//proto:defs.bzl", "proto_library")
+load("@rules_cc//cc:defs.bzl", "cc_proto_library")
+
+proto_library(
+    name = "run_data_proto",
+    srcs = ["run_data.proto"],
+    deps = [
+        "//sekai/db/proto:descriptor_proto",
+    ],
+)
+
+cc_proto_library(
+    name = "run_data_cc_proto",
+    deps = [":run_data_proto"],
+)
