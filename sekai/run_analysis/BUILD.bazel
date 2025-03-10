@@ -28,7 +28,7 @@ cc_test(
     name = "analyze_team_handler_test",
     srcs = ["analyze_team_handler_test.cc"],
     data = [
-        "//data:flat-db",
+        "//data:flat-db-minimal",
     ],
     deps = [
         ":analyze_team_handler",
@@ -59,7 +59,7 @@ cc_binary(
         "server_main.cc",
     ],
     additional_linker_inputs = [
-        "//data:flat-db",
+        "//data:flat-db-minimal",
     ],
     linkopts = [
         "--oformat=js",

@@ -74,12 +74,17 @@ T ParseTextProtoFile(std::filesystem::path path) {
 }
 
 template <typename T>
+T ReadCompressedBinaryProto(const std::string& data) {
+  std::string decompressed_data = zstd::Decompressor{}(data);
+  T msg;
+  ABSL_CHECK(msg.ParseFromString(decompressed_data));
+  return msg;
+}
+
+template <typename T>
 T ReadCompressedBinaryProtoFile(std::filesystem::path path) {
   std::string data = GetFileContents(path, std::ios::binary);
-  data = zstd::Decompressor{}(data);
-  T msg;
-  ABSL_CHECK(msg.ParseFromString(data));
-  return msg;
+  return ReadCompressedBinaryProto<T>(data);
 }
 
 template <typename T>

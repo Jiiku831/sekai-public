@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <concepts>
+#include <filesystem>
 #include <memory>
 #include <string_view>
 #include <tuple>
@@ -27,6 +28,7 @@ namespace sekai::db {
 namespace internal {
 
 constexpr std::string_view kFlatDbPath = "data/flat-db";
+constexpr std::string_view kMinimalFlatDbPath = "data/flat-db-minimal";
 constexpr std::string_view kEmptyString = "";
 
 template <typename... Ts>
@@ -108,9 +110,18 @@ void TryUnpack(const google::protobuf::Any& msg, std::tuple<std::vector<Ts>...>&
 
 template <typename... Ts>
 std::pair<absl::Time, std::tuple<std::vector<Ts>...>> LoadItemsFromFlatDb(
-    std::tuple<Ts...> unused, absl::flat_hash_map<std::string, std::string>& thumbnails) {
+    std::tuple<Ts...> unused, absl::flat_hash_map<std::string, std::string>& thumbnails,
+    const std::string& data) {
   absl::Time start = absl::Now();
-  auto records = ReadCompressedBinaryProtoFile<Records>(MainRunfilesRoot() / kFlatDbPath);
+  std::filesystem::path db_path = MainRunfilesRoot() / kFlatDbPath;
+  if (!data.empty()) {
+    LOG(INFO) << "Loading data from string.";
+  } else if (!std::filesystem::exists(db_path)) {
+    LOG(INFO) << "Full flat-db not found, trying minimal flat-db.";
+    db_path = MainRunfilesRoot() / kMinimalFlatDbPath;
+  }
+  auto records = data.empty() ? ReadCompressedBinaryProtoFile<Records>(db_path)
+                              : ReadCompressedBinaryProto<Records>(data);
   std::tuple<std::vector<Ts>...> out;
   for (const google::protobuf::Any& record : records.records()) {
     ((TryUnpack<Ts>(record, out)), ...);
@@ -136,15 +147,15 @@ std::unique_ptr<MasterDbImpl<Ts...>> CreateMasterDbImplFromItems(
 // Empty class for backwards compatibility.
 class MasterDb {
  public:
-  static auto Create() {
+  static auto Create(const std::string& data = "") {
     absl::flat_hash_map<std::string, std::string> thumbnails;
-    auto [start_load, items] = internal::LoadItemsFromFlatDb(AllRecordTypes{}, thumbnails);
+    auto [start_load, items] = internal::LoadItemsFromFlatDb(AllRecordTypes{}, thumbnails, data);
     return internal::CreateMasterDbImplFromItems(start_load, std::move(thumbnails),
                                                  std::move(items));
   }
 
-  static const auto& Get() {
-    static const auto* const kMasterDb = MasterDb::Create().release();
+  static const auto& Get(const std::string& data = "") {
+    static const auto* const kMasterDb = MasterDb::Create(data).release();
     return *kMasterDb;
   }
 

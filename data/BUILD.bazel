@@ -13,6 +13,19 @@ genrule(
     tools = ["//sekai/db:generate_flat_db_main"],
 )
 
+genrule(
+    name = "flat-db-minimal.genrule",
+    srcs = [
+        "@sekai-master-db",
+        ":storage-sekai-best",
+    ],
+    outs = [
+        "flat-db-minimal",
+    ],
+    cmd = "./$(execpath //sekai/db:generate_flat_db_main) --output=$@ --no_thumbnails",
+    tools = ["//sekai/db:generate_flat_db_main"],
+)
+
 filegroup(
     name = "profile",
     srcs = [
