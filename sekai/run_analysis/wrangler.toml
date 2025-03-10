@@ -1,0 +1,5 @@
+compatibility_date = "2025-02-24"
+name = "hello_world"
+main = "worker.js"
+workers_dev = true
+wasm_modules = { WASM_MAIN = "./hello_world_main.wasm" }

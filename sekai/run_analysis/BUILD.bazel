@@ -1,0 +1,32 @@
+load("@emsdk//emscripten_toolchain:wasm_rules.bzl", "wasm_cc_binary")
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
+load("@rules_python//python:defs.bzl", "py_binary")
+
+cc_binary(
+    name = "hello_world_main",
+    srcs = [
+        "hello_world_main.cc",
+    ],
+    linkopts = [
+        "--oformat=js",
+        "-s INVOKE_RUN=0",
+        "-s EXPORTED_RUNTIME_METHODS=[\"callMain\"]",
+        "-s ENVIRONMENT=\"web\"",
+        "-s MODULARIZE=1",
+    ],
+)
+
+wasm_cc_binary(
+    name = "hello_world_wasm",
+    cc_target = ":hello_world_main",
+)
+
+pkg_tar(
+    name = "wrangler_root",
+    srcs = [
+        "worker.js",
+        "wrangler.toml",
+        ":hello_world_wasm",
+    ],
+)
