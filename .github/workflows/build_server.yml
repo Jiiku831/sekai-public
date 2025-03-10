@@ -1,0 +1,37 @@
+name: Build and Deploy Server
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches:
+      - dev
+
+concurrency:
+  group: deploy-server-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment: ${{ fromJSON(vars.ENV_MAP)[github.ref_name] }}
+    steps:
+    - name: Install zsh
+      run: sudo apt-get update; sudo apt-get install zsh
+    - name: Fetch source
+      uses: actions/checkout@v3
+    - name: Mount bazel cache
+      uses: actions/cache/restore@v4
+      with:
+        path: "~/.cache/bazel"
+        key: bazel-main-${{ runner.os }}
+    - name: Run all tests
+      run: ./test.sh
+    - name: Build files to deploy
+      run: ./sekai/run_analysis/run_local_server.sh --build_only
+    - name: Deploy to Cloudfare
+      uses: cloudflare/pages-action@v1.5.0
+      with:
+        apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        projectName: run-analysis-service
+        directory: bazel-bin/sekai/run_analysis/server.wrangler_root

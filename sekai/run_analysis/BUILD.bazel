@@ -23,7 +23,7 @@ wasm_cc_binary(
 )
 
 pkg_tar(
-    name = "wrangler_root",
+    name = "server",
     srcs = [
         "worker.js",
         "wrangler.toml",

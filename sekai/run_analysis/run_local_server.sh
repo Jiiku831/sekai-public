@@ -10,7 +10,7 @@ if [[ "$1" = "--build_only" ]]; then
 fi
 
 target_pkg=sekai/run_analysis
-target=wrangler_root
+target=server
 output=sajii.html
 
 src_root="$(mktemp).tar"
