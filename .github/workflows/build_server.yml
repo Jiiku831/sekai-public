@@ -19,6 +19,16 @@ jobs:
       run: sudo apt-get update; sudo apt-get install zsh
     - name: Fetch source
       uses: actions/checkout@v3
+    - name: Fetch assets
+      uses: actions/checkout@v3
+      with:
+        repository: Jiiku831/sekai-assets
+        path: sekai-assets
+        token: ${{ secrets.ASSETS_TOKEN }}
+        lfs: true
+    - name: Load assets
+      run: |
+        cp -r sekai-assets/data/* data/
     - name: Mount bazel cache
       uses: actions/cache/restore@v4
       with:
