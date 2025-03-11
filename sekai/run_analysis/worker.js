@@ -65,7 +65,19 @@ function getAllowOrigin(origin) {
   return "";
 }
 
-function handlePreflightRequest(request) {
+const allowedMethods = {
+  "/analyze_team": "GET",
+};
+
+function getAllowedMethods(path) {
+  const allowedForPath = allowedMethods[path] || "";
+  if (allowedForPath == "") {
+    return "OPTIONS";
+  }
+  return `${allowedForPath}, OPTIONS`;
+}
+
+function handlePreflightRequest(request, url) {
   let allowOrigin = getAllowOrigin(request.headers.get("Origin") || "");
   console.log(allowOrigin);
   if (allowOrigin == "") {
@@ -75,7 +87,7 @@ function handlePreflightRequest(request) {
   }
   let headers = new Headers();
   headers.append("Access-Control-Allow-Origin", allowOrigin);
-  headers.append("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  headers.append("Access-Control-Allow-Methods", getAllowedMethods(url.pathname));
   headers.append("Access-Control-Max-Age", "86400");
   headers.append("Vary", "Origin");
   return new Response(null, {
@@ -84,13 +96,51 @@ function handlePreflightRequest(request) {
   });
 }
 
-async function handleRequest(request) {
-  if (request.method == "OPTIONS") {
-    return handlePreflightRequest(request);
+function addCacheControlHeaders(headers) {
+  headers.append("Date", new Date().toUTCString());
+  headers.append("ETag", GIT_HASH);
+  headers.append("Cache-Control", "max-age=86400");
+}
+
+function checkCache(request) {
+  const clientRef = request.headers.get("If-None-Match");
+  if (clientRef == GIT_HASH) {
+    let headers = new Headers();
+    addCacheControlHeaders(headers);
+    return new Response(null, {
+      status: 304,
+      headers: headers
+    });
+  }
+  return null;
+}
+
+async function handleGetRequest(request, url) {
+  let cachedResponse = checkCache(request);
+  if (cachedResponse != null) {
+    return cachedResponse;
   }
   await moduleReady;
   let output = "";
-  const url = new URL(request.url);
+  let body = atob(url.searchParams.get("payload")) || "";
+  let [code, result] = callHandler(url.pathname, await body);
+  let headers = new Headers();
+  let allowOrigin = getAllowOrigin(request.headers.get("Origin"));
+  if (allowOrigin != "") {
+    headers.append("Access-Control-Allow-Origin", allowOrigin);
+  }
+  headers.append("Vary", "Origin");
+  headers.append("Content-Type", "application/json; charset=UTF-8");
+  addCacheControlHeaders(headers);
+  return new Response(result, {
+    status: mapCode(code),
+    headers: headers
+  });
+}
+
+async function handlePostRequest(request, url) {
+  await moduleReady;
+  let output = "";
   let body = request.text();
   let [code, result] = callHandler(url.pathname, await body);
   let headers = new Headers();
@@ -103,6 +153,24 @@ async function handleRequest(request) {
   return new Response(result, {
     status: mapCode(code),
     headers: headers
+  });
+}
+
+async function handleRequest(request) {
+  const url = new URL(request.url);
+  if (request.method == "OPTIONS") {
+    return handlePreflightRequest(request, url);
+  }
+  if (request.method == allowedMethods[url.pathname]) {
+    if (request.method == "GET") {
+      return handleGetRequest(request, url);
+    }
+    if (request.method == "POST") {
+      return handlePostRequest(request, url);
+    }
+  }
+  return new Response(null, {
+    status: 405,
   });
 }
 

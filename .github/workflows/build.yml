@@ -133,7 +133,7 @@ jobs:
         apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         workingDirectory: bazel-bin/sekai/run_analysis/server.wrangler_root
-        command: deploy --env dev
+        command: deploy --env dev --var GIT_HASH:${{ env.sha }}
     - name: Upload version to Cloudflare (prod)
       uses: cloudflare/wrangler-action@v3
       if: github.ref == 'refs/heads/main'
@@ -141,4 +141,4 @@ jobs:
         apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         workingDirectory: bazel-bin/sekai/run_analysis/server.wrangler_root
-        command: versions upload
+        command: versions upload --var GIT_HASH:${{ env.sha }}
