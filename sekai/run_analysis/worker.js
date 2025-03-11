@@ -55,14 +55,32 @@ function mapCode(code) {
   }[code] || 500;
 }
 
-async function handlePreflightRequest(request) {
+function getAllowOrigin(origin) {
+  if (ALLOWED_ORIGINS == "*") {
+    return "*";
+  }
+  if (origin.match(ALLOWED_ORIGINS)) {
+    return origin;
+  }
+  return "";
+}
+
+function handlePreflightRequest(request) {
+  let allowOrigin = getAllowOrigin(request.headers.get("Origin"));
+  console.log(allowOrigin);
+  if (allowOrigin == "") {
+    return new Response(null, {
+      status: 403,
+    });
+  }
   let headers = new Headers();
-  headers.append("Access-Control-Allow-Origin", "*");
+  headers.append("Access-Control-Allow-Origin", allowOrigin);
   headers.append("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   headers.append("Access-Control-Max-Age", "86400");
+  headers.append("Vary", "Origin");
   return new Response(null, {
     status: 204,
-    headers: headers
+    headers: headers,
   });
 }
 
@@ -76,7 +94,11 @@ async function handleRequest(request) {
   let body = request.text();
   let [code, result] = callHandler(url.pathname, await body);
   let headers = new Headers();
-  headers.append("Access-Control-Allow-Origin", "*");
+  let allowOrigin = getAllowOrigin(request.headers.get("Origin"));
+  if (allowOrigin != "") {
+    headers.append("Access-Control-Allow-Origin", allowOrigin);
+  }
+  headers.append("Vary", "Origin");
   headers.append("Content-Type", "application/json; charset=UTF-8");
   return new Response(result, {
     status: mapCode(code),

@@ -2,3 +2,16 @@ compatibility_date = "2025-02-24"
 name = "run-analysis-service"
 main = "worker.js"
 wasm_modules = { WASM_MAIN = "./server_main.wasm" }
+keep_vars = true
+workers_dev = false
+routes = [
+  { pattern = "run-analysis-service.jiiku.dev", custom_domain = true }
+]
+
+[limits]
+cpu_ms = 50
+
+[env.dev]
+routes = [
+  { pattern = "run-analysis-service.dev.jiiku.dev", custom_domain = true }
+]

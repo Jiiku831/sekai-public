@@ -38,9 +38,19 @@ jobs:
       run: ./test.sh
     - name: Build files to deploy
       run: ./sekai/run_analysis/run_local_server.sh --build_only
-    - name: Deploy to Cloudfare
+    - name: Deploy to Cloudfare (dev)
       uses: cloudflare/wrangler-action@v3
+      if: gihtub.ref == 'refs/heads/dev'
       with:
         apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         workingDirectory: bazel-bin/sekai/run_analysis/server.wrangler_root
+        command: deploy --env dev
+    - name: Upload version to Cloudfare (prod)
+      uses: cloudflare/wrangler-action@v3
+      if: gihtub.ref == 'refs/heads/dev'
+      with:
+        apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        workingDirectory: bazel-bin/sekai/run_analysis/server.wrangler_root
+        command: versions upload

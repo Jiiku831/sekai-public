@@ -91,6 +91,7 @@ wasm_cc_binary(
 pkg_tar(
     name = "server",
     srcs = [
+        ".dev.vars",
         "worker.js",
         "wrangler.toml",
         ":server_wasm",
