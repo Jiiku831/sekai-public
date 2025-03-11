@@ -36,7 +36,7 @@ pkg_files(
 
 pkg_files(
     name = "testing",
-    srcs = [":ohnyajii_wasm"],
+    srcs = ["//sekai/run_analysis:server_wasm"],
     prefix = "testing",
 )
 
