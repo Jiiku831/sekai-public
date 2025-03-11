@@ -75,6 +75,7 @@ cc_binary(
         ":analyze_team_handler",
         ":handler",
         "//base",
+        "//frontend:console_log_sink",
         "//sekai/db:master_db",
         "@abseil-cpp//absl/base:no_destructor",
         "@abseil-cpp//absl/container:flat_hash_map",

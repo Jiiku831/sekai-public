@@ -8,8 +8,10 @@
 #include "absl/container/flat_hash_map.h"
 #include "absl/log/globals.h"
 #include "absl/log/log.h"
+#include "absl/log/log_sink_registry.h"
 #include "absl/strings/str_cat.h"
 #include "base/init.h"
+#include "frontend/console_log_sink.h"
 #include "sekai/db/master_db.h"
 #include "sekai/run_analysis/analyze_team_handler.h"
 #include "sekai/run_analysis/handler.h"
@@ -48,7 +50,8 @@ char* HandleRequest(const char* path, const char* request) {
 int main(int argc, char** argv) {
   Init(argc, argv);
   absl::SetMinLogLevel(absl::LogSeverityAtLeast::kInfo);
-  absl::SetStderrThreshold(absl::LogSeverityAtLeast::kInfo);
+  absl::SetStderrThreshold(absl::LogSeverityAtLeast::kInfinity);
+  absl::AddLogSink(ConsoleLogSink::Get());
 
   LOG(INFO) << "Initializing server...";
   LOG(INFO) << sekai::db::MasterDb::Get().DebugString();

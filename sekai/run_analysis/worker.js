@@ -59,6 +59,9 @@ function getAllowOrigin(origin) {
   if (ALLOWED_ORIGINS == "*") {
     return "*";
   }
+  if (origin == null) {
+    return "";
+  }
   if (origin.match(ALLOWED_ORIGINS)) {
     return origin;
   }
@@ -78,7 +81,7 @@ function getAllowedMethods(path) {
 }
 
 function handlePreflightRequest(request, url) {
-  let allowOrigin = getAllowOrigin(request.headers.get("Origin") || "");
+  let allowOrigin = getAllowOrigin(request.headers.get("Origin"));
   console.log(allowOrigin);
   if (allowOrigin == "") {
     return new Response(null, {
