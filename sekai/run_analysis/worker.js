@@ -66,7 +66,7 @@ function getAllowOrigin(origin) {
 }
 
 function handlePreflightRequest(request) {
-  let allowOrigin = getAllowOrigin(request.headers.get("Origin"));
+  let allowOrigin = getAllowOrigin(request.headers.get("Origin") || "");
   console.log(allowOrigin);
   if (allowOrigin == "") {
     return new Response(null, {
