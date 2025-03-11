@@ -16,7 +16,6 @@ concurrency:
 
 env:
   CACHE_KEY: ${{ fromJSON(vars.CACHE_KEY)[github.ref_name] }}
-  ENV: ${{ fromJSON(vars.ENV_MAP)[github.ref_name] }}
 
 jobs:
   test:
@@ -54,7 +53,7 @@ jobs:
   deploy-jiiku:
     runs-on: ubuntu-latest
     needs: test
-    environment: ${{ env.ENV }}
+    environment: ${{ fromJSON(vars.ENV_MAP)[github.ref_name] }}
     steps:
     - name: Install zsh
       run: sudo apt-get update; sudo apt-get install zsh
@@ -95,7 +94,7 @@ jobs:
   deploy-ras:
     runs-on: ubuntu-latest
     needs: test
-    environment: ${{ env.ENV }}
+    environment: ras-${{ fromJSON(vars.ENV_MAP)[github.ref_name] }}
     if: github.ref == 'refs/heads/dev'
     steps:
     - name: Install zsh
