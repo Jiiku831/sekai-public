@@ -16,7 +16,7 @@ enum DisplayState {
   DISPLAY_STATE_TRAINED   = 2 [(sekai.db.json_value) = "special_training"];
 }
 
-message Card {
+message DeckCard2 {
   optional int32 card_id             = 1 [(sekai.db.json_name) = "cardId"];
   optional int32 level               = 2 [(sekai.db.json_name) = "level"];
   optional int32 master_rank         = 3 [(sekai.db.json_name) = "masterRank"];
@@ -36,8 +36,8 @@ message TeamPower {
 }
 
 message PointsGraph {
-  repeated int64 timestamp = 1 [(sekai.db.json_name) = "x"];
-  repeated int64 points    = 2 [(sekai.db.json_name) = "y"];
+  repeated int64 timestamps = 1 [(sekai.db.json_name) = "x"];
+  repeated int32 points     = 2 [(sekai.db.json_name) = "y"];
 }
 
 message EventPointsGraph {
@@ -47,7 +47,7 @@ message EventPointsGraph {
 
 message RunData {
   optional string name                    = 1 [(sekai.db.json_name) = "profile_nickname"];
-  repeated Card team                      = 2 [(sekai.db.json_name) = "profile_decks"];
+  repeated DeckCard2 team                 = 2 [(sekai.db.json_name) = "profile_decks"];
   optional TeamPower team_power           = 3 [(sekai.db.json_name) = "profile_score"];
   optional int64 last_updated             = 4 [(sekai.db.json_name) = "profile_updated"];
   optional EventPointsGraph user_graph    = 5 [(sekai.db.json_name) = "profile_graph"];

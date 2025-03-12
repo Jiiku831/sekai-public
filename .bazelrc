@@ -15,6 +15,7 @@ build:ubsan \
 build:wasm \
   --cxxopt=-std=c++20 \
   --cxxopt=-Wno-error=deprecated-pragma \
+  --cxxopt=-Wno-error=deprecated-this-capture \
   --cxxopt=-Wno-error=unused-function \
   --cxxopt=-DBS_THREAD_POOL_DISABLE_EXCEPTION_HANDLING
 
@@ -26,6 +27,7 @@ build:wasm-dbg \
   --linkopt=-gsource-map \
   --cxxopt=-std=c++20 \
   --cxxopt=-Wno-error=deprecated-pragma \
+  --cxxopt=-Wno-error=deprecated-this-capture \
   --cxxopt=-Wno-error=unused-function \
   --cxxopt=-DBS_THREAD_POOL_DISABLE_EXCEPTION_HANDLING \
 
@@ -39,6 +41,7 @@ build:wasm-asan \
   --linkopt=-fsanitize=address \
   --cxxopt=-std=c++20 \
   --cxxopt=-Wno-error=deprecated-pragma \
+  --cxxopt=-Wno-error=deprecated-this-capture \
   --cxxopt=-Wno-error=unused-function \
   --cxxopt=-DBS_THREAD_POOL_DISABLE_EXCEPTION_HANDLING
 
@@ -52,5 +55,6 @@ build:wasm-ubsan \
   --linkopt=-fsanitize=undefined \
   --cxxopt=-std=c++20 \
   --cxxopt=-Wno-error=deprecated-pragma \
+  --cxxopt=-Wno-error=deprecated-this-capture \
   --cxxopt=-Wno-error=unused-function \
   --cxxopt=-DBS_THREAD_POOL_DISABLE_EXCEPTION_HANDLING

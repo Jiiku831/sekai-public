@@ -307,6 +307,8 @@ cc_library(
     deps = [
         ":config",
         "@abseil-cpp//absl/log",
+        "@abseil-cpp//absl/status:statusor",
+        "@abseil-cpp//absl/strings:str_format",
     ],
 )
 

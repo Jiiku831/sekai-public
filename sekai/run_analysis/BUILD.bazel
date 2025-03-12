@@ -42,6 +42,11 @@ cc_test(
 )
 
 cc_library(
+    name = "config",
+    hdrs = ["config.h"],
+)
+
+cc_library(
     name = "handler",
     hdrs = ["handler.h"],
     deps = [
@@ -124,4 +129,29 @@ cc_test(
         "@abseil-cpp//absl/status:status_matchers",
         "@googletest//:gtest",
     ],
+)
+
+cc_library(
+    name = "segmentation",
+    srcs = ["segmentation.cc"],
+    hdrs = ["segmentation.h"],
+    deps = [
+        ":snapshot",
+    ],
+)
+
+cc_test(
+    name = "segmentation_test",
+    srcs = ["segmentation_test.cc"],
+    deps = [
+        ":segmentation",
+        ":snapshot",
+        "//testing:test_main",
+        "@googletest//:gtest",
+    ],
+)
+
+cc_library(
+    name = "snapshot",
+    hdrs = ["snapshot.h"],
 )

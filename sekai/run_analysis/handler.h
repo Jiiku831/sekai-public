@@ -26,7 +26,7 @@ template <typename ResponseType>
 std::string SerializeResponse(const ResponseType& response) {
   std::string output;
   if (auto status = google::protobuf::util::MessageToJsonString(response, &output); !status.ok()) {
-    output = absl::StrCat("JSON serialization failed: ", status.message().as_string());
+    output = absl::StrCat("JSON serialization failed: ", status.message());
     output.insert(0, 1, static_cast<char>(status.code()));
   } else {
     output.insert(0, 1, static_cast<char>(response.status().code()));
