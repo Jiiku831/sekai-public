@@ -39,20 +39,20 @@ class ConditionalPlot : public PlotBase {
 class PointsLineGraph : public PlotBase {
  public:
   // Input must outlive this class.
-  PointsLineGraph(std::span<const Snapshot> points, std::string_view title = "Event Points")
+  PointsLineGraph(std::string_view title, const Sequence& points)
       : points_(points), title_(title) {}
 
   void Draw(const PlotOptions& options) const override;
 
  private:
-  std::span<const Snapshot> points_;
+  const Sequence& points_;
   std::string title_;
 };
 
 class SegmentsLineGraph : public PlotBase {
  public:
   // Input must outlive this class.
-  SegmentsLineGraph(std::span<const Segment> segments);
+  SegmentsLineGraph(std::span<const Sequence> segments);
 
   void Draw(const PlotOptions& options) const override;
 

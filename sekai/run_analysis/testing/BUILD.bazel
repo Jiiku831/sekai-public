@@ -9,6 +9,7 @@ cc_library(
         "//sekai/run_analysis:config",
         "//sekai/run_analysis:parser",
         "//sekai/run_analysis:segmentation",
+        "//sekai/run_analysis:sequence_util",
         "//sekai/run_analysis:snapshot",
         "//sekai/run_analysis/proto:run_data_cc_proto",
         "@abseil-cpp//absl/status:statusor",

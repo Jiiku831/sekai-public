@@ -44,6 +44,9 @@ cc_test(
 cc_library(
     name = "config",
     hdrs = ["config.h"],
+    deps = [
+        "@abseil-cpp//absl/time",
+    ],
 )
 
 cc_library(
@@ -136,7 +139,9 @@ cc_library(
     srcs = ["segmentation.cc"],
     hdrs = ["segmentation.h"],
     deps = [
+        ":config",
         ":snapshot",
+        "@abseil-cpp//absl/time",
     ],
 )
 
@@ -152,6 +157,34 @@ cc_test(
 )
 
 cc_library(
+    name = "sequence_util",
+    srcs = ["sequence_util.cc"],
+    hdrs = ["sequence_util.h"],
+    deps = [
+        ":snapshot",
+        "@abseil-cpp//absl/time",
+    ],
+)
+
+cc_test(
+    name = "sequence_util_test",
+    srcs = ["sequence_util_test.cc"],
+    deps = [
+        ":segmentation",
+        ":sequence_util",
+        ":snapshot",
+        "//testing:test_main",
+        "@googletest//:gtest",
+    ],
+)
+
+cc_library(
     name = "snapshot",
+    srcs = ["snapshot.cc"],
     hdrs = ["snapshot.h"],
+    deps = [
+        "@abseil-cpp//absl/strings",
+        "@abseil-cpp//absl/strings:str_format",
+        "@abseil-cpp//absl/time",
+    ],
 )

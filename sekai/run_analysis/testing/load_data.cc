@@ -11,21 +11,23 @@
 #include "sekai/run_analysis/parser.h"
 #include "sekai/run_analysis/proto/run_data.pb.h"
 #include "sekai/run_analysis/segmentation.h"
+#include "sekai/run_analysis/sequence_util.h"
 #include "sekai/run_analysis/snapshot.h"
 
 namespace sekai::run_analysis {
 
-absl::StatusOr<std::vector<Snapshot>> ConvertPointsGraph(int64_t timestamp_offset,
-                                                         const PointsGraph& graph) {
+absl::StatusOr<Sequence> ConvertPointsGraph(absl::Time time_offset, const PointsGraph& graph) {
   if (graph.timestamps_size() != graph.points_size()) {
     return absl::InvalidArgumentError("Invalid graph: timestamps and points size differ!");
   }
-  std::vector<Snapshot> points;
+  Sequence sequence = {
+      .time_offset = time_offset,
+  };
   std::transform(graph.timestamps().begin(), graph.timestamps().end(), graph.points().begin(),
-                 std::back_inserter(points), [&](const auto ts, const auto pt) {
-                   return Snapshot{static_cast<int>(ts - timestamp_offset) / 1000, pt};
+                 std::back_inserter(sequence.points), [&](const auto ts, const auto pt) {
+                   return Snapshot{absl::FromUnixMillis(ts) - time_offset, pt};
                  });
-  return points;
+  return sequence;
 }
 
 absl::StatusOr<LoadedData> LoadData(std::filesystem::path path) {
@@ -36,9 +38,10 @@ absl::StatusOr<LoadedData> LoadData(std::filesystem::path path) {
   if (graph.timestamps().empty()) {
     return absl::InvalidArgumentError("Empty graph");
   }
-  data.timestamp_offset = graph.timestamps(0);
-  ASSIGN_OR_RETURN(data.points, ConvertPointsGraph(data.timestamp_offset, graph));
-  data.segments = SplitIntoSegments(data.points, kMinSegmentLength, kMaxSegmentGap);
+  data.timestamp_offset = absl::FromUnixMillis(graph.timestamps(0));
+  ASSIGN_OR_RETURN(data.raw_sequence, ConvertPointsGraph(data.timestamp_offset, graph));
+  data.processed_sequence = ProcessSequence(data.raw_sequence, kInterval, kMaxSegmentGap);
+  data.segments = SplitIntoSegments(data.processed_sequence, kMinSegmentLength, kMaxSegmentGap);
   return data;
 }
 

@@ -95,7 +95,11 @@ class PlotDefs {
  public:
   PlotDefs(const LoadedData& data) : data_(data) {}
   void Draw(PlotOptions& options) {
-    ConditionalPlot(&state_.enable_points_graph, PointsLineGraph(data_.points)).Draw(options);
+    ConditionalPlot(&state_.enable_raw_graph, PointsLineGraph("Raw", data_.raw_sequence))
+        .Draw(options);
+    ConditionalPlot(&state_.enable_processed_graph,
+                    PointsLineGraph("Processed", data_.processed_sequence))
+        .Draw(options);
     ConditionalPlot(&state_.enable_segments_graph, SegmentsLineGraph(data_.segments)).Draw(options);
   }
 
@@ -111,12 +115,14 @@ class PlotDefs {
 
  private:
   struct PlotState {
-    bool enable_points_graph = true;
+    bool enable_raw_graph = true;
+    bool enable_processed_graph = true;
     bool enable_segments_graph = true;
   } state_;
   const LoadedData& data_;
   std::vector<std::pair<std::string, bool*>> checkboxes_ = {
-      {"Event Points", &state_.enable_points_graph},
+      {"Raw Sequence", &state_.enable_raw_graph},
+      {"Processed Sequence", &state_.enable_processed_graph},
       {"Segments", &state_.enable_segments_graph},
   };
 };

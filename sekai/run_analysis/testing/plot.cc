@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "absl/strings/str_cat.h"
+#include "absl/time/time.h"
 #include "implot.h"
 #include "sekai/run_analysis/snapshot.h"
 
@@ -17,19 +18,19 @@ void PointsLineGraph::Draw(const PlotOptions& options) const {
   x.reserve(points_.size());
   y.reserve(points_.size());
 
-  for (const Snapshot& point : points_) {
-    x.push_back(point.timestamp);
+  for (const Snapshot& point : points_.points) {
+    x.push_back(static_cast<int>((point.time) / absl::Minutes(1)));
     y.push_back(point.points);
   }
 
   ImPlot::PlotLine(title_.c_str(), x.data(), y.data(), x.size());
 }
 
-SegmentsLineGraph::SegmentsLineGraph(std::span<const Segment> segments) {
+SegmentsLineGraph::SegmentsLineGraph(std::span<const Sequence> segments) {
   segment_graphs_.reserve(segments.size());
   int counter = 0;
-  for (const Segment& segment : segments) {
-    segment_graphs_.emplace_back(segment.points, absl::StrCat("Segment ", counter++));
+  for (const Sequence& segment : segments) {
+    segment_graphs_.emplace_back(absl::StrCat("Segment ", counter++), segment);
   }
 }
 
