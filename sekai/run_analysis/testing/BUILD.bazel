@@ -1,3 +1,4 @@
+load("@emsdk//emscripten_toolchain:wasm_rules.bzl", "wasm_cc_binary")
 load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library")
 
 cc_library(
@@ -7,6 +8,7 @@ cc_library(
     deps = [
         "//sekai:file_util",
         "//sekai/run_analysis:config",
+        "//sekai/run_analysis:histogram",
         "//sekai/run_analysis:parser",
         "//sekai/run_analysis:segmentation",
         "//sekai/run_analysis:sequence_util",
@@ -17,6 +19,25 @@ cc_library(
 )
 
 cc_binary(
+    name = "load_data_main",
+    srcs = ["load_data_main.cc"],
+    linkopts = [
+        "-sUSE_PTHREADS=0",
+    ],
+    deps = [
+        ":load_data",
+        "//base",
+        "@abseil-cpp//absl/log",
+        "@abseil-cpp//absl/log:flags",
+    ],
+)
+
+wasm_cc_binary(
+    name = "load_data_wasm",
+    cc_target = ":load_data_main",
+)
+
+cc_binary(
     name = "main",
     srcs = ["main.cc"],
     deps = [
@@ -24,6 +45,7 @@ cc_binary(
         ":plot",
         "//base",
         "@abseil-cpp//absl/log",
+        "@abseil-cpp//absl/log:flags",
         "@glfw",
         "@imgui",
         "@imgui//backends:platform-glfw",
@@ -37,8 +59,10 @@ cc_library(
     srcs = ["plot.cc"],
     hdrs = ["plot.h"],
     deps = [
+        "//sekai:ranges_util",
         "//sekai/run_analysis:segmentation",
         "//sekai/run_analysis:snapshot",
+        "@abseil-cpp//absl/log",
         "@abseil-cpp//absl/strings",
         "@imgui",
         "@implot",

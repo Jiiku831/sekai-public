@@ -5,6 +5,7 @@
 
 #include "absl/status/statusor.h"
 #include "absl/time/time.h"
+#include "sekai/run_analysis/histogram.h"
 #include "sekai/run_analysis/proto/run_data.pb.h"
 #include "sekai/run_analysis/segmentation.h"
 #include "sekai/run_analysis/snapshot.h"
@@ -17,6 +18,7 @@ struct LoadedData {
   Sequence raw_sequence;
   Sequence processed_sequence;
   std::vector<Sequence> segments;
+  Histograms histograms;
 };
 
 absl::StatusOr<LoadedData> LoadData(std::filesystem::path path);

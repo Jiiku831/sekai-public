@@ -61,6 +61,29 @@ cc_library(
     ],
 )
 
+cc_library(
+    name = "histogram",
+    srcs = ["histogram.cc"],
+    hdrs = ["histogram.h"],
+    deps = [
+        ":snapshot",
+        "//sekai:ranges_util",
+        "@abseil-cpp//absl/time",
+    ],
+)
+
+cc_test(
+    name = "histogram_test",
+    srcs = ["histogram_test.cc"],
+    deps = [
+        ":histogram",
+        ":snapshot",
+        "//testing:test_main",
+        "@abseil-cpp//absl/time",
+        "@googletest//:gtest",
+    ],
+)
+
 cc_binary(
     name = "server_main",
     srcs = [

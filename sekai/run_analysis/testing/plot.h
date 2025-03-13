@@ -60,4 +60,22 @@ class SegmentsLineGraph : public PlotBase {
   std::vector<PointsLineGraph> segment_graphs_;
 };
 
+struct HistogramOptions {
+  bool drop_zeros = true;
+  int bins = 100;
+};
+
+class HistogramPlot : public PlotBase {
+ public:
+  // Input must outlive this class.
+  HistogramPlot(std::string_view title, std::span<const int> points, HistogramOptions options = {});
+
+  void Draw(const PlotOptions& options) const override;
+
+ private:
+  std::string title_;
+  HistogramOptions options_;
+  std::vector<int> points_;
+};
+
 }  // namespace sekai::run_analysis

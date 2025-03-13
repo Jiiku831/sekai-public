@@ -1,12 +1,16 @@
 #include "sekai/run_analysis/testing/plot.h"
 
 #include <cstdint>
+#include <ranges>
 #include <span>
 #include <vector>
 
+#include "absl/log/log.h"
 #include "absl/strings/str_cat.h"
 #include "absl/time/time.h"
 #include "implot.h"
+#include "plot.h"
+#include "sekai/ranges_util.h"
 #include "sekai/run_analysis/snapshot.h"
 
 namespace sekai::run_analysis {
@@ -38,6 +42,21 @@ void SegmentsLineGraph::Draw(const PlotOptions& options) const {
   for (const PointsLineGraph& graph : segment_graphs_) {
     graph.Draw(options);
   }
+}
+
+HistogramPlot::HistogramPlot(std::string_view title, std::span<const int> points,
+                             HistogramOptions options)
+    : title_(title), options_(std::move(options)) {
+  if (options.drop_zeros) {
+    points_ = ToVector(points | std::views::filter([](const int x) { return x != 0; }));
+  } else {
+    points_ = {points.begin(), points.end()};
+  }
+}
+
+void HistogramPlot::Draw(const PlotOptions& options) const {
+  ImPlot::PlotHistogram(title_.c_str(), points_.data(), points_.size(), options_.bins,
+                        /*bar_scale=*/1.0, ImPlotRange(), ImPlotHistogramFlags_Density);
 }
 
 }  // namespace sekai::run_analysis

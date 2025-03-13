@@ -16,7 +16,11 @@
 
 ABSL_FLAG(std::string, run_data, "", "Run data to load");
 
+using ::sekai::run_analysis::ComputeHistograms;
 using ::sekai::run_analysis::ConditionalPlot;
+using ::sekai::run_analysis::HistogramPlot;
+using ::sekai::run_analysis::kInterval;
+using ::sekai::run_analysis::kWindow;
 using ::sekai::run_analysis::LoadData;
 using ::sekai::run_analysis::LoadedData;
 using ::sekai::run_analysis::PlotOptions;
@@ -93,14 +97,30 @@ void NewFrame() {
 
 class PlotDefs {
  public:
-  PlotDefs(const LoadedData& data) : data_(data) {}
-  void Draw(PlotOptions& options) {
+  PlotDefs(LoadedData data) : data_(std::move(data)) {}
+
+  void Update() {
+    data_.histograms = ComputeHistograms(data_.segments, state_.smoothing_window, kInterval);
+  }
+
+  void Draw(const PlotOptions& options) {
     ConditionalPlot(&state_.enable_raw_graph, PointsLineGraph("Raw", data_.raw_sequence))
         .Draw(options);
     ConditionalPlot(&state_.enable_processed_graph,
                     PointsLineGraph("Processed", data_.processed_sequence))
         .Draw(options);
     ConditionalPlot(&state_.enable_segments_graph, SegmentsLineGraph(data_.segments)).Draw(options);
+  }
+
+  void DrawHistograms(const PlotOptions& options) {
+    ConditionalPlot(&state_.enable_step_hist, HistogramPlot("Steps", data_.histograms.steps))
+        .Draw(options);
+    ConditionalPlot(&state_.enable_speed_hist,
+                    HistogramPlot("Hourly Speeds", data_.histograms.speeds))
+        .Draw(options);
+    ConditionalPlot(&state_.enable_smoothed_hist,
+                    HistogramPlot("Smoothed Hourly Speeds", data_.histograms.smoothed_speeds))
+        .Draw(options);
   }
 
   void DrawCheckboxes() {
@@ -113,17 +133,31 @@ class PlotDefs {
     }
   }
 
+  void DrawInputs() {
+    DrawCheckboxes();
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(15 * ImGui::GetFontSize());
+    ImGui::SliderInt("Smoothing Window", &state_.smoothing_window, 1, 12);
+  }
+
  private:
   struct PlotState {
     bool enable_raw_graph = true;
     bool enable_processed_graph = true;
     bool enable_segments_graph = true;
+    bool enable_step_hist = false;
+    bool enable_speed_hist = true;
+    bool enable_smoothed_hist = true;
+    int smoothing_window = kWindow;
   } state_;
-  const LoadedData& data_;
+  LoadedData data_;
   std::vector<std::pair<std::string, bool*>> checkboxes_ = {
       {"Raw Sequence", &state_.enable_raw_graph},
       {"Processed Sequence", &state_.enable_processed_graph},
       {"Segments", &state_.enable_segments_graph},
+      {"Step Histogram", &state_.enable_step_hist},
+      {"Speed Histogram", &state_.enable_speed_hist},
+      {"Smoothed Speed Histogram", &state_.enable_smoothed_hist},
   };
 };
 
@@ -134,15 +168,26 @@ void DrawFrame(PlotDefs& plots) {
   ImGui::SetNextWindowSize(viewport->WorkSize);
   ImGui::Begin("Run Analysis Debugger", nullptr,
                ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove);
-  plots.DrawCheckboxes();
+  plots.DrawInputs();
 
   constexpr int kPaddingBottom = 80;
   constexpr int kPaddingRight = 35;
-  ImVec2 plotSize(viewport->WorkSize.x - kPaddingRight, viewport->WorkSize.y - kPaddingBottom);
+  const int kHistogramWidth = (viewport->WorkSize.x - 2 * kPaddingRight) / 2;
+  const int kHistogramHeight = 600;
+
+  ImVec2 plotSize(viewport->WorkSize.x - kPaddingRight,
+                  viewport->WorkSize.y - kHistogramHeight - kPaddingBottom);
   if (ImPlot::BeginPlot("Event Points", plotSize)) {
     ImPlot::SetupAxes(nullptr, nullptr, ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit);
     ImPlot::SetNextFillStyle(IMPLOT_AUTO_COL, 0.5f);
     plots.Draw(options);
+    ImPlot::EndPlot();
+  }
+  ImVec2 histPlotSize(kHistogramWidth, kHistogramHeight);
+  if (ImPlot::BeginPlot("Speed Histograms##Histograms", histPlotSize)) {
+    ImPlot::SetupAxes(nullptr, nullptr, ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit);
+    ImPlot::SetNextFillStyle(IMPLOT_AUTO_COL, 0.5f);
+    plots.DrawHistograms(options);
     ImPlot::EndPlot();
   }
   ImGui::End();
@@ -184,10 +229,11 @@ int main(int argc, char** argv) {
   }
   InitImPlot(window);
 
-  PlotDefs defs(*data);
+  PlotDefs defs(*std::move(data));
   while (!glfwWindowShouldClose(window)) {
     if (!PollEvents(window)) continue;
     NewFrame();
+    defs.Update();
     DrawFrame(defs);
     RenderFrame(window);
     SwapFrame(window);

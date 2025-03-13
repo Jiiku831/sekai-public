@@ -4,6 +4,7 @@
 #include <iterator>
 #include <string>
 
+#include "absl/log/log.h"
 #include "absl/status/statusor.h"
 #include "base/util.h"
 #include "sekai/file_util.h"
@@ -42,6 +43,7 @@ absl::StatusOr<LoadedData> LoadData(std::filesystem::path path) {
   ASSIGN_OR_RETURN(data.raw_sequence, ConvertPointsGraph(data.timestamp_offset, graph));
   data.processed_sequence = ProcessSequence(data.raw_sequence, kInterval, kMaxSegmentGap);
   data.segments = SplitIntoSegments(data.processed_sequence, kMinSegmentLength, kMaxSegmentGap);
+  data.histograms = ComputeHistograms(data.segments, kWindow, kInterval);
   return data;
 }
 
