@@ -40,7 +40,7 @@ else
     -c opt
   )
 fi
-BAZEL_CXXOPTS=-std=c++20 bazelisk build "${build_opts[@]}" "//$target_pkg:$target" || exit $?
+BAZEL_CXXOPTS=-std=c++23 bazelisk build "${build_opts[@]}" "//$target_pkg:$target" || exit $?
 
 echo "$fg[blue]Extracting server root...$reset_color"
 server_root="$(bazelisk info "${build_opts[@]}" bazel-bin)/$target_pkg/$target.wrangler_root"
