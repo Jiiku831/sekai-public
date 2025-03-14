@@ -11,6 +11,7 @@ namespace sekai::run_analysis {
 struct Histograms {
   // Values of all steps.
   std::vector<int> steps;
+  Sequence step_seq;
 
   // Values of hourly speeds computed from each step.
   std::vector<int> speeds;
@@ -18,10 +19,13 @@ struct Histograms {
   // Values of smoothed hourly speeds over the given window.
   int smoothing_window = 0;
   std::vector<int> smoothed_speeds;
+  Sequence smooth_seq;
 
   void reserve(std::size_t n) {
+    step_seq.reserve(n);
     steps.reserve(n);
     speeds.reserve(n);
+    smooth_seq.reserve(n);
     smoothed_speeds.reserve(n);
   }
 

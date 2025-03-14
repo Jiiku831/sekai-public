@@ -13,19 +13,12 @@
 #include "implot.h"
 #include "load_data.h"
 #include "plot.h"
+#include "sekai/ranges_util.h"
 
 ABSL_FLAG(std::string, run_data, "", "Run data to load");
 
-using ::sekai::run_analysis::ComputeHistograms;
-using ::sekai::run_analysis::ConditionalPlot;
-using ::sekai::run_analysis::HistogramPlot;
-using ::sekai::run_analysis::kInterval;
-using ::sekai::run_analysis::kWindow;
-using ::sekai::run_analysis::LoadData;
-using ::sekai::run_analysis::LoadedData;
-using ::sekai::run_analysis::PlotOptions;
-using ::sekai::run_analysis::PointsLineGraph;
-using ::sekai::run_analysis::SegmentsLineGraph;
+using namespace ::sekai;
+using namespace ::sekai::run_analysis;
 
 constexpr const char* kGlslVersion = "#version 130";
 constexpr float kScaleFactor = 2.0;
@@ -100,7 +93,18 @@ class PlotDefs {
   PlotDefs(LoadedData data) : data_(std::move(data)) {}
 
   void Update() {
+    data_.runs = RangesTo<std::vector<Runs>>(
+        data_.segments | std::views::transform([&](const auto& x) {
+          return SegmentRuns(x, state_.smoothing_window, state_.breakpoint_shift,
+                             state_.breakpoint_threshold_low / 1000,
+                             state_.breakpoint_threshold_high);
+        }));
     data_.histograms = ComputeHistograms(data_.segments, state_.smoothing_window, kInterval);
+    data_.run_histograms = RangesTo<std::vector<Histograms>>(
+        data_.runs | std::views::transform([&](const auto& x) {
+          return ComputeHistograms(x.runs, state_.smoothing_window, kInterval);
+        }));
+    data_.combined_run_histograms = Histograms::Join(data_.run_histograms);
   }
 
   void Draw(const PlotOptions& options) {
@@ -109,7 +113,30 @@ class PlotDefs {
     ConditionalPlot(&state_.enable_processed_graph,
                     PointsLineGraph("Processed", data_.processed_sequence))
         .Draw(options);
-    ConditionalPlot(&state_.enable_segments_graph, SegmentsLineGraph(data_.segments)).Draw(options);
+    ConditionalPlot(&state_.enable_segments_graph,
+                    SegmentsPlot<PointsLineGraph>("Segment", data_.segments))
+        .Draw(options);
+    auto breakpoints = RangesTo<std::vector<Sequence>>(
+        data_.runs | std::views::transform([](const auto& run) { return run.breakpoints; }));
+    ConditionalPlot(&state_.enable_breakpoints_graph,
+                    SegmentsPlot<MarkersPlot>("Breakpoints", breakpoints))
+        .Draw(options);
+    ImPlot::SetAxis(ImAxis_Y2);
+    auto bp_scores = RangesTo<std::vector<Sequence>>(
+        data_.runs | std::views::transform([](const auto& run) { return run.breakpoint_scores; }));
+    ConditionalPlot(&state_.enable_breakpoints_graph,
+                    SegmentsPlot<PointsLineGraph>("Breakpoint Scores", bp_scores))
+        .Draw(options);
+    ImPlot::DragLineY(0, &state_.breakpoint_threshold_low, ImVec4(1, 0, 0, 1), 1,
+                      ImPlotDragToolFlags_NoFit);
+    ImPlot::TagY(state_.breakpoint_threshold_low, ImVec4(1, 0, 0, 1), "Thresh");
+    // ConditionalPlot(&state_.enable_step_graph,
+    //                 MarkersPlot("Steps", data_.combined_run_histograms.step_seq))
+    //     .Draw(options);
+    ImPlot::SetAxis(ImAxis_Y3);
+    ConditionalPlot(&state_.enable_step_graph,
+                    MarkersPlot("Smoothed Speed", data_.combined_run_histograms.smooth_seq))
+        .Draw(options);
   }
 
   void DrawHistograms(const PlotOptions& options) {
@@ -120,6 +147,30 @@ class PlotDefs {
         .Draw(options);
     ConditionalPlot(&state_.enable_smoothed_hist,
                     HistogramPlot("Smoothed Hourly Speeds", data_.histograms.smoothed_speeds))
+        .Draw(options);
+  }
+
+  void DrawSegmentHistograms(const PlotOptions& options) {
+    ConditionalPlot(&state_.enable_step_hist,
+                    HistogramPlot("Steps (All Runs)", data_.combined_run_histograms.steps))
+        .Draw(options);
+    ConditionalPlot(&state_.enable_speed_hist,
+                    HistogramPlot("Hourly Speeds (All Runs)", data_.combined_run_histograms.speeds))
+        .Draw(options);
+    ConditionalPlot(&state_.enable_smoothed_hist,
+                    HistogramPlot("Smoothed Hourly Speeds (All Runs)",
+                                  data_.combined_run_histograms.smoothed_speeds))
+        .Draw(options);
+    ConditionalPlot(&state_.enable_step_hist,
+                    HistogramPlot("Steps", data_.run_histograms[state_.selected_segment].steps))
+        .Draw(options);
+    ConditionalPlot(
+        &state_.enable_speed_hist,
+        HistogramPlot("Hourly Speeds", data_.run_histograms[state_.selected_segment].speeds))
+        .Draw(options);
+    ConditionalPlot(&state_.enable_smoothed_hist,
+                    HistogramPlot("Smoothed Hourly Speeds",
+                                  data_.run_histograms[state_.selected_segment].smoothed_speeds))
         .Draw(options);
   }
 
@@ -137,24 +188,44 @@ class PlotDefs {
     DrawCheckboxes();
     ImGui::SameLine();
     ImGui::SetNextItemWidth(15 * ImGui::GetFontSize());
+    ImGui::SliderFloat("BP Shift", &state_.breakpoint_shift, 0, 2);
+    // ImGui::SameLine();
+    // ImGui::SetNextItemWidth(15 * ImGui::GetFontSize());
+    // ImGui::SliderFloat("BP Thresh Low", &state_.breakpoint_threshold_low, 1, 10);
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(15 * ImGui::GetFontSize());
+    ImGui::SliderFloat("BP Thresh High", &state_.breakpoint_threshold_high, 0.01, 0.99);
+
+    ImGui::SetNextItemWidth(15 * ImGui::GetFontSize());
     ImGui::SliderInt("Smoothing Window", &state_.smoothing_window, 1, 12);
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(15 * ImGui::GetFontSize());
+    ImGui::SliderInt("Select Segment", &state_.selected_segment, 0, data_.segments.size() - 1);
   }
 
  private:
   struct PlotState {
     bool enable_raw_graph = true;
     bool enable_processed_graph = true;
+    bool enable_step_graph = true;
     bool enable_segments_graph = true;
+    bool enable_breakpoints_graph = true;
     bool enable_step_hist = false;
     bool enable_speed_hist = true;
     bool enable_smoothed_hist = true;
     int smoothing_window = kWindow;
+    int selected_segment = 0;
+    float breakpoint_shift = 1;
+    double breakpoint_threshold_low = kBreakpointThresholdLow * 1000;
+    float breakpoint_threshold_high = kBreakpointThresholdHigh;
   } state_;
   LoadedData data_;
   std::vector<std::pair<std::string, bool*>> checkboxes_ = {
       {"Raw Sequence", &state_.enable_raw_graph},
       {"Processed Sequence", &state_.enable_processed_graph},
+      {"Steps", &state_.enable_step_graph},
       {"Segments", &state_.enable_segments_graph},
+      {"Breakpoints", &state_.enable_breakpoints_graph},
       {"Step Histogram", &state_.enable_step_hist},
       {"Speed Histogram", &state_.enable_speed_hist},
       {"Smoothed Speed Histogram", &state_.enable_smoothed_hist},
@@ -170,24 +241,33 @@ void DrawFrame(PlotDefs& plots) {
                ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove);
   plots.DrawInputs();
 
-  constexpr int kPaddingBottom = 80;
+  constexpr int kPaddingBottom = 125;
   constexpr int kPaddingRight = 35;
-  const int kHistogramWidth = (viewport->WorkSize.x - 2 * kPaddingRight) / 2;
+  const int kHistogramWidth = (viewport->WorkSize.x - 2 * kPaddingRight) / 3;
   const int kHistogramHeight = 600;
 
   ImVec2 plotSize(viewport->WorkSize.x - kPaddingRight,
                   viewport->WorkSize.y - kHistogramHeight - kPaddingBottom);
-  if (ImPlot::BeginPlot("Event Points", plotSize)) {
-    ImPlot::SetupAxes(nullptr, nullptr, ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit);
+  if (ImPlot::BeginPlot("Event Points", plotSize, ImPlotFlags_Crosshairs)) {
+    ImPlot::SetupAxes(nullptr, nullptr);
+    ImPlot::SetupAxis(ImAxis_Y2, nullptr, ImPlotAxisFlags_Opposite);
+    ImPlot::SetupAxis(ImAxis_Y3, nullptr, ImPlotAxisFlags_Opposite);
     ImPlot::SetNextFillStyle(IMPLOT_AUTO_COL, 0.5f);
     plots.Draw(options);
     ImPlot::EndPlot();
   }
   ImVec2 histPlotSize(kHistogramWidth, kHistogramHeight);
   if (ImPlot::BeginPlot("Speed Histograms##Histograms", histPlotSize)) {
-    ImPlot::SetupAxes(nullptr, nullptr, ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit);
+    ImPlot::SetupAxes(nullptr, nullptr);
     ImPlot::SetNextFillStyle(IMPLOT_AUTO_COL, 0.5f);
     plots.DrawHistograms(options);
+    ImPlot::EndPlot();
+  }
+  ImGui::SameLine();
+  if (ImPlot::BeginPlot("Segment Histograms##Histograms2", histPlotSize)) {
+    ImPlot::SetupAxes(nullptr, nullptr);
+    ImPlot::SetNextFillStyle(IMPLOT_AUTO_COL, 0.5f);
+    plots.DrawSegmentHistograms(options);
     ImPlot::EndPlot();
   }
   ImGui::End();

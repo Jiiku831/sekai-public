@@ -164,6 +164,9 @@ cc_library(
     deps = [
         ":config",
         ":snapshot",
+        "//sekai:ranges_util",
+        "@abseil-cpp//absl/container:flat_hash_map",
+        "@abseil-cpp//absl/log",
         "@abseil-cpp//absl/time",
     ],
 )

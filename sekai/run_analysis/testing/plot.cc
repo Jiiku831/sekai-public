@@ -1,5 +1,6 @@
 #include "sekai/run_analysis/testing/plot.h"
 
+#include <cstddef>
 #include <cstdint>
 #include <ranges>
 #include <span>
@@ -14,41 +15,50 @@
 #include "sekai/run_analysis/snapshot.h"
 
 namespace sekai::run_analysis {
+namespace {
+
+struct PointSequence {
+  std::vector<int> x;
+  std::vector<int> y;
+
+  void reserve(std::size_t n) {
+    x.reserve(n);
+    y.reserve(n);
+  }
+
+  std::size_t size() const { return std::min(x.size(), y.size()); }
+};
+
+PointSequence SplitSequence(const Sequence& sequence) {
+  PointSequence seq;
+  seq.reserve(sequence.size());
+  for (const Snapshot& point : sequence) {
+    seq.x.push_back(static_cast<int>((point.time) / absl::Minutes(1)));
+    seq.y.push_back(point.points);
+  }
+  return seq;
+}
+
+}  // namespace
+
+void MarkersPlot::Draw(const PlotOptions& options) const {
+  if (points_.empty()) return;
+  PointSequence seq = SplitSequence(points_);
+  ImPlot::PlotScatter(title_.c_str(), seq.x.data(), seq.y.data(), seq.size());
+}
 
 void PointsLineGraph::Draw(const PlotOptions& options) const {
   if (points_.empty()) return;
-  std::vector<int> x;
-  std::vector<int> y;
-  x.reserve(points_.size());
-  y.reserve(points_.size());
-
-  for (const Snapshot& point : points_.points) {
-    x.push_back(static_cast<int>((point.time) / absl::Minutes(1)));
-    y.push_back(point.points);
-  }
-
-  ImPlot::PlotLine(title_.c_str(), x.data(), y.data(), x.size());
-}
-
-SegmentsLineGraph::SegmentsLineGraph(std::span<const Sequence> segments) {
-  segment_graphs_.reserve(segments.size());
-  int counter = 0;
-  for (const Sequence& segment : segments) {
-    segment_graphs_.emplace_back(absl::StrCat("Segment ", counter++), segment);
-  }
-}
-
-void SegmentsLineGraph::Draw(const PlotOptions& options) const {
-  for (const PointsLineGraph& graph : segment_graphs_) {
-    graph.Draw(options);
-  }
+  PointSequence seq = SplitSequence(points_);
+  ImPlot::PlotLine(title_.c_str(), seq.x.data(), seq.y.data(), seq.size());
 }
 
 HistogramPlot::HistogramPlot(std::string_view title, std::span<const int> points,
                              HistogramOptions options)
     : title_(title), options_(std::move(options)) {
   if (options.drop_zeros) {
-    points_ = ToVector(points | std::views::filter([](const int x) { return x != 0; }));
+    points_ =
+        RangesTo<std::vector<int>>(points | std::views::filter([](const int x) { return x != 0; }));
   } else {
     points_ = {points.begin(), points.end()};
   }

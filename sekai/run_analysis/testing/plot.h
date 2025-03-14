@@ -3,6 +3,7 @@
 #include <span>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "imgui.h"
 #include "sekai/run_analysis/segmentation.h"
@@ -36,6 +37,18 @@ class ConditionalPlot : public PlotBase {
   T inner_plot_;
 };
 
+class MarkersPlot : public PlotBase {
+ public:
+  // Input must outlive this class.
+  MarkersPlot(std::string_view title, const Sequence& points) : points_(points), title_(title) {}
+
+  void Draw(const PlotOptions& options) const override;
+
+ private:
+  const Sequence& points_;
+  std::string title_;
+};
+
 class PointsLineGraph : public PlotBase {
  public:
   // Input must outlive this class.
@@ -49,20 +62,32 @@ class PointsLineGraph : public PlotBase {
   std::string title_;
 };
 
-class SegmentsLineGraph : public PlotBase {
+template <typename Plot>
+class SegmentsPlot : public PlotBase {
  public:
   // Input must outlive this class.
-  SegmentsLineGraph(std::span<const Sequence> segments);
+  SegmentsPlot(std::string_view prefix, std::span<const Sequence> segments) : prefix_(prefix) {
+    segment_graphs_.reserve(segments.size());
+    int counter = 0;
+    for (const Sequence& segment : segments) {
+      segment_graphs_.emplace_back(absl::StrCat(prefix_, " ", counter++), segment);
+    }
+  }
 
-  void Draw(const PlotOptions& options) const override;
+  void Draw(const PlotOptions& options) const override {
+    for (const Plot& graph : segment_graphs_) {
+      graph.Draw(options);
+    }
+  }
 
  private:
-  std::vector<PointsLineGraph> segment_graphs_;
+  std::string prefix_;
+  std::vector<Plot> segment_graphs_;
 };
 
 struct HistogramOptions {
   bool drop_zeros = true;
-  int bins = 100;
+  int bins = 200;
 };
 
 class HistogramPlot : public PlotBase {
