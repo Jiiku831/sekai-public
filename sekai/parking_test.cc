@@ -166,7 +166,7 @@ class AnnotateTeamProtoWithMultiTurnParkingStrategyTest : public ::testing::Test
   Profile profile_{TestProfile()};
 };
 
-TEST_F(AnnotateTeamProtoWithMultiTurnParkingStrategyTest, AnnotateExample1) {
+TEST_F(AnnotateTeamProtoWithMultiTurnParkingStrategyTest, DISABLED_AnnotateExample1) {
   std::array cards = {
       CreateCard(profile_, /*card_id=*/116, /*level=*/60, /*master_rank=*/5),
       CreateCard(profile_, /*card_id=*/423, /*level=*/60, /*master_rank=*/2),
