@@ -21,12 +21,16 @@ struct Histograms {
   std::vector<int> smoothed_speeds;
   Sequence smooth_seq;
 
+  // Values of smoothed hourly speeds over each segment;
+  std::vector<int> segment_speeds;
+
   void reserve(std::size_t n) {
     step_seq.reserve(n);
     steps.reserve(n);
     speeds.reserve(n);
     smooth_seq.reserve(n);
     smoothed_speeds.reserve(n);
+    segment_speeds.reserve(n);
   }
 
   static Histograms Join(std::span<const Histograms> others);

@@ -17,6 +17,7 @@ class RunSegments {
   RunSegments(std::vector<Sequence> segments, Sequence breakpoint_scores, Sequence smoothed_diffs);
 
   const std::vector<Sequence>& active_segments() const { return active_segments_; }
+  const std::vector<Sequence>& segment_speeds() const { return segment_speeds_; }
   const Sequence& breakpoints() const { return breakpoints_; }
   const Sequence& breakpoint_scores() const { return breakpoint_scores_; }
   const Sequence& smoothed_diffs() const { return smoothed_diffs_; }
@@ -24,6 +25,7 @@ class RunSegments {
  private:
   std::vector<Sequence> active_segments_;
   std::vector<Sequence> inactive_segments_;
+  std::vector<Sequence> segment_speeds_;
   Sequence breakpoints_;
   Sequence breakpoint_scores_;
   Sequence smoothed_diffs_;

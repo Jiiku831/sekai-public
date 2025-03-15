@@ -33,6 +33,8 @@ Histograms Histograms::Join(std::span<const Histograms> others) {
     histograms.smooth_seq.points.insert(histograms.smooth_seq.points.end(),
                                         other.smooth_seq.points.begin(),
                                         other.smooth_seq.points.end());
+    histograms.segment_speeds.insert(histograms.segment_speeds.end(), other.segment_speeds.begin(),
+                                     other.segment_speeds.end());
   }
   return histograms;
 }
@@ -74,6 +76,13 @@ Histograms ComputeHistograms(const Sequence& segment, int smoothing_window,
     histograms.smoothed_speeds = RangesTo<std::vector<int>>(
         histograms.smooth_seq |
         std::views::transform([](const Snapshot& snapshot) { return snapshot.points; }));
+    if (segment.size() > 1) {
+      histograms.segment_speeds.insert(
+          histograms.segment_speeds.end(),
+          int((segment.back().time - segment.front().time) / interval),
+          (segment.back().points - segment.front().points) *
+              (60.0f / ((segment.back().time - segment.front().time) / absl::Minutes(1))));
+    }
   }
   return histograms;
 }

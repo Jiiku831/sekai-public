@@ -192,6 +192,9 @@ absl::StatusOr<DetectionResult> BreakpointDetection(const Sequence& seq,
     const Window& window = smoothed_diffs[i];
     ASSIGN_OR_RETURN(const DetectorState::Verdict verdict, state.AddPoint(pt, window));
     if (opts.debug) {
+      if (verdict.major_gap) {
+        res.breakpoint_scores.push_back(Snapshot(pt.time, 0));
+      }
       res.breakpoint_scores.push_back(Snapshot(pt.time, verdict.score * kBreakpointScoreFactor));
     }
 
@@ -253,6 +256,7 @@ RunSegments::RunSegments(std::vector<Sequence> run_segments, Sequence breakpoint
   // Debug info
   breakpoint_scores_ = std::move(breakpoint_scores);
   smoothed_diffs_ = std::move(smoothed_diffs);
+  segment_speeds_.reserve(run_segments.size() * 2);
 
   // Get breakpoints
   if (run_segments.empty()) return;
@@ -263,6 +267,14 @@ RunSegments::RunSegments(std::vector<Sequence> run_segments, Sequence breakpoint
       breakpoints_.push_back(seq.front());
     }
     breakpoints_.push_back(seq.back());
+    if (seq.size() > 1) {
+      int speed = (seq.back().points - seq.front().points) *
+                  (60.0f / ((seq.back().time - seq.front().time) / absl::Minutes(1)));
+      segment_speeds_.push_back(breakpoint_scores.CopyWithNewPoints({
+          Snapshot{seq.front().time, speed},
+          Snapshot{seq.back().time, speed},
+      }));
+    }
   }
 
   // Classify segments

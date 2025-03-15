@@ -139,14 +139,20 @@ class PlotDefs {
     ConditionalPlot(&state_.enable_breakpoints_graph,
                     PointsLineGraph("Breakpoint Scores", data_.segments.breakpoint_scores()))
         .Draw(options);
-    ImPlot::DragLineY(0, &state_.breakpoint_threshold_low, ImVec4(1, 0, 0, 1), 1,
-                      ImPlotDragToolFlags_NoFit);
-    ImPlot::TagY(state_.breakpoint_threshold_low, ImVec4(1, 0, 0, 1), "Thresh");
+    if (state_.enable_breakpoints_graph) {
+      ImPlot::DragLineY(0, &state_.breakpoint_threshold_low, ImVec4(1, 0, 0, 1), 1,
+                        ImPlotDragToolFlags_NoFit);
+      ImPlot::TagY(state_.breakpoint_threshold_low, ImVec4(1, 0, 0, 1), "Thresh");
+    }
     ImPlot::SetAxis(ImAxis_Y3);
     ConditionalPlot(&state_.enable_step_graph, MarkersPlot("Raw Diffs", data_.histograms.step_seq))
         .Draw(options);
     ConditionalPlot(&state_.enable_step_graph,
                     MarkersPlot("Smoothed Diffs", data_.segments.smoothed_diffs()))
+        .Draw(options);
+    ConditionalPlot(
+        &state_.enable_speed_graph,
+        SegmentsPlot<PointsLineGraph>("Segment Speeds", data_.segments.segment_speeds()))
         .Draw(options);
     ImPlot::EndPlot();
   }
@@ -170,13 +176,19 @@ class PlotDefs {
     ConditionalPlot(&state_.enable_step_hist,
                     HistogramPlot("Steps", data_.run_histograms[state_.selected_segment].steps))
         .Draw(options);
-    ConditionalPlot(
-        &state_.enable_speed_hist,
-        HistogramPlot("Hourly Speeds", data_.run_histograms[state_.selected_segment].speeds))
+    ConditionalPlot(&state_.enable_speed_hist,
+                    HistogramPlot("Segment Hourly Speeds",
+                                  data_.run_histograms[state_.selected_segment].speeds))
         .Draw(options);
     ConditionalPlot(&state_.enable_smoothed_hist,
-                    HistogramPlot("Smoothed Hourly Speeds",
+                    HistogramPlot("Segment Smoothed Hourly Speeds",
                                   data_.run_histograms[state_.selected_segment].smoothed_speeds))
+        .Draw(options);
+    ConditionalPlot(&state_.enable_segment_hist,
+                    HistogramPlot("Segment Avg Speeds", data_.histograms.segment_speeds,
+                                  {
+                                      .bins = 100,
+                                  }))
         .Draw(options);
     ImPlot::EndPlot();
   }
@@ -215,12 +227,14 @@ class PlotDefs {
   struct PlotState {
     bool enable_raw_graph = true;
     bool enable_processed_graph = true;
-    bool enable_step_graph = true;
+    bool enable_step_graph = false;
     bool enable_segments_graph = true;
     bool enable_breakpoints_graph = true;
+    bool enable_speed_graph = true;
     bool enable_step_hist = false;
     bool enable_speed_hist = true;
     bool enable_smoothed_hist = true;
+    bool enable_segment_hist = true;
     int smoothing_window = kWindow;
     int selected_segment = 0;
     float breakpoint_shift = kBreakpointShift;
@@ -234,9 +248,11 @@ class PlotDefs {
       {"Steps", &state_.enable_step_graph},
       {"Segments", &state_.enable_segments_graph},
       {"Breakpoints", &state_.enable_breakpoints_graph},
+      {"Segment Speed", &state_.enable_speed_graph},
       {"Step Histogram", &state_.enable_step_hist},
       {"Speed Histogram", &state_.enable_speed_hist},
       {"Smoothed Speed Histogram", &state_.enable_smoothed_hist},
+      {"Segment Speed Histogram", &state_.enable_segment_hist},
   };
 };
 

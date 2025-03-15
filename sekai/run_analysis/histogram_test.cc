@@ -39,6 +39,8 @@ TEST(HistogramsTest, ComputeSingleSegment) {
   EXPECT_THAT(histograms.steps, ElementsAreArray({0, 0, 0, 0, 0, 10, 10, 10, 10, 10}));
   EXPECT_THAT(histograms.speeds, ElementsAreArray({0, 0, 0, 0, 0, 120, 120, 120, 120, 120}));
   EXPECT_THAT(histograms.smoothed_speeds, ElementsAreArray({0, 0, 0, 40, 80, 120, 120, 120}));
+  EXPECT_THAT(histograms.segment_speeds,
+              ElementsAreArray({54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54}));
 }
 
 TEST(HistogramsTest, MergeHistograms) {
@@ -77,6 +79,8 @@ TEST(HistogramsTest, MergeHistograms) {
   EXPECT_THAT(histograms.steps, ElementsAreArray({0, 0, 0, 0, 0, 10, 10, 10, 10, 10}));
   EXPECT_THAT(histograms.speeds, ElementsAreArray({0, 0, 0, 0, 0, 120, 120, 120, 120, 120}));
   EXPECT_THAT(histograms.smoothed_speeds, ElementsAreArray({0, 0, 0, 120, 120, 120}));
+  EXPECT_THAT(histograms.segment_speeds,
+              ElementsAreArray({0, 0, 0, 0, 0, 120, 120, 120, 120, 120}));
 }
 
 }  // namespace
