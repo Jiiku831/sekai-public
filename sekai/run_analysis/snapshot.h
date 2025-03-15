@@ -8,7 +8,8 @@ namespace sekai::run_analysis {
 
 struct Snapshot {
   absl::Duration time;
-  int points;
+  int points = 0;
+  int diff = 0;
 
   auto operator<=>(const Snapshot&) const = default;
 
@@ -33,6 +34,8 @@ struct Sequence {
   Sequence CopyWithNewPoints(std::vector<Snapshot> new_points) const;
   Sequence CopyEmpty() const;
   Sequence CopyEmptyAndReserve(std::size_t size) const;
+
+  int diff() const { return empty() ? 0 : (back().points - front().points); }
 
   bool empty() const { return points.empty(); }
   std::size_t size() const { return points.size(); }

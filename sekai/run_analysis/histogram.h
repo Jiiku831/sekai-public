@@ -32,7 +32,7 @@ struct Histograms {
   static Histograms Join(std::span<const Histograms> others);
 };
 
-Histograms ComputeHistograms(std::span<const Sequence> segments, int smoothing_window,
+Histograms ComputeHistograms(const Sequence& segment, int smoothing_window,
                              absl::Duration interval);
 
 }  // namespace sekai::run_analysis

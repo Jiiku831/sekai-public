@@ -17,11 +17,9 @@ struct LoadedData {
   absl::Time timestamp_offset;
   Sequence raw_sequence;
   Sequence processed_sequence;
-  std::vector<Sequence> segments;
-  std::vector<Runs> runs;
+  RunSegments segments;
   Histograms histograms;
   std::vector<Histograms> run_histograms;
-  Histograms combined_run_histograms;
 };
 
 absl::StatusOr<LoadedData> LoadData(std::filesystem::path path);

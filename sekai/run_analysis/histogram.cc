@@ -13,12 +13,32 @@
 #include "sekai/ranges_util.h"
 #include "sekai/run_analysis/snapshot.h"
 
-namespace sekai::run_analysis {
+namespace sekai::run_analysis {  // namespace
 
-namespace {
+Histograms Histograms::Join(std::span<const Histograms> others) {
+  Histograms histograms;
+  if (others.empty()) {
+    return histograms;
+  }
+  histograms.smoothing_window = others[0].smoothing_window;
+  auto sizes = others | std::views::transform([](const Histograms& h) { return h.steps.size(); });
+  histograms.reserve(std::accumulate(sizes.begin(), sizes.end(), 0));
+  for (const Histograms& other : others) {
+    histograms.step_seq.points.insert(histograms.step_seq.points.end(),
+                                      other.step_seq.points.begin(), other.step_seq.points.end());
+    histograms.steps.insert(histograms.steps.end(), other.steps.begin(), other.steps.end());
+    histograms.speeds.insert(histograms.speeds.end(), other.speeds.begin(), other.speeds.end());
+    histograms.smoothed_speeds.insert(histograms.smoothed_speeds.end(),
+                                      other.smoothed_speeds.begin(), other.smoothed_speeds.end());
+    histograms.smooth_seq.points.insert(histograms.smooth_seq.points.end(),
+                                        other.smooth_seq.points.begin(),
+                                        other.smooth_seq.points.end());
+  }
+  return histograms;
+}
 
-Histograms ComputeForSegment(int smoothing_window, absl::Duration interval,
-                             const Sequence& segment) {
+Histograms ComputeHistograms(const Sequence& segment, int smoothing_window,
+                             absl::Duration interval) {
   Histograms histograms;
   histograms.smoothing_window = smoothing_window;
   histograms.step_seq = segment.CopyWithNewPoints(RangesTo<std::vector<Snapshot>>(
@@ -56,37 +76,6 @@ Histograms ComputeForSegment(int smoothing_window, absl::Duration interval,
         std::views::transform([](const Snapshot& snapshot) { return snapshot.points; }));
   }
   return histograms;
-}
-
-}  // namespace
-
-Histograms Histograms::Join(std::span<const Histograms> others) {
-  Histograms histograms;
-  if (others.empty()) {
-    return histograms;
-  }
-  histograms.smoothing_window = others[0].smoothing_window;
-  auto sizes = others | std::views::transform([](const Histograms& h) { return h.steps.size(); });
-  histograms.reserve(std::accumulate(sizes.begin(), sizes.end(), 0));
-  for (const Histograms& other : others) {
-    histograms.step_seq.points.insert(histograms.step_seq.points.end(),
-                                      other.step_seq.points.begin(), other.step_seq.points.end());
-    histograms.steps.insert(histograms.steps.end(), other.steps.begin(), other.steps.end());
-    histograms.speeds.insert(histograms.speeds.end(), other.speeds.begin(), other.speeds.end());
-    histograms.smoothed_speeds.insert(histograms.smoothed_speeds.end(),
-                                      other.smoothed_speeds.begin(), other.smoothed_speeds.end());
-    histograms.smooth_seq.points.insert(histograms.smooth_seq.points.end(),
-                                        other.smooth_seq.points.begin(),
-                                        other.smooth_seq.points.end());
-  }
-  return histograms;
-}
-
-Histograms ComputeHistograms(std::span<const Sequence> segments, int smoothing_window,
-                             absl::Duration interval) {
-  return Histograms::Join(RangesTo<std::vector<Histograms>>(
-      segments |
-      std::views::transform(std::bind_front(ComputeForSegment, smoothing_window, interval))));
 }
 
 }  // namespace sekai::run_analysis

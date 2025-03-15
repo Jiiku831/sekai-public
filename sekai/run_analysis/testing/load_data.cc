@@ -46,21 +46,12 @@ absl::StatusOr<LoadedData> LoadData(std::filesystem::path path) {
   data.timestamp_offset = absl::FromUnixMillis(graph.timestamps(0));
   ASSIGN_OR_RETURN(data.raw_sequence, ConvertPointsGraph(data.timestamp_offset, graph));
   data.processed_sequence = ProcessSequence(data.raw_sequence, kInterval, kMaxSegmentGap);
-  data.segments = SplitIntoSegments(data.processed_sequence, kMinSegmentLength, kMaxSegmentGap);
-#ifdef __cpp_lib_bind_back
-#warning std::bind_back is available to replace this crap
-#endif
-  data.runs = RangesTo<std::vector<Runs>>(data.segments | std::views::transform([](const auto& x) {
-                                            return SegmentRuns(x, kWindow, kBreakpointShift,
-                                                               kBreakpointThresholdLow,
-                                                               kBreakpointThresholdHigh);
-                                          }));
-  data.histograms = ComputeHistograms(data.segments, kWindow, kInterval);
-  data.run_histograms =
-      RangesTo<std::vector<Histograms>>(data.runs | std::views::transform([](const auto& x) {
-                                          return ComputeHistograms(x.runs, kWindow, kInterval);
-                                        }));
-  data.combined_run_histograms = Histograms::Join(data.run_histograms);
+  ASSIGN_OR_RETURN(data.segments, SegmentRuns(data.processed_sequence));
+  data.run_histograms = RangesTo<std::vector<Histograms>>(
+      data.segments.active_segments() | std::views::transform([](const Sequence& seq) {
+        return ComputeHistograms(seq, kWindow, kInterval);
+      }));
+  data.histograms = Histograms::Join(data.run_histograms);
   return data;
 }
 

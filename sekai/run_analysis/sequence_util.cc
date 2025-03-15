@@ -56,7 +56,13 @@ Sequence InterpolateSequence(const Sequence& sequence, absl::Duration interval,
 
 Sequence ProcessSequence(const Sequence& sequence, absl::Duration interval,
                          absl::Duration max_gap) {
-  return InterpolateSequence(AlignSequence(sequence, interval), interval, max_gap);
+  Sequence processed_seq =
+      InterpolateSequence(AlignSequence(sequence, interval), interval, max_gap);
+  for (std::size_t i = 1; i < processed_seq.size(); ++i) {
+    processed_seq.points[i].diff =
+        processed_seq.points[i].points - processed_seq.points[i - 1].points;
+  }
+  return processed_seq;
 }
 
 }  // namespace sekai::run_analysis

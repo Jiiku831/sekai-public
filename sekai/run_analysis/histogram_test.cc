@@ -5,7 +5,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "histogram.h"
+#include "sekai/ranges_util.h"
 #include "sekai/run_analysis/snapshot.h"
 
 namespace sekai::run_analysis {
@@ -16,7 +16,7 @@ using ::testing::ElementsAreArray;
 using ::testing::Field;
 
 TEST(HistogramsTest, ComputeSingleSegment) {
-  std::vector<Sequence> seqs = {{
+  Sequence seq = {
       .time_offset = absl::UnixEpoch(),
       .points =
           {
@@ -32,8 +32,8 @@ TEST(HistogramsTest, ComputeSingleSegment) {
               Snapshot{absl::Minutes(45), 40},
               Snapshot{absl::Minutes(55), 50},
           },
-  }};
-  Histograms histograms = ComputeHistograms(seqs, /*smoothing_window=*/3,
+  };
+  Histograms histograms = ComputeHistograms(seq, /*smoothing_window=*/3,
                                             /*interval=*/absl::Minutes(5));
   EXPECT_EQ(histograms.smoothing_window, 3);
   EXPECT_THAT(histograms.steps, ElementsAreArray({0, 0, 0, 0, 0, 10, 10, 10, 10, 10}));
@@ -41,7 +41,7 @@ TEST(HistogramsTest, ComputeSingleSegment) {
   EXPECT_THAT(histograms.smoothed_speeds, ElementsAreArray({0, 0, 0, 40, 80, 120, 120, 120}));
 }
 
-TEST(HistogramsTest, ComputeTwoSegments) {
+TEST(HistogramsTest, MergeHistograms) {
   std::vector<Sequence> seqs = {
       {
           .time_offset = absl::UnixEpoch(),
@@ -68,8 +68,11 @@ TEST(HistogramsTest, ComputeTwoSegments) {
               },
       },
   };
-  Histograms histograms = ComputeHistograms(seqs, /*smoothing_window=*/3,
-                                            /*interval=*/absl::Minutes(5));
+  Histograms histograms = Histograms::Join(
+      RangesTo<std::vector<Histograms>>(seqs | std::views::transform([](const auto& seq) {
+                                          return ComputeHistograms(seq, /*smoothing_window=*/3,
+                                                                   /*interval=*/absl::Minutes(5));
+                                        })));
   EXPECT_EQ(histograms.smoothing_window, 3);
   EXPECT_THAT(histograms.steps, ElementsAreArray({0, 0, 0, 0, 0, 10, 10, 10, 10, 10}));
   EXPECT_THAT(histograms.speeds, ElementsAreArray({0, 0, 0, 0, 0, 120, 120, 120, 120, 120}));

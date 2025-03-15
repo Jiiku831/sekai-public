@@ -4,25 +4,52 @@
 #include <span>
 #include <vector>
 
+#include "absl/status/statusor.h"
 #include "absl/time/time.h"
 #include "sekai/run_analysis/config.h"
 #include "sekai/run_analysis/snapshot.h"
 
 namespace sekai::run_analysis {
 
-// Assumes points are sorted by time.
-std::vector<Sequence> SplitIntoSegments(const Sequence& sequence, std::size_t min_segment_length,
-                                        absl::Duration max_segment_gap = kMaxSegmentGap);
+class RunSegments {
+ public:
+  RunSegments() = default;
+  RunSegments(std::vector<Sequence> segments, Sequence breakpoint_scores, Sequence smoothed_diffs);
 
-struct Runs {
-  Sequence breakpoints;
-  std::vector<Sequence> initial_splits;
-  std::vector<Sequence> runs;
-  Sequence breakpoint_scores;
+  const std::vector<Sequence>& active_segments() const { return active_segments_; }
+  const Sequence& breakpoints() const { return breakpoints_; }
+  const Sequence& breakpoint_scores() const { return breakpoint_scores_; }
+  const Sequence& smoothed_diffs() const { return smoothed_diffs_; }
+
+ private:
+  std::vector<Sequence> active_segments_;
+  std::vector<Sequence> inactive_segments_;
+  Sequence breakpoints_;
+  Sequence breakpoint_scores_;
+  Sequence smoothed_diffs_;
 };
-Runs SegmentRuns(const Sequence& sequence, int window, float breakpoint_shift = kBreakpointShift,
-                 float breakpoint_threshold_low = kBreakpointThresholdLow,
-                 float breakpoint_threshold_high = kBreakpointThresholdHigh,
-                 absl::Duration interval = kInterval);
+
+struct SegmentationOptions {
+  // Initial segmentation parameters
+  absl::Duration interval = kInterval;
+  absl::Duration max_segment_gap = kMaxSegmentGap;
+  std::size_t min_segment_length = kMinSegmentLength;
+
+  // Smoothing window to apply to breakpoint detection.
+  int window = kWindow;
+
+  // Breakpoint detection parameters.
+  float shift_detection_decay = kBreakpointDecay;
+  float shift_detection_factor = kBreakpointShift;
+  float mean_shift_threshold = kBreakpointThresholdLow;
+
+  // The threshold at which a change indicates a major shift in strategy.
+  float major_shift_threshold = kBreakpointThresholdHigh;
+
+  bool debug = kRunAnalysisDebug;
+};
+
+absl::StatusOr<RunSegments> SegmentRuns(const Sequence& sequence,
+                                        const SegmentationOptions& options = {});
 
 }  // namespace sekai::run_analysis
