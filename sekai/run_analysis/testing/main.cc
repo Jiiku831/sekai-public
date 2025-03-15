@@ -1,5 +1,7 @@
+#include <algorithm>
 #include <array>
 #include <filesystem>
+#include <ranges>
 #include <tuple>
 
 #include <GLFW/glfw3.h>
@@ -13,6 +15,7 @@
 #include "imgui_impl_opengl3.h"
 #include "implot.h"
 #include "sekai/ranges_util.h"
+#include "sekai/run_analysis/segment_analysis.h"
 #include "sekai/run_analysis/testing/load_data.h"
 #include "sekai/run_analysis/testing/plot.h"
 
@@ -106,11 +109,15 @@ class PlotDefs {
                                          static_cast<float>(state_.breakpoint_threshold_low / 1000),
                                      .major_shift_threshold = state_.breakpoint_threshold_high,
                                  }));
+    state_.selected_segment = std::clamp(state_.selected_segment, 0,
+                                         static_cast<int>(data_.segments.active_segments().size()));
     data_.run_histograms = RangesTo<std::vector<Histograms>>(
         data_.segments.active_segments() | std::views::transform([&](const Sequence& seq) {
           return ComputeHistograms(seq, state_.smoothing_window, kInterval);
         }));
     data_.histograms = Histograms::Join(data_.run_histograms);
+    ASSIGN_OR_RETURN(state_.segment_analysis,
+                     AnalyzeSegment(data_.segments.active_segments()[state_.selected_segment]));
     return absl::OkStatus();
   }
 
@@ -193,6 +200,65 @@ class PlotDefs {
     ImPlot::EndPlot();
   }
 
+  void DrawSteps(const PlotOptions& options, const ImGuiViewport* viewport) {
+    const int kHistogramWidth = (viewport->WorkSize.x - 2 * kPaddingRight) / 3;
+    ImVec2 histPlotSize(kHistogramWidth, kHistogramHeight);
+    if (!ImPlot::BeginPlot("Sequence", histPlotSize)) {
+      return;
+    }
+    ImPlot::SetupAxis(ImAxis_X1, nullptr, ImPlotAxisFlags_AutoFit);
+    ImPlot::SetupAxis(ImAxis_Y1, nullptr);
+    ImPlot::SetupAxisLimits(ImAxis_Y1, 0, 300'000);
+    ImPlot::SetupAxis(ImAxis_Y2, nullptr, ImPlotAxisFlags_Opposite | ImPlotAxisFlags_AutoFit);
+    ImPlot::SetNextFillStyle(IMPLOT_AUTO_COL, 0.5f);
+    auto seqs = RangesTo<std::vector<Sequence>>(
+        state_.segment_analysis.clusters | std::views::transform([](const Cluster& cluster) {
+          return Sequence{.points = RangesTo<std::vector<Snapshot>>(
+                              cluster.vals | std::views::transform([](const Snapshot& pt) {
+                                return Snapshot{pt.time, pt.diff};
+                              }))};
+        }));
+    std::array colors = {
+        ImVec4(1, 0, 0, 1),
+        ImVec4(0, 0, 1, 1),
+    };
+    SegmentsPlot<MarkersPlot>("Cluster", seqs | std::views::take(colors.size())).Draw(options);
+    SegmentsPlot<MarkersPlot>("Outliers", seqs | std::views::drop(colors.size())).Draw(options);
+    for (std::size_t i = 0; i < std::min(colors.size(), state_.segment_analysis.clusters.size());
+         ++i) {
+      float lv = state_.segment_analysis.clusters[i].mean;
+      float bound = 3 * state_.segment_analysis.clusters[i].stdev;
+      ImPlot::TagY(lv - bound, colors[i], "LB %.0f", lv - bound);
+      ImPlot::TagY(lv + bound, colors[i], "UB %.0f", lv + bound);
+      ImPlot::TagY(lv, colors[i], "Mean %.0f", lv);
+    }
+    ImPlot::SetAxis(ImAxis_Y2);
+    std::string title = absl::StrCat("Segment ", state_.selected_segment);
+    PointsLineGraph(title.c_str(), data_.segments.active_segments()[state_.selected_segment])
+        .Draw(options);
+    ImPlot::EndPlot();
+  }
+
+  void DrawDebug(const PlotOptions& options, const ImGuiViewport* viewport) {
+    const int kWidth = (viewport->WorkSize.x - 2 * kPaddingRight) / 3 + 3;
+    ImVec2 childSize(kWidth, kHistogramHeight);
+    if (!ImGui::BeginChild("Debug Info", childSize)) {
+      return;
+    }
+    if (ImGui::CollapsingHeader("Segment Debug", ImGuiTreeNodeFlags_DefaultOpen)) {
+      const auto& analysis = state_.segment_analysis;
+      for (std::size_t i = 0; i < analysis.clusters.size(); ++i) {
+        const auto& cluster = analysis.clusters[i];
+        if (cluster.mean < 0) {
+          continue;
+        }
+        ImGui::BulletText("Cluster %d: mean=%.0f stdev=%.0f", i, cluster.mean, cluster.stdev);
+      }
+      ImGui::BulletText("Cluster mean ratio: %.2f", analysis.cluster_mean_ratio);
+    }
+    ImGui::EndChild();
+  }
+
   void DrawCheckboxes() {
     int counter = 0;
     for (const auto& [title, toggle] : checkboxes_) {
@@ -205,7 +271,6 @@ class PlotDefs {
 
   void DrawInputs() {
     DrawCheckboxes();
-    ImGui::SameLine();
     ImGui::SetNextItemWidth(15 * ImGui::GetFontSize());
     ImGui::SliderFloat("BP Shift", &state_.breakpoint_shift, 0, 2);
     // ImGui::SameLine();
@@ -215,6 +280,7 @@ class PlotDefs {
     ImGui::SetNextItemWidth(15 * ImGui::GetFontSize());
     ImGui::SliderFloat("BP Thresh High", &state_.breakpoint_threshold_high, 0.01, 0.99);
 
+    ImGui::SameLine();
     ImGui::SetNextItemWidth(15 * ImGui::GetFontSize());
     ImGui::SliderInt("Smoothing Window", &state_.smoothing_window, 1, 12);
     ImGui::SameLine();
@@ -240,6 +306,7 @@ class PlotDefs {
     float breakpoint_shift = kBreakpointShift;
     double breakpoint_threshold_low = kBreakpointThresholdLow * 1000;
     float breakpoint_threshold_high = kBreakpointThresholdHigh;
+    SegmentAnalysisResult segment_analysis;
   } state_;
   LoadedData data_;
   std::vector<std::pair<std::string, bool*>> checkboxes_ = {
@@ -266,6 +333,10 @@ void DrawFrame(PlotDefs& plots) {
   plots.DrawInputs();
   plots.Draw(options, viewport);
   plots.DrawHistograms(options, viewport);
+  ImGui::SameLine();
+  plots.DrawSteps(options, viewport);
+  ImGui::SameLine();
+  plots.DrawDebug(options, viewport);
   ImGui::End();
   // ImGui::ShowDemoWindow();
   // ImPlot::ShowDemoWindow();

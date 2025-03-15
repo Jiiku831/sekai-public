@@ -44,6 +44,7 @@ cc_binary(
         ":load_data",
         ":plot",
         "//base",
+        "//sekai/run_analysis:segment_analysis",
         "@abseil-cpp//absl/log",
         "@abseil-cpp//absl/log:flags",
         "@glfw",

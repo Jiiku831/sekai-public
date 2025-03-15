@@ -15,7 +15,7 @@ struct Snapshot {
 
   template <typename Sink>
   friend void AbslStringify(Sink& sink, const Snapshot& snapshot) {
-    absl::Format(&sink, "Snapshot{%v, %d}", snapshot.time, snapshot.points);
+    absl::Format(&sink, "Snapshot{%v, %d, %d}", snapshot.time, snapshot.points, snapshot.diff);
   }
 };
 
