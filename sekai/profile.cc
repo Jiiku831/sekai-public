@@ -10,6 +10,7 @@
 #include <string_view>
 #include <vector>
 
+#include "absl/base/no_destructor.h"
 #include "absl/base/nullability.h"
 #include "absl/log/absl_check.h"
 #include "absl/log/log.h"
@@ -21,6 +22,8 @@
 #include "sekai/card.h"
 #include "sekai/db/master_db.h"
 #include "sekai/db/proto/all.h"
+#include "sekai/fixtures.h"
+#include "sekai/max_level.h"
 #include "sekai/team_builder/pool_utils.h"
 
 namespace sekai {
@@ -339,6 +342,27 @@ ProfileProto EmptyProfileProto() {
   profile.mutable_area_item_levels()->Resize(AreaItemArraySize(), 0);
   profile.mutable_character_ranks()->Resize(CharacterArraySize(), 1);
   return profile;
+}
+
+const Profile& Profile::Min() {
+  static const absl::NoDestructor<Profile> kMinProfile{EmptyProfileProto()};
+  return *kMinProfile;
+}
+const Profile& Profile::Max() {
+  static const absl::NoDestructor<Profile> kMaxProfile{[] {
+    ProfileProto profile_proto;
+    profile_proto.mutable_area_item_levels()->Resize(AreaItemArraySize(), kMaxAreaItemLevel);
+    profile_proto.mutable_character_ranks()->Resize(CharacterArraySize(), kMaxCharacterRank);
+    profile_proto.set_bonus_power(kMaxTitleBonus);
+    profile_proto.mutable_mysekai_gate_levels()->Resize(MySekaiGateArraySize(),
+                                                        kMaxMySekaiGateLevel);
+    profile_proto.set_mysekai_gate_levels(0, 0);
+    for (const db::MySekaiFixture* fixture : FixturesWithCharBonuses()) {
+      (*profile_proto.mutable_mysekai_fixture_crafted())[fixture->id()] = true;
+    }
+    return profile_proto;
+  }()};
+  return *kMaxProfile;
 }
 
 }  // namespace sekai

@@ -36,6 +36,20 @@ TEST_F(AnalyzeTeamTest, RespondsWithEventBonus) {
   )pb");
   auto expected_response = ParseTextProto<AnalyzeTeamResponse>(R"pb(
     event_bonus: 105
+    skill_details {
+      skill_lower_bounds: 80
+      skill_lower_bounds: 60
+      skill_lower_bounds: 60
+      skill_lower_bounds: 60
+      skill_lower_bounds: 60
+      skill_upper_bounds: 100
+      skill_upper_bounds: 80
+      skill_upper_bounds: 80
+      skill_upper_bounds: 80
+      skill_upper_bounds: 80
+      skill_value_lower_bound: 128
+      skill_value_upper_bound: 164
+    }
   )pb");
   EXPECT_THAT(Run(request), IsOkAndHolds(ProtoEquals(expected_response)));
 }

@@ -9,9 +9,11 @@ namespace sekai {
 
 inline constexpr int kTeamSize = 5;
 
+inline constexpr int kMasterRankMin = 0;
 inline constexpr int kMasterRankMax = 5;
 inline constexpr int kMasterRankArraySize = kMasterRankMax + 1;
 
+inline constexpr int kSkillLevelMin = 1;
 inline constexpr int kSkillLevelMax = 4;
 inline constexpr int kSkillLevelArraySize = kSkillLevelMax + 1;
 
@@ -24,6 +26,7 @@ inline constexpr int kMaxSkillValue = 160 + (160 / 5) * 4;
 
 inline constexpr std::array kReferenceScoreBoostCaps = {0.f, 120.f, 130.f, 140.f, 140.f};
 
+inline constexpr int kMaxTitleBonus = 310;
 inline constexpr int kMaxCharacterRank = 160;
 
 inline constexpr std::array kBoostMultipliers = {1, 5, 10, 15, 20, 25, 27, 29, 31, 33, 35};
