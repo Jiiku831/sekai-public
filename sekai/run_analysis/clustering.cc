@@ -68,16 +68,22 @@ std::vector<Cluster> FindClusters(std::span<const Snapshot> pts) {
     bool outliers_removed = true;
     for (int j = 0; j < kOutlierIterations && outliers_removed; ++j) {
       std::size_t outlier_init_size = outliers.vals.size();
-      constexpr float kMinStdev = 200;
+      constexpr float kMinStdev = 2000;
       float cluster_mean = results[i].mean;
       float cluster_stdev =
           std::max(kMinStdev, stdev<float>(results[i].vals | GetDiffs(), cluster_mean));
-      std::remove_copy_if(results[i].vals.begin(), results[i].vals.end(),
-                          std::back_inserter(outliers.vals), [&](const Snapshot& pt) {
-                            constexpr int kRejectionThreshold = 2;
-                            return std::abs(pt.diff - cluster_mean) <
-                                   kRejectionThreshold * cluster_stdev;
-                          });
+      results[i].vals.erase(std::remove_if(results[i].vals.begin(), results[i].vals.end(),
+                                           [&](const Snapshot& pt) {
+                                             constexpr float kRejectionThreshold = 2;
+                                             bool is_outlier = std::abs(pt.diff - cluster_mean) >
+                                                               kRejectionThreshold * cluster_stdev;
+                                             if (is_outlier) {
+                                               // Standard guarantees exactly N applications of p.
+                                               outliers.vals.push_back(pt);
+                                             }
+                                             return is_outlier;
+                                           }),
+                            results[i].vals.end());
       // Recompute mean/stdev
       results[i].mean = mean<float>(results[i].vals | GetDiffs());
       results[i].stdev = stdev<float>(results[i].vals | GetDiffs(), results[i].mean);

@@ -170,7 +170,10 @@ class PlotDefs {
     if (!ImPlot::BeginPlot("Speed Histograms##Histograms", histPlotSize)) {
       return;
     }
-    ImPlot::SetupAxes(nullptr, nullptr);
+    ImPlot::SetupAxes(nullptr, nullptr, ImPlotAxisFlags_AutoFit,
+                      ImPlotAxisFlags_AutoFit | ImPlotAxisFlags_NoDecorations);
+    ImPlot::SetupAxis(ImAxis_Y2, nullptr, ImPlotAxisFlags_AutoFit | ImPlotAxisFlags_NoDecorations);
+    ImPlot::SetupAxis(ImAxis_Y3, nullptr, ImPlotAxisFlags_AutoFit | ImPlotAxisFlags_NoDecorations);
     ImPlot::SetNextFillStyle(IMPLOT_AUTO_COL, 0.5f);
     ConditionalPlot(&state_.enable_step_hist, HistogramPlot("Steps", data_.histograms.steps))
         .Draw(options);
@@ -180,6 +183,7 @@ class PlotDefs {
     ConditionalPlot(&state_.enable_smoothed_hist,
                     HistogramPlot("Smoothed Hourly Speeds", data_.histograms.smoothed_speeds))
         .Draw(options);
+    ImPlot::SetAxis(ImAxis_Y2);
     ConditionalPlot(&state_.enable_step_hist,
                     HistogramPlot("Steps", data_.run_histograms[state_.selected_segment].steps))
         .Draw(options);
@@ -191,6 +195,7 @@ class PlotDefs {
                     HistogramPlot("Segment Smoothed Hourly Speeds",
                                   data_.run_histograms[state_.selected_segment].smoothed_speeds))
         .Draw(options);
+    ImPlot::SetAxis(ImAxis_Y3);
     ConditionalPlot(&state_.enable_segment_hist,
                     HistogramPlot("Segment Avg Speeds", data_.histograms.segment_speeds,
                                   {
@@ -226,11 +231,12 @@ class PlotDefs {
     SegmentsPlot<MarkersPlot>("Outliers", seqs | std::views::drop(colors.size())).Draw(options);
     for (std::size_t i = 0; i < std::min(colors.size(), state_.segment_analysis.clusters.size());
          ++i) {
-      float lv = state_.segment_analysis.clusters[i].mean;
-      float bound = 3 * state_.segment_analysis.clusters[i].stdev;
-      ImPlot::TagY(lv - bound, colors[i], "LB %.0f", lv - bound);
-      ImPlot::TagY(lv + bound, colors[i], "UB %.0f", lv + bound);
-      ImPlot::TagY(lv, colors[i], "Mean %.0f", lv);
+      double lv = state_.segment_analysis.clusters[i].mean;
+      ImPlot::TagY(lv, colors[i], "%.0f", lv);
+      ImPlot::DragLineY(i, &lv, colors[i], /*thickness=*/1, ImPlotDragToolFlags_NoInputs);
+      // float bound = 3 * state_.segment_analysis.clusters[i].stdev;
+      // ImPlot::TagY(lv - bound, colors[i], "LB %.0f", lv - bound);
+      // ImPlot::TagY(lv + bound, colors[i], "UB %.0f", lv + bound);
     }
     ImPlot::SetAxis(ImAxis_Y2);
     std::string title = absl::StrCat("Segment ", state_.selected_segment);
@@ -252,7 +258,7 @@ class PlotDefs {
         if (cluster.mean < 0) {
           continue;
         }
-        ImGui::BulletText("Cluster %d: mean=%.0f stdev=%.0f", i, cluster.mean, cluster.stdev);
+        ImGui::BulletText("Cluster %ld: mean=%.0f stdev=%.0f", i, cluster.mean, cluster.stdev);
       }
       ImGui::BulletText("Cluster mean ratio: %.2f", analysis.cluster_mean_ratio);
     }
