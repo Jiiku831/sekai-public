@@ -8,16 +8,43 @@
 #include "absl/container/flat_hash_map.h"
 #include "absl/log/globals.h"
 #include "absl/log/log.h"
+#include "absl/log/log_entry.h"
+#include "absl/log/log_sink.h"
 #include "absl/log/log_sink_registry.h"
 #include "absl/strings/str_cat.h"
 #include "base/init.h"
-#include "frontend/console_log_sink.h"
+#include "emscripten/console.h"
 #include "sekai/db/master_db.h"
 #include "sekai/run_analysis/analyze_team_handler.h"
 #include "sekai/run_analysis/handler.h"
 
 using ::sekai::run_analysis::AnalyzeTeamHandler;
 using ::sekai::run_analysis::HandlerBase;
+
+class WorkerLogSink : public absl::LogSink {
+ public:
+  WorkerLogSink() = default;
+
+  static WorkerLogSink* Get() {
+    static auto* const kLogSink = new WorkerLogSink;
+    return kLogSink;
+  }
+
+  void Send(const absl::LogEntry& entry) override {
+    switch (entry.log_severity()) {
+      case absl::LogSeverity::kInfo:
+        // emscripten_console_log(entry.text_message_with_prefix_and_newline_c_str());
+        break;
+      case absl::LogSeverity::kWarning:
+        emscripten_console_warn(entry.text_message_with_prefix_and_newline_c_str());
+        break;
+      case absl::LogSeverity::kError:
+      case absl::LogSeverity::kFatal:
+        emscripten_console_error(entry.text_message_with_prefix_and_newline_c_str());
+        break;
+    }
+  }
+};
 
 const absl::NoDestructor<absl::flat_hash_map<std::string, const HandlerBase*>> kHandlers{{
     {"/analyze_team", new AnalyzeTeamHandler},
@@ -51,7 +78,7 @@ int main(int argc, char** argv) {
   Init(argc, argv);
   absl::SetMinLogLevel(absl::LogSeverityAtLeast::kInfo);
   absl::SetStderrThreshold(absl::LogSeverityAtLeast::kInfinity);
-  absl::AddLogSink(ConsoleLogSink::Get());
+  absl::AddLogSink(WorkerLogSink::Get());
 
   LOG(INFO) << "Initializing server...";
   LOG(INFO) << sekai::db::MasterDb::Get().DebugString();

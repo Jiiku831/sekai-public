@@ -10,7 +10,7 @@ async function initModule() {
       return instance.exports;
     },
   });
-  console.log("WASM Module Initialized");
+  // console.log("WASM Module Initialized");
   return true;
 }
 
@@ -82,7 +82,6 @@ function getAllowedMethods(path) {
 
 function handlePreflightRequest(request, url) {
   let allowOrigin = getAllowOrigin(request.headers.get("Origin"));
-  console.log(allowOrigin);
   if (allowOrigin == "") {
     return new Response(null, {
       status: 403,
