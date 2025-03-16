@@ -225,12 +225,13 @@ class PlotDefs {
         }));
     std::array colors = {
         ImVec4(1, 0, 0, 1),
+        ImVec4(0, 1, 0, 1),
         ImVec4(0, 0, 1, 1),
     };
-    SegmentsPlot<MarkersPlot>("Cluster", seqs | std::views::take(colors.size())).Draw(options);
-    SegmentsPlot<MarkersPlot>("Outliers", seqs | std::views::drop(colors.size())).Draw(options);
-    for (std::size_t i = 0; i < std::min(colors.size(), state_.segment_analysis.clusters.size());
-         ++i) {
+    std::size_t num_clusters = state_.segment_analysis.clusters.size() - 1;
+    SegmentsPlot<MarkersPlot>("Cluster", seqs | std::views::take(num_clusters)).Draw(options);
+    SegmentsPlot<MarkersPlot>("Outliers", seqs | std::views::drop(num_clusters)).Draw(options);
+    for (std::size_t i = 0; i < std::min(colors.size(), num_clusters); ++i) {
       double lv = state_.segment_analysis.clusters[i].mean;
       ImPlot::TagY(lv, colors[i], "%.0f", lv);
       ImPlot::DragLineY(i, &lv, colors[i], /*thickness=*/1, ImPlotDragToolFlags_NoInputs);

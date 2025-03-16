@@ -48,6 +48,7 @@ cc_library(
     deps = [
         ":snapshot",
         ":stats_util",
+        "//sekai:ranges_util",
         "@abseil-cpp//absl/log",
         "@abseil-cpp//absl/strings:str_format",
     ],
@@ -196,6 +197,7 @@ cc_library(
     srcs = ["segmentation.cc"],
     hdrs = ["segmentation.h"],
     deps = [
+        ":clustering",
         ":config",
         ":snapshot",
         "//base:util",

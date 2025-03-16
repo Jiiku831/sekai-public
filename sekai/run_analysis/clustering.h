@@ -10,8 +10,9 @@ namespace sekai::run_analysis {
 
 struct Cluster {
   static constexpr float kOutlierSentinel = -1;
-  float mean;
-  float stdev;
+  float mean = 0;
+  float stdev = 0;
+  float rss = 0;
   std::vector<Snapshot> vals;
 
   template <typename Sink>
@@ -21,7 +22,7 @@ struct Cluster {
   }
 };
 
-// Run steps generally only have 2 clusters, so this only finds two clusters.
+// Run steps generally only have 2 or 3 clusters, so this only looks for one of those.
 std::vector<Cluster> FindClusters(std::span<const Snapshot> pts);
 
 }  // namespace sekai::run_analysis
