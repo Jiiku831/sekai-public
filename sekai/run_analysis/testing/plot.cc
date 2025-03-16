@@ -2,6 +2,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <limits>
 #include <ranges>
 #include <span>
 #include <vector>
@@ -18,8 +19,8 @@ namespace sekai::run_analysis {
 namespace {
 
 struct PointSequence {
-  std::vector<int> x;
-  std::vector<int> y;
+  std::vector<float> x;
+  std::vector<float> y;
 
   void reserve(std::size_t n) {
     x.reserve(n);
@@ -33,8 +34,10 @@ PointSequence SplitSequence(const Sequence& sequence) {
   PointSequence seq;
   seq.reserve(sequence.size());
   for (const Snapshot& point : sequence) {
-    seq.x.push_back(static_cast<int>((point.time) / absl::Minutes(1)));
-    seq.y.push_back(point.points);
+    seq.x.push_back((point.time) / absl::Minutes(1));
+    seq.y.push_back(point.points == std::numeric_limits<int>::min()
+                        ? std::numeric_limits<float>::quiet_NaN()
+                        : point.points);
   }
   return seq;
 }
@@ -44,12 +47,20 @@ PointSequence SplitSequence(const Sequence& sequence) {
 void MarkersPlot::Draw(const PlotOptions& options) const {
   if (points_.empty()) return;
   PointSequence seq = SplitSequence(points_);
+  if (color_.has_value()) {
+    ImPlot::SetNextFillStyle(*color_);
+    ImPlot::SetNextLineStyle(*color_);
+  }
   ImPlot::PlotScatter(title_.c_str(), seq.x.data(), seq.y.data(), seq.size());
 }
 
 void PointsLineGraph::Draw(const PlotOptions& options) const {
   if (points_.empty()) return;
   PointSequence seq = SplitSequence(points_);
+  if (color_.has_value()) {
+    ImPlot::SetNextFillStyle(*color_);
+    ImPlot::SetNextLineStyle(*color_);
+  }
   ImPlot::PlotLine(title_.c_str(), seq.x.data(), seq.y.data(), seq.size());
 }
 

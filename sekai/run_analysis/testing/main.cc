@@ -104,6 +104,7 @@ class PlotDefs {
                      SegmentRuns(data_.processed_sequence,
                                  {
                                      .window = state_.smoothing_window,
+                                     .shift_detection_decay = state_.breakpoint_shift_decay,
                                      .shift_detection_factor = state_.breakpoint_shift,
                                      .mean_shift_threshold =
                                          static_cast<float>(state_.breakpoint_threshold_low / 1000),
@@ -130,14 +131,11 @@ class PlotDefs {
     ImPlot::SetupAxes(nullptr, nullptr);
     ImPlot::SetupAxis(ImAxis_Y2, nullptr, ImPlotAxisFlags_Opposite);
     ImPlot::SetupAxis(ImAxis_Y3, nullptr, ImPlotAxisFlags_Opposite);
-    ImPlot::SetNextFillStyle(IMPLOT_AUTO_COL, 0.5f);
+    ImPlot::SetNextFillStyle(IMPLOT_AUTO_COL);
     ConditionalPlot(&state_.enable_raw_graph, PointsLineGraph("Raw", data_.raw_sequence))
         .Draw(options);
     ConditionalPlot(&state_.enable_processed_graph,
                     PointsLineGraph("Processed", data_.processed_sequence))
-        .Draw(options);
-    ConditionalPlot(&state_.enable_segments_graph,
-                    SegmentsPlot<PointsLineGraph>("Segment", data_.segments.active_segments()))
         .Draw(options);
     ConditionalPlot(&state_.enable_breakpoints_graph,
                     MarkersPlot("Breakpoints", data_.segments.breakpoints()))
@@ -152,14 +150,45 @@ class PlotDefs {
       ImPlot::TagY(state_.breakpoint_threshold_low, ImVec4(1, 0, 0, 1), "Thresh");
     }
     ImPlot::SetAxis(ImAxis_Y3);
-    ConditionalPlot(&state_.enable_step_graph, MarkersPlot("Raw Diffs", data_.histograms.step_seq))
+    auto cluster_assignments = RangesTo<std::vector<Sequence>>(
+        data_.segments.debug().cluster_assignments | std::views::transform([](const Sequence& seq) {
+          return Sequence{.points = RangesTo<std::vector<Snapshot>>(
+                              seq.points | std::views::transform([](const Snapshot& pt) {
+                                return Snapshot{pt.time, pt.diff};
+                              }))};
+        }));
+    std::array colors = {
+        ImVec4(0, 1, 1, 1),
+        ImVec4(0, 1, 0, 1),
+        ImVec4(0, 0, 1, 1),
+        ImVec4(1, 0, 0, 1),
+    };
+    SegmentsPlot<MarkersPlot>("Cluster Assignment", cluster_assignments, colors).Draw(options);
+    SegmentsPlot<PointsLineGraph>("Cluster Mean", data_.segments.debug().cluster_means, colors)
         .Draw(options);
-    ConditionalPlot(&state_.enable_step_graph,
-                    MarkersPlot("Smoothed Diffs", data_.segments.smoothed_diffs()))
+    std::array bound_colors = {
+        ImVec4(0, 1, 1, 0.5),
+        ImVec4(0, 1, 0, 0.5),
+        ImVec4(0, 0, 1, 0.5),
+        ImVec4(1, 0, 0, 0.5),
+    };
+    SegmentsPlot<PointsLineGraph>("Cluster LB", data_.segments.debug().cluster_lbs, bound_colors)
         .Draw(options);
-    ConditionalPlot(
-        &state_.enable_speed_graph,
-        SegmentsPlot<PointsLineGraph>("Segment Speeds", data_.segments.segment_speeds()))
+    SegmentsPlot<PointsLineGraph>("Cluster UB", data_.segments.debug().cluster_ubs, bound_colors)
+        .Draw(options);
+    // ConditionalPlot(&state_.enable_step_graph, MarkersPlot("Raw Diffs",
+    // data_.histograms.step_seq))
+    //     .Draw(options);
+    // ConditionalPlot(&state_.enable_step_graph,
+    //                 MarkersPlot("Smoothed Diffs", data_.segments.smoothed_diffs()))
+    //     .Draw(options);
+    // ConditionalPlot(
+    //     &state_.enable_speed_graph,
+    //     SegmentsPlot<PointsLineGraph>("Segment Speeds", data_.segments.segment_speeds()))
+    //     .Draw(options);
+    ImPlot::SetAxis(ImAxis_Y1);
+    ConditionalPlot(&state_.enable_segments_graph,
+                    SegmentsPlot<PointsLineGraph>("Segment", data_.segments.active_segments()))
         .Draw(options);
     ImPlot::EndPlot();
   }
@@ -215,7 +244,7 @@ class PlotDefs {
     ImPlot::SetupAxis(ImAxis_Y1, nullptr);
     ImPlot::SetupAxisLimits(ImAxis_Y1, 0, 300'000);
     ImPlot::SetupAxis(ImAxis_Y2, nullptr, ImPlotAxisFlags_Opposite | ImPlotAxisFlags_AutoFit);
-    ImPlot::SetNextFillStyle(IMPLOT_AUTO_COL, 0.5f);
+    ImPlot::SetNextFillStyle(IMPLOT_AUTO_COL);
     auto seqs = RangesTo<std::vector<Sequence>>(
         state_.segment_analysis.clusters | std::views::transform([](const Cluster& cluster) {
           return Sequence{.points = RangesTo<std::vector<Snapshot>>(
@@ -279,10 +308,10 @@ class PlotDefs {
   void DrawInputs() {
     DrawCheckboxes();
     ImGui::SetNextItemWidth(15 * ImGui::GetFontSize());
-    ImGui::SliderFloat("BP Shift", &state_.breakpoint_shift, 0, 2);
-    // ImGui::SameLine();
-    // ImGui::SetNextItemWidth(15 * ImGui::GetFontSize());
-    // ImGui::SliderFloat("BP Thresh Low", &state_.breakpoint_threshold_low, 1, 10);
+    ImGui::SliderFloat("BP Shift", &state_.breakpoint_shift, 0, 10);
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(15 * ImGui::GetFontSize());
+    ImGui::SliderFloat("BP Shift Decay", &state_.breakpoint_shift_decay, 0, 1);
     ImGui::SameLine();
     ImGui::SetNextItemWidth(15 * ImGui::GetFontSize());
     ImGui::SliderFloat("BP Thresh High", &state_.breakpoint_threshold_high, 0.01, 0.99);
@@ -311,6 +340,7 @@ class PlotDefs {
     int smoothing_window = kWindow;
     int selected_segment = 0;
     float breakpoint_shift = kBreakpointShift;
+    float breakpoint_shift_decay = kBreakpointDecay;
     double breakpoint_threshold_low = kBreakpointThresholdLow * 1000;
     float breakpoint_threshold_high = kBreakpointThresholdHigh;
     SegmentAnalysisResult segment_analysis;

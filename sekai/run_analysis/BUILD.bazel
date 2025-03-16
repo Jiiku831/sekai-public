@@ -46,6 +46,7 @@ cc_library(
     srcs = ["clustering.cc"],
     hdrs = ["clustering.h"],
     deps = [
+        ":config",
         ":snapshot",
         ":stats_util",
         "//sekai:ranges_util",

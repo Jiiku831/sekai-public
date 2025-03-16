@@ -11,16 +11,25 @@
 
 namespace sekai::run_analysis {
 
+struct SegmentationV2DebugData {
+  std::vector<Sequence> cluster_assignments;
+  std::vector<Sequence> cluster_means;
+  std::vector<Sequence> cluster_lbs;
+  std::vector<Sequence> cluster_ubs;
+};
+
 class RunSegments {
  public:
   RunSegments() = default;
-  RunSegments(std::vector<Sequence> segments, Sequence breakpoint_scores, Sequence smoothed_diffs);
+  RunSegments(std::vector<Sequence> segments, Sequence breakpoint_scores, Sequence smoothed_diffs,
+              SegmentationV2DebugData debug_data);
 
   const std::vector<Sequence>& active_segments() const { return active_segments_; }
   const std::vector<Sequence>& segment_speeds() const { return segment_speeds_; }
   const Sequence& breakpoints() const { return breakpoints_; }
   const Sequence& breakpoint_scores() const { return breakpoint_scores_; }
   const Sequence& smoothed_diffs() const { return smoothed_diffs_; }
+  const SegmentationV2DebugData& debug() const { return debug_data_; }
 
  private:
   std::vector<Sequence> active_segments_;
@@ -29,6 +38,7 @@ class RunSegments {
   Sequence breakpoints_;
   Sequence breakpoint_scores_;
   Sequence smoothed_diffs_;
+  SegmentationV2DebugData debug_data_;
 };
 
 struct SegmentationOptions {

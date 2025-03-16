@@ -40,37 +40,46 @@ class ConditionalPlot : public PlotBase {
 class MarkersPlot : public PlotBase {
  public:
   // Input must outlive this class.
-  MarkersPlot(std::string_view title, const Sequence& points) : points_(points), title_(title) {}
+  MarkersPlot(std::string_view title, const Sequence& points,
+              std::optional<ImVec4> color = std::nullopt)
+      : points_(points), title_(title), color_(color) {}
 
   void Draw(const PlotOptions& options) const override;
 
  private:
   const Sequence& points_;
   std::string title_;
+  std::optional<ImVec4> color_;
 };
 
 class PointsLineGraph : public PlotBase {
  public:
   // Input must outlive this class.
-  PointsLineGraph(std::string_view title, const Sequence& points)
-      : points_(points), title_(title) {}
+  PointsLineGraph(std::string_view title, const Sequence& points,
+                  std::optional<ImVec4> color = std::nullopt)
+      : points_(points), title_(title), color_(color) {}
 
   void Draw(const PlotOptions& options) const override;
 
  private:
   const Sequence& points_;
   std::string title_;
+  std::optional<ImVec4> color_;
 };
 
 template <typename Plot>
 class SegmentsPlot : public PlotBase {
  public:
   // Input must outlive this class.
-  SegmentsPlot(std::string_view prefix, std::span<const Sequence> segments) : prefix_(prefix) {
+  SegmentsPlot(std::string_view prefix, std::span<const Sequence> segments,
+               std::span<const ImVec4> colors = {})
+      : prefix_(prefix) {
     segment_graphs_.reserve(segments.size());
     int counter = 0;
     for (const Sequence& segment : segments) {
-      segment_graphs_.emplace_back(absl::StrCat(prefix_, " ", counter++), segment);
+      std::optional<ImVec4> color;
+      if (!colors.empty()) color = colors[counter % colors.size()];
+      segment_graphs_.emplace_back(absl::StrCat(prefix_, " ", counter++), segment, color);
     }
   }
 

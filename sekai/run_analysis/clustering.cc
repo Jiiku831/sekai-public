@@ -18,23 +18,24 @@ inline auto GetDiffs() {
   return std::views::transform([](const Snapshot& pt) { return pt.diff; });
 }
 
-std::vector<float> InitialMeans(std::span<const int> vals, int num_clusters) {
+std::vector<float> InitialMeans(std::span<const int> sorted_vals, int num_clusters) {
   // Given the nature of the data, we assign the initial means by equally dividing the range of the
   // values into (num_clusters + 1) parts;
-  auto [min, max] = std::minmax_element(vals.begin(), vals.end());
-  // Add a little bias to the top and bottom elements to ensure that they are different and the
-  // result is stable.
-  constexpr float kBias = 0.05;
-  float step = static_cast<float>(*max - *min) / (num_clusters + 1);
+  float step = sorted_vals.size() / (num_clusters + 1);
   std::vector<float> initial;
   initial.reserve(num_clusters);
   for (int i = 1; i <= num_clusters; ++i) {
-    float val = *min + i * step;
+    float val = sorted_vals[int(step * i)];
+
+    // Add a little bias to the top and bottom elements to ensure that they are different and the
+    // result is a bit more stable.
+    constexpr float kBias = 0.05;
     if (i == 1) {
       val *= 1 - kBias;
     } else if (i == num_clusters) {
       val *= 1 + kBias;
     }
+
     initial.push_back(val);
   }
   return initial;
@@ -53,9 +54,9 @@ int GetClusterAssignment(const float pt, std::span<const float> means, int num_c
   return cluster;
 }
 
-std::vector<Cluster> AssignClusters(std::span<const Snapshot> pts, int num_clusters) {
-  std::vector<float> means =
-      InitialMeans(RangesTo<std::vector<int>>(pts | GetDiffs()), num_clusters);
+std::vector<Cluster> AssignClusters(std::span<const Snapshot> pts,
+                                    std::span<const int> sorted_diffs, int num_clusters) {
+  std::vector<float> means = InitialMeans(sorted_diffs, num_clusters);
 
   // EM step. Clusters should be obvious, so no need to do too many iterations.
   constexpr int kMaxIter = 1000;
@@ -100,12 +101,14 @@ float RssMetric(std::span<const Cluster> clusters, std::size_t total_size) {
   return rss;
 }
 
-std::vector<Cluster> FindBestClusters(std::span<const Snapshot> pts, int max_num_clusters) {
+std::vector<Cluster> FindBestClusters(std::span<const Snapshot> pts, int max_num_clusters,
+                                      float min_size_ratio) {
   if (pts.empty()) {
     return std::vector<Cluster>(1);
   }
   // Single cluster model
-  auto diffs = pts | GetDiffs();
+  auto diffs = RangesTo<std::vector<int>>(pts | GetDiffs());
+  std::sort(diffs.begin(), diffs.end());
   float sample_mean = mean<float>(diffs);
   float rss = variance<float>(diffs, sample_mean) * pts.size();
   constexpr float kRssThreshold = 0.8;
@@ -113,17 +116,18 @@ std::vector<Cluster> FindBestClusters(std::span<const Snapshot> pts, int max_num
   std::vector<Cluster> candidate;
   constexpr float kMinRss = 100;
   for (int i = 2; i <= max_num_clusters && rss > kMinRss; ++i) {
-    std::vector<Cluster> new_candidate = AssignClusters(pts, i);
+    std::vector<Cluster> new_candidate = AssignClusters(pts, diffs, i);
     float new_rss = RssMetric(new_candidate, pts.size());
     if (new_rss / rss >= kRssThreshold) {
       break;
     }
+    bool reject = false;
     for (const Cluster& cluster : new_candidate) {
-      constexpr int kMinClusterSize = 3;
-      if (cluster.vals.size() < kMinClusterSize) {
-        break;
+      if (cluster.vals.size() < min_size_ratio * pts.size()) {
+        reject = true;
       }
     }
+    if (reject) break;
     rss = new_rss;
     candidate = std::move(new_candidate);
   }
@@ -137,14 +141,20 @@ std::vector<Cluster> FindBestClusters(std::span<const Snapshot> pts, int max_num
   return candidate;
 }
 
-Cluster RemoveOutliers(std::span<Cluster> clusters) {
+void RecomputeMeanStdev(std::span<Cluster> clusters) {
+  for (std::size_t i = 0; i < clusters.size(); ++i) {
+    clusters[i].mean = mean<float>(clusters[i].vals | GetDiffs());
+    clusters[i].stdev = stdev<float>(clusters[i].vals | GetDiffs(), clusters[i].mean);
+  }
+}
+
+Cluster RemoveOutliers(std::span<Cluster> clusters, int iterations, float rejection_threshold) {
   Cluster outliers = {
       .mean = Cluster::kOutlierSentinel,
   };
   for (std::size_t i = 0; i < clusters.size(); ++i) {
-    constexpr int kOutlierIterations = 3;
     bool outliers_removed = true;
-    for (int j = 0; j < kOutlierIterations && outliers_removed; ++j) {
+    for (int j = 0; j < iterations && outliers_removed; ++j) {
       std::size_t outlier_init_size = outliers.vals.size();
       constexpr float kMinStdev = 2000;
       float cluster_mean = clusters[i].mean;
@@ -152,19 +162,17 @@ Cluster RemoveOutliers(std::span<Cluster> clusters) {
           std::max(kMinStdev, stdev<float>(clusters[i].vals | GetDiffs(), cluster_mean));
       clusters[i].vals.erase(std::remove_if(clusters[i].vals.begin(), clusters[i].vals.end(),
                                             [&](const Snapshot& pt) {
-                                              constexpr float kRejectionThreshold = 2;
                                               bool is_outlier = std::abs(pt.diff - cluster_mean) >
-                                                                kRejectionThreshold * cluster_stdev;
+                                                                rejection_threshold * cluster_stdev;
                                               if (is_outlier) {
-                                                // Standard guarantees exactly N applications of p.
+                                                // Standard guarantees exactly N applications of
+                                                // p.
                                                 outliers.vals.push_back(pt);
                                               }
                                               return is_outlier;
                                             }),
                              clusters[i].vals.end());
-      // Recompute mean/stdev
-      clusters[i].mean = mean<float>(clusters[i].vals | GetDiffs());
-      clusters[i].stdev = stdev<float>(clusters[i].vals | GetDiffs(), clusters[i].mean);
+      RecomputeMeanStdev(clusters);
       outliers_removed = outliers.vals.size() != outlier_init_size;
     }
   }
@@ -173,11 +181,14 @@ Cluster RemoveOutliers(std::span<Cluster> clusters) {
 
 }  // namespace
 
-std::vector<Cluster> FindClusters(std::span<const Snapshot> pts) {
+std::vector<Cluster> FindClusters(std::span<const Snapshot> pts, float min_size_ratio,
+                                  int outlier_iterations, float outlier_rejection_threshold) {
   constexpr std::size_t kMaxClusters = 3;
-  std::vector<Cluster> results = FindBestClusters(pts, kMaxClusters);
+  std::vector<Cluster> results = FindBestClusters(pts, kMaxClusters, min_size_ratio);
+  RecomputeMeanStdev(results);
 
-  results.push_back(RemoveOutliers(std::span(results)));
+  results.push_back(
+      RemoveOutliers(std::span(results), outlier_iterations, outlier_rejection_threshold));
   return results;
 }
 
