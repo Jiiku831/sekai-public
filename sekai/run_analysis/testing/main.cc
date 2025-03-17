@@ -272,6 +272,14 @@ class PlotDefs {
     std::string title = absl::StrCat("Segment ", state_.selected_segment);
     PointsLineGraph(title.c_str(), data_.segments.active_segments()[state_.selected_segment])
         .Draw(options);
+    if (state_.segment_analysis.game_count_analysis.ok()) {
+      ImPlot::SetNextMarkerStyle(ImPlotMarker_Cross,
+                                 /*size=*/ImGui::GetFontSize() / 3, /*fill=*/IMPLOT_AUTO_COL,
+                                 /*weight=*/ImGui::GetFontSize() / 8,
+                                 /*outline=*/ImVec4(1, 0, 0, 1));
+      MarkersPlot("Rejected Samples", state_.segment_analysis.game_count_analysis->rejected_samples)
+          .Draw(options);
+    }
     ImPlot::EndPlot();
   }
 
@@ -283,14 +291,25 @@ class PlotDefs {
     }
     if (ImGui::CollapsingHeader("Segment Debug", ImGuiTreeNodeFlags_DefaultOpen)) {
       const auto& analysis = state_.segment_analysis;
+      ImGui::Text("Segment length: %s", absl::FormatDuration(analysis.segment_length).c_str());
+      ImGui::SeparatorText("Snapshot Analysis");
       for (std::size_t i = 0; i < analysis.clusters.size(); ++i) {
         const auto& cluster = analysis.clusters[i];
         if (cluster.mean < 0) {
           continue;
         }
-        ImGui::BulletText("Cluster %ld: mean=%.0f stdev=%.0f", i, cluster.mean, cluster.stdev);
+        ImGui::Text("Cluster %ld: mean=%.0f stdev=%.0f", i, cluster.mean, cluster.stdev);
       }
-      ImGui::BulletText("Cluster mean ratio: %.2f", analysis.cluster_mean_ratio);
+      ImGui::Text("Cluster mean ratio: %.2f", analysis.cluster_mean_ratio);
+      ImGui::SeparatorText("Game Count Analysis");
+      if (analysis.game_count_analysis.ok()) {
+        ImGui::Text("Est. EP/g: %.0f (sigma=%.0f)", analysis.game_count_analysis->ep_per_game.mu,
+                    analysis.game_count_analysis->ep_per_game.sigma);
+        ImGui::Text("Game Count: %d", analysis.game_count_analysis->game_count);
+        ImGui::Text("Est. GPH: %.1f", analysis.game_count_analysis->estimated_gph);
+      } else {
+        ImGui::Text("%s", analysis.game_count_analysis.status().ToString().c_str());
+      }
     }
     ImGui::EndChild();
   }
