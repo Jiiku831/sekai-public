@@ -16,6 +16,7 @@
 #include "implot.h"
 #include "sekai/ranges_util.h"
 #include "sekai/run_analysis/segment_analysis.h"
+#include "sekai/run_analysis/testing/imgui_util.h"
 #include "sekai/run_analysis/testing/load_data.h"
 #include "sekai/run_analysis/testing/plot.h"
 
@@ -289,26 +290,40 @@ class PlotDefs {
     if (!ImGui::BeginChild("Debug Info", childSize)) {
       return;
     }
+    if (ImGui::CollapsingHeader("Team Debug", ImGuiTreeNodeFlags_DefaultOpen)) {
+      const auto& analysis = data_.team_analysis;
+      PrintMessage("Analyze Request", data_.team_analysis_request);
+      if (analysis.ok()) {
+        ImGui::BulletText("Event Bonus: %.2f%%", analysis->event_bonus());
+        ImGui::BulletText("Skill Value: [%.0f%%, %.0f%%]",
+                          analysis->skill_details().skill_value_lower_bound(),
+                          analysis->skill_details().skill_value_upper_bound());
+      } else {
+        ImGui::BulletText("%s", analysis.status().ToString().c_str());
+      }
+    }
     if (ImGui::CollapsingHeader("Segment Debug", ImGuiTreeNodeFlags_DefaultOpen)) {
       const auto& analysis = state_.segment_analysis;
-      ImGui::Text("Segment length: %s", absl::FormatDuration(analysis.segment_length).c_str());
+      ImGui::BulletText("Segment length: %s",
+                        absl::FormatDuration(analysis.segment_length).c_str());
       ImGui::SeparatorText("Snapshot Analysis");
       for (std::size_t i = 0; i < analysis.clusters.size(); ++i) {
         const auto& cluster = analysis.clusters[i];
         if (cluster.mean < 0) {
           continue;
         }
-        ImGui::Text("Cluster %ld: mean=%.0f stdev=%.0f", i, cluster.mean, cluster.stdev);
+        ImGui::BulletText("Cluster %ld: mean=%.0f stdev=%.0f", i, cluster.mean, cluster.stdev);
       }
-      ImGui::Text("Cluster mean ratio: %.2f", analysis.cluster_mean_ratio);
+      ImGui::BulletText("Cluster mean ratio: %.2f", analysis.cluster_mean_ratio);
       ImGui::SeparatorText("Game Count Analysis");
       if (analysis.game_count_analysis.ok()) {
-        ImGui::Text("Est. EP/g: %.0f (sigma=%.0f)", analysis.game_count_analysis->ep_per_game.mu,
-                    analysis.game_count_analysis->ep_per_game.sigma);
-        ImGui::Text("Game Count: %d", analysis.game_count_analysis->game_count);
-        ImGui::Text("Est. GPH: %.1f", analysis.game_count_analysis->estimated_gph);
+        ImGui::BulletText("Est. EP/g: %.0f (sigma=%.0f)",
+                          analysis.game_count_analysis->ep_per_game.mu,
+                          analysis.game_count_analysis->ep_per_game.sigma);
+        ImGui::BulletText("Game Count: %d", analysis.game_count_analysis->game_count);
+        ImGui::BulletText("Est. GPH: %.1f", analysis.game_count_analysis->estimated_gph);
       } else {
-        ImGui::Text("%s", analysis.game_count_analysis.status().ToString().c_str());
+        ImGui::BulletText("%s", analysis.game_count_analysis.status().ToString().c_str());
       }
     }
     ImGui::EndChild();
@@ -394,7 +409,7 @@ void DrawFrame(PlotDefs& plots) {
   ImGui::SameLine();
   plots.DrawDebug(options, viewport);
   ImGui::End();
-  // ImGui::ShowDemoWindow();
+  ImGui::ShowDemoWindow();
   // ImPlot::ShowDemoWindow();
 }
 

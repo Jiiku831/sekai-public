@@ -280,7 +280,6 @@ class DetectorStateV2 {
         outlier_seen = false;
       }
     }
-    float outlier_run_ratio = static_cast<float>(outlier_run) / last_outliers_.size();
     float outlier_ratio = static_cast<float>(outlier_count) / last_outliers_.size();
 
     if (is_outlier) {

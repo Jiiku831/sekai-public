@@ -92,6 +92,7 @@ cc_library(
         "//sekai/db/proto:all",
         "@abseil-cpp//absl/container:flat_hash_set",
     ],
+    alwayslink = True,
 )
 
 cc_library(

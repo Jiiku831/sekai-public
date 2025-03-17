@@ -7,19 +7,25 @@
 #include <string>
 #include <vector>
 
+#include "absl/flags/flag.h"
 #include "absl/log/log.h"
 #include "absl/status/statusor.h"
 #include "base/util.h"
 #include "sekai/file_util.h"
 #include "sekai/ranges_util.h"
+#include "sekai/run_analysis/analyze_team_handler.h"
 #include "sekai/run_analysis/config.h"
 #include "sekai/run_analysis/parser.h"
 #include "sekai/run_analysis/proto/run_data.pb.h"
+#include "sekai/run_analysis/proto/service.pb.h"
 #include "sekai/run_analysis/segmentation.h"
 #include "sekai/run_analysis/sequence_util.h"
 #include "sekai/run_analysis/snapshot.h"
 
+ABSL_FLAG(int, event_id, 159, "Event ID");
+
 namespace sekai::run_analysis {
+namespace {
 
 absl::StatusOr<Sequence> ConvertPointsGraph(absl::Time time_offset, const PointsGraph& graph) {
   if (graph.timestamps_size() != graph.points_size()) {
@@ -34,6 +40,21 @@ absl::StatusOr<Sequence> ConvertPointsGraph(absl::Time time_offset, const Points
                  });
   return sequence;
 }
+
+AnalyzeTeamRequest MakeAnalyzeTeamRequest(const RunData& data) {
+  AnalyzeTeamRequest req;
+  req.set_event_id(absl::GetFlag(FLAGS_event_id));
+  for (const auto& deck_card : data.team()) {
+    auto* req_card = req.add_cards();
+    req_card->set_card_id(deck_card.card_id());
+    req_card->set_master_rank(deck_card.master_rank());
+    req_card->set_trained_state(deck_card.display_state() == DISPLAY_STATE_TRAINED);
+  }
+  req.set_team_power(data.team_power().total_power());
+  return req;
+}
+
+}  // namespace
 
 absl::StatusOr<LoadedData> LoadData(std::filesystem::path path) {
   LoadedData data;
@@ -52,6 +73,9 @@ absl::StatusOr<LoadedData> LoadData(std::filesystem::path path) {
         return ComputeHistograms(seq, kWindow, kInterval);
       }));
   data.histograms = Histograms::Join(data.run_histograms);
+  AnalyzeTeamHandler handler;
+  data.team_analysis_request = MakeAnalyzeTeamRequest(data.raw_data);
+  data.team_analysis = handler.Run(data.team_analysis_request);
   return data;
 }
 

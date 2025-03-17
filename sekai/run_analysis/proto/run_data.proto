@@ -17,12 +17,12 @@ enum DisplayState {
 }
 
 message DeckCard2 {
-  optional int32 card_id             = 1 [(sekai.db.json_name) = "cardId"];
-  optional int32 level               = 2 [(sekai.db.json_name) = "level"];
-  optional int32 master_rank         = 3 [(sekai.db.json_name) = "masterRank"];
-  optional CardState trained         = 4 [(sekai.db.json_name) = "specialTrainingStatus"];
-  optional DisplayState displayState = 5 [(sekai.db.json_name) = "defaultImage"];
-  optional string asset              = 6 [(sekai.db.json_name) = "cardAsset"];
+  optional int32 card_id              = 1 [(sekai.db.json_name) = "cardId"];
+  optional int32 level                = 2 [(sekai.db.json_name) = "level"];
+  optional int32 master_rank          = 3 [(sekai.db.json_name) = "masterRank"];
+  optional CardState trained          = 4 [(sekai.db.json_name) = "specialTrainingStatus"];
+  optional DisplayState display_state = 5 [(sekai.db.json_name) = "defaultImage"];
+  optional string asset               = 6 [(sekai.db.json_name) = "cardAsset"];
 }
 
 message TeamPower {

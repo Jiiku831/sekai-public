@@ -2,11 +2,22 @@ load("@emsdk//emscripten_toolchain:wasm_rules.bzl", "wasm_cc_binary")
 load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library")
 
 cc_library(
+    name = "imgui_util",
+    srcs = ["imgui_util.cc"],
+    hdrs = ["imgui_util.h"],
+    deps = [
+        "@imgui",
+        "@protobuf",
+    ],
+)
+
+cc_library(
     name = "load_data",
     srcs = ["load_data.cc"],
     hdrs = ["load_data.h"],
     deps = [
         "//sekai:file_util",
+        "//sekai/run_analysis:analyze_team_handler",
         "//sekai/run_analysis:config",
         "//sekai/run_analysis:histogram",
         "//sekai/run_analysis:parser",
@@ -14,6 +25,7 @@ cc_library(
         "//sekai/run_analysis:sequence_util",
         "//sekai/run_analysis:snapshot",
         "//sekai/run_analysis/proto:run_data_cc_proto",
+        "//sekai/run_analysis/proto:service_cc_proto",
         "@abseil-cpp//absl/status:statusor",
     ],
 )
@@ -40,7 +52,11 @@ wasm_cc_binary(
 cc_binary(
     name = "main",
     srcs = ["main.cc"],
+    data = [
+        "//data:flat-db-minimal",
+    ],
     deps = [
+        ":imgui_util",
         ":load_data",
         ":plot",
         "//base",
