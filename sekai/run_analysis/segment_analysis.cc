@@ -51,7 +51,7 @@ ConfidenceInterval ValueDistTo95pCI(const ValueDist& dist) {
   ConfidenceInterval res;
   res.set_value(dist.mean());
   res.set_lower_bound(dist.mean() - dist.stdev() * 2);
-  res.set_lower_bound(dist.mean() + dist.stdev() * 2);
+  res.set_upper_bound(dist.mean() + dist.stdev() * 2);
   res.set_confidence(0.95);
   return res;
 }
