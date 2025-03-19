@@ -69,7 +69,9 @@ function getAllowOrigin(origin) {
 }
 
 const allowedMethods = {
+  "/analyze_graph": "POST",
   "/analyze_team": "GET",
+  "/batch_analyze_graph": "POST",
 };
 
 function getAllowedMethods(path) {
@@ -143,7 +145,7 @@ async function handleGetRequest(request, url) {
 async function handlePostRequest(request, url) {
   await moduleReady;
   let output = "";
-  let body = request.text();
+  let body = request.text().then(atob);
   let [code, result] = callHandler(url.pathname, await body);
   let headers = new Headers();
   let allowOrigin = getAllowOrigin(request.headers.get("Origin"));

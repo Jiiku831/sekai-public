@@ -15,11 +15,20 @@
 #include "base/init.h"
 #include "emscripten/console.h"
 #include "sekai/db/master_db.h"
+#include "sekai/run_analysis/analyze_graph_handler.h"
 #include "sekai/run_analysis/analyze_team_handler.h"
+#include "sekai/run_analysis/batch_handler.h"
 #include "sekai/run_analysis/handler.h"
+#include "sekai/run_analysis/proto/service.pb.h"
 
-using ::sekai::run_analysis::AnalyzeTeamHandler;
-using ::sekai::run_analysis::HandlerBase;
+using namespace ::sekai::run_analysis;
+
+const absl::NoDestructor<absl::flat_hash_map<std::string, const HandlerBase*>> kHandlers{{
+    {"/analyze_graph", new AnalyzeGraphHandler},
+    {"/analyze_team", new AnalyzeTeamHandler},
+    {"/batch_analyze_graph",
+     new BatchHandler<AnalyzeGraphHandler, BatchAnalyzeGraphRequest, BatchAnalyzeGraphResponse>},
+}};
 
 class WorkerLogSink : public absl::LogSink {
  public:
@@ -45,10 +54,6 @@ class WorkerLogSink : public absl::LogSink {
     }
   }
 };
-
-const absl::NoDestructor<absl::flat_hash_map<std::string, const HandlerBase*>> kHandlers{{
-    {"/analyze_team", new AnalyzeTeamHandler},
-}};
 
 std::string HandleRequestImpl(std::string_view path, std::string_view request) {
   auto handler = kHandlers->find(path);

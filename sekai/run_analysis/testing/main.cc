@@ -302,8 +302,17 @@ class PlotDefs {
         ImGui::BulletText("%s", analysis.status().ToString().c_str());
       }
     }
+    if (ImGui::CollapsingHeader("Run Debug", ImGuiTreeNodeFlags_DefaultOpen)) {
+      ImGui::BulletText("Total Duration: %s",
+                        absl::FormatDuration(data_.segments.total_duration()).c_str());
+      ImGui::BulletText("Total Uptime: %s",
+                        absl::FormatDuration(data_.segments.total_uptime()).c_str());
+      ImGui::BulletText("Total Downtime: %s",
+                        absl::FormatDuration(data_.segments.total_downtime()).c_str());
+    }
     if (ImGui::CollapsingHeader("Segment Debug", ImGuiTreeNodeFlags_DefaultOpen)) {
       const auto& analysis = state_.segment_analysis;
+      ImGui::BulletText("Is Confident: %s", analysis.is_confident ? "true" : "false");
       ImGui::BulletText("Segment length: %s",
                         absl::FormatDuration(analysis.segment_length).c_str());
       ImGui::SeparatorText("Snapshot Analysis");
@@ -318,13 +327,17 @@ class PlotDefs {
       ImGui::SeparatorText("Game Count Analysis");
       if (analysis.game_count_analysis.ok()) {
         ImGui::BulletText("Est. EP/g: %.0f (sigma=%.0f)",
-                          analysis.game_count_analysis->ep_per_game.mu,
-                          analysis.game_count_analysis->ep_per_game.sigma);
+                          analysis.game_count_analysis->ep_per_game.mean(),
+                          analysis.game_count_analysis->ep_per_game.stdev());
         ImGui::BulletText("Game Count: %d", analysis.game_count_analysis->game_count);
-        ImGui::BulletText("Est. GPH: %.1f", analysis.game_count_analysis->estimated_gph);
+        ImGui::BulletText("Est. GPH: %.1f [%.1f, %.1f]",
+                          analysis.game_count_analysis->estimated_gph.value(),
+                          analysis.game_count_analysis->estimated_gph.lower_bound(),
+                          analysis.game_count_analysis->estimated_gph.upper_bound());
       } else {
         ImGui::BulletText("%s", analysis.game_count_analysis.status().ToString().c_str());
       }
+      PrintMessage("Segment Proto", SegmentAnalysisResultToApiSegment(analysis));
     }
     ImGui::EndChild();
   }
@@ -409,7 +422,7 @@ void DrawFrame(PlotDefs& plots) {
   ImGui::SameLine();
   plots.DrawDebug(options, viewport);
   ImGui::End();
-  ImGui::ShowDemoWindow();
+  // ImGui::ShowDemoWindow();
   // ImPlot::ShowDemoWindow();
 }
 

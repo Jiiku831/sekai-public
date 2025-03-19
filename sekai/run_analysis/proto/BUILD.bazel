@@ -17,6 +17,10 @@ cc_proto_library(
 proto_library(
     name = "service_proto",
     srcs = ["service.proto"],
+    deps = [
+        "@protobuf//:duration_proto",
+        "@protobuf//:timestamp_proto",
+    ],
 )
 
 cc_proto_library(

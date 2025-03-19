@@ -2,14 +2,17 @@ common --registry https://bcr.bazel.build/
 common --registry https://raw.githubusercontent.com/Jiiku831/sekai-modules/main/
 build --config=c++23 --define=absl=1 --incompatible_enable_cc_toolchain_resolution
 
-build:c++23 --cxxopt=-std=c++23
+build:c++23 \
+  --cxxopt=-std=c++23
 
 build:asan \
   --cxxopt=-fsanitize=address \
   --linkopt=-fsanitize=address
+
 build:ubsan \
   --cxxopt=-fsanitize=undefined \
   --linkopt=-fsanitize=undefined
+
 
 # Configurations for wasm
 build:wasm \
@@ -29,7 +32,7 @@ build:wasm-dbg \
   --cxxopt=-Wno-error=deprecated-pragma \
   --cxxopt=-Wno-error=deprecated-this-capture \
   --cxxopt=-Wno-error=unused-function \
-  --cxxopt=-DBS_THREAD_POOL_DISABLE_EXCEPTION_HANDLING \
+  --cxxopt=-DBS_THREAD_POOL_DISABLE_EXCEPTION_HANDLING
 
 build:wasm-asan \
   --cxxopt=-O0 \

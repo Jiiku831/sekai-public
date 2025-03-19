@@ -9,18 +9,11 @@
 #include "absl/status/statusor.h"
 #include "absl/strings/str_cat.h"
 #include "sekai/run_analysis/proto/service.pb.h"
+#include "sekai/run_analysis/proto_util.h"
 
 namespace sekai::run_analysis {
 
 namespace internal {
-
-template <typename StatusType>
-void ToStatusProto(const StatusType& status, Status& status_proto) {
-  status_proto.set_code(static_cast<int>(status.code()));
-  if (!status.ok()) {
-    status_proto.set_msg(std::string(status.message()));
-  }
-}
 
 template <typename ResponseType>
 std::string SerializeResponse(const ResponseType& response) {
@@ -47,21 +40,24 @@ class Handler : public HandlerBase {
  public:
   ~Handler() = default;
 
+  using request_type = RequestType;
+  using response_type = ResponseType;
+
   std::string Run(std::string_view request) const override {
     RequestType request_msg;
     if (auto status = google::protobuf::util::JsonStringToMessage(request, &request_msg);
         !status.ok()) {
       ResponseType response;
-      internal::ToStatusProto(status, *response.mutable_status());
+      ToStatusProto(status, *response.mutable_status());
       return internal::SerializeResponse(response);
     }
     absl::StatusOr<ResponseType> response = Run(request_msg);
     if (!response.ok()) {
       ResponseType response_msg;
-      internal::ToStatusProto(response.status(), *response_msg.mutable_status());
+      ToStatusProto(response.status(), *response_msg.mutable_status());
       return internal::SerializeResponse(response_msg);
     }
-    internal::ToStatusProto(response.status(), *response->mutable_status());
+    ToStatusProto(response.status(), *response->mutable_status());
     return internal::SerializeResponse(*response);
   }
 

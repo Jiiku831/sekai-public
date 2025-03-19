@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "absl/time/time.h"
+#include "sekai/run_analysis/config.h"
 #include "sekai/run_analysis/snapshot.h"
 
 namespace sekai::run_analysis {
@@ -15,6 +16,7 @@ Sequence AlignSequence(const Sequence& sequence, absl::Duration interval);
 Sequence InterpolateSequence(const Sequence& sequence, absl::Duration interval,
                              absl::Duration max_gap);
 
-Sequence ProcessSequence(const Sequence& sequence, absl::Duration interval, absl::Duration max_gap);
+Sequence ProcessSequence(const Sequence& sequence, absl::Duration interval = kInterval,
+                         absl::Duration max_gap = kMaxSegmentGap);
 
 }  // namespace sekai::run_analysis

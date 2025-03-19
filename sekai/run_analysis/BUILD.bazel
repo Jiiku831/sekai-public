@@ -4,6 +4,26 @@ load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
 load("@rules_python//python:defs.bzl", "py_binary")
 
 cc_library(
+    name = "analyze_graph_handler",
+    srcs = ["analyze_graph_handler.cc"],
+    hdrs = ["analyze_graph_handler.h"],
+    deps = [
+        ":config",
+        ":handler",
+        ":segment_analysis",
+        ":segmentation",
+        ":sequence_util",
+        "//base:util",
+        "//sekai/run_analysis/proto:service_cc_proto",
+        "@abseil-cpp//absl/status:status",
+        "@abseil-cpp//absl/status:statusor",
+        "@abseil-cpp//absl/strings:str_format",
+        "@protobuf",
+        "@protobuf//:time_util",
+    ],
+)
+
+cc_library(
     name = "analyze_team_handler",
     srcs = ["analyze_team_handler.cc"],
     hdrs = ["analyze_team_handler.h"],
@@ -38,6 +58,14 @@ cc_test(
         "//testing:util",
         "@abseil-cpp//absl/status:status_matchers",
         "@googletest//:gtest",
+    ],
+)
+
+cc_library(
+    name = "batch_handler",
+    hdrs = ["batch_handler.h"],
+    deps = [
+        ":handler",
     ],
 )
 
@@ -78,6 +106,7 @@ cc_library(
     name = "handler",
     hdrs = ["handler.h"],
     deps = [
+        ":proto_util",
         "//sekai/run_analysis/proto:service_cc_proto",
         "@abseil-cpp//absl/log",
         "@abseil-cpp//absl/status:status",
@@ -128,7 +157,9 @@ cc_binary(
         "-sALLOW_MEMORY_GROWTH",
     ],
     deps = [
+        ":analyze_graph_handler",
         ":analyze_team_handler",
+        ":batch_handler",
         ":handler",
         "//base",
         "//sekai/db:master_db",
@@ -182,18 +213,29 @@ cc_test(
 )
 
 cc_library(
+    name = "proto_util",
+    hdrs = ["proto_util.h"],
+    deps = [
+        "//sekai/run_analysis/proto:service_cc_proto",
+    ],
+)
+
+cc_library(
     name = "segment_analysis",
     srcs = ["segment_analysis.cc"],
     hdrs = ["segment_analysis.h"],
     deps = [
         ":clustering",
+        ":proto_util",
         ":snapshot",
         ":stats_util",
         "//base:util",
+        "//sekai/run_analysis/proto:service_cc_proto",
         "@abseil-cpp//absl/status",
         "@abseil-cpp//absl/status:statusor",
         "@abseil-cpp//absl/strings:str_format",
         "@abseil-cpp//absl/time",
+        "@protobuf//:time_util",
     ],
 )
 
@@ -231,6 +273,7 @@ cc_library(
     srcs = ["sequence_util.cc"],
     hdrs = ["sequence_util.h"],
     deps = [
+        ":config",
         ":snapshot",
         "@abseil-cpp//absl/time",
     ],

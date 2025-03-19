@@ -141,7 +141,7 @@ void PrintMessageImpl(const google::protobuf::Message& msg, int& next_id) {
 void PrintMessage(const char* title, const google::protobuf::Message& msg) {
   int next_id = 0;
   std::string msg_name(msg.GetDescriptor()->name());
-  if (ImGui::TreeNode("%s", "%s = %s", title, msg_name.c_str())) {
+  if (ImGui::TreeNode(title, "%s = %s", title, msg_name.c_str())) {
     ImGui::SameLine();
     PrintMessageImpl(msg, next_id);
     ImGui::TreePop();

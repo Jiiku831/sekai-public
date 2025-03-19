@@ -573,9 +573,12 @@ RunSegments::RunSegments(std::vector<Sequence> run_segments, Sequence breakpoint
 
   // Classify segments
   for (Sequence& sequence : run_segments) {
+    total_duration_ += sequence.duration();
     if (sequence.diff() == 0) {
+      total_downtime_ += sequence.duration();
       inactive_segments_.push_back(std::move(sequence));
     } else {
+      total_uptime_ += sequence.duration();
       active_segments_.push_back(std::move(sequence));
     }
   }

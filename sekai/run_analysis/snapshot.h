@@ -22,6 +22,10 @@ struct Snapshot {
 struct Sequence {
   absl::Time time_offset = absl::UnixEpoch();
 
+  absl::Duration duration() const {
+    return empty() ? absl::ZeroDuration() : back().time - front().time;
+  }
+
   using container = std::vector<Snapshot>;
   container points;
 

@@ -31,6 +31,10 @@ class RunSegments {
   const Sequence& smoothed_diffs() const { return smoothed_diffs_; }
   const SegmentationV2DebugData& debug() const { return debug_data_; }
 
+  absl::Duration total_duration() const { return total_duration_; }
+  absl::Duration total_uptime() const { return total_uptime_; }
+  absl::Duration total_downtime() const { return total_downtime_; }
+
  private:
   std::vector<Sequence> active_segments_;
   std::vector<Sequence> inactive_segments_;
@@ -39,6 +43,9 @@ class RunSegments {
   Sequence breakpoint_scores_;
   Sequence smoothed_diffs_;
   SegmentationV2DebugData debug_data_;
+  absl::Duration total_duration_;
+  absl::Duration total_uptime_;
+  absl::Duration total_downtime_;
 };
 
 struct SegmentationOptions {
