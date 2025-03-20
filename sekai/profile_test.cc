@@ -365,5 +365,9 @@ TEST(ProfileTest, SortedSupport) {
   EXPECT_THAT(sorted_support_ids, ElementsAre(116, 71, 74));
 }
 
+TEST(ProfileTest, MinProfileSuccess) { EXPECT_EQ(Profile::Min().bonus_power(), 0); }
+
+TEST(ProfileTest, MaxProfileSuccess) { EXPECT_EQ(Profile::Max().bonus_power(), kMaxTitleBonus); }
+
 }  // namespace
 }  // namespace sekai

@@ -1,0 +1,87 @@
+load("@emsdk//emscripten_toolchain:wasm_rules.bzl", "wasm_cc_binary")
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library")
+
+cc_library(
+    name = "imgui_util",
+    srcs = ["imgui_util.cc"],
+    hdrs = ["imgui_util.h"],
+    deps = [
+        "@imgui",
+        "@protobuf",
+    ],
+)
+
+cc_library(
+    name = "load_data",
+    srcs = ["load_data.cc"],
+    hdrs = ["load_data.h"],
+    deps = [
+        "//sekai:file_util",
+        "//sekai/run_analysis:analyze_team_handler",
+        "//sekai/run_analysis:config",
+        "//sekai/run_analysis:histogram",
+        "//sekai/run_analysis:parser",
+        "//sekai/run_analysis:segmentation",
+        "//sekai/run_analysis:sequence_util",
+        "//sekai/run_analysis:snapshot",
+        "//sekai/run_analysis/proto:run_data_cc_proto",
+        "//sekai/run_analysis/proto:service_cc_proto",
+        "@abseil-cpp//absl/status:statusor",
+    ],
+)
+
+cc_binary(
+    name = "load_data_main",
+    srcs = ["load_data_main.cc"],
+    linkopts = [
+        "-sUSE_PTHREADS=0",
+    ],
+    deps = [
+        ":load_data",
+        "//base",
+        "@abseil-cpp//absl/log",
+        "@abseil-cpp//absl/log:flags",
+    ],
+)
+
+wasm_cc_binary(
+    name = "load_data_wasm",
+    cc_target = ":load_data_main",
+)
+
+cc_binary(
+    name = "main",
+    srcs = ["main.cc"],
+    data = [
+        "//data:flat-db-minimal",
+    ],
+    deps = [
+        ":imgui_util",
+        ":load_data",
+        ":plot",
+        "//base",
+        "//sekai/run_analysis:segment_analysis",
+        "@abseil-cpp//absl/log",
+        "@abseil-cpp//absl/log:flags",
+        "@glfw",
+        "@imgui",
+        "@imgui//backends:platform-glfw",
+        "@imgui//backends:renderer-opengl3",
+        "@implot",
+    ],
+)
+
+cc_library(
+    name = "plot",
+    srcs = ["plot.cc"],
+    hdrs = ["plot.h"],
+    deps = [
+        "//sekai:ranges_util",
+        "//sekai/run_analysis:segmentation",
+        "//sekai/run_analysis:snapshot",
+        "@abseil-cpp//absl/log",
+        "@abseil-cpp//absl/strings",
+        "@imgui",
+        "@implot",
+    ],
+)

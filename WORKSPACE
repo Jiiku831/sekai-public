@@ -1,12 +1,12 @@
 workspace(name = "sekai-public")
 
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive", "http_file")
+load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 
-http_archive(
+git_repository(
     name = "emsdk",
-    sha256 = "6b206e135ccc3b0d6c02e948eb4b8b95521593b5b4d9788795269bbf6640fcb2",
-    strip_prefix = "emsdk-4e2496141eda15040c44e9bbf237a1326368e34c/bazel",
-    url = "https://github.com/emscripten-core/emsdk/archive/4e2496141eda15040c44e9bbf237a1326368e34c.tar.gz",
+    remote = "https://github.com/emscripten-core/emsdk.git",
+    strip_prefix = "bazel",
+    tag = "4.0.5",
 )
 
 load("@emsdk//:deps.bzl", emsdk_deps = "deps")
@@ -15,7 +15,7 @@ emsdk_deps()
 
 load("@emsdk//:emscripten_deps.bzl", emsdk_emscripten_deps = "emscripten_deps")
 
-emsdk_emscripten_deps(emscripten_version = "3.1.51")
+emsdk_emscripten_deps(emscripten_version = "4.0.5")
 
 load("@emsdk//:toolchains.bzl", "register_emscripten_toolchains")
 

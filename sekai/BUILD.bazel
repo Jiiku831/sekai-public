@@ -92,6 +92,7 @@ cc_library(
         "//sekai/db/proto:all",
         "@abseil-cpp//absl/container:flat_hash_set",
     ],
+    alwayslink = True,
 )
 
 cc_library(
@@ -307,6 +308,8 @@ cc_library(
     deps = [
         ":config",
         "@abseil-cpp//absl/log",
+        "@abseil-cpp//absl/status:statusor",
+        "@abseil-cpp//absl/strings:str_format",
     ],
 )
 
@@ -439,6 +442,8 @@ cc_library(
         ":bonus_limit",
         ":card",
         ":character",
+        ":fixtures",
+        ":max_level",
         ":profile_bonus",
         "//base:util",
         "//sekai/db:master_db",
@@ -487,6 +492,11 @@ cc_library(
         "@abseil-cpp//absl/log:absl_check",
         "@protobuf",
     ],
+)
+
+cc_library(
+    name = "ranges_util",
+    hdrs = ["ranges_util.h"],
 )
 
 cc_library(

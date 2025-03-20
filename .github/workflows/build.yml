@@ -11,12 +11,43 @@ on:
       - tw
 
 concurrency:
-  group: deploy-${{ github.ref_name }}
+  group: build-${{ github.ref_name }}
   cancel-in-progress: true
 
+env:
+  CACHE_KEY: ${{ fromJSON(vars.CACHE_KEY)[github.ref_name] }}
+
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
+    steps:
+    - name: Install zsh
+      run: sudo apt-get update; sudo apt-get install zsh
+    - name: Fetch source
+      uses: actions/checkout@v3
+    - name: Fetch assets
+      uses: actions/checkout@v3
+      with:
+        repository: Jiiku831/sekai-assets
+        path: sekai-assets
+        token: ${{ secrets.ASSETS_TOKEN }}
+        lfs: true
+    - name: Load assets
+      run: cp -r sekai-assets/data/* data/
+    - name: Mount bazel cache
+      uses: actions/cache/restore@v4
+      with:
+        path: "~/.cache/bazel"
+        key: bazel-${{ runner.os }}-${{ env.CACHE_KEY }}-${{ github.run_id }}
+        restore-keys: |
+          bazel-${{ runner.os }}-${{ env.CACHE_KEY }}
+          bazel-${{ runner.os }}
+    - name: Run all tests
+      if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev'
+      run: ./test.sh
+  deploy-jiiku:
+    runs-on: ubuntu-latest
+    needs: test
     environment: ${{ fromJSON(vars.ENV_MAP)[github.ref_name] }}
     steps:
     - name: Install zsh
@@ -33,47 +64,71 @@ jobs:
     - name: Load assets
       run: |
         cp -r sekai-assets/data/* data/
-    - name: Mount bazel cache (main)
+    - name: Mount bazel cache
       uses: actions/cache/restore@v4
-      if: ${{ ! (github.ref == 'refs/heads/kr' || github.ref == 'refs/heads/tw') }}
       with:
         path: "~/.cache/bazel"
-        key: bazel-main-${{ runner.os }}-${{ github.run_id }}
+        key: bazel-${{ runner.os }}-${{ env.CACHE_KEY }}-${{ github.run_id }}
         restore-keys: |
-          bazel-main-${{ runner.os }}
-          bazel-alt-${{ runner.os }}
+          bazel-${{ runner.os }}-${{ env.CACHE_KEY }}
           bazel-${{ runner.os }}
-    - name: Mount bazel cache (kr/tw)
-      uses: actions/cache/restore@v4
-      if: ${{ github.ref == 'refs/heads/kr' || github.ref == 'refs/heads/tw' }}
-      with:
-        path: "~/.cache/bazel"
-        key: bazel-${{ runner.os }}-alt-${{ github.run_id }}
-        restore-keys: |
-          bazel-alt-${{ runner.os }}
-          bazel-main-${{ runner.os }}
-          bazel-${{ runner.os }}
-    - name: Run all tests
-      if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev'
-      run: ./test.sh
     - name: Build files to deploy
       run: ./run_local_server.sh --build_only
-    - name: Save bazel cache (main)
+    - name: Save bazel cache
       uses: actions/cache/save@v4
-      if: ${{ ! (github.ref == 'refs/heads/kr' || github.ref == 'refs/heads/tw') }}
       with:
         path: "~/.cache/bazel"
-        key: bazel-main-${{ runner.os }}-${{ github.run_id }}
-    - name: Save bazel cache (kr/tw)
-      uses: actions/cache/save@v4
-      if: github.ref == 'refs/heads/kr' || github.ref == 'refs/heads/tw'
-      with:
-        path: "~/.cache/bazel"
-        key: bazel-alt-${{ runner.os }}-${{ github.run_id }}
-    - name: Deploy to Cloudfare
+        key: bazel-${{ runner.os }}-${{ env.CACHE_KEY }}-${{ github.run_id }}
+    - name: Deploy to Cloudflare
       uses: cloudflare/pages-action@v1.5.0
       with:
         apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         projectName: jiiku
         directory: bazel-bin/frontend/build/server.runfiles/_main/frontend/build/server_root
+  deploy-ras:
+    runs-on: ubuntu-latest
+    needs: test
+    environment: ras-${{ fromJSON(vars.ENV_MAP)[github.ref_name] }}
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev'
+    steps:
+    - name: Install zsh
+      run: sudo apt-get update; sudo apt-get install zsh
+    - name: Fetch source
+      uses: actions/checkout@v3
+    - name: Fetch assets
+      uses: actions/checkout@v3
+      with:
+        repository: Jiiku831/sekai-assets
+        path: sekai-assets
+        token: ${{ secrets.ASSETS_TOKEN }}
+        lfs: true
+    - name: Load assets
+      run: |
+        cp -r sekai-assets/data/* data/
+    - name: Mount bazel cache
+      uses: actions/cache/restore@v4
+      with:
+        path: "~/.cache/bazel"
+        key: bazel-${{ runner.os }}-${{ env.CACHE_KEY }}-${{ github.run_id }}
+        restore-keys: |
+          bazel-${{ runner.os }}-${{ env.CACHE_KEY }}
+          bazel-${{ runner.os }}
+    - name: Build files to deploy
+      run: ./sekai/run_analysis/run_local_server.sh --build_only
+    - name: Deploy to Cloudflare (dev)
+      uses: cloudflare/wrangler-action@v3
+      if: github.ref == 'refs/heads/dev'
+      with:
+        apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        workingDirectory: bazel-bin/sekai/run_analysis/server.wrangler_root
+        command: deploy --env dev --var GIT_HASH:${{ github.sha }}
+    - name: Upload version to Cloudflare (prod)
+      uses: cloudflare/wrangler-action@v3
+      if: github.ref == 'refs/heads/main'
+      with:
+        apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        workingDirectory: bazel-bin/sekai/run_analysis/server.wrangler_root
+        command: deploy --var GIT_HASH:${{ github.sha }}

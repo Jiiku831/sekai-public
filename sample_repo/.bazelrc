@@ -1,4 +1,4 @@
 common --registry https://bcr.bazel.build/
 common --registry https://raw.githubusercontent.com/Jiiku831/sekai-public/main/
-build:c++20 --cxxopt=-std=c++20
-build --config=c++20 --define=absl=1 --incompatible_enable_cc_toolchain_resolution
+build:c++23 --cxxopt=-std=c++23
+build --config=c++23 --define=absl=1 --incompatible_enable_cc_toolchain_resolution
