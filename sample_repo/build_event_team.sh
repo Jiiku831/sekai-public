@@ -11,7 +11,7 @@ args=(
     "--stderrthreshold=0"
 )
 
-BAZEL_CXXOPTS=-std=c++20 bazelisk build -c opt "$target" || exit $?
+BAZEL_CXXOPTS=-std=c++23 bazelisk build -c opt "$target" || exit $?
 
 target_path="$(echo $target | sed 's/:/\//')"
 runfiles="$(bazelisk info -c opt bazel-bin)/${target_path}.runfiles"

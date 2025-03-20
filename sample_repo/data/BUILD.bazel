@@ -38,14 +38,14 @@ filegroup(
     srcs = ["profile/profile.textproto"],
 )
 
-filegroup(
-    name = "sekai-best",
-    srcs = [
-        ":sekai-best/music_metas",
-    ],
-)
-
-filegroup(
-    name = "sekai-best/music_metas",
-    srcs = ["@sekai-best-music-metas//file"],
-)
+# filegroup(
+#     name = "sekai-best",
+#     srcs = [
+#         ":sekai-best/music_metas",
+#     ],
+# )
+#
+# filegroup(
+#     name = "sekai-best/music_metas",
+#     srcs = ["@sekai-best-music-metas//file"],
+# )

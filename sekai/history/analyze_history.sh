@@ -8,7 +8,7 @@ cd "$root"
 echo "$fg[blue]Building targets$reset_color"
 target="//sekai/history:history_analyzer_main"
 repo_target="//sekai/history:sekai_master_db_repo"
-BAZEL_CXXOPTS=-std=c++20 bazelisk build -c opt "$target" "$repo_target" || exit $?
+BAZEL_CXXOPTS=-std=c++23 bazelisk build -c opt "$target" "$repo_target" || exit $?
 
 echo "$fg[blue]Unpacking ${repo_target} to $tmpdir $reset_color"
 target_path="$(echo $target | sed 's/:/\//')"

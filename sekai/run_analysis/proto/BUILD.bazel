@@ -1,0 +1,29 @@
+load("@rules_proto//proto:defs.bzl", "proto_library")
+load("@protobuf//bazel:cc_proto_library.bzl", "cc_proto_library")
+
+proto_library(
+    name = "run_data_proto",
+    srcs = ["run_data.proto"],
+    deps = [
+        "//sekai/db/proto:descriptor_proto",
+    ],
+)
+
+cc_proto_library(
+    name = "run_data_cc_proto",
+    deps = [":run_data_proto"],
+)
+
+proto_library(
+    name = "service_proto",
+    srcs = ["service.proto"],
+    deps = [
+        "@protobuf//:duration_proto",
+        "@protobuf//:timestamp_proto",
+    ],
+)
+
+cc_proto_library(
+    name = "service_cc_proto",
+    deps = [":service_proto"],
+)

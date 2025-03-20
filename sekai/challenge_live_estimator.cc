@@ -6,6 +6,7 @@
 #include "absl/base/no_destructor.h"
 #include "absl/container/flat_hash_set.h"
 #include "absl/log/absl_check.h"
+#include "sekai/config.h"
 #include "sekai/db/master_db.h"
 #include "sekai/db/proto/all.h"
 #include "sekai/team.h"
@@ -15,8 +16,6 @@ namespace sekai {
 namespace {
 
 using ::sekai::db::MasterDb;
-
-constexpr int kTeamSize = 5;
 
 std::string DifficultyToDisplayText(db::Difficulty diff) {
   switch (diff) {

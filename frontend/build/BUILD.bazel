@@ -34,6 +34,12 @@ pkg_files(
     prefix = "images",
 )
 
+pkg_files(
+    name = "testing",
+    srcs = ["//sekai/run_analysis:server_wasm"],
+    prefix = "testing",
+)
+
 pkg_tar(
     name = "server_root",
     srcs = [
@@ -42,6 +48,7 @@ pkg_tar(
         ":images",
         ":ohnyajii_wasm",
         ":sajii_wasm",
+        ":testing",
         "//frontend:licenses",
         "//frontend:ohnyajii_css",
         "//frontend:src_root",

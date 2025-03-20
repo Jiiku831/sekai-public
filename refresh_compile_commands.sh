@@ -1,5 +1,5 @@
 #!/usr/bin/bash
-BAZEL_CXXOPTS=-std=c++20 bazelisk run @hedron_compile_commands//:refresh_all
+BAZEL_CXXOPTS=-std=c++23 bazelisk run //:refresh_compile_commands
 
 # Ignore failures
 exit 0
