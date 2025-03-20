@@ -361,6 +361,19 @@ class JsonParser : public json::json_sax_t {
 }  // namespace internal
 
 template <typename T>
+absl::StatusOr<std::vector<T>> ParseJsonFromString(std::string_view json_str) {
+  internal::JsonParser<T> parser;
+  bool status = nlohmann::json::sax_parse(json_str, &parser);
+  if (status) {
+    return parser.objs();
+  }
+  if (parser.status().ok()) {
+    return absl::InternalError("Parser failed but no error status.");
+  }
+  return parser.status();
+}
+
+template <typename T>
 absl::StatusOr<std::vector<T>> ParseJsonFromFile(const std::filesystem::path path) {
   if (!std::filesystem::exists(path)) {
     LOG(INFO) << "File not found: " << path;

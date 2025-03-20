@@ -66,8 +66,11 @@ class ItemDb {
     return matching;
   }
 
-  Records ToRecords() const {
+  Records ToRecords(std::span<const std::string> allowlist) const {
     Records records;
+    if (!allowlist.empty() && !absl::c_linear_search(allowlist, T::GetDescriptor()->name())) {
+      return records;
+    }
     for (const T& obj : objs_) {
       records.add_records()->PackFrom(obj, "");
     }

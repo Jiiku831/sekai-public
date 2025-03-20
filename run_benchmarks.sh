@@ -11,7 +11,7 @@ targets=(
     sekai/team_builder:team_builder_benchmark
 )
 
-BAZEL_CXXOPTS=-std=c++20 bazelisk build -c opt "${targets[@]}" || exit $?
+BAZEL_CXXOPTS=-std=c++23 bazelisk build -c opt "${targets[@]}" || exit $?
 
 for target in "${targets[@]}"; do
     target_path="$(echo $target | sed 's/:/\//')"

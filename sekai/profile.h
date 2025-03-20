@@ -23,6 +23,9 @@ class Profile : public ProfileBonus {
   Profile();
   explicit Profile(const ProfileProto& profile);
 
+  static const Profile& Min();
+  static const Profile& Max();
+
   void LoadCardsFromCsv(std::filesystem::path path);
   absl::Status LoadCardsFromCsvString(std::string_view contents);
   absl::Status LoadCardsFromCsv(std::stringstream& ss);

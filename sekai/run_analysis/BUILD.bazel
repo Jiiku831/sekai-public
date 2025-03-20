@@ -1,0 +1,308 @@
+load("@emsdk//emscripten_toolchain:wasm_rules.bzl", "wasm_cc_binary")
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library", "cc_test")
+load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
+load("@rules_python//python:defs.bzl", "py_binary")
+
+cc_library(
+    name = "analyze_graph_handler",
+    srcs = ["analyze_graph_handler.cc"],
+    hdrs = ["analyze_graph_handler.h"],
+    deps = [
+        ":config",
+        ":handler",
+        ":segment_analysis",
+        ":segmentation",
+        ":sequence_util",
+        "//base:util",
+        "//sekai/run_analysis/proto:service_cc_proto",
+        "@abseil-cpp//absl/status:status",
+        "@abseil-cpp//absl/status:statusor",
+        "@abseil-cpp//absl/strings:str_format",
+        "@protobuf",
+        "@protobuf//:time_util",
+    ],
+)
+
+cc_library(
+    name = "analyze_team_handler",
+    srcs = ["analyze_team_handler.cc"],
+    hdrs = ["analyze_team_handler.h"],
+    deps = [
+        ":handler",
+        "//base:util",
+        "//sekai:card",
+        "//sekai:challenge_live_estimator",
+        "//sekai:event_bonus",
+        "//sekai:team",
+        "//sekai/db:master_db",
+        "//sekai/proto:card_state_cc_proto",
+        "//sekai/run_analysis/proto:service_cc_proto",
+        "@abseil-cpp//absl/status:status",
+        "@abseil-cpp//absl/status:statusor",
+        "@abseil-cpp//absl/strings:str_format",
+        "@protobuf",
+    ],
+)
+
+cc_test(
+    name = "analyze_team_handler_test",
+    srcs = ["analyze_team_handler_test.cc"],
+    data = [
+        "//data:flat-db-minimal",
+    ],
+    deps = [
+        ":analyze_team_handler",
+        "//sekai:proto_util",
+        "//sekai/run_analysis/proto:service_cc_proto",
+        "//testing:test_main",
+        "//testing:util",
+        "@abseil-cpp//absl/status:status_matchers",
+        "@googletest//:gtest",
+    ],
+)
+
+cc_library(
+    name = "batch_handler",
+    hdrs = ["batch_handler.h"],
+    deps = [
+        ":handler",
+    ],
+)
+
+cc_library(
+    name = "clustering",
+    srcs = ["clustering.cc"],
+    hdrs = ["clustering.h"],
+    deps = [
+        ":config",
+        ":snapshot",
+        ":stats_util",
+        "//sekai:ranges_util",
+        "@abseil-cpp//absl/log",
+        "@abseil-cpp//absl/strings:str_format",
+    ],
+)
+
+cc_test(
+    name = "clustering_test",
+    srcs = ["clustering_test.cc"],
+    deps = [
+        ":clustering",
+        ":snapshot",
+        "//testing:test_main",
+        "@googletest//:gtest",
+    ],
+)
+
+cc_library(
+    name = "config",
+    hdrs = ["config.h"],
+    deps = [
+        "@abseil-cpp//absl/time",
+    ],
+)
+
+cc_library(
+    name = "handler",
+    hdrs = ["handler.h"],
+    deps = [
+        ":proto_util",
+        "//sekai/run_analysis/proto:service_cc_proto",
+        "@abseil-cpp//absl/log",
+        "@abseil-cpp//absl/status:status",
+        "@abseil-cpp//absl/status:statusor",
+        "@protobuf",
+    ],
+)
+
+cc_library(
+    name = "histogram",
+    srcs = ["histogram.cc"],
+    hdrs = ["histogram.h"],
+    deps = [
+        ":snapshot",
+        "//sekai:ranges_util",
+        "@abseil-cpp//absl/time",
+    ],
+)
+
+cc_test(
+    name = "histogram_test",
+    srcs = ["histogram_test.cc"],
+    deps = [
+        ":histogram",
+        ":snapshot",
+        "//testing:test_main",
+        "@abseil-cpp//absl/time",
+        "@googletest//:gtest",
+    ],
+)
+
+cc_binary(
+    name = "server_main",
+    srcs = [
+        "server_main.cc",
+    ],
+    additional_linker_inputs = [
+        "//data:flat-db-minimal",
+    ],
+    linkopts = [
+        "--oformat=js",
+        "--embed-file $(location //data:flat-db-minimal)@data/flat-db",
+        "-sEXPORTED_RUNTIME_METHODS=stringToUTF8,lengthBytesUTF8,UTF8ToString,getValue",
+        "-sEXPORTED_FUNCTIONS=_main,_HandleRequest,_Malloc,_Free",
+        "-sENVIRONMENT=web",
+        "-sMODULARIZE",
+        "-sUSE_PTHREADS=0",
+        "-sALLOW_MEMORY_GROWTH",
+    ],
+    deps = [
+        ":analyze_graph_handler",
+        ":analyze_team_handler",
+        ":batch_handler",
+        ":handler",
+        "//base",
+        "//sekai/db:master_db",
+        "@abseil-cpp//absl/base:no_destructor",
+        "@abseil-cpp//absl/container:flat_hash_map",
+        "@abseil-cpp//absl/log",
+        "@abseil-cpp//absl/status:status",
+    ],
+)
+
+wasm_cc_binary(
+    name = "server_wasm",
+    cc_target = ":server_main",
+)
+
+pkg_tar(
+    name = "server",
+    srcs = [
+        ".dev.vars",
+        "worker.js",
+        "wrangler.toml",
+        ":server_wasm",
+    ],
+)
+
+cc_library(
+    name = "parser",
+    srcs = ["parser.cc"],
+    hdrs = ["parser.h"],
+    deps = [
+        "//base:util",
+        "//sekai/db/json:parser",
+        "//sekai/run_analysis/proto:run_data_cc_proto",
+        "@abseil-cpp//absl/status:status",
+        "@abseil-cpp//absl/status:statusor",
+        "@abseil-cpp//absl/strings:str_format",
+    ],
+)
+
+cc_test(
+    name = "parser_test",
+    srcs = ["parser_test.cc"],
+    data = ["testdata/run_data_1.json"],
+    deps = [
+        ":parser",
+        "//sekai:file_util",
+        "//testing:test_main",
+        "@abseil-cpp//absl/status:status_matchers",
+        "@googletest//:gtest",
+    ],
+)
+
+cc_library(
+    name = "proto_util",
+    hdrs = ["proto_util.h"],
+    deps = [
+        "//sekai/run_analysis/proto:service_cc_proto",
+    ],
+)
+
+cc_library(
+    name = "segment_analysis",
+    srcs = ["segment_analysis.cc"],
+    hdrs = ["segment_analysis.h"],
+    deps = [
+        ":clustering",
+        ":proto_util",
+        ":snapshot",
+        ":stats_util",
+        "//base:util",
+        "//sekai/run_analysis/proto:service_cc_proto",
+        "@abseil-cpp//absl/status",
+        "@abseil-cpp//absl/status:statusor",
+        "@abseil-cpp//absl/strings:str_format",
+        "@abseil-cpp//absl/time",
+        "@protobuf//:time_util",
+    ],
+)
+
+cc_library(
+    name = "segmentation",
+    srcs = ["segmentation.cc"],
+    hdrs = ["segmentation.h"],
+    deps = [
+        ":clustering",
+        ":config",
+        ":snapshot",
+        "//base:util",
+        "//sekai:ranges_util",
+        "@abseil-cpp//absl/container:flat_hash_map",
+        "@abseil-cpp//absl/log",
+        "@abseil-cpp//absl/status",
+        "@abseil-cpp//absl/status:statusor",
+        "@abseil-cpp//absl/time",
+    ],
+)
+
+cc_test(
+    name = "segmentation_test",
+    srcs = ["segmentation_test.cc"],
+    deps = [
+        ":segmentation",
+        ":snapshot",
+        "//testing:test_main",
+        "@googletest//:gtest",
+    ],
+)
+
+cc_library(
+    name = "sequence_util",
+    srcs = ["sequence_util.cc"],
+    hdrs = ["sequence_util.h"],
+    deps = [
+        ":config",
+        ":snapshot",
+        "@abseil-cpp//absl/time",
+    ],
+)
+
+cc_test(
+    name = "sequence_util_test",
+    srcs = ["sequence_util_test.cc"],
+    deps = [
+        ":segmentation",
+        ":sequence_util",
+        ":snapshot",
+        "//testing:test_main",
+        "@googletest//:gtest",
+    ],
+)
+
+cc_library(
+    name = "snapshot",
+    srcs = ["snapshot.cc"],
+    hdrs = ["snapshot.h"],
+    deps = [
+        "@abseil-cpp//absl/strings",
+        "@abseil-cpp//absl/strings:str_format",
+        "@abseil-cpp//absl/time",
+    ],
+)
+
+cc_library(
+    name = "stats_util",
+    hdrs = ["stats_util.h"],
+)

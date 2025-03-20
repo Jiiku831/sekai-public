@@ -46,8 +46,8 @@ TEST(EstimatorTest, SoloEpEstimatorParams) {
   std::vector<double> expected = {
       111.66666666666667,
       0.00026255376057510599,
-      6.2561463276098066e-05,
-      1.3474270916673305e-05,
+      6.0922526201126268e-05,
+      1.3099906417468482e-05,
   };
   Eigen::Vector4d actual = Estimator(Estimator::Mode::kSolo, GetTestSongs()).GetEpEstimatorParams();
   EXPECT_THAT(actual, Pointwise(FloatEq(), expected));
@@ -57,8 +57,8 @@ TEST(EstimatorTest, MultiEpEstimatorParams) {
   std::vector<double> expected = {
       137.35,
       0.00034683671855194142,
-      8.3153773191065584e-05,
-      1.5852083431380358e-05,
+      8.093338241189053e-05,
+      1.541165460878645e-05,
   };
   Eigen::Vector4d actual =
       Estimator(Estimator::Mode::kMulti, GetTestSongs()).GetEpEstimatorParams();
@@ -69,8 +69,8 @@ TEST(EstimatorTest, CheerfulEpEstimatorParams) {
   std::vector<double> expected = {
       185.42250000000001,
       0.00046822957004512094,
-      0.00011225759380793855,
-      2.1400312632363484e-05,
+      0.00010926006625605222,
+      2.0805733721861708e-05,
   };
   Eigen::Vector4d actual =
       Estimator(Estimator::Mode::kCheerful, GetTestSongs()).GetEpEstimatorParams();
