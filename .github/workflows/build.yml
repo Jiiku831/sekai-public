@@ -90,7 +90,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: test
     environment: ras-${{ fromJSON(vars.ENV_MAP)[github.ref_name] }}
-    if: github.ref == 'refs/heads/dev'
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev'
     steps:
     - name: Install zsh
       run: sudo apt-get update; sudo apt-get install zsh
@@ -131,4 +131,4 @@ jobs:
         apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         workingDirectory: bazel-bin/sekai/run_analysis/server.wrangler_root
-        command: versions upload --var GIT_HASH:${{ github.sha }}
+        command: deploy --var GIT_HASH:${{ github.sha }}
