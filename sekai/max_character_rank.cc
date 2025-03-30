@@ -36,6 +36,7 @@ constexpr Version<4> kAnni3AssetVersion({3, 0, 0, 0});
 constexpr Version<4> kEndOfWlAssetVersion({3, 8, 0, 30});
 constexpr Version<4> kAnni4AssetVersion({4, 0, 0, 0});
 constexpr Version<4> kMovieAssetVersion({5, 0, 0, 21});
+constexpr Version<4> kAnni4p5AssetVersion({5, 2, 0, 0});
 
 absl::Time Get4thAnniUncapResetTime() {
   return absl::FromCivil(absl::CivilSecond(2024, 9, 27, 19, 0, 0), absl::UTCTimeZone());
@@ -79,6 +80,8 @@ int GetProgress(int char_id, CharacterRankSource::OtherSource source, absl::Time
       return GetAssetVersionAt(time) >= kAnni4AssetVersion ? 1 : 0;
     case CharacterRankSource::OTHER_SOURCE_MOVIE_STAMP:
       return GetAssetVersionAt(time) >= kMovieAssetVersion ? 2 : 0;
+    case CharacterRankSource::OTHER_SOURCE_ANNI_4_5_STAMP:
+      return GetAssetVersionAt(time) >= kAnni4p5AssetVersion ? 2 : 0;
     default:
       ABSL_CHECK(false) << "unhandled case";
   }
@@ -102,6 +105,8 @@ std::optional<int> GetMaxProgress(int char_id, CharacterRankSource::OtherSource 
       return GetAssetVersionAt(time) >= kAnni4AssetVersion ? 1 : 0;
     case CharacterRankSource::OTHER_SOURCE_MOVIE_STAMP:
       return GetAssetVersionAt(time) >= kMovieAssetVersion ? 2 : 0;
+    case CharacterRankSource::OTHER_SOURCE_ANNI_4_5_STAMP:
+      return GetAssetVersionAt(time) >= kAnni4p5AssetVersion ? 2 : 0;
     default:
       ABSL_CHECK(false) << "unhandled case";
   }
@@ -118,6 +123,7 @@ int ProgressToXp(int char_id, CharacterRankSource::OtherSource source, int progr
     case CharacterRankSource::OTHER_SOURCE_ANNI_4_STAMP:
     case CharacterRankSource::OTHER_SOURCE_ANNI_4_MEMORIAL_SELECT:
     case CharacterRankSource::OTHER_SOURCE_MOVIE_STAMP:
+    case CharacterRankSource::OTHER_SOURCE_ANNI_4_5_STAMP:
       return progress;
     default:
       ABSL_CHECK(false) << "unhandled case";
@@ -636,6 +642,8 @@ std::string SourceDescription(CharacterRankSource::OtherSource source) {
       return "Gacha";
     case CharacterRankSource::OTHER_SOURCE_MOVIE_STAMP:
       return "Movie";
+    case CharacterRankSource::OTHER_SOURCE_ANNI_4_5_STAMP:
+      return "4.5th Anni";
     default:
       ABSL_CHECK(false) << "unhandled case";
   }
