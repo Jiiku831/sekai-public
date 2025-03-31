@@ -643,7 +643,7 @@ std::string SourceDescription(CharacterRankSource::OtherSource source) {
     case CharacterRankSource::OTHER_SOURCE_MOVIE_STAMP:
       return "Movie";
     case CharacterRankSource::OTHER_SOURCE_ANNI_4_5_STAMP:
-      return "4.5th Anni";
+      return "4.5 Anni";
     default:
       ABSL_CHECK(false) << "unhandled case";
   }
