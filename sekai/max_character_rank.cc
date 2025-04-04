@@ -6,7 +6,6 @@
 #include <limits>
 #include <optional>
 #include <span>
-#include <unordered_set>
 #include <vector>
 
 #include "absl/log/absl_check.h"
@@ -299,7 +298,7 @@ int CountAreaConvos(int char_id, absl::Time time) {
     absl::Time publish_time = absl::FromUnixMillis(action_set.archive_published_at());
     if (publish_time > time) continue;
     for (int character2d_id : action_set.character2d_ids()) {
-      db::Character2D character = db::MasterDb::FindFirst<db::Character2D>(character2d_id);
+      const auto& character = db::MasterDb::FindFirst<db::Character2D>(character2d_id);
       if (character.character_id() == char_id) {
         ++count;
         break;
@@ -345,6 +344,92 @@ int CountVoiceLine(int char_id, absl::Time time) {
   return count;
 }
 
+std::vector<int> GetGameCharacterUnitIds(const db::MySekaiGameCharacterUnitGroup& grp) {
+  std::vector<int> ids;
+  if (grp.has_game_character_unit_id1()) {
+    ids.push_back(grp.game_character_unit_id1());
+  }
+  if (grp.has_game_character_unit_id2()) {
+    ids.push_back(grp.game_character_unit_id2());
+  }
+  if (grp.has_game_character_unit_id3()) {
+    ids.push_back(grp.game_character_unit_id3());
+  }
+  if (grp.has_game_character_unit_id4()) {
+    ids.push_back(grp.game_character_unit_id4());
+  }
+  if (grp.has_game_character_unit_id5()) {
+    ids.push_back(grp.game_character_unit_id5());
+  }
+  return ids;
+}
+
+int CountMySekaiTalks(int char_id) {
+  // TODO: check if there is an archive for this as well
+  absl::flat_hash_set<std::string> unique_talks;
+  for (const auto& talk : db::MasterDb::GetAll<db::MySekaiCharacterTalk>()) {
+    bool match = false;
+    for (int game_character_unit_id :
+         GetGameCharacterUnitIds(db::MasterDb::FindFirst<db::MySekaiGameCharacterUnitGroup>(
+             talk.game_character_unit_group_id()))) {
+      const auto& game_character_unit =
+          db::MasterDb::FindFirst<db::GameCharacterUnit>(game_character_unit_id);
+      if (game_character_unit.game_character_id() == char_id) {
+        match = true;
+        break;
+      }
+    }
+    if (!match) continue;
+
+    // Check is fixture talk
+    const auto& condition_group =
+        db::MasterDb::FindFirst<db::MySekaiCharacterTalkConditionGroup>(talk.condition_group_id());
+    const auto& condition =
+        db::MasterDb::FindFirst<db::MySekaiCharacterTalkCondition>(condition_group.condition_id());
+    if (condition.condition_type() == db::MySekaiCharacterTalkCondition::MYSEKAI_FIXTURE_ID) {
+      unique_talks.insert(talk.lua());
+    }
+  }
+  return unique_talks.size();
+}
+
+std::vector<int> GetFixtureTagIds(const db::MySekaiFixture& fixture) {
+  std::vector<int> ids;
+  ids.reserve(4);
+  if (fixture.mysekai_fixture_tag_group().has_mysekai_fixture_tag_id1()) {
+    ids.push_back(fixture.mysekai_fixture_tag_group().mysekai_fixture_tag_id1());
+  }
+  if (fixture.mysekai_fixture_tag_group().has_mysekai_fixture_tag_id2()) {
+    ids.push_back(fixture.mysekai_fixture_tag_group().mysekai_fixture_tag_id2());
+  }
+  if (fixture.mysekai_fixture_tag_group().has_mysekai_fixture_tag_id3()) {
+    ids.push_back(fixture.mysekai_fixture_tag_group().mysekai_fixture_tag_id3());
+  }
+  if (fixture.mysekai_fixture_tag_group().has_mysekai_fixture_tag_id4()) {
+    ids.push_back(fixture.mysekai_fixture_tag_group().mysekai_fixture_tag_id4());
+  }
+  return ids;
+}
+
+int CountMySekaiFixtures(int char_id) {
+  // TODO: check if there is an archive for this as well
+  int count = 0;
+  for (const auto& fixture : db::MasterDb::GetAll<db::MySekaiFixture>()) {
+    for (int tag_id : GetFixtureTagIds(fixture)) {
+      const auto& tag = db::MasterDb::FindFirst<db::MySekaiFixtureTag>(tag_id);
+      if (tag.tag_type() == db::MySekaiFixtureTag::GAME_CHARACTER && tag.external_id() == char_id) {
+        ++count;
+        break;
+      }
+    }
+  }
+  return count;
+}
+
+int CountMembers(int char_id, absl::Time time) {
+  return CountRareMember(char_id, time) + CountCommonMember(char_id, time);
+}
+
 int GetProgress(int char_id, db::CharacterMissionType source, absl::Time time) {
   switch (source) {
     case db::CHARACTER_MISSION_TYPE_AREA_ITEM_LEVEL_UP_CHARACTER:
@@ -381,9 +466,11 @@ int GetProgress(int char_id, db::CharacterMissionType source, absl::Time time) {
     case db::CHARACTER_MISSION_TYPE_COLLECT_CHARACTER_ARCHIVE_VOICE:
       return CountVoiceLine(char_id, time);
     case db::CHARACTER_MISSION_TYPE_COLLECT_MYSEKAI_FIXTURE:
+      return CountMySekaiFixtures(char_id);
     case db::CHARACTER_MISSION_TYPE_COLLECT_MYSEKAI_CANVAS:
+      return CountMembers(char_id, time);
     case db::CHARACTER_MISSION_TYPE_READ_MYSEKAI_FIXTURE_TALK:
-      return 0;
+      return CountMySekaiTalks(char_id);
     default:
       ABSL_CHECK(false) << "unhandled case";
   }

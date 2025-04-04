@@ -3,9 +3,10 @@ syntax = "proto3";
 package sekai.db;
 
 import "sekai/db/proto/descriptor.proto";
-message MysekaiCharacterTalkConditionGroup {
-  option (master_db_file)                            = "mysekaiCharacterTalkConditionGroups.json";
-  optional int32 id                                  = 1 [(json_name) = "id"];
-  optional int32 group_id                            = 2 [(json_name) = "groupId"];
-  optional int32 mysekai_character_talk_condition_id = 3 [(json_name) = "mysekaiCharacterTalkConditionId"];
+
+message MySekaiCharacterTalkConditionGroup {
+  option (master_db_file)     = "mysekaiCharacterTalkConditionGroups.json";
+  optional int32 id           = 1 [(json_name) = "id", (primary_key) = true];
+  optional int32 group_id     = 2 [(json_name) = "groupId"];
+  optional int32 condition_id = 3 [(json_name) = "mysekaiCharacterTalkConditionId"];
 }

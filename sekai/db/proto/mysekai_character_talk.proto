@@ -3,14 +3,16 @@ syntax = "proto3";
 package sekai.db;
 
 import "sekai/db/proto/descriptor.proto";
-message MysekaiCharacterTalk {
-  option (master_db_file)                                  = "mysekaiCharacterTalks.json";
-  optional int32 id                                        = 1 [(json_name) = "id"];
-  optional int32 mysekai_game_character_unit_group_id      = 2 [(json_name) = "mysekaiGameCharacterUnitGroupId"];
-  optional int32 mysekai_character_talk_condition_group_id = 3 [(json_name) = "mysekaiCharacterTalkConditionGroupId"];
-  optional int32 mysekai_site_group_id                     = 4 [(json_name) = "mysekaiSiteGroupId"];
-  optional int32 mysekai_character_talk_term_id            = 5 [(json_name) = "mysekaiCharacterTalkTermId"];
-  optional string assetbundle_name                         = 6 [(json_name) = "assetbundleName"];
-  optional string lua                                      = 7 [(json_name) = "lua"];
-  optional bool is_enabled_for_multi                       = 8 [(json_name) = "isEnabledForMulti"];
+
+message MySekaiCharacterTalk {
+  option (master_db_file)                        = "mysekaiCharacterTalks.json";
+  optional int32 id                              = 1 [(json_name) = "id", (primary_key) = true];
+  optional int32 game_character_unit_group_id    = 2 [(json_name) = "mysekaiGameCharacterUnitGroupId"];
+  optional int32 condition_group_id              = 3 [(json_name) = "mysekaiCharacterTalkConditionGroupId"];
+  optional int32 site_group_id                   = 4 [(json_name) = "mysekaiSiteGroupId"];
+  optional int32 talk_term_id                    = 5 [(json_name) = "mysekaiCharacterTalkTermId"];
+  optional string assetbundle_name               = 6 [(json_name) = "assetbundleName"];
+  optional string lua                            = 7 [(json_name) = "lua"];
+  optional bool is_enabled_for_multi             = 8 [(json_name) = "isEnabledForMulti"];
+  optional int32 archive_character_talk_group_id = 9 [(json_name) = "characterArchiveMysekaiCharacterTalkGroupId"];
 }
