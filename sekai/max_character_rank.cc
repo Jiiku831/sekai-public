@@ -380,6 +380,10 @@ int GetProgress(int char_id, db::CharacterMissionType source, absl::Time time) {
       return CountCommonMember(char_id, time) * (kSkillLevelMax - 1);
     case db::CHARACTER_MISSION_TYPE_COLLECT_CHARACTER_ARCHIVE_VOICE:
       return CountVoiceLine(char_id, time);
+    case db::CHARACTER_MISSION_TYPE_COLLECT_MYSEKAI_FIXTURE:
+    case db::CHARACTER_MISSION_TYPE_COLLECT_MYSEKAI_CANVAS:
+    case db::CHARACTER_MISSION_TYPE_READ_MYSEKAI_FIXTURE_TALK:
+      return 0;
     default:
       ABSL_CHECK(false) << "unhandled case";
   }
@@ -475,6 +479,9 @@ std::optional<int> GetMaxProgress(int char_id, db::CharacterMissionType source, 
     case db::CHARACTER_MISSION_TYPE_SKILL_LEVEL_UP_RARE:
     case db::CHARACTER_MISSION_TYPE_SKILL_LEVEL_UP_STANDARD:
     case db::CHARACTER_MISSION_TYPE_COLLECT_CHARACTER_ARCHIVE_VOICE:
+    case db::CHARACTER_MISSION_TYPE_COLLECT_MYSEKAI_FIXTURE:
+    case db::CHARACTER_MISSION_TYPE_COLLECT_MYSEKAI_CANVAS:
+    case db::CHARACTER_MISSION_TYPE_READ_MYSEKAI_FIXTURE_TALK:
       return GetMaxProgressFromMissionParams(char_id, source);
     default:
       ABSL_CHECK(false) << "unhandled case";
@@ -690,6 +697,12 @@ std::string SourceDescription(db::CharacterMissionType source) {
       return "SL (3*)";
     case db::CHARACTER_MISSION_TYPE_COLLECT_CHARACTER_ARCHIVE_VOICE:
       return "Voice Lines";
+    case db::CHARACTER_MISSION_TYPE_COLLECT_MYSEKAI_FIXTURE:
+      return "Furnitures";
+    case db::CHARACTER_MISSION_TYPE_COLLECT_MYSEKAI_CANVAS:
+      return "Canvases";
+    case db::CHARACTER_MISSION_TYPE_READ_MYSEKAI_FIXTURE_TALK:
+      return "MySaki Convos";
     default:
       ABSL_CHECK(false) << "unhandled case";
       return "";

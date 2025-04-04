@@ -32,6 +32,8 @@ message MySekaiFixture {
     HANDLE_NONE                         = 4 [(json_value) = "none"];
     HANDLE_ROAD                         = 5 [(json_value) = "road"];
     HANDLE_WINDOWPANE                   = 6 [(json_value) = "windowpane"];
+    HANDLE_BLOCK                        = 7 [(json_value) = "block"];
+    HANDLE_BLOCK_TRANSPARENT            = 8 [(json_value) = "block_transparent"];
   }
 
   enum MysekaiSettableSiteType {
@@ -56,6 +58,7 @@ message MySekaiFixture {
     NONE                             = 1 [(json_value) = "none"];
     PUT_BASE                         = 2 [(json_value) = "put_base"];
     PUT_TARGET                       = 3 [(json_value) = "put_target"];
+    PUT_EITHER                       = 4 [(json_value) = "put_either"];
   }
 
   message MysekaiFixtureTagGroup {
