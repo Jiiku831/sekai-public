@@ -459,15 +459,7 @@ WorldBloomVersion GetWorldBloomVersion(const ProfileProto& profile) {
       return sekai::kDefaultWorldBloomVersion;
     }
   }
-  int version = 1;
-  for (int cutoff : sekai::kWorldBloomVersionCutoffs) {
-    if (profile.event_id().event_id() > cutoff) {
-      ++version;
-    }
-  }
-  ABSL_CHECK(sekai::WorldBloomVersion_IsValid(version));
-  ABSL_CHECK_GT(version, 0);
-  return static_cast<WorldBloomVersion>(version);
+  return sekai::GetWorldBloomVersion(profile.event_id().event_id());
 }
 
 }  // namespace frontend
@@ -581,7 +573,9 @@ void Controller::SetTitleBonus(int bonus) {
 }
 
 void Controller::OnProfileUpdate() {
-  event_bonus_ = std::visit([](auto&& arg) { return EventBonus(arg); }, event_bonus_source());
+  event_bonus_ = std::visit(
+      [this](auto&& arg) { return EventBonus(arg, GetWorldBloomVersion(profile_proto_)); },
+      event_bonus_source());
   constraints_ = MakeConstraints(profile_proto_);
   profile_.ApplyEventBonus(event_bonus_);
   absl::SetFlag(&FLAGS_subunitless_offset, profile_proto_.use_old_subunitless_bonus() ? 10 : 0);

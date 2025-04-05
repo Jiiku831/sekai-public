@@ -12,6 +12,7 @@
 #include "absl/log/absl_check.h"
 #include "base/zstd.h"
 #include "sekai/file_util.h"
+#include "sekai/parse_proto.h"
 
 namespace sekai {
 
@@ -36,31 +37,6 @@ std::vector<T> EnumValuesExcludingDefault() {
     values.push_back(static_cast<T>(desc->value(i)->number()));
   }
   return values;
-}
-
-template <typename T>
-T ParseTextProto(const std::string& str) {
-  T msg;
-  ABSL_CHECK(google::protobuf::TextFormat::ParseFromString(str, &msg));
-  return msg;
-}
-
-template <typename T>
-std::optional<T> SafeParseTextProto(const std::string& str) {
-  T msg;
-  if (!google::protobuf::TextFormat::ParseFromString(str, &msg)) {
-    return std::nullopt;
-  }
-  return msg;
-}
-
-template <typename T>
-std::optional<T> SafeParseBinaryProto(const std::string& str) {
-  T msg;
-  if (!msg.ParseFromString(str)) {
-    return std::nullopt;
-  }
-  return msg;
 }
 
 template <typename T>

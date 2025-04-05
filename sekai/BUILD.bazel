@@ -198,6 +198,7 @@ cc_library(
     srcs = ["config.cc"],
     hdrs = ["config.h"],
     deps = [
+        ":parse_proto",
         "//sekai/proto:world_bloom_cc_proto",
         "@abseil-cpp//absl/log:absl_check",
     ],
@@ -286,6 +287,7 @@ cc_test(
         "testdata/event_bonus_117.textproto",
         "testdata/support_event_bonus_112_1.textproto",
         "testdata/support_event_bonus_140_1.textproto",
+        "testdata/support_event_bonus_vs_v2.textproto",
         "//data:flat-db",
     ],
     deps = [
@@ -411,6 +413,16 @@ cc_test(
 )
 
 cc_library(
+    name = "parse_proto",
+    hdrs = ["parse_proto.h"],
+    deps = [
+        "//base",
+        "@abseil-cpp//absl/log:absl_check",
+        "@protobuf",
+    ],
+)
+
+cc_library(
     name = "points",
     srcs = ["points.cc"],
     hdrs = ["points.h"],
@@ -488,6 +500,7 @@ cc_library(
     hdrs = ["proto_util.h"],
     deps = [
         ":file_util",
+        ":parse_proto",
         "//base",
         "@abseil-cpp//absl/log:absl_check",
         "@protobuf",

@@ -956,7 +956,7 @@ function RenderTeamImpl(teamIndex, context) {
       thumbCell.appendChild(CreateCardThumbHover(card));
       statsCell.innerText =
         `MR${card.state.masterRank}/SL${card.state.skillLevel}\n` +
-        `${card.state.teamBonusContrib}%\n`;
+        `${numberFmt.format(card.state.teamBonusContrib)}%\n`;
     } else {
       statsCell.innerText = "";
     }

@@ -1,6 +1,9 @@
 #pragma once
 
+#include <optional>
+
 #include "absl/base/nullability.h"
+#include "absl/container/flat_hash_set.h"
 #include "sekai/bitset.h"
 #include "sekai/character.h"
 #include "sekai/config.h"
@@ -14,10 +17,14 @@ class EventBonus {
  public:
   EventBonus();
   virtual ~EventBonus() = default;
-  explicit EventBonus(const db::Event& event);
-  explicit EventBonus(absl::Nullable<const db::Event*> event);
-  explicit EventBonus(const EventId& event_id);
-  explicit EventBonus(const SimpleEventBonus& event_bonus);
+  explicit EventBonus(const db::Event& event,
+                      std::optional<WorldBloomVersion> wl_version = std::nullopt);
+  explicit EventBonus(absl::Nullable<const db::Event*> event,
+                      std::optional<WorldBloomVersion> wl_version = std::nullopt);
+  explicit EventBonus(const EventId& event_id,
+                      std::optional<WorldBloomVersion> wl_version = std::nullopt);
+  explicit EventBonus(const SimpleEventBonus& event_bonus,
+                      std::optional<WorldBloomVersion> wl_version = std::nullopt);
 
   EventBonusProto ToProto() const;
 
@@ -63,9 +70,11 @@ class EventBonus {
 
 class SupportUnitEventBonus : public EventBonus {
  public:
-  SupportUnitEventBonus();
-  explicit SupportUnitEventBonus(const EventId& event_id);
-  explicit SupportUnitEventBonus(const SimpleEventBonus& event_bonus);
+  explicit SupportUnitEventBonus(std::optional<WorldBloomVersion> version = std::nullopt);
+  explicit SupportUnitEventBonus(const EventId& event_id,
+                                 std::optional<WorldBloomVersion> version = std::nullopt);
+  explicit SupportUnitEventBonus(const SimpleEventBonus& event_bonus,
+                                 std::optional<WorldBloomVersion> version = std::nullopt);
 
   float GetBonus(int card_id, int character_id, db::Attr attr, db::Unit unit,
                  db::CardRarityType rarity, int master_rank, int skill_level) const override {
@@ -80,8 +89,14 @@ class SupportUnitEventBonus : public EventBonus {
   }
 
  private:
+  float baseline_char_bonus_ = 0;
+  float baseline_card_bonus_ = 0;
+  absl::flat_hash_set<int> support_bonus_cards_;
   int chapter_char_ = 0;
   Unit chapter_unit_;
+  db::Unit db_chapter_unit_;
+
+  void PopulateChapterSpecificBonus();
 };
 
 }  // namespace sekai
