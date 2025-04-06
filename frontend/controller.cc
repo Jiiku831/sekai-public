@@ -10,6 +10,7 @@
 
 #include <emscripten.h>
 #include <emscripten/bind.h>
+#include <emscripten/val.h>
 #include <google/protobuf/text_format.h>
 #include <google/protobuf/util/json_util.h>
 
@@ -1148,6 +1149,17 @@ std::string Controller::SerializeStateToTextProto() const {
   return output;
 }
 
+emscripten::val Controller::SerializeStateToString() {
+  profile_proto_bytes_ = profile_proto_.SerializeAsString();
+  return emscripten::val(
+      emscripten::typed_memory_view(profile_proto_bytes_.length(), profile_proto_bytes_.data()));
+}
+
+void Controller::ClearSerializedStringState() {
+  profile_proto_bytes_.clear();
+  profile_proto_bytes_.shrink_to_fit();
+}
+
 EMSCRIPTEN_BINDINGS(controller) {
   class_<Controller, base<ControllerBase>>("Controller")
       .constructor<>()
@@ -1155,6 +1167,7 @@ EMSCRIPTEN_BINDINGS(controller) {
       .function("BuildEventTeam", &Controller::BuildEventTeam)
       .function("BuildFillTeam", &Controller::BuildFillTeam)
       .function("BuildParkingTeam", &Controller::BuildParkingTeam)
+      .function("ClearSerializedStringState", &Controller::ClearSerializedStringState)
       .function("ClearTeamCard", &Controller::ClearTeamCard)
       .function("ImportCardsFromCsv", &Controller::ImportCardsFromCsv)
       .function("ImportDataFromProto", &Controller::ImportDataFromProto)

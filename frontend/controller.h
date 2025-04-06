@@ -4,6 +4,8 @@
 #include <string>
 #include <variant>
 
+#include <emscripten/val.h>
+
 #include "frontend/controller_base.h"
 #include "sekai/bitset.h"
 #include "sekai/challenge_live_estimator.h"
@@ -90,7 +92,8 @@ class Controller : public ControllerBase {
   void SetUseOldSubunitlessBonus(bool state);
 
   std::string SerializeStateToTextProto() const;
-  std::string SerializeStateToString() const { return profile_proto_.SerializeAsString(); }
+  emscripten::val SerializeStateToString();
+  void ClearSerializedStringState();
 
  private:
   FilterState card_list_filter_state_;
@@ -107,6 +110,7 @@ class Controller : public ControllerBase {
   sekai::Constraints constraints_;
   std::optional<int> target_points_;
   int park_accuracy_ = 95;
+  std::string profile_proto_bytes_ = "";
 
   const sekai::Estimator& estimator() const {
     return estimator_mode_ == sekai::Estimator::Mode::kCheerful ? cc_estimator_ : estimator_;

@@ -978,7 +978,7 @@ function ImportBinaryProto() {
   reader.onload = (e) => {
     controller.ImportDataFromProto(e.target.result);
   }
-  reader.readAsText(file);
+  reader.readAsArrayBuffer(file);
 }
 
 function ImportTextProto() {
@@ -1000,7 +1000,8 @@ function SaveAsFile(fileName, data, type) {
 
 function ExportBinaryProto() {
   let data = controller.SerializeStateToString();
-  SaveAsFile("profile.binaryproto", data, "application/octet-stream");
+  SaveAsFile("profile.binaryproto", new Int8Array(data), "application/octet-stream");
+  controller.ClearSerializedStringState();
 }
 
 function ExportTextProto() {
