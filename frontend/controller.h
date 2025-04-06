@@ -89,7 +89,7 @@ class Controller : public ControllerBase {
 
   void SetUseOldSubunitlessBonus(bool state);
 
-  std::string SerializeStateToDebugString() const { return profile_proto_.DebugString(); }
+  std::string SerializeStateToTextProto() const;
   std::string SerializeStateToString() const { return profile_proto_.SerializeAsString(); }
 
  private:

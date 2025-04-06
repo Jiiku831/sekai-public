@@ -10,6 +10,7 @@
 
 #include <emscripten.h>
 #include <emscripten/bind.h>
+#include <google/protobuf/text_format.h>
 #include <google/protobuf/util/json_util.h>
 
 #include "absl/algorithm/container.h"
@@ -56,6 +57,7 @@ namespace {
 
 using ::emscripten::base;
 using ::emscripten::class_;
+using ::google::protobuf::TextFormat;
 using ::google::protobuf::util::MessageToJsonString;
 using ::sekai::CardState;
 using ::sekai::ChallengeLiveTeamBuilder;
@@ -1137,6 +1139,15 @@ void Controller::BuildFillTeam(bool ignore_constraints, int min_power) {
   RefreshTeam(kTeamBuilderOutputSlot);
 }
 
+std::string Controller::SerializeStateToTextProto() const {
+  std::string output;
+  if (!TextFormat::PrintToString(profile_proto_, &output)) {
+    LOG(ERROR) << "Failed to convert profile to textproto";
+    return "";
+  }
+  return output;
+}
+
 EMSCRIPTEN_BINDINGS(controller) {
   class_<Controller, base<ControllerBase>>("Controller")
       .constructor<>()
@@ -1150,8 +1161,8 @@ EMSCRIPTEN_BINDINGS(controller) {
       .function("ImportDataFromTextProto", &Controller::ImportDataFromTextProto)
       .function("IsValidCard", &Controller::IsValidCard)
       .function("RefreshTeams", &Controller::RefreshTeams)
-      .function("SerializeStateToDebugString", &Controller::SerializeStateToDebugString)
       .function("SerializeStateToString", &Controller::SerializeStateToString)
+      .function("SerializeStateToTextProto", &Controller::SerializeStateToTextProto)
       .function("SetAreaItemLevel", &Controller::SetAreaItemLevel)
       .function("SetCardCanvasCrafted", &Controller::SetCardCanvasCrafted)
       .function("SetAttrFilterState", &Controller::SetAttrFilterState)

@@ -1004,7 +1004,7 @@ function ExportBinaryProto() {
 }
 
 function ExportTextProto() {
-  let data = controller.SerializeStateToDebugString();
+  let data = controller.SerializeStateToTextProto();
   SaveAsFile("profile.textproto", data, "text/plain");
 }
 
