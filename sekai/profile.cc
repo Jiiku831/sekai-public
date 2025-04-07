@@ -14,6 +14,7 @@
 #include "absl/base/nullability.h"
 #include "absl/log/absl_check.h"
 #include "absl/log/log.h"
+#include "absl/strings/ascii.h"
 #include "absl/strings/numbers.h"
 #include "absl/strings/str_split.h"
 #include "base/util.h"
@@ -153,9 +154,8 @@ bool TryParseInt(std::string_view str, int& out) {
   if (absl::SimpleAtoi(str, &tmp)) {
     std::swap(tmp, out);
     return true;
-  } else {
-    return false;
   }
+  return false;
 }
 
 }  // namespace
@@ -237,12 +237,15 @@ absl::Status Profile::LoadCardsFromCsv(std::stringstream& ss) {
     int card_id = 0;
     if (!TryParseInt(parts[7 + offset], card_id)) {
       return absl::InvalidArgumentError(
-          absl::StrCat("Failed to parse as int: ", parts[7 + offset]));
+          absl::StrCat("Failed to parse card id as number: '", parts[1], "' on row ", row));
     }
     int master_rank = 0;
     int skill_level = 1;
-    if (!parts[1].empty() && !TryParseInt(parts[1], master_rank)) {
-      return absl::InvalidArgumentError(absl::StrCat("Failed to parse as int: ", parts[1]));
+    if (std::string_view mr_str = absl::StripAsciiWhitespace(parts[1]);
+        !mr_str.empty() && !TryParseInt(mr_str, master_rank)) {
+      return absl::InvalidArgumentError(absl::StrCat("Failed to parse master rank as number: '",
+                                                     parts[1], "' for card ", card_id, " on row ",
+                                                     row));
     }
     if (master_rank < 0) {
       LOG(WARNING) << "Clamping master rank for card " << card_id << " to 0";
@@ -252,8 +255,11 @@ absl::Status Profile::LoadCardsFromCsv(std::stringstream& ss) {
       LOG(WARNING) << "Clamping master rank for card " << card_id << " to 5";
       master_rank = 5;
     }
-    if (!parts[2].empty() && !TryParseInt(parts[2], skill_level)) {
-      return absl::InvalidArgumentError(absl::StrCat("Failed to parse as int: ", parts[2]));
+    if (std::string_view sl_str = absl::StripAsciiWhitespace(parts[2]);
+        !sl_str.empty() && !TryParseInt(sl_str, skill_level)) {
+      return absl::InvalidArgumentError(absl::StrCat("Failed to parse skill level as number: '",
+                                                     parts[1], "' for card ", card_id, " on row ",
+                                                     row));
     }
     if (skill_level < 1) {
       LOG(WARNING) << "Clamping skill level for card " << card_id << " to 1";

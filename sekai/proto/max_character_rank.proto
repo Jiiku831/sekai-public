@@ -15,6 +15,7 @@ message CharacterRankSource {
     OTHER_SOURCE_ANNI_4_STAMP           = 5;
     OTHER_SOURCE_ANNI_4_MEMORIAL_SELECT = 6;
     OTHER_SOURCE_MOVIE_STAMP            = 7;
+    OTHER_SOURCE_ANNI_4_5_STAMP         = 8;
   }
   optional OtherSource other_source = 2;
   optional int32 progress           = 3;

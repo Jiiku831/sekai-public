@@ -156,5 +156,7 @@ TEST(GetMaxCharacterRanksTest, ComputeMaxChallengeLiveForMiku) {
   EXPECT_EQ(cl_source->progress(), 103);
 }
 
+// TODO: add tests for mysekai CR missions
+
 }  // namespace
 }  // namespace sekai

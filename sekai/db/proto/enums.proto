@@ -76,4 +76,7 @@ enum CharacterMissionType {
   CHARACTER_MISSION_TYPE_WAITING_ROOM                     = 17 [(json_value) = "waiting_room"];
   CHARACTER_MISSION_TYPE_WAITING_ROOM_EX                  = 18 [(json_value) = "waiting_room_ex"];
   CHARACTER_MISSION_TYPE_COLLECT_CHARACTER_ARCHIVE_VOICE  = 19 [(json_value) = "collect_character_archive_voice"];
+  CHARACTER_MISSION_TYPE_COLLECT_MYSEKAI_FIXTURE          = 20 [(json_value) = "collect_mysekai_fixture"];
+  CHARACTER_MISSION_TYPE_COLLECT_MYSEKAI_CANVAS           = 21 [(json_value) = "collect_mysekai_canvas"];
+  CHARACTER_MISSION_TYPE_READ_MYSEKAI_FIXTURE_TALK = 22 [(json_value) = "read_mysekai_fixture_unique_character_talk"];
 }

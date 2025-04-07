@@ -6,7 +6,6 @@
 #include <limits>
 #include <optional>
 #include <span>
-#include <unordered_set>
 #include <vector>
 
 #include "absl/log/absl_check.h"
@@ -36,6 +35,7 @@ constexpr Version<4> kAnni3AssetVersion({3, 0, 0, 0});
 constexpr Version<4> kEndOfWlAssetVersion({3, 8, 0, 30});
 constexpr Version<4> kAnni4AssetVersion({4, 0, 0, 0});
 constexpr Version<4> kMovieAssetVersion({5, 0, 0, 21});
+constexpr Version<4> kAnni4p5AssetVersion({5, 2, 0, 0});
 
 absl::Time Get4thAnniUncapResetTime() {
   return absl::FromCivil(absl::CivilSecond(2024, 9, 27, 19, 0, 0), absl::UTCTimeZone());
@@ -79,6 +79,8 @@ int GetProgress(int char_id, CharacterRankSource::OtherSource source, absl::Time
       return GetAssetVersionAt(time) >= kAnni4AssetVersion ? 1 : 0;
     case CharacterRankSource::OTHER_SOURCE_MOVIE_STAMP:
       return GetAssetVersionAt(time) >= kMovieAssetVersion ? 2 : 0;
+    case CharacterRankSource::OTHER_SOURCE_ANNI_4_5_STAMP:
+      return GetAssetVersionAt(time) >= kAnni4p5AssetVersion ? 2 : 0;
     default:
       ABSL_CHECK(false) << "unhandled case";
   }
@@ -102,6 +104,8 @@ std::optional<int> GetMaxProgress(int char_id, CharacterRankSource::OtherSource 
       return GetAssetVersionAt(time) >= kAnni4AssetVersion ? 1 : 0;
     case CharacterRankSource::OTHER_SOURCE_MOVIE_STAMP:
       return GetAssetVersionAt(time) >= kMovieAssetVersion ? 2 : 0;
+    case CharacterRankSource::OTHER_SOURCE_ANNI_4_5_STAMP:
+      return GetAssetVersionAt(time) >= kAnni4p5AssetVersion ? 2 : 0;
     default:
       ABSL_CHECK(false) << "unhandled case";
   }
@@ -118,6 +122,7 @@ int ProgressToXp(int char_id, CharacterRankSource::OtherSource source, int progr
     case CharacterRankSource::OTHER_SOURCE_ANNI_4_STAMP:
     case CharacterRankSource::OTHER_SOURCE_ANNI_4_MEMORIAL_SELECT:
     case CharacterRankSource::OTHER_SOURCE_MOVIE_STAMP:
+    case CharacterRankSource::OTHER_SOURCE_ANNI_4_5_STAMP:
       return progress;
     default:
       ABSL_CHECK(false) << "unhandled case";
@@ -293,7 +298,7 @@ int CountAreaConvos(int char_id, absl::Time time) {
     absl::Time publish_time = absl::FromUnixMillis(action_set.archive_published_at());
     if (publish_time > time) continue;
     for (int character2d_id : action_set.character2d_ids()) {
-      db::Character2D character = db::MasterDb::FindFirst<db::Character2D>(character2d_id);
+      const auto& character = db::MasterDb::FindFirst<db::Character2D>(character2d_id);
       if (character.character_id() == char_id) {
         ++count;
         break;
@@ -339,6 +344,92 @@ int CountVoiceLine(int char_id, absl::Time time) {
   return count;
 }
 
+std::vector<int> GetGameCharacterUnitIds(const db::MySekaiGameCharacterUnitGroup& grp) {
+  std::vector<int> ids;
+  if (grp.has_game_character_unit_id1()) {
+    ids.push_back(grp.game_character_unit_id1());
+  }
+  if (grp.has_game_character_unit_id2()) {
+    ids.push_back(grp.game_character_unit_id2());
+  }
+  if (grp.has_game_character_unit_id3()) {
+    ids.push_back(grp.game_character_unit_id3());
+  }
+  if (grp.has_game_character_unit_id4()) {
+    ids.push_back(grp.game_character_unit_id4());
+  }
+  if (grp.has_game_character_unit_id5()) {
+    ids.push_back(grp.game_character_unit_id5());
+  }
+  return ids;
+}
+
+int CountMySekaiTalks(int char_id) {
+  // TODO: check if there is an archive for this as well
+  absl::flat_hash_set<std::string> unique_talks;
+  for (const auto& talk : db::MasterDb::GetAll<db::MySekaiCharacterTalk>()) {
+    bool match = false;
+    for (int game_character_unit_id :
+         GetGameCharacterUnitIds(db::MasterDb::FindFirst<db::MySekaiGameCharacterUnitGroup>(
+             talk.game_character_unit_group_id()))) {
+      const auto& game_character_unit =
+          db::MasterDb::FindFirst<db::GameCharacterUnit>(game_character_unit_id);
+      if (game_character_unit.game_character_id() == char_id) {
+        match = true;
+        break;
+      }
+    }
+    if (!match) continue;
+
+    // Check is fixture talk
+    const auto& condition_group =
+        db::MasterDb::FindFirst<db::MySekaiCharacterTalkConditionGroup>(talk.condition_group_id());
+    const auto& condition =
+        db::MasterDb::FindFirst<db::MySekaiCharacterTalkCondition>(condition_group.condition_id());
+    if (condition.condition_type() == db::MySekaiCharacterTalkCondition::MYSEKAI_FIXTURE_ID) {
+      unique_talks.insert(talk.lua());
+    }
+  }
+  return unique_talks.size();
+}
+
+std::vector<int> GetFixtureTagIds(const db::MySekaiFixture& fixture) {
+  std::vector<int> ids;
+  ids.reserve(4);
+  if (fixture.mysekai_fixture_tag_group().has_mysekai_fixture_tag_id1()) {
+    ids.push_back(fixture.mysekai_fixture_tag_group().mysekai_fixture_tag_id1());
+  }
+  if (fixture.mysekai_fixture_tag_group().has_mysekai_fixture_tag_id2()) {
+    ids.push_back(fixture.mysekai_fixture_tag_group().mysekai_fixture_tag_id2());
+  }
+  if (fixture.mysekai_fixture_tag_group().has_mysekai_fixture_tag_id3()) {
+    ids.push_back(fixture.mysekai_fixture_tag_group().mysekai_fixture_tag_id3());
+  }
+  if (fixture.mysekai_fixture_tag_group().has_mysekai_fixture_tag_id4()) {
+    ids.push_back(fixture.mysekai_fixture_tag_group().mysekai_fixture_tag_id4());
+  }
+  return ids;
+}
+
+int CountMySekaiFixtures(int char_id) {
+  // TODO: check if there is an archive for this as well
+  int count = 0;
+  for (const auto& fixture : db::MasterDb::GetAll<db::MySekaiFixture>()) {
+    for (int tag_id : GetFixtureTagIds(fixture)) {
+      const auto& tag = db::MasterDb::FindFirst<db::MySekaiFixtureTag>(tag_id);
+      if (tag.tag_type() == db::MySekaiFixtureTag::GAME_CHARACTER && tag.external_id() == char_id) {
+        ++count;
+        break;
+      }
+    }
+  }
+  return count;
+}
+
+int CountMembers(int char_id, absl::Time time) {
+  return CountRareMember(char_id, time) + CountCommonMember(char_id, time);
+}
+
 int GetProgress(int char_id, db::CharacterMissionType source, absl::Time time) {
   switch (source) {
     case db::CHARACTER_MISSION_TYPE_AREA_ITEM_LEVEL_UP_CHARACTER:
@@ -374,6 +465,12 @@ int GetProgress(int char_id, db::CharacterMissionType source, absl::Time time) {
       return CountCommonMember(char_id, time) * (kSkillLevelMax - 1);
     case db::CHARACTER_MISSION_TYPE_COLLECT_CHARACTER_ARCHIVE_VOICE:
       return CountVoiceLine(char_id, time);
+    case db::CHARACTER_MISSION_TYPE_COLLECT_MYSEKAI_FIXTURE:
+      return CountMySekaiFixtures(char_id);
+    case db::CHARACTER_MISSION_TYPE_COLLECT_MYSEKAI_CANVAS:
+      return CountMembers(char_id, time);
+    case db::CHARACTER_MISSION_TYPE_READ_MYSEKAI_FIXTURE_TALK:
+      return CountMySekaiTalks(char_id);
     default:
       ABSL_CHECK(false) << "unhandled case";
   }
@@ -469,6 +566,9 @@ std::optional<int> GetMaxProgress(int char_id, db::CharacterMissionType source, 
     case db::CHARACTER_MISSION_TYPE_SKILL_LEVEL_UP_RARE:
     case db::CHARACTER_MISSION_TYPE_SKILL_LEVEL_UP_STANDARD:
     case db::CHARACTER_MISSION_TYPE_COLLECT_CHARACTER_ARCHIVE_VOICE:
+    case db::CHARACTER_MISSION_TYPE_COLLECT_MYSEKAI_FIXTURE:
+    case db::CHARACTER_MISSION_TYPE_COLLECT_MYSEKAI_CANVAS:
+    case db::CHARACTER_MISSION_TYPE_READ_MYSEKAI_FIXTURE_TALK:
       return GetMaxProgressFromMissionParams(char_id, source);
     default:
       ABSL_CHECK(false) << "unhandled case";
@@ -636,6 +736,8 @@ std::string SourceDescription(CharacterRankSource::OtherSource source) {
       return "Gacha";
     case CharacterRankSource::OTHER_SOURCE_MOVIE_STAMP:
       return "Movie";
+    case CharacterRankSource::OTHER_SOURCE_ANNI_4_5_STAMP:
+      return "4.5 Anni";
     default:
       ABSL_CHECK(false) << "unhandled case";
   }
@@ -682,6 +784,12 @@ std::string SourceDescription(db::CharacterMissionType source) {
       return "SL (3*)";
     case db::CHARACTER_MISSION_TYPE_COLLECT_CHARACTER_ARCHIVE_VOICE:
       return "Voice Lines";
+    case db::CHARACTER_MISSION_TYPE_COLLECT_MYSEKAI_FIXTURE:
+      return "Furnitures";
+    case db::CHARACTER_MISSION_TYPE_COLLECT_MYSEKAI_CANVAS:
+      return "Canvases";
+    case db::CHARACTER_MISSION_TYPE_READ_MYSEKAI_FIXTURE_TALK:
+      return "MySaki Convos";
     default:
       ABSL_CHECK(false) << "unhandled case";
       return "";

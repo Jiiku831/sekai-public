@@ -10,6 +10,8 @@
 
 #include <emscripten.h>
 #include <emscripten/bind.h>
+#include <emscripten/val.h>
+#include <google/protobuf/text_format.h>
 #include <google/protobuf/util/json_util.h>
 
 #include "absl/algorithm/container.h"
@@ -56,6 +58,7 @@ namespace {
 
 using ::emscripten::base;
 using ::emscripten::class_;
+using ::google::protobuf::TextFormat;
 using ::google::protobuf::util::MessageToJsonString;
 using ::sekai::CardState;
 using ::sekai::ChallengeLiveTeamBuilder;
@@ -459,15 +462,7 @@ WorldBloomVersion GetWorldBloomVersion(const ProfileProto& profile) {
       return sekai::kDefaultWorldBloomVersion;
     }
   }
-  int version = 1;
-  for (int cutoff : sekai::kWorldBloomVersionCutoffs) {
-    if (profile.event_id().event_id() > cutoff) {
-      ++version;
-    }
-  }
-  ABSL_CHECK(sekai::WorldBloomVersion_IsValid(version));
-  ABSL_CHECK_GT(version, 0);
-  return static_cast<WorldBloomVersion>(version);
+  return sekai::GetWorldBloomVersion(profile.event_id().event_id());
 }
 
 }  // namespace frontend
@@ -581,7 +576,9 @@ void Controller::SetTitleBonus(int bonus) {
 }
 
 void Controller::OnProfileUpdate() {
-  event_bonus_ = std::visit([](auto&& arg) { return EventBonus(arg); }, event_bonus_source());
+  event_bonus_ = std::visit(
+      [this](auto&& arg) { return EventBonus(arg, GetWorldBloomVersion(profile_proto_)); },
+      event_bonus_source());
   constraints_ = MakeConstraints(profile_proto_);
   profile_.ApplyEventBonus(event_bonus_);
   absl::SetFlag(&FLAGS_subunitless_offset, profile_proto_.use_old_subunitless_bonus() ? 10 : 0);
@@ -1143,6 +1140,26 @@ void Controller::BuildFillTeam(bool ignore_constraints, int min_power) {
   RefreshTeam(kTeamBuilderOutputSlot);
 }
 
+std::string Controller::SerializeStateToTextProto() const {
+  std::string output;
+  if (!TextFormat::PrintToString(profile_proto_, &output)) {
+    LOG(ERROR) << "Failed to convert profile to textproto";
+    return "";
+  }
+  return output;
+}
+
+emscripten::val Controller::SerializeStateToString() {
+  profile_proto_bytes_ = profile_proto_.SerializeAsString();
+  return emscripten::val(
+      emscripten::typed_memory_view(profile_proto_bytes_.length(), profile_proto_bytes_.data()));
+}
+
+void Controller::ClearSerializedStringState() {
+  profile_proto_bytes_.clear();
+  profile_proto_bytes_.shrink_to_fit();
+}
+
 EMSCRIPTEN_BINDINGS(controller) {
   class_<Controller, base<ControllerBase>>("Controller")
       .constructor<>()
@@ -1150,14 +1167,15 @@ EMSCRIPTEN_BINDINGS(controller) {
       .function("BuildEventTeam", &Controller::BuildEventTeam)
       .function("BuildFillTeam", &Controller::BuildFillTeam)
       .function("BuildParkingTeam", &Controller::BuildParkingTeam)
+      .function("ClearSerializedStringState", &Controller::ClearSerializedStringState)
       .function("ClearTeamCard", &Controller::ClearTeamCard)
       .function("ImportCardsFromCsv", &Controller::ImportCardsFromCsv)
       .function("ImportDataFromProto", &Controller::ImportDataFromProto)
       .function("ImportDataFromTextProto", &Controller::ImportDataFromTextProto)
       .function("IsValidCard", &Controller::IsValidCard)
       .function("RefreshTeams", &Controller::RefreshTeams)
-      .function("SerializeStateToDebugString", &Controller::SerializeStateToDebugString)
       .function("SerializeStateToString", &Controller::SerializeStateToString)
+      .function("SerializeStateToTextProto", &Controller::SerializeStateToTextProto)
       .function("SetAreaItemLevel", &Controller::SetAreaItemLevel)
       .function("SetCardCanvasCrafted", &Controller::SetCardCanvasCrafted)
       .function("SetAttrFilterState", &Controller::SetAttrFilterState)
