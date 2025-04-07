@@ -865,7 +865,8 @@ function RenderTeamImpl(teamIndex, context) {
     `- Gates:       ${context.powerDetailed[5].toLocaleString().padStart(7)}\n` +
     `Skill Value:   ${numberFmt.format(context.skillValue).padStart(6)}%\n` +
     `Event Bonus:   ${numberFmt.format(context.eventBonus).padStart(6)}%\n` +
-    `Est. EP:       ${context.expectedEp.toLocaleString().padStart(7)}\n`;
+    `Est. EP:       ${context.expectedEp.toLocaleString().padStart(7)}\n` +
+    `MySaki EP:     ${context.mysakiEp.toLocaleString().padStart(7)}\n`;
   if (context.supportBonus) {
     statsNode.innerText +=
       `\nEvent Bonus Breakdown\n` +

@@ -324,6 +324,7 @@ TeamContext CreateTeamContext(const sekai::TeamProto& team) {
   context.set_skill_value(team.skill_value());
   context.set_event_bonus(team.event_bonus());
   context.set_expected_ep(team.expected_ep());
+  context.set_mysaki_ep(team.mysaki_ep());
   context.set_expected_score(team.expected_score());
   context.set_best_song_name(team.best_song_name());
   for (const sekai::CardProto& card : team.support_cards()) {

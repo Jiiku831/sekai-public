@@ -42,11 +42,11 @@
     </p>
 
     <p>
-      <b>Other instances</b>:&nbsp;
-      <a href="https://jiiku.pages.dev/sajii" target="_blank">JP Server</a>&nbsp;&middot;&nbsp;
-      <a href="https://en.jiiku.pages.dev/sajii" target="_blank">EN Server</a>&nbsp;&middot;&nbsp;
-      <a href="https://kr.jiiku.pages.dev/sajii" target="_blank">KR Server</a>&nbsp;&middot;&nbsp;
-      <a href="https://tw.jiiku.pages.dev/sajii" target="_blank">TW Server</a>&nbsp;&middot;&nbsp;
+      <b>Other instances</b>:
+      <a href="https://jiiku.pages.dev/sajii" target="_blank">JP Server</a>&nbsp;&middot;
+      <a href="https://en.jiiku.pages.dev/sajii" target="_blank">EN Server</a>&nbsp;&middot;
+      <a href="https://kr.jiiku.pages.dev/sajii" target="_blank">KR Server</a>&nbsp;&middot;
+      <a href="https://tw.jiiku.pages.dev/sajii" target="_blank">TW Server</a>&nbsp;&middot;
       <a href="https://dev.jiiku.pages.dev/sajii" target="_blank">Testing</a>
     </p>
 
@@ -59,15 +59,15 @@
         <h4>Important Notes</h4>
         <ul style="max-width: 50em">
           <li>
-            The optimizer is probabilistic and may not be the true optimal team. Check the&nbsp;
+            The optimizer is probabilistic and may not be the true optimal team. Check the
             <a href="https://github.com/Jiiku831/sekai-public" target="_blank">source repo</a>
-            &nbsp;for an exact optimizer. You may click the recommend button a few times to find if
+            for an exact optimizer. You may click the recommend button a few times to find if
             there is a better team.
           </li>
           <li>
-            You may choose to import the card list from&nbsp;<a href="https://docs.google.com/spreadsheets/d/1_pHFBUTILVJbBFymBY08pVbrLu6VmYfPDuQifQKD0dA/edit?gid=1370982493#gid=1370982493" target="_blank">
-              this spreadsheet</a>. Download the sheet as a CSV and then import
-            it using the file select above.
+            You may choose to import the card list from
+            <a href="https://docs.google.com/spreadsheets/d/1_pHFBUTILVJbBFymBY08pVbrLu6VmYfPDuQifQKD0dA/edit?gid=1370982493#gid=1370982493" target="_blank">this spreadsheet</a>.
+            Download the sheet as a CSV and then import it using the file select above.
           </li>
           <li>
             Parking targets above a certain threshold is done with limited
@@ -79,6 +79,8 @@
 
         <b>Recommend Team:</b>&nbsp;
         <input type="button" value="Event (Slot 0)" onclick="controller.BuildEventTeam();">
+        <input type="button" value="MySaki* (Slot 1)" onclick="controller.BuildMySakiTeam();">
+        <span class="new-inline"></span>
         <input type="button" value="Fill (Slot 1)" onclick="BuildFillTeam(false);">
         <input type="button" value="Fill* (Slot 1)" onclick="BuildFillTeam(true);">
         <input type="button" value="Challenge Live (Slot 1)" onclick="BuildChallengeLiveTeam();">

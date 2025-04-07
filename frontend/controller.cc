@@ -814,6 +814,26 @@ void Controller::BuildEventTeam() {
   RefreshTeam(kTeamBuilderOutputSlot);
 }
 
+void Controller::BuildMySakiTeam() {
+  constexpr int kTeamBuilderOutputSlot = 1;
+  SimulatedAnnealingTeamBuilder builder{{
+      .early_exit_steps = 2'000'000,
+      .enable_progress = false,
+      .world_bloom_version = GetWorldBloomVersion(profile_proto_),
+  }};
+
+  std::vector<sekai::Team> teams = builder.RecommendTeams(profile_.TeamBuilderCardPool(), profile_,
+                                                          event_bonus_, mysaki_estimator_);
+  if (teams.empty()) {
+    SetTeamBuilderOutput("WARNING: no teams built.");
+  } else {
+    teams[0].ReorderTeamForOptimalSkillValue(builder.constraints());
+    SetTeam(kTeamBuilderOutputSlot, teams[0]);
+    SetTeamBuilderOutput("Done.");
+  }
+  RefreshTeam(kTeamBuilderOutputSlot);
+}
+
 void Controller::OnSaveDataRead() {
   ResetView(profile_proto_);
   RefreshTeamInputs();
@@ -901,6 +921,7 @@ void Controller::RefreshTeam(int team_index) const {
   if (team.chars_present().count() == 1) {
     cl_estimator_.AnnotateTeamProto(profile_, event_bonus_, team, team_proto);
   }
+  mysaki_estimator_.AnnotateTeamProto(profile_, event_bonus_, team, team_proto);
   TeamContext context = CreateTeamContext(team_proto);
   std::string json;
   (void)MessageToJsonString(context, &json);
@@ -1167,6 +1188,7 @@ EMSCRIPTEN_BINDINGS(controller) {
       .function("BuildEventTeam", &Controller::BuildEventTeam)
       .function("BuildFillTeam", &Controller::BuildFillTeam)
       .function("BuildParkingTeam", &Controller::BuildParkingTeam)
+      .function("BuildMySakiTeam", &Controller::BuildMySakiTeam)
       .function("ClearSerializedStringState", &Controller::ClearSerializedStringState)
       .function("ClearTeamCard", &Controller::ClearTeamCard)
       .function("ImportCardsFromCsv", &Controller::ImportCardsFromCsv)
