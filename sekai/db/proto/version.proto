@@ -14,4 +14,5 @@ message Version {
   optional string app_hash           = 6 [(json_name) = "appHash"];
   optional string asset_hash         = 7 [(json_name) = "assetHash"];
   optional string app_version_status = 8 [(json_name) = "appVersionStatus"];
+  optional int32 cdn_version         = 9 [(json_name) = "cdnVersion"];
 }
