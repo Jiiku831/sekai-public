@@ -4,7 +4,7 @@ package sekai.db;
 
 import "sekai/db/proto/descriptor.proto";
 
-message MysekaiCharacterTalkCondition {
+message MySekaiCharacterTalkCondition {
   option (master_db_file) = "mysekaiCharacterTalkConditions.json";
   enum MysekaiCharacterTalkConditionType {
     UNKNOWN_MYSEKAI_CHARACTER_TALK_CONDITION_TYPE = 0;
@@ -14,9 +14,7 @@ message MysekaiCharacterTalkCondition {
     READ_EVENT_STORY_EPISODE_ID                   = 4 [(json_value) = "read_event_story_episode_id"];
   }
 
-  optional int32 id                                                                = 1 [(json_name) = "id"];
-  optional MysekaiCharacterTalkConditionType mysekai_character_talk_condition_type = 2
-      [(json_name) = "mysekaiCharacterTalkConditionType"];
-  optional int32 mysekai_character_talk_condition_type_value = 3
-      [(json_name) = "mysekaiCharacterTalkConditionTypeValue"];
+  optional int32 id                                         = 1 [(json_name) = "id", (primary_key) = true];
+  optional MysekaiCharacterTalkConditionType condition_type = 2 [(json_name) = "mysekaiCharacterTalkConditionType"];
+  optional int32 condition_value = 3 [(json_name) = "mysekaiCharacterTalkConditionTypeValue"];
 }

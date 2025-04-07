@@ -22,13 +22,14 @@
 namespace sekai::html {
 namespace {
 
-constexpr std::array<std::variant<db::CharacterMissionType, CharacterRankSource::OtherSource>, 26>
+constexpr std::array<std::variant<db::CharacterMissionType, CharacterRankSource::OtherSource>, 30>
     source_order = {
         db::CHARACTER_MISSION_TYPE_COLLECT_MEMBER,
         db::CHARACTER_MISSION_TYPE_COLLECT_STAMP,
         db::CHARACTER_MISSION_TYPE_COLLECT_COSTUME_3D,
         db::CHARACTER_MISSION_TYPE_COLLECT_CHARACTER_ARCHIVE_VOICE,
         db::CHARACTER_MISSION_TYPE_COLLECT_ANOTHER_VOCAL,
+        db::CHARACTER_MISSION_TYPE_READ_MYSEKAI_FIXTURE_TALK,
         db::CHARACTER_MISSION_TYPE_READ_AREA_TALK,
         db::CHARACTER_MISSION_TYPE_PLAY_LIVE,
         db::CHARACTER_MISSION_TYPE_PLAY_LIVE_EX,
@@ -43,6 +44,8 @@ constexpr std::array<std::variant<db::CharacterMissionType, CharacterRankSource:
         db::CHARACTER_MISSION_TYPE_SKILL_LEVEL_UP_STANDARD,
         db::CHARACTER_MISSION_TYPE_MASTER_RANK_UP_RARE,
         db::CHARACTER_MISSION_TYPE_MASTER_RANK_UP_STANDARD,
+        db::CHARACTER_MISSION_TYPE_COLLECT_MYSEKAI_FIXTURE,
+        db::CHARACTER_MISSION_TYPE_COLLECT_MYSEKAI_CANVAS,
         CharacterRankSource::OTHER_SOURCE_CHALLENGE_LIVE,
         CharacterRankSource::OTHER_SOURCE_ANNI_2_STAMP,
         CharacterRankSource::OTHER_SOURCE_ANNI_3_STAMP,
@@ -50,6 +53,7 @@ constexpr std::array<std::variant<db::CharacterMissionType, CharacterRankSource:
         CharacterRankSource::OTHER_SOURCE_ANNI_4_STAMP,
         CharacterRankSource::OTHER_SOURCE_ANNI_4_MEMORIAL_SELECT,
         CharacterRankSource::OTHER_SOURCE_MOVIE_STAMP,
+        CharacterRankSource::OTHER_SOURCE_ANNI_4_5_STAMP,
 };
 
 std::string SourceToClass(db::CharacterMissionType source) { return "char_mission"; }

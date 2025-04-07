@@ -2,10 +2,18 @@ syntax = "proto3";
 
 package sekai;
 
+import "sekai/proto/event_bonus.proto";
+
 enum WorldBloomVersion {
   WORLD_BLOOM_VERSION_UNKNOWN = 0;
   WORLD_BLOOM_VERSION_1       = 1;
   WORLD_BLOOM_VERSION_2       = 2;
 }
 
-message WorldBloomConfig { optional int32 support_team_size = 1; }
+message WorldBloomConfig {
+  optional int32 support_team_size     = 1;
+  optional float support_char_bonus    = 2;
+  optional float support_wl_card_bonus = 3;
+  repeated int32 support_wl_cards      = 4;
+  EventBonusProto support_team_bonus   = 5;
+}
