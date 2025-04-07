@@ -5,6 +5,7 @@
 #include "absl/log/absl_check.h"
 #include "sekai/array_size.h"
 #include "sekai/character.h"
+#include "sekai/config.h"
 #include "sekai/db/master_db.h"
 #include "sekai/db/proto/all.h"
 #include "sekai/proto_util.h"
@@ -81,7 +82,7 @@ EventBonus::EventBonus()
       skill_level_bonus_(),
       diff_attr_bonus_() {}
 
-EventBonus::EventBonus(const EventId& event_id)
+EventBonus::EventBonus(const EventId& event_id, std::optional<WorldBloomVersion> wl_version)
     : EventBonus(MasterDb::SafeFindFirst<db::Event>(event_id.event_id())) {
   const db::Event* event = MasterDb::SafeFindFirst<db::Event>(event_id.event_id());
   if (event == nullptr) {
@@ -89,13 +90,16 @@ EventBonus::EventBonus(const EventId& event_id)
     return;
   }
   if (event_id.chapter_id() > 0) {
-    support_bonus_ = std::shared_ptr<EventBonus>(new SupportUnitEventBonus{event_id});
+    support_bonus_ = std::shared_ptr<EventBonus>(new SupportUnitEventBonus{event_id, wl_version});
   }
 }
 
-EventBonus::EventBonus(const SimpleEventBonus& event_bonus) : EventBonus() {
+EventBonus::EventBonus(const SimpleEventBonus& event_bonus,
+                       std::optional<WorldBloomVersion> wl_version)
+    : EventBonus() {
   if (event_bonus.chapter_char_id() > 0) {
-    support_bonus_ = std::shared_ptr<EventBonus>(new SupportUnitEventBonus{event_bonus});
+    support_bonus_ =
+        std::shared_ptr<EventBonus>(new SupportUnitEventBonus{event_bonus, wl_version});
   }
   if (event_bonus.attr() != db::ATTR_UNKNOWN) {
     PopulateAttrBonus(event_bonus.attr(), kDefaultBonusRate, deck_bonus_);
@@ -124,10 +128,11 @@ EventBonus::EventBonus(const SimpleEventBonus& event_bonus) : EventBonus() {
   }
 }
 
-EventBonus::EventBonus(const db::Event* event)
-    : EventBonus(event != nullptr ? *event : db::Event::default_instance()) {}
+EventBonus::EventBonus(const db::Event* event, std::optional<WorldBloomVersion> wl_version)
+    : EventBonus(event != nullptr ? *event : db::Event::default_instance(), wl_version) {}
 
-EventBonus::EventBonus(const db::Event& event) : EventBonus() {
+EventBonus::EventBonus(const db::Event& event, std::optional<WorldBloomVersion> wl_version)
+    : EventBonus() {
   if (event.id() == 0) {
     return;
   }
@@ -225,7 +230,8 @@ float EventBonus::MaxDeckBonusForChar(int character_id) const {
   return max_bonus;
 }
 
-SupportUnitEventBonus::SupportUnitEventBonus() : EventBonus() {
+SupportUnitEventBonus::SupportUnitEventBonus(std::optional<WorldBloomVersion> version)
+    : EventBonus() {
   // Reset deck, skill level and master rank bonuses
   deck_bonus_.clear();
   deck_bonus_.resize(CharacterArraySize());
@@ -235,9 +241,76 @@ SupportUnitEventBonus::SupportUnitEventBonus() : EventBonus() {
   for (auto& bonus : master_rank_bonus_) {
     bonus.fill(0);
   }
+
+  // Fill support deck bonus
+  if (version.has_value()) {
+    WorldBloomConfig config = GetWorldBloomConfig(*version);
+    baseline_char_bonus_ = config.support_char_bonus();
+    baseline_card_bonus_ = config.support_wl_card_bonus();
+    for (const int card_id : config.support_wl_cards()) {
+      support_bonus_cards_.insert(card_id);
+    }
+    for (int i = 0; i < config.support_team_bonus().master_rank_bonus_size(); ++i) {
+      for (int j = 0; j < config.support_team_bonus().master_rank_bonus(i).level_bonus_size();
+           ++j) {
+        master_rank_bonus_[i][j] = config.support_team_bonus().master_rank_bonus(i).level_bonus(j);
+      }
+    }
+    for (int i = 0; i < config.support_team_bonus().skill_level_bonus_size(); ++i) {
+      for (int j = 0; j < config.support_team_bonus().skill_level_bonus(i).level_bonus_size();
+           ++j) {
+        skill_level_bonus_[i][j] = config.support_team_bonus().skill_level_bonus(i).level_bonus(j);
+      }
+    }
+  } else {
+    for (const auto& bonus : MasterDb::GetAll<db::WorldBloomSupportDeckBonus>()) {
+      // Index: (Id, Attr, Unit)
+      db::CardRarityType rarity = bonus.card_rarity_type();
+      float specific_char_bonus = 0;
+      float other_char_bonus = 0;
+      for (const auto& char_bonus : bonus.character_bonuses()) {
+        switch (char_bonus.type()) {
+          case db::WorldBloomSupportDeckBonus::CharacterBonus::OTHERS:
+            other_char_bonus = char_bonus.bonus_rate();
+            break;
+          case db::WorldBloomSupportDeckBonus::CharacterBonus::SPECIFIC:
+            specific_char_bonus = char_bonus.bonus_rate();
+            break;
+          default:
+            ABSL_CHECK(false) << "unhandled case: "
+                              << db::WorldBloomSupportDeckBonus::CharacterBonus::Type_Name(
+                                     char_bonus.type());
+        }
+      }
+      float baseline_rarity_bonus = other_char_bonus;
+      if (baseline_char_bonus_ == 0) {
+        baseline_char_bonus_ = specific_char_bonus - baseline_rarity_bonus;
+      } else {
+        ABSL_CHECK_EQ(baseline_char_bonus_, specific_char_bonus - baseline_rarity_bonus);
+      }
+
+      for (const auto& master_rank_bonus : bonus.master_rank_bonuses()) {
+        ABSL_CHECK_LT(rarity, static_cast<int64_t>(master_rank_bonus_.size()));
+        ABSL_CHECK_LT(master_rank_bonus.master_rank(),
+                      static_cast<int64_t>(master_rank_bonus_[rarity].size()));
+        master_rank_bonus_[rarity][master_rank_bonus.master_rank()] =
+            baseline_rarity_bonus + master_rank_bonus.bonus_rate();
+      }
+
+      for (const auto& skill_level_bonus : bonus.skill_level_bonuses()) {
+        ABSL_CHECK_LT(rarity, static_cast<int64_t>(skill_level_bonus_.size()));
+        ABSL_CHECK_LT(skill_level_bonus.skill_level(),
+                      static_cast<int64_t>(skill_level_bonus_[rarity].size()));
+        skill_level_bonus_[rarity][skill_level_bonus.skill_level()] =
+            skill_level_bonus.bonus_rate();
+      }
+    }
+  }
 }
 
-SupportUnitEventBonus::SupportUnitEventBonus(const EventId& event_id) : SupportUnitEventBonus() {
+SupportUnitEventBonus::SupportUnitEventBonus(const EventId& event_id,
+                                             std::optional<WorldBloomVersion> version)
+    : SupportUnitEventBonus(version.value_or(GetWorldBloomVersion(event_id.event_id()))) {
   absl::Nullable<const db::WorldBloom*> world_bloom = nullptr;
   for (const auto* cand : MasterDb::FindAll<db::WorldBloom>(event_id.event_id())) {
     if (cand->chapter_no() == event_id.chapter_id()) {
@@ -247,128 +320,42 @@ SupportUnitEventBonus::SupportUnitEventBonus(const EventId& event_id) : SupportU
   }
   ABSL_CHECK_NE(world_bloom, nullptr);
 
-  float baseline_char_bonus = 0;
-  for (const auto& bonus : MasterDb::GetAll<db::WorldBloomSupportDeckBonus>()) {
-    // Index: (Id, Attr, Unit)
-    db::CardRarityType rarity = bonus.card_rarity_type();
-    float specific_char_bonus = 0;
-    float other_char_bonus = 0;
-    for (const auto& char_bonus : bonus.character_bonuses()) {
-      switch (char_bonus.type()) {
-        case db::WorldBloomSupportDeckBonus::CharacterBonus::OTHERS:
-          other_char_bonus = char_bonus.bonus_rate();
-          break;
-        case db::WorldBloomSupportDeckBonus::CharacterBonus::SPECIFIC:
-          specific_char_bonus = char_bonus.bonus_rate();
-          break;
-        default:
-          ABSL_CHECK(false) << "unhandled case: "
-                            << db::WorldBloomSupportDeckBonus::CharacterBonus::Type_Name(
-                                   char_bonus.type());
-      }
-    }
-    float baseline_rarity_bonus = other_char_bonus;
-    if (baseline_char_bonus == 0) {
-      baseline_char_bonus = specific_char_bonus - baseline_rarity_bonus;
-    } else {
-      ABSL_CHECK_EQ(baseline_char_bonus, specific_char_bonus - baseline_rarity_bonus);
-    }
-
-    for (const auto& master_rank_bonus : bonus.master_rank_bonuses()) {
-      ABSL_CHECK_LT(rarity, static_cast<int64_t>(master_rank_bonus_.size()));
-      ABSL_CHECK_LT(master_rank_bonus.master_rank(),
-                    static_cast<int64_t>(master_rank_bonus_[rarity].size()));
-      master_rank_bonus_[rarity][master_rank_bonus.master_rank()] =
-          baseline_rarity_bonus + master_rank_bonus.bonus_rate();
-    }
-
-    for (const auto& skill_level_bonus : bonus.skill_level_bonuses()) {
-      ABSL_CHECK_LT(rarity, static_cast<int64_t>(skill_level_bonus_.size()));
-      ABSL_CHECK_LT(skill_level_bonus.skill_level(),
-                    static_cast<int64_t>(skill_level_bonus_[rarity].size()));
-      skill_level_bonus_[rarity][skill_level_bonus.skill_level()] = skill_level_bonus.bonus_rate();
-    }
-  }
-
   chapter_char_ = world_bloom->game_character_id();
   ABSL_CHECK_LT(chapter_char_, static_cast<int64_t>(deck_bonus_.size()));
-  db::Unit unit = LookupCharacterUnit(chapter_char_);
-  chapter_unit_.set(unit);
-  // Index: (Id, Attr, Unit)
-  for (auto attr : EnumValues<db::Attr, db::Attr_descriptor>()) {
-    if (attr == db::ATTR_UNKNOWN) continue;
-    deck_bonus_[chapter_char_][attr][unit] = baseline_char_bonus;
-    if (unit == db::UNIT_VS) {
-      for (auto subunit : EnumValues<db::Unit, db::Unit_descriptor>()) {
-        if (subunit != db::UNIT_NONE && subunit != db::UNIT_VS) {
-          deck_bonus_[chapter_char_][attr][subunit] = baseline_char_bonus;
-        }
-      }
-    }
-  }
+  PopulateChapterSpecificBonus();
 }
 
-SupportUnitEventBonus::SupportUnitEventBonus(const SimpleEventBonus& event_bonus)
-    : SupportUnitEventBonus() {
+SupportUnitEventBonus::SupportUnitEventBonus(const SimpleEventBonus& event_bonus,
+                                             std::optional<WorldBloomVersion> version)
+    : SupportUnitEventBonus(version.value_or(kDefaultWorldBloomVersion)) {
   ABSL_CHECK_GT(event_bonus.chapter_char_id(), 0);
   ABSL_CHECK_LT(event_bonus.chapter_char_id(), static_cast<int64_t>(deck_bonus_.size()));
-  float baseline_char_bonus = 0;
-  for (const auto& bonus : MasterDb::GetAll<db::WorldBloomSupportDeckBonus>()) {
-    // Index: (Id, Attr, Unit)
-    db::CardRarityType rarity = bonus.card_rarity_type();
-    float specific_char_bonus = 0;
-    float other_char_bonus = 0;
-    for (const auto& char_bonus : bonus.character_bonuses()) {
-      switch (char_bonus.type()) {
-        case db::WorldBloomSupportDeckBonus::CharacterBonus::OTHERS:
-          other_char_bonus = char_bonus.bonus_rate();
-          break;
-        case db::WorldBloomSupportDeckBonus::CharacterBonus::SPECIFIC:
-          specific_char_bonus = char_bonus.bonus_rate();
-          break;
-        default:
-          ABSL_CHECK(false) << "unhandled case: "
-                            << db::WorldBloomSupportDeckBonus::CharacterBonus::Type_Name(
-                                   char_bonus.type());
-      }
-    }
-    float baseline_rarity_bonus = other_char_bonus;
-    if (baseline_char_bonus == 0) {
-      baseline_char_bonus = specific_char_bonus - baseline_rarity_bonus;
-    } else {
-      ABSL_CHECK_EQ(baseline_char_bonus, specific_char_bonus - baseline_rarity_bonus);
-    }
-
-    for (const auto& master_rank_bonus : bonus.master_rank_bonuses()) {
-      ABSL_CHECK_LT(rarity, static_cast<int64_t>(master_rank_bonus_.size()));
-      ABSL_CHECK_LT(master_rank_bonus.master_rank(),
-                    static_cast<int64_t>(master_rank_bonus_[rarity].size()));
-      master_rank_bonus_[rarity][master_rank_bonus.master_rank()] =
-          baseline_rarity_bonus + master_rank_bonus.bonus_rate();
-    }
-
-    for (const auto& skill_level_bonus : bonus.skill_level_bonuses()) {
-      ABSL_CHECK_LT(rarity, static_cast<int64_t>(skill_level_bonus_.size()));
-      ABSL_CHECK_LT(skill_level_bonus.skill_level(),
-                    static_cast<int64_t>(skill_level_bonus_[rarity].size()));
-      skill_level_bonus_[rarity][skill_level_bonus.skill_level()] = skill_level_bonus.bonus_rate();
-    }
-  }
 
   chapter_char_ = event_bonus.chapter_char_id();
   ABSL_CHECK_LT(chapter_char_, static_cast<int64_t>(deck_bonus_.size()));
-  db::Unit unit = LookupCharacterUnit(chapter_char_);
-  chapter_unit_.set(unit);
+  PopulateChapterSpecificBonus();
+}
+
+void SupportUnitEventBonus::PopulateChapterSpecificBonus() {
+  db_chapter_unit_ = LookupCharacterUnit(chapter_char_);
+  chapter_unit_.set(db_chapter_unit_);
+
   // Index: (Id, Attr, Unit)
   for (auto attr : EnumValues<db::Attr, db::Attr_descriptor>()) {
     if (attr == db::ATTR_UNKNOWN) continue;
-    deck_bonus_[chapter_char_][attr][unit] = baseline_char_bonus;
-    if (unit == db::UNIT_VS) {
+    deck_bonus_[chapter_char_][attr][db_chapter_unit_] = baseline_char_bonus_;
+    if (db_chapter_unit_ == db::UNIT_VS) {
       for (auto subunit : EnumValues<db::Unit, db::Unit_descriptor>()) {
         if (subunit != db::UNIT_NONE && subunit != db::UNIT_VS) {
-          deck_bonus_[chapter_char_][attr][subunit] = baseline_char_bonus;
+          deck_bonus_[chapter_char_][attr][subunit] = baseline_char_bonus_;
         }
       }
+    }
+  }
+
+  for (const int card_id : support_bonus_cards_) {
+    if (MasterDb::FindFirst<db::Card>(card_id).character_id() == chapter_char_) {
+      card_bonus_[card_id] = baseline_card_bonus_;
     }
   }
 }

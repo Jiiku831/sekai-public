@@ -44,5 +44,6 @@ const std::filesystem::path& SekaiRunfilesRoot();
 const std::filesystem::path& MainRunfilesRoot();
 
 const WorldBloomConfig& GetWorldBloomConfig(WorldBloomVersion version);
+WorldBloomVersion GetWorldBloomVersion(int event_id);
 
 }  // namespace sekai

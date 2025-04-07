@@ -103,6 +103,7 @@ cc_proto_library(
 proto_library(
     name = "world_bloom_proto",
     srcs = ["world_bloom.proto"],
+    deps = [":event_bonus_proto"],
 )
 
 cc_proto_library(

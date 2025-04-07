@@ -956,7 +956,7 @@ function RenderTeamImpl(teamIndex, context) {
       thumbCell.appendChild(CreateCardThumbHover(card));
       statsCell.innerText =
         `MR${card.state.masterRank}/SL${card.state.skillLevel}\n` +
-        `${card.state.teamBonusContrib}%\n`;
+        `${numberFmt.format(card.state.teamBonusContrib)}%\n`;
     } else {
       statsCell.innerText = "";
     }
@@ -978,7 +978,7 @@ function ImportBinaryProto() {
   reader.onload = (e) => {
     controller.ImportDataFromProto(e.target.result);
   }
-  reader.readAsText(file);
+  reader.readAsArrayBuffer(file);
 }
 
 function ImportTextProto() {
@@ -1000,11 +1000,12 @@ function SaveAsFile(fileName, data, type) {
 
 function ExportBinaryProto() {
   let data = controller.SerializeStateToString();
-  SaveAsFile("profile.binaryproto", data, "application/octet-stream");
+  SaveAsFile("profile.binaryproto", new Int8Array(data), "application/octet-stream");
+  controller.ClearSerializedStringState();
 }
 
 function ExportTextProto() {
-  let data = controller.SerializeStateToDebugString();
+  let data = controller.SerializeStateToTextProto();
   SaveAsFile("profile.textproto", data, "text/plain");
 }
 

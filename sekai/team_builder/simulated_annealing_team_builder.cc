@@ -84,7 +84,7 @@ std::optional<Team> FindAnyValidTeamForChars(
 
       if (constraints_satisfied) {
         if (!support_pool.empty() && !opts.disable_support) {
-          candidate_team.FillSupportCards(support_pool);
+          candidate_team.FillSupportCards(support_pool, opts.world_bloom_version);
         }
         return candidate_team;
       }

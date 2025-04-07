@@ -4,7 +4,7 @@ package sekai.db;
 
 import "sekai/db/proto/descriptor.proto";
 
-message MysekaiFixtureTag {
+message MySekaiFixtureTag {
   option (master_db_file) = "mysekaiFixtureTags.json";
   enum MysekaiFixtureTagType {
     UNKNOWN_MYSEKAI_FIXTURE_TAG_TYPE = 0;
@@ -14,9 +14,9 @@ message MysekaiFixtureTag {
     UNIT                             = 4 [(json_value) = "unit"];
   }
 
-  optional int32 id                                       = 1 [(json_name) = "id"];
-  optional string name                                    = 2 [(json_name) = "name"];
-  optional string pronunciation                           = 3 [(json_name) = "pronunciation"];
-  optional MysekaiFixtureTagType mysekai_fixture_tag_type = 4 [(json_name) = "mysekaiFixtureTagType"];
-  optional int32 external_id                              = 5 [(json_name) = "externalId"];
+  optional int32 id                       = 1 [(json_name) = "id", (primary_key) = true];
+  optional string name                    = 2 [(json_name) = "name"];
+  optional string pronunciation           = 3 [(json_name) = "pronunciation"];
+  optional MysekaiFixtureTagType tag_type = 4 [(json_name) = "mysekaiFixtureTagType"];
+  optional int32 external_id              = 5 [(json_name) = "externalId"];
 }
