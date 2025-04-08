@@ -181,6 +181,13 @@ TEST(EstimatorTest, MinRequiredBonus) {
   }
 }
 
+TEST(MySekaiEstimatorTest, ExpectedEp) {
+  MySakiEstimator estimator;
+  EXPECT_EQ(estimator.ExpectedEp(/*power=*/270'000, /*event_bonus=*/20), 500);
+  EXPECT_EQ(estimator.ExpectedEp(/*power=*/300'000, /*event_bonus=*/880), 8000);
+  EXPECT_EQ(estimator.ExpectedEp(/*power=*/90'000, /*event_bonus=*/570), 4000);
+}
+
 TEST(RandomExEstimatorTest, LoadsSuccessfully) {
   Eigen::Vector4d params = RandomExEstimator(Estimator::Mode::kMulti).GetEpEstimatorParams();
   EXPECT_THAT(params, Each(Gt(0)));

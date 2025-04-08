@@ -81,6 +81,7 @@ message TeamContext {
   optional float skill_value              = 4;
   optional float event_bonus              = 5;
   optional int32 expected_ep              = 6;
+  optional int32 mysaki_ep                = 13;
   optional int32 expected_score           = 7;
   optional string best_song_name          = 8;
   repeated CardContext support_cards      = 9;

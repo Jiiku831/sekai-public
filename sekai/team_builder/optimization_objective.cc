@@ -23,7 +23,7 @@ namespace sekai {
 ObjectiveFunction OptimizePoints::GetObjectiveFunction() const {
   return [](const Team& team, const Profile& profile, const EventBonus& event_bonus,
             const EstimatorBase& estimator, Character lead_chars) {
-    return estimator.MaxExpectedValue(profile, event_bonus, team, lead_chars);
+    return estimator.SmoothOptimizationObjective(profile, event_bonus, team, lead_chars);
   };
 }
 

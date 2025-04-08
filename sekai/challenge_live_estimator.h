@@ -28,6 +28,10 @@ class ChallengeLiveEstimator : public EstimatorBase {
                        const Team& team) const override;
   double MaxExpectedValue(const Profile& profile, const EventBonus& event_bonus, const Team& team,
                           Character lead_chars) const override;
+  double SmoothOptimizationObjective(const Profile& profile, const EventBonus& event_bonus,
+                                     const Team& team, Character lead_chars) const override {
+    return MaxExpectedValue(profile, event_bonus, team, lead_chars);
+  }
 
   void AnnotateTeamProto(const Profile& profile, const EventBonus& event_bonus, const Team& team,
                          TeamProto& team_proto) const override;

@@ -45,6 +45,10 @@ class Estimator : public EstimatorBase {
                        const Team& team) const override;
   double MaxExpectedValue(const Profile& profile, const EventBonus& event_bonus, const Team& team,
                           Character lead_chars) const override;
+  double SmoothOptimizationObjective(const Profile& profile, const EventBonus& event_bonus,
+                                     const Team& team, Character lead_chars) const override {
+    return MaxExpectedValue(profile, event_bonus, team, lead_chars);
+  }
 
   void AnnotateTeamProto(const Profile& profile, const EventBonus& event_bonus, const Team& team,
                          TeamProto& team_proto) const override;
@@ -64,6 +68,23 @@ class Estimator : public EstimatorBase {
 
   // Index: (Power, Event Bonus)
   std::array<std::array<LookupTableEntry, kEventBonusBuckets>, kPowerBuckets> ep_lookup_table_{};
+};
+
+class MySakiEstimator : public EstimatorBase {
+ public:
+  double ExpectedEp(int power, double event_bonus) const;
+  double SmoothExpectedEp(int power, double event_bonus) const;
+  double ExpectedValue(const Profile& profile, const EventBonus& event_bonus,
+                       const Team& team) const override;
+  double MaxExpectedValue(const Profile& profile, const EventBonus& event_bonus, const Team& team,
+                          Character lead_chars) const override {
+    return ExpectedValue(profile, event_bonus, team);
+  }
+  double SmoothOptimizationObjective(const Profile& profile, const EventBonus& event_bonus,
+                                     const Team& team, Character lead_chars) const override;
+
+  void AnnotateTeamProto(const Profile& profile, const EventBonus& event_bonus, const Team& team,
+                         TeamProto& team_proto) const override;
 };
 
 Estimator RandomExEstimator(Estimator::Mode mode);
