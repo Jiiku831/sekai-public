@@ -21,6 +21,7 @@ message TeamProto {
   optional float event_bonus       = 3;
   optional float skill_value       = 4;
   optional int32 expected_ep       = 5;
+  optional int32 mysaki_ep         = 16;
   repeated int32 power_detailed    = 6;
   repeated CardProto support_cards = 7;
   optional float main_bonus        = 8;
