@@ -78,6 +78,7 @@ class Controller : public ControllerBase {
   void SetParkAccuracy(int value);
 
   void BuildEventTeam();
+  void BuildMySakiTeam();
   void BuildChallengeLiveTeam(int char_id);
   void BuildParkingTeam(bool ignore_constraints);
   void BuildFillTeam(bool ignore_constraints, int min_power);
@@ -106,6 +107,7 @@ class Controller : public ControllerBase {
   sekai::Estimator estimator_ = sekai::RandomExEstimator(sekai::Estimator::Mode::kMulti);
   sekai::Estimator cc_estimator_ = sekai::RandomExEstimator(sekai::Estimator::Mode::kCheerful);
   sekai::ChallengeLiveEstimator cl_estimator_;
+  sekai::MySakiEstimator mysaki_estimator_;
   sekai::EventBonus event_bonus_;
   sekai::Constraints constraints_;
   std::optional<int> target_points_;

@@ -251,6 +251,37 @@ void Estimator::AnnotateTeamProto(const Profile& profile, const EventBonus& even
   team_proto.set_expected_ep(ExpectedValue(profile, event_bonus, team));
 }
 
+double MySakiEstimator::ExpectedEp(int power, double event_bonus) const {
+  double power_bonus =
+      static_cast<double>(static_cast<int>(100 + static_cast<double>(power) / 4500)) / 100;
+  return static_cast<int>(power_bonus * (1 + event_bonus / 100)) * 500;
+}
+
+double MySakiEstimator::SmoothExpectedEp(int power, double event_bonus) const {
+  double power_bonus = 100 + static_cast<double>(power) / 4'500;
+  return power_bonus * (100 + event_bonus) * 0.05;
+}
+
+double MySakiEstimator::ExpectedValue(const Profile& profile, const EventBonus& event_bonus,
+                                      const Team& team) const {
+  int power = team.Power(profile);
+  float eb = team.EventBonus(event_bonus);
+  return ExpectedEp(power, eb);
+}
+
+void MySakiEstimator::AnnotateTeamProto(const Profile& profile, const EventBonus& event_bonus,
+                                        const Team& team, TeamProto& team_proto) const {
+  team_proto.set_mysaki_ep(ExpectedValue(profile, event_bonus, team));
+}
+
+double MySakiEstimator::SmoothOptimizationObjective(const Profile& profile,
+                                                    const EventBonus& event_bonus, const Team& team,
+                                                    Character lead_chars) const {
+  int power = team.Power(profile);
+  float eb = team.EventBonus(event_bonus);
+  return SmoothExpectedEp(power, eb);
+}
+
 Estimator RandomExEstimator(Estimator::Mode mode) {
   std::vector<absl::Nonnull<const db::MusicMeta*>> metas = MasterDb::GetIf<db::MusicMeta>(
       [](const db::MusicMeta& meta) { return meta.difficulty() == db::DIFF_EXPERT; });
