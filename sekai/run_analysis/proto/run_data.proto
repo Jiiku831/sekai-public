@@ -41,8 +41,8 @@ message PointsGraph {
 }
 
 message EventPointsGraph {
-  optional PointsGraph overall  = 1 [(sekai.db.json_name) = "all"];
-  repeated PointsGraph chapters = 2 [(sekai.db.json_name) = "wl"];
+  optional PointsGraph overall     = 1 [(sekai.db.json_name) = "all"];
+  map<int32, PointsGraph> chapters = 2 [(sekai.db.json_name) = "wl"];
 }
 
 message RunData {

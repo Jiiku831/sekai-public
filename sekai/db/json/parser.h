@@ -16,6 +16,7 @@
 #include "absl/log/log.h"
 #include "absl/status/status.h"
 #include "absl/status/statusor.h"
+#include "absl/strings/numbers.h"
 #include "absl/strings/str_format.h"
 #include "sekai/config.h"
 #include "sekai/db/proto/descriptor.pb.h"
@@ -42,7 +43,8 @@ class JsonParser : public json::json_sax_t {
     }
     auto& cur_obj = obj_stack_.top();
     if (cur_obj.field == nullptr) {
-      status_ = absl::InternalError(absl::StrFormat("Field with key '%s' is null", cur_obj.key));
+      status_ = absl::InternalError(
+          absl::StrFormat("While parsing boolean value: Field with key '%s' is null", cur_obj.key));
       return false;
     }
     proto::Message* msg = cur_obj.msg;
@@ -97,7 +99,8 @@ class JsonParser : public json::json_sax_t {
     }
     auto& cur_obj = obj_stack_.top();
     if (cur_obj.field == nullptr) {
-      status_ = absl::InternalError(absl::StrFormat("Field with key '%s' is null", cur_obj.key));
+      status_ = absl::InternalError(
+          absl::StrFormat("While parsing float value: Field with key '%s' is null", cur_obj.key));
       return false;
     }
     proto::Message* msg = cur_obj.msg;
@@ -137,7 +140,8 @@ class JsonParser : public json::json_sax_t {
     }
     auto& cur_obj = obj_stack_.top();
     if (cur_obj.field == nullptr) {
-      status_ = absl::InternalError(absl::StrFormat("Field with key '%s' is null", cur_obj.key));
+      status_ = absl::InternalError(
+          absl::StrFormat("While parsing number value: Field with key '%s' is null", cur_obj.key));
       return false;
     }
     proto::Message* msg = cur_obj.msg;
@@ -207,8 +211,35 @@ class JsonParser : public json::json_sax_t {
       return true;
     }
     auto& cur_obj = obj_stack_.top();
+    const proto::Descriptor* descriptor = cur_obj.descriptor;
+    const proto::FieldDescriptor* map_key = descriptor->map_key();
+    if (map_key != nullptr) {
+      proto::Message* msg = cur_obj.msg;
+      const proto::Reflection* reflection = cur_obj.reflection;
+      switch (map_key->cpp_type()) {
+        case proto::FieldDescriptor::CPPTYPE_INT32: {
+          int key_val;
+          if (!absl::SimpleAtoi(cur_obj.key, &key_val)) {
+            status_ = absl::InternalError(absl::StrFormat(
+                "While parsing key value: failed to parse %s as an int32", cur_obj.key));
+            return false;
+          }
+          reflection->SetInt32(msg, descriptor->map_key(), key_val);
+          break;
+        }
+        default:
+          status_ = absl::InternalError(
+              absl::StrFormat("While parsing key value: unsupported key type %s",
+                              proto::FieldDescriptor::CppTypeName(map_key->cpp_type())));
+          return false;
+      }
+      obj_stack_.emplace(*reflection->MutableMessage(msg, descriptor->map_value()));
+      return true;
+    }
+
     if (cur_obj.field == nullptr) {
-      status_ = absl::InternalError(absl::StrFormat("Field with key '%s' is null", cur_obj.key));
+      status_ = absl::InternalError(
+          absl::StrFormat("While parsing object value: Field with key '%s' is null", cur_obj.key));
       return false;
     }
     proto::Message* msg = cur_obj.msg;
@@ -219,7 +250,7 @@ class JsonParser : public json::json_sax_t {
                           "Message: %s\n"
                           "Field: %s\n"
                           "Type: %s (expected message)",
-                          cur_obj.descriptor->full_name(), field->name(), field->cpp_type_name()));
+                          descriptor->full_name(), field->name(), field->cpp_type_name()));
       return false;
     }
     const proto::Reflection* reflection = cur_obj.reflection;
@@ -239,7 +270,8 @@ class JsonParser : public json::json_sax_t {
     }
     auto& cur_obj = obj_stack_.top();
     if (cur_obj.field == nullptr) {
-      status_ = absl::InternalError(absl::StrFormat("Field with key '%s' is null", cur_obj.key));
+      status_ = absl::InternalError(
+          absl::StrFormat("While parsing string value: Field with key '%s' is null", cur_obj.key));
       return false;
     }
     proto::Message* msg = cur_obj.msg;
