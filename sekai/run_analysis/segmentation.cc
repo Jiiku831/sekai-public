@@ -587,7 +587,8 @@ RunSegments::RunSegments(std::vector<Sequence> run_segments, Sequence breakpoint
   // Analyze segments
   for (const Sequence& seq : active_segments_) {
     analyzed_segments_.push_back(AnalyzeSegment(seq));
-    if (analyzed_segments_.back().ok() && analyzed_segments_.back()->is_auto) {
+    if (analyzed_segments_.back().ok() && analyzed_segments_.back()->is_confident &&
+        analyzed_segments_.back()->is_auto) {
       total_auto_time_ += seq.duration();
     }
   }
