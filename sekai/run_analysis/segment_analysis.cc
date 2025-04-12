@@ -1,5 +1,6 @@
 #include "sekai/run_analysis/segment_analysis.h"
 
+#include <algorithm>
 #include <cmath>
 #include <cstdlib>
 #include <limits>
@@ -21,6 +22,8 @@ namespace sekai::run_analysis {
 namespace {
 
 using ::google::protobuf::util::TimeUtil;
+
+constexpr float kAutoStdevThreshold = 100;
 
 absl::StatusOr<int> InferMinClusterGameCount(float cluster_mean_ratio) {
   constexpr float kMeanRatioTolerance = 0.2;
@@ -114,9 +117,14 @@ absl::StatusOr<SegmentAnalysisResult> AnalyzeSegment(const Sequence& sequence) {
   }
   result.clusters = FindClusters(sequence | std::views::drop(1));
   result.cluster_mean_ratio = std::numeric_limits<float>::quiet_NaN();
+  float max_stdev = std::numeric_limits<float>::quiet_NaN();
   if (result.clusters.size() < 1) {
     return absl::InternalError("Expected at least 1 clusters.");
   }
+  max_stdev = std::ranges::max(result.clusters | std::views::transform([](const Cluster& cluster) {
+                                 return cluster.stdev;
+                               }));
+  result.is_auto = max_stdev < kAutoStdevThreshold;
   if (result.clusters.size() < 2) {
     return result;
   }
@@ -146,6 +154,7 @@ AnalyzeGraphResponse::Segment SegmentAnalysisResultToApiSegment(
   }
 
   segment.set_is_confident(res->is_confident);
+  segment.set_is_auto(res->is_auto);
   if (res->start.has_value()) {
     *segment.mutable_start() = TimeUtil::NanosecondsToTimestamp(absl::ToUnixNanos(*res->start));
   }

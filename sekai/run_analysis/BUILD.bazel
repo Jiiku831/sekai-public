@@ -246,6 +246,7 @@ cc_library(
     deps = [
         ":clustering",
         ":config",
+        ":segment_analysis",
         ":snapshot",
         "//base:util",
         "//sekai:ranges_util",

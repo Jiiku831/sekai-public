@@ -63,10 +63,12 @@ message AnalyzeGraphResponse {
   google.protobuf.Duration observed_duration = 2;
   google.protobuf.Duration total_uptime      = 3;
   google.protobuf.Duration total_downtime    = 4;
+  google.protobuf.Duration total_auto_time   = 6;
 
   message Segment {
     optional Status status     = 1;
     optional bool is_confident = 2;
+    optional bool is_auto      = 7;
 
     // Absolute start and end timestamps of the segment.
     optional google.protobuf.Timestamp start   = 3;

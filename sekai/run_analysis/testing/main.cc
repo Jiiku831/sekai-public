@@ -307,12 +307,17 @@ class PlotDefs {
                         absl::FormatDuration(data_.segments.total_duration()).c_str());
       ImGui::BulletText("Total Uptime: %s",
                         absl::FormatDuration(data_.segments.total_uptime()).c_str());
+      ImGui::Indent();
+      ImGui::BulletText("Auto Time: %s",
+                        absl::FormatDuration(data_.segments.total_auto_time()).c_str());
+      ImGui::Unindent();
       ImGui::BulletText("Total Downtime: %s",
                         absl::FormatDuration(data_.segments.total_downtime()).c_str());
     }
     if (ImGui::CollapsingHeader("Segment Debug", ImGuiTreeNodeFlags_DefaultOpen)) {
       const auto& analysis = state_.segment_analysis;
       ImGui::BulletText("Is Confident: %s", analysis.is_confident ? "true" : "false");
+      ImGui::BulletText("Is Auto: %s", analysis.is_auto ? "true" : "false");
       ImGui::BulletText("Segment length: %s",
                         absl::FormatDuration(analysis.segment_length).c_str());
       ImGui::SeparatorText("Snapshot Analysis");

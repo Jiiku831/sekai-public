@@ -15,6 +15,7 @@
 #include "segmentation.h"
 #include "sekai/ranges_util.h"
 #include "sekai/run_analysis/clustering.h"
+#include "sekai/run_analysis/segment_analysis.h"
 #include "sekai/run_analysis/segmentation.h"
 #include "sekai/run_analysis/snapshot.h"
 
@@ -580,6 +581,14 @@ RunSegments::RunSegments(std::vector<Sequence> run_segments, Sequence breakpoint
     } else {
       total_uptime_ += sequence.duration();
       active_segments_.push_back(std::move(sequence));
+    }
+  }
+
+  // Analyze segments
+  for (const Sequence& seq : active_segments_) {
+    analyzed_segments_.push_back(AnalyzeSegment(seq));
+    if (analyzed_segments_.back().ok() && analyzed_segments_.back()->is_auto) {
+      total_auto_time_ += seq.duration();
     }
   }
 }

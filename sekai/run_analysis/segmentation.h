@@ -7,6 +7,7 @@
 #include "absl/status/statusor.h"
 #include "absl/time/time.h"
 #include "sekai/run_analysis/config.h"
+#include "sekai/run_analysis/segment_analysis.h"
 #include "sekai/run_analysis/snapshot.h"
 
 namespace sekai::run_analysis {
@@ -25,6 +26,9 @@ class RunSegments {
               SegmentationV2DebugData debug_data);
 
   const std::vector<Sequence>& active_segments() const { return active_segments_; }
+  const std::vector<absl::StatusOr<SegmentAnalysisResult>>& analyzed_segments() const {
+    return analyzed_segments_;
+  }
   const std::vector<Sequence>& segment_speeds() const { return segment_speeds_; }
   const Sequence& breakpoints() const { return breakpoints_; }
   const Sequence& breakpoint_scores() const { return breakpoint_scores_; }
@@ -34,9 +38,11 @@ class RunSegments {
   absl::Duration total_duration() const { return total_duration_; }
   absl::Duration total_uptime() const { return total_uptime_; }
   absl::Duration total_downtime() const { return total_downtime_; }
+  absl::Duration total_auto_time() const { return total_auto_time_; }
 
  private:
   std::vector<Sequence> active_segments_;
+  std::vector<absl::StatusOr<SegmentAnalysisResult>> analyzed_segments_;
   std::vector<Sequence> inactive_segments_;
   std::vector<Sequence> segment_speeds_;
   Sequence breakpoints_;
@@ -46,6 +52,7 @@ class RunSegments {
   absl::Duration total_duration_;
   absl::Duration total_uptime_;
   absl::Duration total_downtime_;
+  absl::Duration total_auto_time_;
 };
 
 struct SegmentationOptions {

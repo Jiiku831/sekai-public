@@ -17,6 +17,7 @@ struct GameCountAnalysis {
 
 struct SegmentAnalysisResult {
   bool is_confident;
+  bool is_auto;
   std::optional<absl::Time> start;
   std::optional<absl::Time> end;
   absl::Duration segment_length;
