@@ -12,6 +12,7 @@
 #include "absl/strings/str_format.h"
 #include "absl/time/time.h"
 #include "base/util.h"
+#include "sekai/ranges_util.h"
 #include "sekai/run_analysis/clustering.h"
 #include "sekai/run_analysis/proto/service.pb.h"
 #include "sekai/run_analysis/proto_util.h"
@@ -23,7 +24,7 @@ namespace {
 
 using ::google::protobuf::util::TimeUtil;
 
-constexpr float kAutoStdevThreshold = 200;
+constexpr float kAutoStdevThreshold = 250;
 
 absl::StatusOr<int> InferMinClusterGameCount(float cluster_mean_ratio) {
   constexpr float kMeanRatioTolerance = 0.2;
@@ -121,9 +122,9 @@ absl::StatusOr<SegmentAnalysisResult> AnalyzeSegment(const Sequence& sequence) {
   if (result.clusters.size() < 1) {
     return absl::InternalError("Expected at least 1 clusters.");
   }
-  max_stdev = std::ranges::max(result.clusters | std::views::transform([](const Cluster& cluster) {
-                                 return cluster.stdev;
-                               }));
+  max_stdev = mean<float>(RangesTo<std::vector<float>>(
+      result.clusters |
+      std::views::transform([](const Cluster& cluster) { return cluster.stdev; })));
   result.is_auto = max_stdev < kAutoStdevThreshold;
   if (result.clusters.size() < 2) {
     return result;

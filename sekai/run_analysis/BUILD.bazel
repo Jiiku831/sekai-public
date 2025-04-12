@@ -230,6 +230,7 @@ cc_library(
         ":snapshot",
         ":stats_util",
         "//base:util",
+        "//sekai:ranges_util",
         "//sekai/run_analysis/proto:service_cc_proto",
         "@abseil-cpp//absl/status",
         "@abseil-cpp//absl/status:statusor",
