@@ -23,7 +23,7 @@ namespace {
 
 using ::google::protobuf::util::TimeUtil;
 
-constexpr float kAutoStdevThreshold = 100;
+constexpr float kAutoStdevThreshold = 200;
 
 absl::StatusOr<int> InferMinClusterGameCount(float cluster_mean_ratio) {
   constexpr float kMeanRatioTolerance = 0.2;
