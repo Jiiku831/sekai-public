@@ -18,7 +18,6 @@ inline constexpr float kMinClusterSizeRatio = 0.10;
 inline constexpr int kClusteringOutlierIterations = 3;
 inline constexpr float kClusteringOutlierRejectionThresh = 2;
 
-// TODO: move to flag
-inline constexpr bool kRunAnalysisDebug = true;
+bool DebugEnabled();
 
 }  // namespace sekai::run_analysis

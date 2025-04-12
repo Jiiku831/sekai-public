@@ -13,6 +13,7 @@
 namespace sekai::run_analysis {
 
 struct SegmentationV2DebugData {
+  bool debug = false;
   std::vector<Sequence> cluster_assignments;
   std::vector<Sequence> cluster_means;
   std::vector<Sequence> cluster_lbs;
@@ -72,7 +73,7 @@ struct SegmentationOptions {
   // The threshold at which a change indicates a major shift in strategy.
   float major_shift_threshold = kBreakpointThresholdHigh;
 
-  bool debug = kRunAnalysisDebug;
+  bool debug = DebugEnabled();
 };
 
 absl::StatusOr<RunSegments> SegmentRuns(const Sequence& sequence,

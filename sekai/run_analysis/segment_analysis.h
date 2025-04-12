@@ -24,9 +24,10 @@ struct SegmentAnalysisResult {
   std::vector<Cluster> clusters;
   float cluster_mean_ratio;
   absl::StatusOr<GameCountAnalysis> game_count_analysis;
+  ClusterDebug cluster_debug;
 };
 
-absl::StatusOr<SegmentAnalysisResult> AnalyzeSegment(const Sequence& sequence);
+absl::StatusOr<SegmentAnalysisResult> AnalyzeSegment(const Sequence& sequence, bool debug = false);
 AnalyzeGraphResponse::Segment SegmentAnalysisResultToApiSegment(
     const absl::StatusOr<SegmentAnalysisResult>& res);
 AnalyzeGraphResponse::Segment AnalyzeSegmentForApi(const Sequence& sequence);

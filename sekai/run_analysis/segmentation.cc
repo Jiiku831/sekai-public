@@ -358,7 +358,7 @@ class DetectorStateV2 {
     constexpr std::size_t kDropInitialSegment = 1;
     latest_clusters_ = FindClusters(current_run_ | std::views::drop(kDropInitialSegment) |
                                         std::views::take(current_run_.size() - drop),
-                                    kMinClusterSizeRatio,
+                                    /*debug=*/nullptr, kMinClusterSizeRatio,
                                     /*outlier_iterations=*/2,
                                     /*outlier_rejection_threshold=*/outlier_threshold_);
     if (initial_cluster && debug_) {
@@ -445,6 +445,7 @@ absl::StatusOr<DetectionResult> BreakpointDetection(const Sequence& seq,
   if (opts.debug) {
     res.breakpoint_scores = seq.CopyEmptyAndReserve(seq.size());
     res.debug_data = {
+        .debug = opts.debug,
         .cluster_assignments = {kMaxClusters + 1, seq.CopyEmpty()},
         .cluster_means = {kMaxClusters, seq.CopyEmpty()},
         .cluster_lbs = {kMaxClusters, seq.CopyEmpty()},
@@ -586,7 +587,7 @@ RunSegments::RunSegments(std::vector<Sequence> run_segments, Sequence breakpoint
 
   // Analyze segments
   for (const Sequence& seq : active_segments_) {
-    analyzed_segments_.push_back(AnalyzeSegment(seq));
+    analyzed_segments_.push_back(AnalyzeSegment(seq, debug_data_.debug));
     if (analyzed_segments_.back().ok() && analyzed_segments_.back()->is_confident &&
         analyzed_segments_.back()->is_auto) {
       total_auto_time_ += seq.duration();

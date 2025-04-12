@@ -96,8 +96,10 @@ cc_test(
 
 cc_library(
     name = "config",
+    srcs = ["config.cc"],
     hdrs = ["config.h"],
     deps = [
+        "@abseil-cpp//absl/flags:flag",
         "@abseil-cpp//absl/time",
     ],
 )

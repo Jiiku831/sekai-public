@@ -107,7 +107,7 @@ absl::StatusOr<GameCountAnalysis> RunGameCountAnalysis(float cluster_mean_ratio,
 
 }  // namespace
 
-absl::StatusOr<SegmentAnalysisResult> AnalyzeSegment(const Sequence& sequence) {
+absl::StatusOr<SegmentAnalysisResult> AnalyzeSegment(const Sequence& sequence, bool debug) {
   SegmentAnalysisResult result;
   result.segment_length =
       sequence.empty() ? absl::ZeroDuration() : (sequence.back().time - sequence.front().time);
@@ -116,7 +116,8 @@ absl::StatusOr<SegmentAnalysisResult> AnalyzeSegment(const Sequence& sequence) {
     result.start = sequence.time_offset + sequence.front().time;
     result.end = sequence.time_offset + sequence.back().time;
   }
-  result.clusters = FindClusters(sequence | std::views::drop(1));
+  result.clusters =
+      FindClusters(sequence | std::views::drop(1), debug ? &result.cluster_debug : nullptr);
   result.cluster_mean_ratio = std::numeric_limits<float>::quiet_NaN();
   float max_stdev = std::numeric_limits<float>::quiet_NaN();
   if (result.clusters.size() < 1) {
