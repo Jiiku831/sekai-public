@@ -14,6 +14,7 @@
 #include "base/util.h"
 #include "sekai/ranges_util.h"
 #include "sekai/run_analysis/clustering.h"
+#include "sekai/run_analysis/config.h"
 #include "sekai/run_analysis/proto/service.pb.h"
 #include "sekai/run_analysis/proto_util.h"
 #include "sekai/run_analysis/snapshot.h"
@@ -142,7 +143,11 @@ absl::StatusOr<SegmentAnalysisResult> AnalyzeSegment(const Sequence& sequence, b
   result.cluster_mean_ratio = std::max(mean0, mean1) / min_mean;
   result.game_count_analysis = RunGameCountAnalysis(result.cluster_mean_ratio, min_mean, sequence);
   result.is_confident =
-      result.game_count_analysis.ok() && result.segment_length >= kConfidentDuration;
+      result.game_count_analysis.ok() && result.game_count_analysis->game_count > 0 &&
+      !std::isnan(result.game_count_analysis->ep_per_game.mean()) &&
+      !std::isnan(result.game_count_analysis->estimated_gph.value()) &&
+      result.segment_length - result.game_count_analysis->rejected_samples.size() * kInterval >=
+          kConfidentDuration;
   return result;
 }
 
