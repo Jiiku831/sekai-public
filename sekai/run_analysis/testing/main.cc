@@ -119,7 +119,8 @@ class PlotDefs {
         }));
     data_.histograms = Histograms::Join(data_.run_histograms);
     ASSIGN_OR_RETURN(state_.segment_analysis,
-                     AnalyzeSegment(data_.segments.active_segments()[state_.selected_segment]));
+                     AnalyzeSegment(data_.segments.active_segments()[state_.selected_segment],
+                                    /*debug=*/true));
     return absl::OkStatus();
   }
 
@@ -307,12 +308,17 @@ class PlotDefs {
                         absl::FormatDuration(data_.segments.total_duration()).c_str());
       ImGui::BulletText("Total Uptime: %s",
                         absl::FormatDuration(data_.segments.total_uptime()).c_str());
+      ImGui::Indent();
+      ImGui::BulletText("Auto Time: %s",
+                        absl::FormatDuration(data_.segments.total_auto_time()).c_str());
+      ImGui::Unindent();
       ImGui::BulletText("Total Downtime: %s",
                         absl::FormatDuration(data_.segments.total_downtime()).c_str());
     }
     if (ImGui::CollapsingHeader("Segment Debug", ImGuiTreeNodeFlags_DefaultOpen)) {
       const auto& analysis = state_.segment_analysis;
       ImGui::BulletText("Is Confident: %s", analysis.is_confident ? "true" : "false");
+      ImGui::BulletText("Is Auto: %s", analysis.is_auto ? "true" : "false");
       ImGui::BulletText("Segment length: %s",
                         absl::FormatDuration(analysis.segment_length).c_str());
       ImGui::SeparatorText("Snapshot Analysis");
@@ -324,6 +330,26 @@ class PlotDefs {
         ImGui::BulletText("Cluster %ld: mean=%.0f stdev=%.0f", i, cluster.mean, cluster.stdev);
       }
       ImGui::BulletText("Cluster mean ratio: %.2f", analysis.cluster_mean_ratio);
+      if (!analysis.cluster_debug.split_debug.empty() && ImGui::TreeNode("Cluster Split Debug")) {
+        for (std::size_t i = 0; i < analysis.cluster_debug.split_debug.size(); ++i) {
+          const auto& debug = analysis.cluster_debug.split_debug[i];
+          ImGui::BulletText("%lu-cluster: rss=%.0f, rss_ratio=%.2f, min_size=%.2f", i + 1,
+                            debug.rss, debug.rss_ratio, debug.min_size);
+          ImGui::BulletText("%lu-cluster init means: %s", i + 1,
+                            absl::StrJoin(debug.initial_means, ", ").c_str());
+          ImGui::BulletText(
+              "%lu-cluster means: %s", i + 1,
+              absl::StrJoin(
+                  RangesTo<std::vector<float>>(
+                      debug.clusters | std::views::transform([](const auto& c) { return c.mean; })),
+                  ", ")
+                  .c_str());
+        }
+        ImGui::TreePop();
+      }
+      if (analysis.cluster_debug.split_debug.empty()) {
+        ImGui::BulletText("No cluster split debug available.");
+      }
       ImGui::SeparatorText("Game Count Analysis");
       if (analysis.game_count_analysis.ok()) {
         ImGui::BulletText("Est. EP/g: %.0f (sigma=%.0f)",

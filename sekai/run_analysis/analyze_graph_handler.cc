@@ -50,8 +50,10 @@ absl::StatusOr<AnalyzeGraphResponse> AnalyzeGraphHandler::Run(
       TimeUtil::NanosecondsToDuration(segments.total_uptime() / absl::Nanoseconds(1));
   *response.mutable_total_downtime() =
       TimeUtil::NanosecondsToDuration(segments.total_downtime() / absl::Nanoseconds(1));
-  for (const Sequence& seq : segments.active_segments()) {
-    *response.add_active_segments() = AnalyzeSegmentForApi(seq);
+  *response.mutable_total_auto_time() =
+      TimeUtil::NanosecondsToDuration(segments.total_auto_time() / absl::Nanoseconds(1));
+  for (const absl::StatusOr<SegmentAnalysisResult>& res : segments.analyzed_segments()) {
+    *response.add_active_segments() = SegmentAnalysisResultToApiSegment(res);
   }
   return response;
 }
