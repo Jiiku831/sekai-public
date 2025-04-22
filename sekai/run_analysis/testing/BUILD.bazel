@@ -33,8 +33,8 @@ cc_library(
 cc_binary(
     name = "load_data_main",
     srcs = ["load_data_main.cc"],
-    linkopts = [
-        "-sUSE_PTHREADS=0",
+    data = [
+        "//data:flat-db-minimal",
     ],
     deps = [
         ":load_data",

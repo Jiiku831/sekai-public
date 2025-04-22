@@ -1,5 +1,6 @@
 #include "sekai/run_analysis/segment_analysis.h"
 
+#include <algorithm>
 #include <cmath>
 #include <cstdlib>
 #include <limits>
@@ -11,7 +12,9 @@
 #include "absl/strings/str_format.h"
 #include "absl/time/time.h"
 #include "base/util.h"
+#include "sekai/ranges_util.h"
 #include "sekai/run_analysis/clustering.h"
+#include "sekai/run_analysis/config.h"
 #include "sekai/run_analysis/proto/service.pb.h"
 #include "sekai/run_analysis/proto_util.h"
 #include "sekai/run_analysis/snapshot.h"
@@ -21,6 +24,8 @@ namespace sekai::run_analysis {
 namespace {
 
 using ::google::protobuf::util::TimeUtil;
+
+constexpr float kAutoStdevThreshold = 250;
 
 absl::StatusOr<int> InferMinClusterGameCount(float cluster_mean_ratio) {
   constexpr float kMeanRatioTolerance = 0.2;
@@ -103,7 +108,7 @@ absl::StatusOr<GameCountAnalysis> RunGameCountAnalysis(float cluster_mean_ratio,
 
 }  // namespace
 
-absl::StatusOr<SegmentAnalysisResult> AnalyzeSegment(const Sequence& sequence) {
+absl::StatusOr<SegmentAnalysisResult> AnalyzeSegment(const Sequence& sequence, bool debug) {
   SegmentAnalysisResult result;
   result.segment_length =
       sequence.empty() ? absl::ZeroDuration() : (sequence.back().time - sequence.front().time);
@@ -112,11 +117,17 @@ absl::StatusOr<SegmentAnalysisResult> AnalyzeSegment(const Sequence& sequence) {
     result.start = sequence.time_offset + sequence.front().time;
     result.end = sequence.time_offset + sequence.back().time;
   }
-  result.clusters = FindClusters(sequence | std::views::drop(1));
+  result.clusters =
+      FindClusters(sequence | std::views::drop(1), debug ? &result.cluster_debug : nullptr);
   result.cluster_mean_ratio = std::numeric_limits<float>::quiet_NaN();
+  float max_stdev = std::numeric_limits<float>::quiet_NaN();
   if (result.clusters.size() < 1) {
     return absl::InternalError("Expected at least 1 clusters.");
   }
+  max_stdev = mean<float>(RangesTo<std::vector<float>>(
+      result.clusters |
+      std::views::transform([](const Cluster& cluster) { return cluster.stdev; })));
+  result.is_auto = max_stdev < kAutoStdevThreshold;
   if (result.clusters.size() < 2) {
     return result;
   }
@@ -132,7 +143,11 @@ absl::StatusOr<SegmentAnalysisResult> AnalyzeSegment(const Sequence& sequence) {
   result.cluster_mean_ratio = std::max(mean0, mean1) / min_mean;
   result.game_count_analysis = RunGameCountAnalysis(result.cluster_mean_ratio, min_mean, sequence);
   result.is_confident =
-      result.game_count_analysis.ok() && result.segment_length >= kConfidentDuration;
+      result.game_count_analysis.ok() && result.game_count_analysis->game_count > 0 &&
+      !std::isnan(result.game_count_analysis->ep_per_game.mean()) &&
+      !std::isnan(result.game_count_analysis->estimated_gph.value()) &&
+      result.segment_length - result.game_count_analysis->rejected_samples.size() * kInterval >=
+          kConfidentDuration;
   return result;
 }
 
@@ -146,6 +161,7 @@ AnalyzeGraphResponse::Segment SegmentAnalysisResultToApiSegment(
   }
 
   segment.set_is_confident(res->is_confident);
+  segment.set_is_auto(res->is_auto);
   if (res->start.has_value()) {
     *segment.mutable_start() = TimeUtil::NanosecondsToTimestamp(absl::ToUnixNanos(*res->start));
   }
