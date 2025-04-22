@@ -16,6 +16,7 @@
 #include "absl/log/log.h"
 #include "absl/status/status.h"
 #include "absl/status/statusor.h"
+#include "absl/strings/numbers.h"
 #include "absl/strings/str_format.h"
 #include "sekai/config.h"
 #include "sekai/db/proto/descriptor.pb.h"
@@ -42,7 +43,8 @@ class JsonParser : public json::json_sax_t {
     }
     auto& cur_obj = obj_stack_.top();
     if (cur_obj.field == nullptr) {
-      status_ = absl::InternalError(absl::StrFormat("Field with key '%s' is null", cur_obj.key));
+      status_ = absl::InternalError(
+          absl::StrFormat("While parsing boolean value: Field with key '%s' is null", cur_obj.key));
       return false;
     }
     proto::Message* msg = cur_obj.msg;
@@ -97,7 +99,8 @@ class JsonParser : public json::json_sax_t {
     }
     auto& cur_obj = obj_stack_.top();
     if (cur_obj.field == nullptr) {
-      status_ = absl::InternalError(absl::StrFormat("Field with key '%s' is null", cur_obj.key));
+      status_ = absl::InternalError(
+          absl::StrFormat("While parsing float value: Field with key '%s' is null", cur_obj.key));
       return false;
     }
     proto::Message* msg = cur_obj.msg;
@@ -137,7 +140,8 @@ class JsonParser : public json::json_sax_t {
     }
     auto& cur_obj = obj_stack_.top();
     if (cur_obj.field == nullptr) {
-      status_ = absl::InternalError(absl::StrFormat("Field with key '%s' is null", cur_obj.key));
+      status_ = absl::InternalError(
+          absl::StrFormat("While parsing number value: Field with key '%s' is null", cur_obj.key));
       return false;
     }
     proto::Message* msg = cur_obj.msg;
@@ -200,6 +204,40 @@ class JsonParser : public json::json_sax_t {
 
   bool start_array(std::size_t size) override { return true; }
 
+  bool start_map_object() {
+    auto& cur_obj = obj_stack_.top();
+    proto::Message* msg = cur_obj.msg;
+    const proto::Reflection* reflection = cur_obj.reflection;
+
+    proto::Message* map_msg = reflection->AddMessage(msg, cur_obj.map_field);
+    const proto::Descriptor* map_descriptor = map_msg->GetDescriptor();
+    const proto::FieldDescriptor* map_key = map_descriptor->map_key();
+    if (map_key == nullptr) {
+      status_ = absl::InternalError("Expected map descriptor to have map key.");
+      return false;
+    }
+    const proto::Reflection* map_reflection = map_msg->GetReflection();
+    switch (map_key->cpp_type()) {
+      case proto::FieldDescriptor::CPPTYPE_INT32: {
+        int key_val;
+        if (!absl::SimpleAtoi(cur_obj.key, &key_val)) {
+          status_ = absl::InternalError(absl::StrFormat(
+              "While parsing key value: failed to parse %s as an int32", cur_obj.key));
+          return false;
+        }
+        map_reflection->SetInt32(map_msg, map_key, key_val);
+        break;
+      }
+      default:
+        status_ = absl::InternalError(
+            absl::StrFormat("While parsing key value: unsupported key type %s",
+                            proto::FieldDescriptor::CppTypeName(map_key->cpp_type())));
+        return false;
+    }
+    obj_stack_.emplace(*map_reflection->MutableMessage(map_msg, map_descriptor->map_value()));
+    return true;
+  }
+
   bool start_object(std::size_t size) override {
     if (obj_stack_.empty()) {
       objs_.emplace_back();
@@ -207,8 +245,15 @@ class JsonParser : public json::json_sax_t {
       return true;
     }
     auto& cur_obj = obj_stack_.top();
+    const proto::Descriptor* descriptor = cur_obj.descriptor;
+
+    if (cur_obj.map_field != nullptr) {
+      return start_map_object();
+    }
+
     if (cur_obj.field == nullptr) {
-      status_ = absl::InternalError(absl::StrFormat("Field with key '%s' is null", cur_obj.key));
+      status_ = absl::InternalError(
+          absl::StrFormat("While parsing object value: Field with key '%s' is null", cur_obj.key));
       return false;
     }
     proto::Message* msg = cur_obj.msg;
@@ -219,12 +264,15 @@ class JsonParser : public json::json_sax_t {
                           "Message: %s\n"
                           "Field: %s\n"
                           "Type: %s (expected message)",
-                          cur_obj.descriptor->full_name(), field->name(), field->cpp_type_name()));
+                          descriptor->full_name(), field->name(), field->cpp_type_name()));
       return false;
     }
     const proto::Reflection* reflection = cur_obj.reflection;
-    const bool repeated = field->is_repeated();
-    if (repeated) {
+    if (field->is_map()) {
+      StackObj obj_copy = cur_obj;
+      obj_copy.map_field = obj_copy.field;
+      obj_stack_.emplace(std::move(obj_copy));
+    } else if (field->is_repeated()) {
       obj_stack_.emplace(*reflection->AddMessage(msg, field));
     } else {
       obj_stack_.emplace(*reflection->MutableMessage(msg, field));
@@ -239,7 +287,8 @@ class JsonParser : public json::json_sax_t {
     }
     auto& cur_obj = obj_stack_.top();
     if (cur_obj.field == nullptr) {
-      status_ = absl::InternalError(absl::StrFormat("Field with key '%s' is null", cur_obj.key));
+      status_ = absl::InternalError(
+          absl::StrFormat("While parsing string value: Field with key '%s' is null", cur_obj.key));
       return false;
     }
     proto::Message* msg = cur_obj.msg;
@@ -300,6 +349,7 @@ class JsonParser : public json::json_sax_t {
     absl::Nonnull<const proto::Descriptor*> descriptor;
     absl::Nonnull<const proto::Reflection*> reflection;
     absl::Nullable<const proto::FieldDescriptor*> field = nullptr;
+    absl::Nullable<const proto::FieldDescriptor*> map_field = nullptr;
     std::string key;
   };
   std::stack<StackObj> obj_stack_;

@@ -59,6 +59,7 @@ Sequence ProcessSequence(const Sequence& sequence, absl::Duration interval,
   Sequence processed_seq =
       InterpolateSequence(AlignSequence(sequence, interval), interval, max_gap);
   for (std::size_t i = 1; i < processed_seq.size(); ++i) {
+    if (processed_seq.points[i].time - processed_seq.points[i - 1].time > max_gap) continue;
     processed_seq.points[i].diff =
         processed_seq.points[i].points - processed_seq.points[i - 1].points;
   }

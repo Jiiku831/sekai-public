@@ -22,7 +22,8 @@
 #include "sekai/run_analysis/sequence_util.h"
 #include "sekai/run_analysis/snapshot.h"
 
-ABSL_FLAG(int, event_id, 159, "Event ID");
+ABSL_FLAG(int, event_id, 163, "Event ID");
+ABSL_FLAG(int, chapter_char, 0, "Chapter char ID");
 
 namespace sekai::run_analysis {
 namespace {
@@ -60,7 +61,10 @@ absl::StatusOr<LoadedData> LoadData(std::filesystem::path path) {
   LoadedData data;
   ASSIGN_OR_RETURN(std::string contents, SafeGetFileContents(path));
   ASSIGN_OR_RETURN(data.raw_data, ParseRunData(contents));
-  const PointsGraph& graph = data.raw_data.user_graph().overall();
+  const PointsGraph& graph =
+      absl::GetFlag(FLAGS_chapter_char) > 0
+          ? data.raw_data.user_graph().chapters().at(absl::GetFlag(FLAGS_chapter_char))
+          : data.raw_data.user_graph().overall();
   if (graph.timestamps().empty()) {
     return absl::InvalidArgumentError("Empty graph");
   }
