@@ -542,5 +542,15 @@ TEST(CardTest, ApplyProfileFixtureAndGateBonus) {
             38797 + 23276 + 1938 + 775 + 698 + kInaccuracy);
 }
 
+TEST(CardTest, InitialSpecialTrainingStatusIgnoresCardStateStatus) {
+  CardState trained_state, untrained_state;
+  trained_state.set_special_training(true);
+  trained_state.set_level(60);
+  untrained_state.set_level(60);
+  Card card_trained{MasterDb::FindFirst<db::Card>(1167), trained_state};
+  Card card_untrained{MasterDb::FindFirst<db::Card>(1167), untrained_state};
+  EXPECT_EQ(card_trained.power_vec(), card_untrained.power_vec());
+}
+
 }  // namespace
 }  // namespace sekai
