@@ -19,7 +19,8 @@
 namespace sekai {
 
 int MaxLevelForRarity(db::CardRarityType rarity);
-bool TrainableCard(db::CardRarityType rarity);
+bool TrainableCard(const db::Card& card);
+bool AlwaysTrainedState(const db::Card& card);
 CardState CreateMaxCardState(int card_id);
 
 class Card : public CardBase {

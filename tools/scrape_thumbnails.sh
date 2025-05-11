@@ -20,7 +20,7 @@ mkdir -p "$root/data/storage-sekai-best/sekai-assets/thumbnail/chara_64/"
 mkdir -p "$root/data/storage-sekai-best/sekai-assets/thumbnail/chara_128/"
 cd "$root/data/storage-sekai-best/sekai-assets/thumbnail"
 
-for img in chara_rip/*; do
+for img in chara/*; do
     base="$(basename "$img")"
     if ! [[ -f "chara_16/$base" ]]; then
         echo convert "$img" -resize 16x16 "chara_16/$base"

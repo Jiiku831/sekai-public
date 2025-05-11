@@ -32,6 +32,12 @@ message Card {
     optional Cost cost     = 3 [(json_name) = "cost"];
   }
 
+  enum InitialSpecialTrainingStatus {
+    INITIAL_SPECIAL_TRAINING_UNKNOWN = 0;
+    INITIAL_SPECIAL_TRAINING_FALSE   = 1 [(json_value) = "not_doing"];
+    INITIAL_SPECIAL_TRAINING_TRUE    = 2 [(json_value) = "done"];
+  }
+
   optional int32 id                                  = 1 [(json_name) = "id", (primary_key) = true];
   optional int32 seq                                 = 2 [(json_name) = "seq"];
   optional int32 character_id                        = 3 [(json_name) = "characterId"];
@@ -58,4 +64,6 @@ message Card {
   optional string special_training_skill_name            = 23 [(json_name) = "specialTrainingSkillName"];
   optional int32 card_supply_id                          = 24 [(json_name) = "cardSupplyId"];
   optional int32 special_training_reward_resource_box_id = 25 [(json_name) = "specialTrainingRewardResourceBoxId"];
+  optional InitialSpecialTrainingStatus initial_special_training_status = 26
+      [(json_name) = "initialSpecialTrainingStatus"];
 }

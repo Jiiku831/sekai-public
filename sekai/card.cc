@@ -88,7 +88,7 @@ Eigen::Vector3i GetCardEpisodeBonus(int card_id, const CardState& state) {
 
 Eigen::Vector3i GetCardPower(const db::Card& card, const CardState& state) {
   Eigen::Vector3i power = GetBasePower(card, state.has_level() ? state.level() : 1);
-  if (state.special_training()) {
+  if (state.special_training() || AlwaysTrainedState(card)) {
     power += GetSpecialTrainingBonus(card);
   }
   power += GetMasterRankBonus(card.card_rarity_type(), state.master_rank());
@@ -116,8 +116,13 @@ int MaxLevelForRarity(db::CardRarityType rarity) {
   }
 }
 
-bool TrainableCard(db::CardRarityType rarity) {
-  return rarity == db::RARITY_3 || rarity == db::RARITY_4;
+bool TrainableCard(const db::Card& card) {
+  return (card.card_rarity_type() == db::RARITY_3 || card.card_rarity_type() == db::RARITY_4) &&
+         !AlwaysTrainedState(card);
+}
+
+bool AlwaysTrainedState(const db::Card& card) {
+  return card.initial_special_training_status() == db::Card::INITIAL_SPECIAL_TRAINING_TRUE;
 }
 
 Card::Card(const db::Card& card, const CardState& state) : CardBase(card), state_(state) {
@@ -218,7 +223,7 @@ CardState CreateMaxCardState(int card_id) {
   state.set_level(MaxLevelForRarity(card.card_rarity_type()));
   state.set_master_rank(kMasterRankMax);
   state.set_skill_level(kSkillLevelMax);
-  if (TrainableCard(card.card_rarity_type())) {
+  if (TrainableCard(card)) {
     state.set_special_training(true);
   }
   for (const db::CardEpisode* episode : MasterDb::FindAll<db::CardEpisode>(card_id)) {
