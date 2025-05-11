@@ -21,6 +21,7 @@
 namespace frontend {
 namespace {
 
+using ::sekai::AlwaysTrainedState;
 using ::sekai::FixturesWithCharBonuses;
 using ::sekai::LookupCharacterUnit;
 using ::sekai::MaxLevelForRarity;
@@ -253,19 +254,28 @@ CardContext CreateCardContext(const Card& card, std::optional<int> thumbnail_res
   context.set_card_id(card.id());
   context.set_card_list_row_id(CardListRowId(card.id()));
   context.set_thumbnail_res(thumbnail_res.value_or(kDefaultThumbnailRes));
-  context.set_thumbnail_url(MaybeEmbedImage(
-      absl::StrCat(kThumbnailPrefix, context.thumbnail_res(), "/", card.assetbundle_name(),
-                   display_trained ? kThumbnailTrainedSuffix : kThumbnailUntrainedSuffix)));
-  context.set_thumbnail_url_128(MaybeEmbedImage(
-      absl::StrCat(kThumbnailPrefix, 128, "/", card.assetbundle_name(),
-                   display_trained ? kThumbnailTrainedSuffix : kThumbnailUntrainedSuffix)));
+  if (!AlwaysTrainedState(card)) {
+    context.set_thumbnail_url(MaybeEmbedImage(
+        absl::StrCat(kThumbnailPrefix, context.thumbnail_res(), "/", card.assetbundle_name(),
+                     display_trained ? kThumbnailTrainedSuffix : kThumbnailUntrainedSuffix)));
+    context.set_thumbnail_url_128(MaybeEmbedImage(
+        absl::StrCat(kThumbnailPrefix, 128, "/", card.assetbundle_name(),
+                     display_trained ? kThumbnailTrainedSuffix : kThumbnailUntrainedSuffix)));
+    context.set_rarity_frame(GetRarityFramePath(card.card_rarity_type(), trained));
+  } else {
+    context.set_thumbnail_url(
+        MaybeEmbedImage(absl::StrCat(kThumbnailPrefix, context.thumbnail_res(), "/",
+                                     card.assetbundle_name(), kThumbnailTrainedSuffix)));
+    context.set_thumbnail_url_128(MaybeEmbedImage(absl::StrCat(
+        kThumbnailPrefix, 128, "/", card.assetbundle_name(), kThumbnailTrainedSuffix)));
+    context.set_rarity_frame(GetRarityFramePath(card.card_rarity_type(), true));
+  }
   *context.mutable_character() = CreateCharacterContext(card.character_id());
   *context.mutable_attr() = CreateAttrContext(card.attr());
   *context.mutable_rarity() = CreateRarityContext(card.card_rarity_type());
   context.set_max_level(MaxLevelForRarity(card.card_rarity_type()));
-  context.set_trainable(TrainableCard(card.card_rarity_type()));
+  context.set_trainable(TrainableCard(card));
   context.set_attr_frame(GetAttrFramePath(card.attr()));
-  context.set_rarity_frame(GetRarityFramePath(card.card_rarity_type(), trained));
 
   if (context.trainable()) {
     context.set_alt_thumbnail_url(
