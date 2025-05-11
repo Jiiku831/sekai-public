@@ -296,7 +296,7 @@ void UpdateCardState(int card_id, const CardState& state) {
   SetCardLevel(card_id, state.level());
   SetCardMasterRank(card_id, state.master_rank());
   SetCardSkillLevel(card_id, state.skill_level());
-  if (sekai::TrainableCard(card->card_rarity_type())) {
+  if (sekai::TrainableCard(*card)) {
     SetCardTrained(card_id, state.special_training());
   }
   SetCardCanvasCrafted(card_id, state.canvas_crafted());
