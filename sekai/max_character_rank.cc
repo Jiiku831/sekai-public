@@ -209,6 +209,19 @@ absl::flat_hash_map<db::CardRarityType, int> CardCount(int char_id, absl::Time t
   return count;
 }
 
+int CountTrainedOnlyCards(int char_id, absl::Time time) {
+  std::span<const db::Card> cards = db::MasterDb::GetAll<db::Card>();
+  int count = 0;
+  for (const db::Card& card : cards) {
+    absl::Time publish_time = absl::FromUnixMillis(card.release_at());
+    if (publish_time > time) continue;
+    if (char_id != card.character_id()) continue;
+    if (card.initial_special_training_status() != db::Card::INITIAL_SPECIAL_TRAINING_TRUE) continue;
+    ++count;
+  }
+  return count;
+}
+
 int AlbumRarityFactor(db::CardRarityType rarity) {
   switch (rarity) {
     case db::RARITY_1:
@@ -251,7 +264,7 @@ int CountAlbumMember(int char_id, absl::Time time) {
   for (const auto& [rarity, count] : counts) {
     total += count * AlbumRarityFactor(rarity);
   }
-  return total;
+  return total - CountTrainedOnlyCards(char_id, time);
 }
 
 int CountRareMember(int char_id, absl::Time time) {
