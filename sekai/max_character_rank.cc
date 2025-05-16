@@ -128,7 +128,7 @@ std::optional<int> GetMaxProgress(int char_id, CharacterRankSource::OtherSource 
     case CharacterRankSource::OTHER_SOURCE_ANNI_4_5_STAMP:
       return GetAssetVersionAt(time) >= kAnni4p5AssetVersion ? 2 : 0;
     case CharacterRankSource::OTHER_SOURCE_WORLD_LINK_2:
-      return WorldLink2ChapterStarted(char_id, time) ? 2 : 0;
+      return GetAssetVersionAt(time) >= kAnni4AssetVersion ? 2 : 0;
     default:
       ABSL_CHECK(false) << "unhandled case";
   }
