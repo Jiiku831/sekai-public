@@ -23,7 +23,7 @@ bazel_dep(name="rules_cc", version="0.1.1")
 bazel_dep(name="rules_pkg", version="1.0.1")
 bazel_dep(name="rules_proto", version="7.1.0")
 bazel_dep(name="rules_python", version="1.2.0")
-bazel_dep(name="sekai-master-db", version="5.5.0.11.3")
+bazel_dep(name="sekai-master-db", version="5.5.0.31.2")
 bazel_dep(name="zstd", version="1.5.7")
 bazel_dep(name="zstd_license", version="1.5.7")
 
