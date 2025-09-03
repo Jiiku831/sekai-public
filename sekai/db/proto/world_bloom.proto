@@ -15,4 +15,10 @@ message WorldBloom {
   optional int64 chapter_end_at    = 7 [(json_name) = "chapterEndAt"];
   optional int32 costume2d_id      = 8 [(json_name) = "costume2dId"];
   optional bool is_supplemental    = 9 [(json_name) = "isSupplemental"];
+
+  enum ChapterType {
+    CHAPTER_TYPE_UNKNOWN = 0;
+    GAME_CHARACTER       = 1 [(json_value) = "game_character"];
+  }
+  optional ChapterType chapter_type = 10 [(json_name) = "worldBloomChapterType"];
 }

@@ -11,4 +11,5 @@ message EventCard {
   optional int32 event_id             = 3 [(json_name) = "eventId", (primary_key) = true];
   optional float bonus_rate           = 4 [(json_name) = "bonusRate"];
   optional bool is_display_card_story = 5 [(json_name) = "isDisplayCardStory"];
+  optional float leader_bonus_rate    = 6 [(json_name) = "leaderBonusRate"];
 }
