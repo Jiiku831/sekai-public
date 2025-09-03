@@ -19,6 +19,13 @@ message Event {
       optional int32 id              = 1 [(json_name) = "id"];
       optional int32 reward_range_id = 2 [(json_name) = "eventRankingRewardRangeId"];
       optional int32 resource_box_id = 3 [(json_name) = "resourceBoxId"];
+      optional int32 seq             = 4 [(json_name) = "seq"];
+
+      enum ConditionType {
+        CONDITION_TYPE_UNKNOWN = 0;
+        CONDITION_TYPE_NONE    = 1 [(json_value) = "none"];
+      }
+      optional ConditionType condition_type = 5 [(json_name) = "rewardConditionType"];
     }
 
     optional int32 id               = 1 [(json_name) = "id"];
@@ -46,4 +53,5 @@ message Event {
   optional Unit unit                                   = 15 [(json_name) = "unit"];
   repeated RankingRewardRange ranking_reward_range     = 16 [(json_name) = "eventRankingRewardRanges"];
   optional string event_point_assetbundle_name         = 17 [(json_name) = "eventPointAssetbundleName"];
+  optional bool is_count_leader_character_play         = 18 [(json_name) = "isCountLeaderCharacterPlay"];
 }
