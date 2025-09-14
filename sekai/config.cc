@@ -4,8 +4,12 @@
 #include <filesystem>
 #include <string_view>
 
+#include "absl/flags/flag.h"
 #include "absl/log/absl_check.h"
+#include "absl/strings/str_cat.h"
 #include "sekai/parse_proto.h"
+
+ABSL_FLAG(std::string, db_path, "", "db sentinel rloc");
 
 namespace sekai {
 namespace {
@@ -60,7 +64,11 @@ const std::filesystem::path& SekaiBestRoot() {
 const std::filesystem::path& MasterDbRoot() {
   static const std::filesystem::path* const kPath = [] {
     auto* path = new std::filesystem::path;
-    *path = RunfilesDir("external/sekai-master-db~", SekaiRepoRoot());
+    if (!absl::GetFlag(FLAGS_db_path).empty()) {
+      *path = RunfilesDir(absl::StrCat("external/", absl::GetFlag(FLAGS_db_path)), SekaiRepoRoot());
+    } else {
+      *path = RunfilesDir("external/sekai-master-db~", SekaiRepoRoot());
+    }
     return path;
   }();
   return *kPath;

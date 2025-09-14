@@ -200,7 +200,9 @@ cc_library(
     deps = [
         ":parse_proto",
         "//sekai/proto:world_bloom_cc_proto",
+        "@abseil-cpp//absl/flags:flag",
         "@abseil-cpp//absl/log:absl_check",
+        "@abseil-cpp//absl/strings",
     ],
 )
 
