@@ -71,10 +71,10 @@ TEST(HistogramsTest, MergeHistograms) {
       },
   };
   Histograms histograms = Histograms::Join(
-      RangesTo<std::vector<Histograms>>(seqs | std::views::transform([](const auto& seq) {
-                                          return ComputeHistograms(seq, /*smoothing_window=*/3,
-                                                                   /*interval=*/absl::Minutes(5));
-                                        })));
+      RangesTo<std::vector>(seqs | std::views::transform([](const auto& seq) {
+                              return ComputeHistograms(seq, /*smoothing_window=*/3,
+                                                       /*interval=*/absl::Minutes(5));
+                            })));
   EXPECT_EQ(histograms.smoothing_window, 3);
   EXPECT_THAT(histograms.steps, ElementsAreArray({0, 0, 0, 0, 0, 10, 10, 10, 10, 10}));
   EXPECT_THAT(histograms.speeds, ElementsAreArray({0, 0, 0, 0, 0, 120, 120, 120, 120, 120}));

@@ -113,7 +113,7 @@ std::vector<Cluster> FindBestClusters(std::span<const Snapshot> pts, int max_num
     return std::vector<Cluster>(1);
   }
   // Single cluster model
-  auto diffs = RangesTo<std::vector<int>>(pts | GetDiffs());
+  auto diffs = RangesTo<std::vector>(pts | GetDiffs());
   std::sort(diffs.begin(), diffs.end());
   float sample_mean = mean<float>(diffs);
   float rss = variance<float>(diffs, sample_mean) * pts.size();

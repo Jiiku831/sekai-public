@@ -56,10 +56,9 @@ std::vector<Window> GetSmoothedDiffs(const Sequence& seq, int window) {
 
 Sequence SmoothedDiffsToSequence(std::span<const Window> windows, absl::Time ref) {
   Sequence seq{ref};
-  seq.points =
-      RangesTo<std::vector<Snapshot>>(windows | std::views::transform([](const auto& window) {
-                                        return Snapshot{window.start.time, window.diff};
-                                      }));
+  seq.points = RangesTo<std::vector>(windows | std::views::transform([](const auto& window) {
+                                       return Snapshot{window.start.time, window.diff};
+                                     }));
   return seq;
 }
 
@@ -297,7 +296,7 @@ class DetectorStateV2 {
     constexpr int kReclusterEveryNSamples = 5;
     if (current_run_.size() > min_segment_length_ * 2 &&
         (current_run_.size() - min_segment_length_) % kReclusterEveryNSamples == 0) {
-      // std::vector<float> prev_means = RangesTo<std::vector<float>>(
+      // std::vector<float> prev_means = RangesTo<std::vector>(
       //     latest_clusters_ |
       //     std::views::transform([](const auto& cluster) { return cluster.mean; }));
       Recluster(min_segment_length_);
