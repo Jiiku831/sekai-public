@@ -1,5 +1,4 @@
 #include <filesystem>
-#include <string_view>
 
 #include <gmock/gmock.h>
 #include <google/protobuf/util/message_differencer.h>
@@ -11,6 +10,16 @@ namespace testing {
 
 MATCHER_P(ProtoEquals, other, "") {
   google::protobuf::util::MessageDifferencer differ;
+  std::string diffs;
+  differ.ReportDifferencesToString(&diffs);
+  bool result = differ.Compare(other, arg);
+  *result_listener << "with differences:\n" << diffs;
+  return result;
+}
+
+MATCHER_P(ProtoPartiallyEquals, other, "") {
+  google::protobuf::util::MessageDifferencer differ;
+  differ.set_scope(google::protobuf::util::MessageDifferencer::PARTIAL);
   std::string diffs;
   differ.ReportDifferencesToString(&diffs);
   bool result = differ.Compare(other, arg);

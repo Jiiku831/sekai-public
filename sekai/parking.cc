@@ -237,8 +237,8 @@ void AnnotateTeamProtoWithMultiTurnParkingStrategy(const Team& team, const Profi
   }
   Team::SoloEbiBasePoints base_points = team.GetSoloEbiBasePoints(profile, event_bonus, accuracy);
   std::vector<ParkingStrategy> turns;
-  ASSIGN_OR_RETURN_VOID(auto sol,
-                        SolveSubsetSumWithRepetition(base_points.possible_points, target));
+  ASSIGN_OR_RETURN_MAP(auto sol, SolveSubsetSumWithRepetition(base_points.possible_points, target),
+                       ReturnVoid());
   for (auto [points, count] : sol) {
     absl::StatusOr<absl::flat_hash_map<int, int>> mult_sol =
         SolveSubsetSumWithRepetition(kBoostMultipliers, count);

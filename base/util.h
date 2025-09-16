@@ -23,13 +23,6 @@ absl::Status AssignOrReturn(T& lhs, absl::StatusOr<T> rhs) {
 #define CONCAT_NAME_INNER(x, y) x##y
 #define CONCAT_NAME(x, y) CONCAT_NAME_INNER(x, y)
 
-#define ASSIGN_OR_RETURN_VOID_IMPL(tmp, dst, expr) \
-  auto tmp = expr;                                 \
-  if (!tmp.ok()) {                                 \
-    return;                                        \
-  }                                                \
-  dst = *std::move(tmp);
-
 #define ASSIGN_OR_RETURN_IMPL(tmp, dst, expr) \
   auto tmp = expr;                            \
   if (!tmp.ok()) {                            \
@@ -44,15 +37,14 @@ absl::Status AssignOrReturn(T& lhs, absl::StatusOr<T> rhs) {
   }                                                   \
   dst = *std::move(tmp);
 
-#define ASSIGN_OR_RETURN_VOID(dst, expr) \
-  ASSIGN_OR_RETURN_VOID_IMPL(CONCAT_NAME(tmp, __COUNTER__), dst, expr)
-
 #define ASSIGN_OR_RETURN(dst, expr) ASSIGN_OR_RETURN_IMPL(CONCAT_NAME(tmp, __COUNTER__), dst, expr)
 
 #define ASSIGN_OR_RETURN_MAP(dst, expr, fn) \
   ASSIGN_OR_RETURN_MAP_IMPL(CONCAT_NAME(tmp, __COUNTER__), dst, expr, fn)
 
-inline void ReturnVoid(const absl::Status& status) {}
+struct ReturnVoid {
+  void operator()(const absl::Status& status) {}
+};
 
 template <typename T>
 struct ReturnValue {
