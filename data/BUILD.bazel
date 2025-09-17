@@ -36,12 +36,13 @@ genrule(
     name = "flat-db-minimal.genrule",
     srcs = [
         "@sekai-master-db",
+        "@sekai-master-db//:sentinel",
         ":storage-sekai-best",
     ],
     outs = [
         "flat-db-minimal",
     ],
-    cmd = "./$(execpath //sekai/db:generate_flat_db_main) --output=$@ --no_thumbnails --keep=" + ",".join(minimal_types),
+    cmd = "./$(execpath //sekai/db:generate_flat_db_main) --output=$@ --db_path=$$(dirname $(rlocationpath @sekai-master-db//:sentinel)) --no_thumbnails --keep=" + ",".join(minimal_types),
     tools = ["//sekai/db:generate_flat_db_main"],
 )
 

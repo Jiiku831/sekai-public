@@ -198,7 +198,7 @@ class JsonParser : public json::json_sax_t {
 
   bool parse_error(std::size_t pos, const std::string& last_token,
                    const json::exception& ex) override {
-    status_ = absl::UnimplementedError("unhandled parse error");
+    status_ = absl::UnimplementedError(absl::StrCat("unhandled parse error: ", ex.what()));
     return false;
   }
 

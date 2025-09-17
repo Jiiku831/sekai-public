@@ -67,7 +67,7 @@ const std::filesystem::path& MasterDbRoot() {
     if (!absl::GetFlag(FLAGS_db_path).empty()) {
       *path = RunfilesDir(absl::StrCat("external/", absl::GetFlag(FLAGS_db_path)), SekaiRepoRoot());
     } else {
-      *path = RunfilesDir("external/sekai-master-db~", SekaiRepoRoot());
+      *path = RunfilesDir("", "sekai-master-db+");
     }
     return path;
   }();
