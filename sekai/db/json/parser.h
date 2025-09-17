@@ -301,7 +301,7 @@ class JsonParser : public json::json_sax_t {
 
     switch (field->cpp_type()) {
       case proto::FieldDescriptor::CPPTYPE_ENUM: {
-        absl::Nullable<const proto::EnumValueDescriptor*> enum_value =
+        const proto::EnumValueDescriptor* absl_nullable enum_value =
             LookupEnumValue(*field->enum_type(), val);
         if (enum_value == nullptr) {
           status_ = absl::InvalidArgumentError(
@@ -345,18 +345,18 @@ class JsonParser : public json::json_sax_t {
   struct StackObj {
     explicit StackObj(proto::Message& msg)
         : msg(&msg), descriptor(msg.GetDescriptor()), reflection(msg.GetReflection()) {}
-    absl::Nonnull<proto::Message*> msg;
-    absl::Nonnull<const proto::Descriptor*> descriptor;
-    absl::Nonnull<const proto::Reflection*> reflection;
-    absl::Nullable<const proto::FieldDescriptor*> field = nullptr;
-    absl::Nullable<const proto::FieldDescriptor*> map_field = nullptr;
+    proto::Message* absl_nonnull msg;
+    const proto::Descriptor* absl_nonnull descriptor;
+    const proto::Reflection* absl_nonnull reflection;
+    const proto::FieldDescriptor* absl_nullable field = nullptr;
+    const proto::FieldDescriptor* absl_nullable map_field = nullptr;
     std::string key;
   };
   std::stack<StackObj> obj_stack_;
   std::vector<T> objs_;
   absl::Status status_ = absl::OkStatus();
 
-  using FieldCache = absl::flat_hash_map<std::string, absl::Nonnull<const proto::FieldDescriptor*>>;
+  using FieldCache = absl::flat_hash_map<std::string, const proto::FieldDescriptor * absl_nonnull>;
   absl::flat_hash_map<std::string, FieldCache> field_caches_;
 
   const FieldCache& GetFieldCacheEntry(const proto::Descriptor& descriptor) {
@@ -364,17 +364,17 @@ class JsonParser : public json::json_sax_t {
     if (!entry.empty()) {
       return entry;
     }
-    absl::flat_hash_map<std::string, absl::Nonnull<const proto::FieldDescriptor*>> cache;
+    absl::flat_hash_map<std::string, const proto::FieldDescriptor * absl_nonnull> cache;
     for (int i = 0; i < descriptor.field_count(); ++i) {
-      absl::Nonnull<const proto::FieldDescriptor*> field = descriptor.field(i);
+      const proto::FieldDescriptor* absl_nonnull field = descriptor.field(i);
       std::string_view key_name = field->options().GetExtension(json_name);
       cache[key_name] = field;
     }
     return entry = std::move(cache);
   }
 
-  absl::Nullable<const proto::FieldDescriptor*> LookupField(const proto::Descriptor& descriptor,
-                                                            std::string_view json_key) {
+  const proto::FieldDescriptor* absl_nullable LookupField(const proto::Descriptor& descriptor,
+                                                          std::string_view json_key) {
     const FieldCache& cache = GetFieldCacheEntry(descriptor);
     auto it = cache.find(json_key);
     if (it == cache.end()) return nullptr;
@@ -382,7 +382,7 @@ class JsonParser : public json::json_sax_t {
   }
 
   using EnumValueCache =
-      absl::flat_hash_map<std::string, absl::Nonnull<const proto::EnumValueDescriptor*>>;
+      absl::flat_hash_map<std::string, const proto::EnumValueDescriptor * absl_nonnull>;
   absl::flat_hash_map<std::string, EnumValueCache> enum_value_caches_;
 
   const EnumValueCache& GetEnumValueCacheEntry(const proto::EnumDescriptor& descriptor) {
@@ -390,17 +390,17 @@ class JsonParser : public json::json_sax_t {
     if (!entry.empty()) {
       return entry;
     }
-    absl::flat_hash_map<std::string, absl::Nonnull<const proto::EnumValueDescriptor*>> cache;
+    absl::flat_hash_map<std::string, const proto::EnumValueDescriptor * absl_nonnull> cache;
     for (int i = 0; i < descriptor.value_count(); ++i) {
-      absl::Nonnull<const proto::EnumValueDescriptor*> value = descriptor.value(i);
+      const proto::EnumValueDescriptor* absl_nonnull value = descriptor.value(i);
       std::string_view key_name = value->options().GetExtension(json_value);
       cache[key_name] = value;
     }
     return entry = std::move(cache);
   }
 
-  absl::Nullable<const proto::EnumValueDescriptor*> LookupEnumValue(
-      const proto::EnumDescriptor& descriptor, std::string_view json_value) {
+  const proto::EnumValueDescriptor* absl_nullable
+  LookupEnumValue(const proto::EnumDescriptor& descriptor, std::string_view json_value) {
     const EnumValueCache& cache = GetEnumValueCacheEntry(descriptor);
     auto it = cache.find(json_value);
     if (it == cache.end()) return nullptr;

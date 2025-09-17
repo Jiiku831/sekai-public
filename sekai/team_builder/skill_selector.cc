@@ -23,7 +23,7 @@ Team OptimizeSkillSelection(std::span<const Card* const> cards, const Profile& p
       continue;
     }
     pools[i].push_back(profile.GetCard(cards[i]->card_id()));
-    absl::Nullable<const Card*> secondary_card = profile.GetSecondaryCard(cards[i]->card_id());
+    const Card* absl_nullable secondary_card = profile.GetSecondaryCard(cards[i]->card_id());
     if (secondary_card != nullptr) {
       pools[i].push_back(secondary_card);
     }

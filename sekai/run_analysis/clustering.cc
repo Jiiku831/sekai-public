@@ -58,7 +58,7 @@ int GetClusterAssignment(const float pt, std::span<const float> means, int num_c
 
 std::vector<Cluster> AssignClusters(std::span<const Snapshot> pts,
                                     std::span<const int> sorted_diffs, int num_clusters,
-                                    absl::Nullable<ClusterDebug::ClusterSplitDebug*> debug) {
+                                    ClusterDebug::ClusterSplitDebug* absl_nullable debug) {
   std::vector<float> means = InitialMeans(sorted_diffs, num_clusters);
   if (debug != nullptr) {
     debug->initial_means = means;
@@ -108,7 +108,7 @@ float RssMetric(std::span<const Cluster> clusters, std::size_t total_size) {
 }
 
 std::vector<Cluster> FindBestClusters(std::span<const Snapshot> pts, int max_num_clusters,
-                                      float min_size_ratio, absl::Nullable<ClusterDebug*> debug) {
+                                      float min_size_ratio, ClusterDebug* absl_nullable debug) {
   if (pts.empty()) {
     return std::vector<Cluster>(1);
   }
@@ -213,9 +213,9 @@ Cluster RemoveOutliers(std::span<Cluster> clusters, int iterations, float reject
 
 }  // namespace
 
-std::vector<Cluster> FindClusters(std::span<const Snapshot> pts,
-                                  absl::Nullable<ClusterDebug*> debug, float min_size_ratio,
-                                  int outlier_iterations, float outlier_rejection_threshold) {
+std::vector<Cluster> FindClusters(std::span<const Snapshot> pts, ClusterDebug* absl_nullable debug,
+                                  float min_size_ratio, int outlier_iterations,
+                                  float outlier_rejection_threshold) {
   constexpr std::size_t kMaxClusters = 3;
   std::vector<Cluster> results = FindBestClusters(pts, kMaxClusters, min_size_ratio, debug);
   RecomputeMeanStdev(results);

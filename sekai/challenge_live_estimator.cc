@@ -36,7 +36,7 @@ std::string DifficultyToDisplayText(db::Difficulty diff) {
   }
 }
 
-void SafeAddMetas(std::span<absl::Nonnull<const db::MusicMeta* const>> metas,
+void SafeAddMetas(std::span<const db::MusicMeta* const absl_nonnull> metas,
                   std::vector<ChallengeLiveSongEstimator>& dst) {
   for (const db::MusicMeta* meta : metas) {
     if (MasterDb::SafeFindFirst<db::Music>(meta->music_id()) == nullptr) {
@@ -88,7 +88,7 @@ ChallengeLiveEstimator::ChallengeLiveEstimator() {
 }
 
 ChallengeLiveEstimator::ChallengeLiveEstimator(
-    std::span<absl::Nonnull<const db::MusicMeta* const>> songs) {
+    std::span<const db::MusicMeta* const absl_nonnull> songs) {
   SafeAddMetas(songs, metas_);
 }
 

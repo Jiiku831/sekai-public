@@ -13,9 +13,8 @@ extern "C" {
 
 namespace git {
 
-Index::Index(absl::Nonnull<git_index*> index)
-    : index_(
-          index, +[](git_index* ptr) { git_index_free(ptr); }) {
+Index::Index(git_index* absl_nonnull index)
+    : index_(index, +[](git_index* ptr) { git_index_free(ptr); }) {
   ABSL_CHECK_NE(index_, nullptr);
 }
 

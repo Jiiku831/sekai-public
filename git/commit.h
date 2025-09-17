@@ -16,13 +16,13 @@ namespace git {
 class Commit {
  public:
   // Transfers ownership of the underlying git repository.
-  explicit Commit(absl::Nonnull<git_commit*> repo);
+  explicit Commit(git_commit* absl_nonnull repo);
 
   std::string Message() const;
   std::string RawMessage() const;
 
  private:
-  absl::Nonnull<std::unique_ptr<git_commit, decltype(&git_commit_free)>> commit_;
+  std::unique_ptr<git_commit, decltype(&git_commit_free) absl_nonnull> commit_;
 };
 
 }  // namespace git

@@ -16,14 +16,14 @@ namespace git {
 class Signature {
  public:
   // Transfers ownership of the underlying pointer.
-  explicit Signature(absl::Nonnull<git_signature*> sig);
+  explicit Signature(git_signature* absl_nonnull sig);
 
   static absl::StatusOr<Signature> New(const std::string& name, const std::string& email,
                                        absl::Time time = absl::Now(),
                                        absl::TimeZone tz = absl::LocalTimeZone());
 
  private:
-  absl::Nonnull<std::unique_ptr<git_signature, decltype(&git_signature_free)>> sig_;
+  std::unique_ptr<git_signature, decltype(&git_signature_free) absl_nonnull> sig_;
 };
 
 }  // namespace git
