@@ -5,6 +5,7 @@ bazel_dep(name="bs-thread-pool", version="4.1.0")
 bazel_dep(name="ctml", version="2.0.0.2")
 bazel_dep(name="eigen", version="4.0.0-20241125.bcr.2")
 bazel_dep(name="emscripten_license", version="3.1.51")
+bazel_dep(name="emsdk", version="4.0.15")
 bazel_dep(name="glfw", version="3.3.9")
 bazel_dep(name="google_benchmark", version="1.9.4")
 bazel_dep(name="googletest", version="1.17.0")
@@ -23,7 +24,7 @@ bazel_dep(name="rules_cc", version="0.2.8")
 bazel_dep(name="rules_pkg", version="1.1.0")
 bazel_dep(name="rules_proto", version="7.1.0")
 bazel_dep(name="rules_python", version="1.6.1")
-bazel_dep(name="sekai-master-db", version="5.6.0.30.6")
+bazel_dep(name="sekai-master-db", version="5.6.0.40.3")
 bazel_dep(name="zstd", version="1.5.7")
 bazel_dep(name="zstd_license", version="1.5.7")
 
@@ -37,4 +38,11 @@ git_override(
     module_name = "hedron_compile_commands",
     remote = "https://github.com/hedronvision/bazel-compile-commands-extractor.git",
     commit = "4f28899228fb3ad0126897876f147ca15026151e",
+)
+
+git_override(
+    module_name = "emsdk",
+    remote = "https://github.com/emscripten-core/emsdk.git",
+    strip_prefix = "bazel",
+    commit = "389a68bc35dcff7ebae4614e1615099dafda00d1",
 )
