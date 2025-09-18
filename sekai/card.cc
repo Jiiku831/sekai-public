@@ -243,17 +243,29 @@ CardState CreateMaxCardState(int card_id) {
 }
 
 float Card::SkillValue(int card_index, UnitCountBase& unit_count) const {
+  float skill_value;
   if (use_secondary_skill_) {
-    return secondary_skill_.SkillValue(card_index, unit_count);
+    skill_value = secondary_skill_.SkillValue(card_index, unit_count);
+  } else {
+    skill_value = skill_.SkillValue(card_index, unit_count);
   }
-  return skill_.SkillValue(card_index, unit_count);
+  if (skill_cap_ >= 0) {
+    return std::min(skill_value, skill_cap_);
+  }
+  return skill_value;
 }
 
 float Card::MaxSkillValue() const {
+  float max_skill_value;
   if (use_secondary_skill_) {
-    return secondary_skill_.MaxSkillValue();
+    max_skill_value = secondary_skill_.MaxSkillValue();
+  } else {
+    max_skill_value = skill_.MaxSkillValue();
   }
-  return skill_.MaxSkillValue();
+  if (skill_cap_ >= 0) {
+    return std::min(max_skill_value, skill_cap_);
+  }
+  return max_skill_value;
 }
 
 }  // namespace sekai

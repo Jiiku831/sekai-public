@@ -20,15 +20,11 @@
     <div style="border: solid black thin; background: #fcc; padding: 1em; width: 40em; margin-bottom: 1ex;">
       <b>Notice:</b>&nbsp;Version 5.2.0 adjusted world link support team event
       bonus and added title bonus for the finale chapter.<br>
-      <b>Update:</b>&nbsp;We added support for multiple versions of World Link
-      so you no longer need to go to EN instance to get WL1 event bonuses.<br><br>
-      <b>Notice:</b>&nbsp;Due to an issue with data exporting, previously
-      exported data may not be loadable. It is recommended to export your data
-      again as a back up.
       <hr>
       <b>Current Status</b><br>
       &#x2705; New support team bonuses<br>
-      &#x274c; Title bonus<br>
+      &#x2705; Title bonus<br>
+      &#x2705; Finale Rules<br>
     </div>
 
     <div class="team-builder" id="team-builder">
@@ -186,6 +182,50 @@
                       <td><table id="custom-event-wl-version"></table></td>
                       <td>
                       </td>
+                    </tr>
+                    <tr>
+                      <th>Finale Chapter</th>
+                      <td>
+                        <input type="checkbox" id="finale-enable" onchange="controller.SetEnableFinaleRules(this.value)">
+                        <label for="finale-enable">Enable Finale Chapter Rules</label>
+                        <input type="checkbox" id="finale-title" onchange="controller.SetEnableFinaleTitleBonus(this.value)">
+                        <label for="finale-title">Add title bonus (+50% if you have WL2 chapter T1k or above as your main)</label>
+                        <details open style="max-width: 40em; margin-top: 1ex;">
+                          <summary>Instructions</summary>
+
+                          Set the chapter character and the team lead constraint to the lead
+                          character you want to use. Leave the event attribute to none and event
+                          characters empty.
+                        </details>
+                        <details style="max-width: 40em; margin-top: 1ex;">
+                          <summary>What is changed</summary>
+                          <ul>
+                            <li>All cards have 5% base EB.</li>
+                            <li>Up to 4 WL2 cards in your mean team get and additional 25% EB.</li>
+                            <li>WL2 cards get an additional 20% EB when in the leader slot.</li>
+                            <li>
+                              The support unit character bonus is determined by your lead character.
+                              You must select this yourself to match the lead character (see
+                              instructions).
+                            </li>
+                            <li>Furniture bonus is capped at 2%.</li>
+                            <li>Skill value is capped at 140% per card.</li>
+                            <li>
+                              You get an additional 50% EB if you set your <i>main title</i> to a WL2
+                              chapter T1k or above title.
+                            </li>
+                            <li>
+                              For more details, please see the
+                              <a href="https://pjsekai.sega.jp/news/archive/index.html?hash=e8ad7617104cdb762f07b7c35de813e8c5190043">
+                                update notes
+                              </a>.
+                            </li>
+                          </ul>
+                        </summary>
+                      </td>
+                      <td>
+                      </td>
+                      </tr>
                     </tr>
                   </tbody>
                 </table>

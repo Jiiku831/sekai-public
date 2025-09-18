@@ -76,6 +76,8 @@ class Controller : public ControllerBase {
   void SetMinLeadSkill(int value);
   void SetTargetPoints(int value);
   void SetParkAccuracy(int value);
+  void SetEnableFinaleRules(bool state);
+  void SetEnableFinaleTitleBonus(bool state);
 
   void BuildEventTeam();
   void BuildMySakiTeam();
@@ -119,6 +121,7 @@ class Controller : public ControllerBase {
   }
 
   const std::variant<sekai::EventId, sekai::SimpleEventBonus> event_bonus_source() const {
+    if (profile_proto_.enable_finale_rules()) return GetFinaleEventBonus();
     if (profile_proto_.event_id().event_id() > 0) return profile_proto_.event_id();
     return profile_proto_.custom_event();
   };
@@ -134,6 +137,7 @@ class Controller : public ControllerBase {
   float park_accuracy() const { return park_accuracy_ / 100.f; }
   void SetTeamCardFromCard(int team_index, int card_index, const sekai::Card* absl_nullable card);
   void SetTeam(int team_index, const sekai::Team& team);
+  sekai::SimpleEventBonus GetFinaleEventBonus() const;
 };
 
 }  // namespace frontend

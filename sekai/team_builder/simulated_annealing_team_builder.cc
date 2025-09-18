@@ -9,6 +9,7 @@
 
 #include <indicators/progress_bar.hpp>
 
+#include "absl/flags/flag.h"
 #include "absl/log/absl_check.h"
 #include "sekai/array_size.h"
 #include "sekai/bitset.h"
@@ -20,6 +21,10 @@
 #include "sekai/team_builder/neighbor_teams.h"
 #include "sekai/team_builder/optimization_objective.h"
 #include "sekai/team_builder/pool_utils.h"
+
+ABSL_FLAG(bool, reorder_team_for_objective, false,
+          "If true, then the team will be reordered to match constraints to compute optimization "
+          "objective.");
 
 namespace sekai {
 
@@ -199,6 +204,7 @@ std::vector<Team> SimulatedAnnealingTeamBuilder::RecommendTeamsImpl(
   float current_temp = opts_.initial_temp;
   ++stats_.teams_evaluated;
   bool early_exit = false;
+  bool reorder_for_objective = absl::GetFlag(FLAGS_reorder_team_for_objective);
   for (int i = 0; i < opts_.max_steps; ++i) {
     if (bar != nullptr && i % 10000 == 0) {
       bar->set_progress(i);
@@ -208,6 +214,9 @@ std::vector<Team> SimulatedAnnealingTeamBuilder::RecommendTeamsImpl(
 
     std::optional<Team> new_team = neighbors_gen->GetRandomNeighbor(current_team, g);
     if (new_team.has_value()) {
+      if (reorder_for_objective) {
+        new_team->ReorderTeamForOptimalSkillValue(constraints_);
+      }
       ++stats_.teams_evaluated;
       if (!support_pool_.empty() && !opts_.disable_support) {
         new_team->FillSupportCards(support_pool_, opts_.world_bloom_version);

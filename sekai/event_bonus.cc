@@ -11,14 +11,17 @@
 #include "sekai/proto_util.h"
 
 ABSL_FLAG(float, subunitless_offset, 0, "The EB offset to apply to subunitless vs");
+ABSL_FLAG(float, char_bonus_rate, 25, "The EB to apply to matching chars");
+ABSL_FLAG(float, card_bonus_rate, 20, "The EB to apply to matching cards");
+ABSL_FLAG(float, leader_card_bonus_rate, 0,
+          "Additional bonus to apply when the leader is an event card");
 
 namespace sekai {
 namespace {
 
 using ::sekai::db::MasterDb;
 
-constexpr float kDefaultBonusRate = 25;
-constexpr float kDefaultCardBonusRate = 20;
+constexpr float kDefaultAttrBonusRate = 25;
 
 void PopulateAttrBonus(db::Attr attr, float rate, EventBonus::DeckBonusType& deck_bonus) {
   for (int char_id = 1; char_id < static_cast<int64_t>(deck_bonus.size()); ++char_id) {
@@ -80,10 +83,12 @@ EventBonus::EventBonus()
       deck_bonus_(CharacterArraySize()),
       master_rank_bonus_(),
       skill_level_bonus_(),
-      diff_attr_bonus_() {}
+      diff_attr_bonus_(),
+      leader_card_bonus_(absl::GetFlag(FLAGS_leader_card_bonus_rate)) {}
 
-EventBonus::EventBonus(const EventId& event_id, std::optional<WorldBloomVersion> wl_version)
-    : EventBonus(MasterDb::SafeFindFirst<db::Event>(event_id.event_id())) {
+EventBonus::EventBonus(const EventId& event_id, std::optional<WorldBloomVersion> wl_version,
+                       int title_bonus)
+    : EventBonus(MasterDb::SafeFindFirst<db::Event>(event_id.event_id()), wl_version, title_bonus) {
   const db::Event* event = MasterDb::SafeFindFirst<db::Event>(event_id.event_id());
   if (event == nullptr) {
     LOG(WARNING) << "Event not found: " << event_id.event_id();
@@ -95,29 +100,32 @@ EventBonus::EventBonus(const EventId& event_id, std::optional<WorldBloomVersion>
 }
 
 EventBonus::EventBonus(const SimpleEventBonus& event_bonus,
-                       std::optional<WorldBloomVersion> wl_version)
+                       std::optional<WorldBloomVersion> wl_version, int title_bonus)
     : EventBonus() {
+  title_bonus_ = title_bonus;
   if (event_bonus.chapter_char_id() > 0) {
     support_bonus_ =
         std::shared_ptr<EventBonus>(new SupportUnitEventBonus{event_bonus, wl_version});
   }
   if (event_bonus.attr() != db::ATTR_UNKNOWN) {
-    PopulateAttrBonus(event_bonus.attr(), kDefaultBonusRate, deck_bonus_);
+    PopulateAttrBonus(event_bonus.attr(), kDefaultAttrBonusRate, deck_bonus_);
   }
   for (const SimpleEventBonus::CharacterAndUnit& char_and_unit : event_bonus.chars()) {
     db::Unit unit = LookupCharacterUnit(char_and_unit.char_id());
     if (char_and_unit.has_unit()) {
       unit = char_and_unit.unit();
     }
-    PopulateCharBonus(char_and_unit.char_id(), unit, kDefaultBonusRate, deck_bonus_);
+    PopulateCharBonus(char_and_unit.char_id(), unit, absl::GetFlag(FLAGS_char_bonus_rate),
+                      deck_bonus_);
     if (event_bonus.attr() != db::ATTR_UNKNOWN) {
       PopulateAttrCharBonus(char_and_unit.char_id(), unit, event_bonus.attr(),
-                            kDefaultBonusRate * 2, deck_bonus_);
+                            absl::GetFlag(FLAGS_char_bonus_rate) + kDefaultAttrBonusRate,
+                            deck_bonus_);
     }
   }
   for (int card : event_bonus.cards()) {
     ABSL_CHECK_LT(card, static_cast<int64_t>(card_bonus_.size()));
-    card_bonus_[card] = kDefaultCardBonusRate;
+    card_bonus_[card] = absl::GetFlag(FLAGS_card_bonus_rate);
   }
 
   PopulateMasterRankBonus(master_rank_bonus_);
@@ -128,14 +136,18 @@ EventBonus::EventBonus(const SimpleEventBonus& event_bonus,
   }
 }
 
-EventBonus::EventBonus(const db::Event* event, std::optional<WorldBloomVersion> wl_version)
-    : EventBonus(event != nullptr ? *event : db::Event::default_instance(), wl_version) {}
+EventBonus::EventBonus(const db::Event* event, std::optional<WorldBloomVersion> wl_version,
+                       int title_bonus)
+    : EventBonus(event != nullptr ? *event : db::Event::default_instance(), wl_version,
+                 title_bonus) {}
 
-EventBonus::EventBonus(const db::Event& event, std::optional<WorldBloomVersion> wl_version)
+EventBonus::EventBonus(const db::Event& event, std::optional<WorldBloomVersion> wl_version,
+                       int title_bonus)
     : EventBonus() {
   if (event.id() == 0) {
     return;
   }
+  title_bonus_ = title_bonus;
   for (const auto& bonus : MasterDb::FindAll<db::EventDeckBonus>(event.id())) {
     // Index: (Id, Attr, Unit)
     db::Attr attr = bonus->card_attr();
@@ -172,6 +184,9 @@ EventBonus::EventBonus(const db::Event& event, std::optional<WorldBloomVersion> 
 
 EventBonusProto EventBonus::ToProto() const {
   EventBonusProto proto;
+  if (title_bonus_ > 0) {
+    proto.set_title_bonus(title_bonus_);
+  }
   for (int card_id = 0; card_id < static_cast<int64_t>(card_bonus_.size()); ++card_id) {
     if (card_bonus_[card_id] > 0) {
       (*proto.mutable_card_bonus())[card_id] = card_bonus_[card_id];

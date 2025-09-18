@@ -52,6 +52,13 @@
 #include "sekai/team_builder/simulated_annealing_team_builder.h"
 
 ABSL_DECLARE_FLAG(float, subunitless_offset);
+ABSL_DECLARE_FLAG(int, override_mysekai_bonus_limit);
+ABSL_DECLARE_FLAG(float, override_skill_cap);
+ABSL_DECLARE_FLAG(float, char_bonus_rate);
+ABSL_DECLARE_FLAG(float, card_bonus_rate);
+ABSL_DECLARE_FLAG(float, leader_card_bonus_rate);
+ABSL_DECLARE_FLAG(float, full_event_team_penalty);
+ABSL_DECLARE_FLAG(bool, reorder_team_for_objective);
 
 namespace frontend {
 namespace {
@@ -69,6 +76,7 @@ using ::sekai::EventId;
 using ::sekai::FixturesWithCharBonuses;
 using ::sekai::OptimizeExactPoints;
 using ::sekai::OptimizeFillTeam;
+using ::sekai::ParseTextProto;
 using ::sekai::PartitionedBuildTeam;
 using ::sekai::ProfileProto;
 using ::sekai::ReadBinaryProtoFile;
@@ -465,6 +473,13 @@ WorldBloomVersion GetWorldBloomVersion(const ProfileProto& profile) {
   return sekai::GetWorldBloomVersion(profile.event_id().event_id());
 }
 
+int GetTitleBonus(const ProfileProto& profile) {
+  if (profile.enable_finale_rules() && profile.enable_finale_title_bonus()) {
+    return 50;
+  }
+  return 0;
+}
+
 }  // namespace frontend
 
 bool FilterState::Eval(const Card& card, bool owned) const {
@@ -577,7 +592,9 @@ void Controller::SetTitleBonus(int bonus) {
 
 void Controller::OnProfileUpdate() {
   event_bonus_ = std::visit(
-      [this](auto&& arg) { return EventBonus(arg, GetWorldBloomVersion(profile_proto_)); },
+      [this](auto&& arg) {
+        return EventBonus(arg, GetWorldBloomVersion(profile_proto_), GetTitleBonus(profile_proto_));
+      },
       event_bonus_source());
   constraints_ = MakeConstraints(profile_proto_);
   profile_.ApplyEventBonus(event_bonus_);
@@ -1181,6 +1198,122 @@ void Controller::ClearSerializedStringState() {
   profile_proto_bytes_.shrink_to_fit();
 }
 
+void Controller::SetEnableFinaleRules(bool state) {
+  profile_proto_.set_enable_finale_rules(state);
+  if (state) {
+    absl::SetFlag(&FLAGS_override_mysekai_bonus_limit, 20);
+    absl::SetFlag(&FLAGS_override_skill_cap, 140);
+    absl::SetFlag(&FLAGS_leader_card_bonus_rate, 20);
+    absl::SetFlag(&FLAGS_char_bonus_rate, 5);
+    absl::SetFlag(&FLAGS_card_bonus_rate, 25);
+    absl::SetFlag(&FLAGS_full_event_team_penalty, 25);
+    absl::SetFlag(&FLAGS_reorder_team_for_objective, true);
+  } else {
+    absl::SetFlag(&FLAGS_override_mysekai_bonus_limit, -1);
+    absl::SetFlag(&FLAGS_override_skill_cap, -1);
+    absl::SetFlag(&FLAGS_leader_card_bonus_rate, 0);
+    absl::SetFlag(&FLAGS_char_bonus_rate, 25);
+    absl::SetFlag(&FLAGS_card_bonus_rate, 20);
+    absl::SetFlag(&FLAGS_full_event_team_penalty, 0);
+    absl::SetFlag(&FLAGS_reorder_team_for_objective, false);
+  }
+  UpdateProfile();
+}
+
+void Controller::SetEnableFinaleTitleBonus(bool state) {
+  profile_proto_.set_enable_finale_title_bonus(state);
+  UpdateProfile();
+}
+
+SimpleEventBonus Controller::GetFinaleEventBonus() const {
+  SimpleEventBonus bonus = ParseTextProto<SimpleEventBonus>(R"pb(
+    chars {char_id: 1}
+    chars {char_id: 2}
+    chars {char_id: 3}
+    chars {char_id: 4}
+    chars {char_id: 5}
+    chars {char_id: 6}
+    chars {char_id: 7}
+    chars {char_id: 8}
+    chars {char_id: 9}
+    chars {char_id: 10}
+    chars {char_id: 11}
+    chars {char_id: 12}
+    chars {char_id: 13}
+    chars {char_id: 14}
+    chars {char_id: 15}
+    chars {char_id: 16}
+    chars {char_id: 17}
+    chars {char_id: 18}
+    chars {char_id: 19}
+    chars {char_id: 20}
+    chars {char_id: 21 unit: UNIT_NONE}
+    chars {char_id: 21 unit: UNIT_LN}
+    chars {char_id: 21 unit: UNIT_MMJ}
+    chars {char_id: 21 unit: UNIT_VBS}
+    chars {char_id: 21 unit: UNIT_WXS}
+    chars {char_id: 21 unit: UNIT_25}
+    chars {char_id: 22 unit: UNIT_NONE}
+    chars {char_id: 22 unit: UNIT_LN}
+    chars {char_id: 22 unit: UNIT_MMJ}
+    chars {char_id: 22 unit: UNIT_VBS}
+    chars {char_id: 22 unit: UNIT_WXS}
+    chars {char_id: 22 unit: UNIT_25}
+    chars {char_id: 23 unit: UNIT_NONE}
+    chars {char_id: 23 unit: UNIT_LN}
+    chars {char_id: 23 unit: UNIT_MMJ}
+    chars {char_id: 23 unit: UNIT_VBS}
+    chars {char_id: 23 unit: UNIT_WXS}
+    chars {char_id: 23 unit: UNIT_25}
+    chars {char_id: 24 unit: UNIT_NONE}
+    chars {char_id: 24 unit: UNIT_LN}
+    chars {char_id: 24 unit: UNIT_MMJ}
+    chars {char_id: 24 unit: UNIT_VBS}
+    chars {char_id: 24 unit: UNIT_WXS}
+    chars {char_id: 24 unit: UNIT_25}
+    chars {char_id: 25 unit: UNIT_NONE}
+    chars {char_id: 25 unit: UNIT_LN}
+    chars {char_id: 25 unit: UNIT_MMJ}
+    chars {char_id: 25 unit: UNIT_VBS}
+    chars {char_id: 25 unit: UNIT_WXS}
+    chars {char_id: 25 unit: UNIT_25}
+    chars {char_id: 26 unit: UNIT_NONE}
+    chars {char_id: 26 unit: UNIT_LN}
+    chars {char_id: 26 unit: UNIT_MMJ}
+    chars {char_id: 26 unit: UNIT_VBS}
+    chars {char_id: 26 unit: UNIT_WXS}
+    chars {char_id: 26 unit: UNIT_25}
+    cards: 1151
+    cards: 1152
+    cards: 1153
+    cards: 1154
+    cards: 1169
+    cards: 1170
+    cards: 1171
+    cards: 1172
+    cards: 1185
+    cards: 1186
+    cards: 1187
+    cards: 1188
+    cards: 1189
+    cards: 1190
+    cards: 1191
+    cards: 1192
+    cards: 1218
+    cards: 1219
+    cards: 1220
+    cards: 1221
+    cards: 1235
+    cards: 1236
+    cards: 1237
+    cards: 1238
+    cards: 1239
+    cards: 1240
+  )pb");
+  bonus.set_chapter_char_id(profile_proto_.custom_event().chapter_char_id());
+  return bonus;
+}
+
 EMSCRIPTEN_BINDINGS(controller) {
   class_<Controller, base<ControllerBase>>("Controller")
       .constructor<>()
@@ -1227,7 +1360,9 @@ EMSCRIPTEN_BINDINGS(controller) {
       .function("SetTeamCard", &Controller::SetTeamCard)
       .function("SetTitleBonus", &Controller::SetTitleBonus)
       .function("SetUnreleasedContentFilterState", &Controller::SetUnreleasedContentFilterState)
-      .function("SetUseOldSubunitlessBonus", &Controller::SetUseOldSubunitlessBonus);
+      .function("SetUseOldSubunitlessBonus", &Controller::SetUseOldSubunitlessBonus)
+      .function("SetEnableFinaleRules", &Controller::SetEnableFinaleRules)
+      .function("SetEnableFinaleTitleBonus", &Controller::SetEnableFinaleTitleBonus);
 }
 
 }  // namespace frontend

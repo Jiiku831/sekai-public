@@ -47,4 +47,5 @@ message EventBonusProto {
   repeated LeveledBonus master_rank_bonus = 3;
   repeated LeveledBonus skill_level_bonus = 4;
   repeated float diff_attr_bonus          = 5;
+  float title_bonus                       = 6;
 }

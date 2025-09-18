@@ -7,6 +7,7 @@
 
 #include <Eigen/Eigen>
 
+#include "absl/flags/flag.h"
 #include "sekai/array_size.h"
 #include "sekai/bitset.h"
 #include "sekai/card.h"
@@ -21,6 +22,9 @@
 #include "sekai/team_builder/constraints.h"
 #include "sekai/unit_count.h"
 
+ABSL_FLAG(float, full_event_team_penalty, 25,
+          "The EB penalty to apply when all cards are event cards");
+
 namespace sekai {
 
 // Forward decls from challenge_live_estimator.h
@@ -28,7 +32,9 @@ const EstimatorBase& SoloEbiMasEstimator();
 
 Team::Team(std::span<const Card* const> cards) {
   cards_.reserve(cards.size());
+  int event_cards = 0;
   for (const Card* card : cards) {
+    event_cards += card->is_event_card() ? 1 : 0;
     cards_.push_back(card);
     primary_units_ |= card->primary_unit();
     secondary_units_ |= card->secondary_unit();
@@ -41,6 +47,9 @@ Team::Team(std::span<const Card* const> cards) {
   attr_match_ = attrs_count_ == 1;
   primary_units_match_ = (primary_units_.count() == 1);
   secondary_units_match_ = (secondary_units_.count() == 1);
+  if (event_cards == 5) {
+    event_bonus_base_ -= absl::GetFlag(FLAGS_full_event_team_penalty);
+  }
 }
 
 int Team::CardPowerContrib(const Card* card) const {
@@ -100,10 +109,12 @@ int Team::MinPowerContrib(const Profile& profile) const {
 }
 
 float Team::EventBonus(const class EventBonus& event_bonus) const {
+  float lead_bonus_rate = cards_.empty() ? 0 : cards_[0]->lead_bonus_rate();
   if (!event_bonus.has_diff_attr_bonus()) {
-    return EventBonus();
+    return EventBonus() + lead_bonus_rate;
   }
-  return EventBonus() + event_bonus.diff_attr_bonus(attrs_count_);
+  return EventBonus() + event_bonus.diff_attr_bonus(attrs_count_) + event_bonus.title_bonus() +
+         lead_bonus_rate;
 }
 
 float Team::MinBonusContrib() const {
@@ -222,11 +233,15 @@ TeamProto Team::ToProto(const Profile& profile, const class EventBonus& event_bo
                         const EstimatorBase& estimator) const {
   TeamProto team;
   UnitCount unit_count(cards_);
+  int event_cards = 0;
   for (std::size_t i = 0; i < cards_.size(); ++i) {
     CardProto* card_proto = team.add_cards();
     *card_proto = cards_[i]->ToProto(unit_count);
+    float leader_bonus = i == 0 ? cards_[0]->lead_bonus_rate() : 0;
+    event_cards += cards_[i]->is_event_card() ? 1 : 0;
+    float bonus_penalty = event_cards == 5 ? absl::GetFlag(FLAGS_full_event_team_penalty) : 0;
     card_proto->set_team_power_contrib(CardPowerContrib(cards_[i]));
-    card_proto->set_team_bonus_contrib(CardBonusContrib(cards_[i]));
+    card_proto->set_team_bonus_contrib(CardBonusContrib(cards_[i]) + leader_bonus - bonus_penalty);
     card_proto->set_team_skill_contrib(CardSkillContrib(cards_[i], i, unit_count));
   }
   float support_bonus = 0;

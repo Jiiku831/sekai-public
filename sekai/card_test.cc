@@ -6,6 +6,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include "absl/flags/declare.h"
 #include "absl/log/log.h"
 #include "sekai/db/master_db.h"
 #include "sekai/db/proto/all.h"
@@ -15,6 +16,8 @@
 #include "sekai/proto/profile.pb.h"
 #include "sekai/unit_count.h"
 #include "testing/util.h"
+
+ABSL_DECLARE_FLAG(float, leader_card_bonus_rate);
 
 namespace sekai {
 namespace {
@@ -248,6 +251,7 @@ TEST(CardTest, TestEvent112Chap1EventBonus) {
   card787.ApplyEventBonus(event_bonus, support_bonus);
   EXPECT_EQ(card787.event_bonus(), 20 + 25 + 10);
   EXPECT_EQ(card787.support_bonus(), 10);
+  EXPCET_TRUE(card787.is_event_card());
 
   state.set_master_rank(5);
   state.set_skill_level(4);
@@ -261,6 +265,50 @@ TEST(CardTest, TestEvent112Chap1EventBonus) {
   card637.ApplyEventBonus(event_bonus, support_bonus);
   EXPECT_EQ(card637.event_bonus(), 25 + 25);
   EXPECT_EQ(card637.support_bonus(), 5 + 12.5 + 2.5);
+  EXPECT_FALSE(card637.is_event_card());
+
+  // 25 miku
+  Card card404{MasterDb::FindFirst<db::Card>(404), state};
+  card404.ApplyEventBonus(event_bonus, support_bonus);
+  EXPECT_EQ(card404.event_bonus(), 25);
+  EXPECT_EQ(card404.support_bonus(), 12.5 + 2.5);
+
+  // Subunitless miku
+  Card card801{MasterDb::FindFirst<db::Card>(801), state};
+  card801.ApplyEventBonus(event_bonus, support_bonus);
+  EXPECT_EQ(card801.event_bonus(), 25);
+  // No guarantees of support bonus for ineligible cards.
+}
+
+TEST(CardTest, TestEvent112Chap1EventBonusLeadBonus) {
+  absl::SetFlag(&FLAGS_leader_card_bonus_rate, 20);
+  auto event_id = ParseTextProto<EventId>(R"pb(event_id: 112 chapter_id: 1)pb");
+  EventBonus event_bonus(event_id);
+  SupportUnitEventBonus support_bonus(event_id);
+
+  CardState state;
+  // Event ena 4*
+  Card card787{MasterDb::FindFirst<db::Card>(787), state};
+  card787.ApplyEventBonus(event_bonus, support_bonus);
+  EXPECT_EQ(card787.event_bonus(), 20 + 25 + 10);
+  EXPECT_EQ(card787.support_bonus(), 10);
+  EXPCET_TRUE(card787.is_event_card());
+  EXPCET_EQ(card787.lead_bonus(), 20);
+
+  state.set_master_rank(5);
+  state.set_skill_level(4);
+  Card card787_2{MasterDb::FindFirst<db::Card>(787), state};
+  card787_2.ApplyEventBonus(event_bonus, support_bonus);
+  EXPECT_EQ(card787_2.event_bonus(), 20 + 25 + 25);
+  EXPECT_EQ(card787_2.support_bonus(), 12.5 + 2.5);
+
+  // Non-event mafuyu
+  Card card637{MasterDb::FindFirst<db::Card>(637), state};
+  card637.ApplyEventBonus(event_bonus, support_bonus);
+  EXPECT_EQ(card637.event_bonus(), 25 + 25);
+  EXPECT_EQ(card637.support_bonus(), 5 + 12.5 + 2.5);
+  EXPECT_FALSE(card637.is_event_card());
+  EXPCET_EQ(card637.lead_bonus(), 0);
 
   // 25 miku
   Card card404{MasterDb::FindFirst<db::Card>(404), state};

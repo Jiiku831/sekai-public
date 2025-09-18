@@ -29,4 +29,6 @@ message ProfileProto {
   optional SimpleEventBonus custom_event         = 10;
   optional EventId event_id                      = 11;
   optional WorldBloomVersion world_bloom_version = 12;
+  bool enable_finale_rules                       = 15;
+  bool enable_finale_title_bonus                 = 16;
 }

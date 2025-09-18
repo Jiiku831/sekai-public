@@ -36,6 +36,7 @@ class CardBase {
   db::Unit db_secondary_unit_ = db::UNIT_NONE;
   CardRarityType rarity_;
   db::CardRarityType db_rarity_ = db::RARITY_UNKNOWN;
+  float skill_cap_ = -1;
 };
 
 }  // namespace sekai

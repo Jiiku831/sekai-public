@@ -255,6 +255,24 @@ TEST(SupportUnitEventBonusTest, NonChapterUnitBonus2) {
   EXPECT_FLOAT_EQ(card_miku_vs.support_bonus(), 0);
 }
 
+TEST(SupportUnitEventBonusTest, NonChapterUnitBonus2WithTitleBonus) {
+  auto event_id = ParseTextProto<EventId>(R"pb(event_id: 112 chapter_id: 1)pb");
+  EventBonus bonus(event_id, std::nullopt, /*title_bonus=*/50);
+
+  CardState card_state;
+  Card card_miku_ln{MasterDb::FindFirst<db::Card>(198), card_state};
+  Card card_miku_25{MasterDb::FindFirst<db::Card>(116), card_state};
+  Card card_miku_vs{MasterDb::FindFirst<db::Card>(81), card_state};
+  card_miku_ln.ApplyEventBonus(bonus);
+  card_miku_25.ApplyEventBonus(bonus);
+  card_miku_vs.ApplyEventBonus(bonus);
+
+  EXPECT_FLOAT_EQ(card_miku_ln.support_bonus(), 0);
+  EXPECT_FLOAT_EQ(card_miku_25.support_bonus(), 10);
+  EXPECT_FLOAT_EQ(card_miku_vs.support_bonus(), 0);
+  EXPECT_FLOAT_EQ(bonus.title_bonus(), 50);
+}
+
 TEST(SupportUnitEventBonusTest, VsUnitBonus) {
   auto event_bonus = ParseTextProto<SimpleEventBonus>(R"pb(
     chars {char_id: 17}
@@ -316,6 +334,34 @@ TEST(SupportUnitEventBonusTest, WorldBloomCardBonus) {
   EXPECT_FLOAT_EQ(card_mafuyu.support_bonus(), 20 + 5 + 7.5);
   EXPECT_FLOAT_EQ(card_miku_25.support_bonus(), 7.5);
   EXPECT_FLOAT_EQ(card_ena.support_bonus(), 7.5);
+}
+
+TEST(SupportUnitEventBonusTest, WorldBloomCardBonusWithTitleBonus) {
+  auto event_bonus = ParseTextProto<SimpleEventBonus>(R"pb(
+    chars {char_id: 17}
+    chars {char_id: 18}
+    chars {char_id: 19}
+    chars {char_id: 20}
+    cards: 785
+    cards: 786
+    cards: 787
+    cards: 788
+    chapter_char_id: 18
+  )pb");
+  EventBonus bonus(event_bonus, WORLD_BLOOM_VERSION_2, 50);
+
+  CardState card_state;
+  Card card_mafuyu{MasterDb::FindFirst<db::Card>(786), card_state};
+  Card card_miku_25{MasterDb::FindFirst<db::Card>(116), card_state};
+  Card card_ena{MasterDb::FindFirst<db::Card>(787), card_state};
+  card_mafuyu.ApplyEventBonus(bonus);
+  card_miku_25.ApplyEventBonus(bonus);
+  card_ena.ApplyEventBonus(bonus);
+
+  EXPECT_FLOAT_EQ(card_mafuyu.support_bonus(), 20 + 5 + 7.5);
+  EXPECT_FLOAT_EQ(card_miku_25.support_bonus(), 7.5);
+  EXPECT_FLOAT_EQ(card_ena.support_bonus(), 7.5);
+  EXPECT_FLOAT_EQ(bonus.title_bonus(), 50);
 }
 
 }  // namespace

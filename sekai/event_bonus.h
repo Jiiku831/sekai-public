@@ -18,13 +18,17 @@ class EventBonus {
   EventBonus();
   virtual ~EventBonus() = default;
   explicit EventBonus(const db::Event& event,
-                      std::optional<WorldBloomVersion> wl_version = std::nullopt);
+                      std::optional<WorldBloomVersion> wl_version = std::nullopt,
+                      int title_bonus = 0);
   explicit EventBonus(const db::Event* absl_nullable event,
-                      std::optional<WorldBloomVersion> wl_version = std::nullopt);
+                      std::optional<WorldBloomVersion> wl_version = std::nullopt,
+                      int title_bonus = 0);
   explicit EventBonus(const EventId& event_id,
-                      std::optional<WorldBloomVersion> wl_version = std::nullopt);
+                      std::optional<WorldBloomVersion> wl_version = std::nullopt,
+                      int title_bonus = 0);
   explicit EventBonus(const SimpleEventBonus& event_bonus,
-                      std::optional<WorldBloomVersion> wl_version = std::nullopt);
+                      std::optional<WorldBloomVersion> wl_version = std::nullopt,
+                      int title_bonus = 0);
 
   EventBonusProto ToProto() const;
 
@@ -42,6 +46,7 @@ class EventBonus {
 
   float diff_attr_bonus(int count) const { return diff_attr_bonus_[count]; }
   bool has_diff_attr_bonus() const { return has_diff_attr_bonus_; }
+  int title_bonus() const { return title_bonus_; }
 
   // Index: (Id, Attr, Unit)
   using DeckBonusType =
@@ -55,6 +60,8 @@ class EventBonus {
            master_rank_bonus(rarity, master_rank) + skill_level_bonus(rarity, skill_level);
   }
 
+  int leader_card_bonus() const { return leader_card_bonus_; }
+
  protected:
   std::vector<float> card_bonus_;
   DeckBonusType deck_bonus_;
@@ -64,6 +71,8 @@ class EventBonus {
       skill_level_bonus_;
   std::array<float, db::Attr_ARRAYSIZE> diff_attr_bonus_;
   bool has_diff_attr_bonus_ = false;
+  int title_bonus_ = 0;
+  int leader_card_bonus_ = 0;
 
   std::shared_ptr<EventBonus> support_bonus_ = nullptr;
 };
@@ -87,6 +96,8 @@ class SupportUnitEventBonus : public EventBonus {
     return card_bonus(card_id) + deck_bonus(character_id, attr, unit) +
            master_rank_bonus(rarity, master_rank) + skill_level_bonus(rarity, skill_level);
   }
+
+  int chapter_char() const { return chapter_char_; }
 
  private:
   float baseline_char_bonus_ = 0;

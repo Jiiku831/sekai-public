@@ -1,10 +1,15 @@
 #include "sekai/card_base.h"
 
+#include "absl/flags/flag.h"
 #include "sekai/character.h"
+
+ABSL_FLAG(float, override_skill_cap, -1,
+          "If >= 0, then skill value maximum per card is set to this value.");
 
 namespace sekai {
 
-CardBase::CardBase(const db::Card& card ABSL_ATTRIBUTE_LIFETIME_BOUND) : db_card_(card) {
+CardBase::CardBase(const db::Card& card ABSL_ATTRIBUTE_LIFETIME_BOUND)
+    : db_card_(card), skill_cap_(absl::GetFlag(FLAGS_override_skill_cap)) {
   card_id_ = card.id();
   attr_.set(card.attr());
   db_attr_ = card.attr();

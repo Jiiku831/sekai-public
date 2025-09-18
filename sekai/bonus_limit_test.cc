@@ -16,7 +16,7 @@ using ::sekai::db::MasterDb;
 TEST(BonusLimitTest, TestMySekaiFixtureBonusLimit) {
   auto limits = MasterDb::GetAll<db::MySekaiFixtureGameCharacterPerformanceBonusLimit>();
   EXPECT_EQ(limits.size(), 1);
-  EXPECT_EQ(limits[0].bonus_rate_limit(), kMaxMySekaiFixtureBonusLimit);
+  EXPECT_EQ(limits[0].bonus_rate_limit(), GetMySekaiFixtureBonusLimit());
 }
 
 }  // namespace

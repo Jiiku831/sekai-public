@@ -43,12 +43,18 @@ class Card : public CardBase {
     } else {
       ApplyEventBonus(event_bonus, SupportUnitEventBonus{});
     }
+    is_event_card_ = event_bonus.card_bonus(card_id()) > 0;
+    if (is_event_card_) {
+      lead_bonus_rate_ = event_bonus.leader_card_bonus();
+    }
   }
 
   void ApplyProfilePowerBonus(const ProfileBonus& profile);
 
   float event_bonus() const { return event_bonus_; }
   float support_bonus() const { return support_bonus_; }
+  bool is_event_card() const { return is_event_card_; }
+  float lead_bonus_rate() const { return lead_bonus_rate_; }
 
   const Eigen::Vector3i& power_vec() const { return power_vec_; }
   int power() const { return power_; }
@@ -103,6 +109,8 @@ class Card : public CardBase {
   float GetBonus(const EventBonus& event_bonus) const;
   float event_bonus_ = 0;
   float support_bonus_ = 0;
+  bool is_event_card_ = false;
+  float lead_bonus_rate_ = 0;
 
   // Power bonus
   int cr_power_bonus_ = 0;

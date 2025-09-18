@@ -12,6 +12,7 @@
 
 #include "absl/base/no_destructor.h"
 #include "absl/base/nullability.h"
+#include "absl/flags/flag.h"
 #include "absl/log/absl_check.h"
 #include "absl/log/log.h"
 #include "absl/strings/ascii.h"
@@ -26,6 +27,8 @@
 #include "sekai/fixtures.h"
 #include "sekai/max_level.h"
 #include "sekai/team_builder/pool_utils.h"
+
+// ABSL_FLAG(bool, finale_support_rules, false, "When true, finale rules apply");
 
 namespace sekai {
 
@@ -83,7 +86,7 @@ void LoadMySekaiFixtureBonus(const ProfileProto& profile,
             bonus.mysekai_fixture_game_character_group_id());
     fixture_bonus[group.game_character_id()] =
         std::min(fixture_bonus[group.game_character_id()] + bonus.bonus_rate(),
-                 kMaxMySekaiFixtureBonusLimit);
+                 GetMySekaiFixtureBonusLimit());
   }
 }
 
@@ -300,6 +303,13 @@ void Profile::ApplyEventBonus(const EventBonus& event_bonus) {
     card.ApplyEventBonus(event_bonus);
   }
   sorted_support_ = GetSortedSupportPool(PrimaryCardPool());
+  // if (const SupportUnitEventBonus* absl_nullable support_bonus =
+  //         event_bonus.SupportUnitEventBonus();
+  //     support_bonus != nullptr && absl::GetFlag(FLAGS_finale_support_rules)) {
+  //   std::erase_if(sorted_support_, [&](const Card* card) {
+  //     return card->character_id() != support_bonus->chapter_char();
+  //   });
+  // }
 }
 
 const Card* absl_nullable Profile::GetCard(int card_id) const {

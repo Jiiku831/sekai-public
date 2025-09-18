@@ -404,6 +404,24 @@ TEST_F(TeamTest, ExampleTeam1EventBonus) {
   EXPECT_FLOAT_EQ(team.EventBonus(bonus), 295);
 }
 
+TEST_F(TeamTest, ExampleTeam1EventBonusWithTitleBonus) {
+  std::array cards = {
+      CreateCard(profile_, /*card_id=*/116, /*level=*/60, /*master_rank=*/5),
+      CreateCard(profile_, /*card_id=*/423, /*level=*/60, /*master_rank=*/2),
+      CreateCard(profile_, /*card_id=*/162, /*level=*/60),
+      CreateCard(profile_, /*card_id=*/242, /*level=*/60),
+      CreateCard(profile_, /*card_id=*/483, /*level=*/60),
+  };
+  auto event_id = ParseTextProto<EventId>(R"pb(event_id: 111)pb");
+  EventBonus bonus(event_id, std::nullopt, /*title_bonus=*/50);
+  EventBonusProto bonus_proto = bonus.ToProto();
+  for (Card& card : cards) {
+    card.ApplyEventBonus(bonus);
+  }
+  Team team = MakeTeam(cards);
+  EXPECT_FLOAT_EQ(team.EventBonus(bonus), 295 + 50);
+}
+
 TEST_F(TeamTest, ExampleTeam2EventBonus) {
   std::array cards = {
       CreateCard(profile_, /*card_id=*/404, /*level=*/60, /*master_rank=*/5),

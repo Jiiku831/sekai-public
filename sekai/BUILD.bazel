@@ -52,6 +52,10 @@ cc_test(
 cc_library(
     name = "bonus_limit",
     hdrs = ["bonus_limit.h"],
+    srcs = ["bonus_limit.cc"],
+    deps = [
+        "@abseil-cpp//absl/flags:flag",
+    ],
 )
 
 cc_test(
