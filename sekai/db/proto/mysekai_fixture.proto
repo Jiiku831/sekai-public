@@ -34,6 +34,7 @@ message MySekaiFixture {
     HANDLE_WINDOWPANE                   = 6 [(json_value) = "windowpane"];
     HANDLE_BLOCK                        = 7 [(json_value) = "block"];
     HANDLE_BLOCK_TRANSPARENT            = 8 [(json_value) = "block_transparent"];
+    HANDLE_IDLE_TIMELINE                = 9 [(json_value) = "idle_timeline"];
   }
 
   enum MysekaiSettableSiteType {
