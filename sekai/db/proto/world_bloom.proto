@@ -19,6 +19,7 @@ message WorldBloom {
   enum ChapterType {
     CHAPTER_TYPE_UNKNOWN = 0;
     GAME_CHARACTER       = 1 [(json_value) = "game_character"];
+    FINALE               = 2 [(json_value) = "finale"];
   }
   optional ChapterType chapter_type = 10 [(json_name) = "worldBloomChapterType"];
 }
