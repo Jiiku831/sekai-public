@@ -41,8 +41,8 @@ class Profile : public ProfileBonus {
   int character_rank(int char_id) const override;
   std::vector<const Card*> TeamBuilderCardPool() const;
   std::vector<const Card*> PrimaryCardPool() const;
-  absl::Nullable<const Card*> GetCard(int card_id) const;
-  absl::Nullable<const Card*> GetSecondaryCard(int card_id) const;
+  const Card* absl_nullable GetCard(int card_id) const;
+  const Card* absl_nullable GetSecondaryCard(int card_id) const;
   std::span<const Card* const> sorted_support() const { return sorted_support_; }
 
   ProfileProto CardsToProto() const;

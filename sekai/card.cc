@@ -60,10 +60,10 @@ Eigen::Vector3i GetSpecialTrainingBonus(const db::Card& card) {
 }
 
 Eigen::Vector3i GetMasterRankBonus(const db::CardRarityType& rarity, int master_rank) {
-  const std::vector<absl::Nonnull<const db::MasterLesson*>> lessons =
+  const std::vector<const db::MasterLesson * absl_nonnull> lessons =
       db::MasterDb::Get().Get<db::MasterLesson>().FindAll(rarity);
   Eigen::Vector3i bonus(0, 0, 0);
-  for (absl::Nonnull<const db::MasterLesson*> lesson : lessons) {
+  for (const db::MasterLesson* absl_nonnull lesson : lessons) {
     if (lesson->master_rank() > master_rank) continue;
     bonus += GetBonusPower(*lesson);
   }
@@ -71,12 +71,12 @@ Eigen::Vector3i GetMasterRankBonus(const db::CardRarityType& rarity, int master_
 }
 
 Eigen::Vector3i GetCardEpisodeBonus(int card_id, const CardState& state) {
-  const std::vector<absl::Nonnull<const db::CardEpisode*>> episodes =
+  const std::vector<const db::CardEpisode * absl_nonnull> episodes =
       db::MasterDb::Get().Get<db::CardEpisode>().FindAll(card_id);
   Eigen::Vector3i bonus(0, 0, 0);
   for (int episode_id : state.card_episodes_read()) {
     auto it = std::find_if(episodes.begin(), episodes.end(),
-                           [&episode_id](absl::Nonnull<const db::CardEpisode*> episode) {
+                           [&episode_id](const db::CardEpisode* absl_nonnull episode) {
                              return episode->id() == episode_id;
                            });
     if (it != episodes.end()) {

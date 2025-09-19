@@ -302,13 +302,13 @@ void Profile::ApplyEventBonus(const EventBonus& event_bonus) {
   sorted_support_ = GetSortedSupportPool(PrimaryCardPool());
 }
 
-absl::Nullable<const Card*> Profile::GetCard(int card_id) const {
+const Card* absl_nullable Profile::GetCard(int card_id) const {
   auto card = cards_.find(card_id);
   if (card == cards_.end()) return nullptr;
   return &card->second;
 }
 
-absl::Nullable<const Card*> Profile::GetSecondaryCard(int card_id) const {
+const Card* absl_nullable Profile::GetSecondaryCard(int card_id) const {
   auto card = secondary_cards_.find(card_id);
   if (card == secondary_cards_.end()) return nullptr;
   return &card->second;

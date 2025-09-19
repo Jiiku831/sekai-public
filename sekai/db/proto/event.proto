@@ -24,8 +24,10 @@ message Event {
       enum ConditionType {
         CONDITION_TYPE_UNKNOWN = 0;
         CONDITION_TYPE_NONE    = 1 [(json_value) = "none"];
+        CONDITION_TYPE_LEADER_PLAY = 2 [(json_value) = "leader_character_play_count"];
       }
       optional ConditionType condition_type = 5 [(json_name) = "rewardConditionType"];
+      optional int32 condition_value        = 6 [(json_name) = "conditionValue"];
     }
 
     optional int32 id               = 1 [(json_name) = "id"];
@@ -54,4 +56,5 @@ message Event {
   repeated RankingRewardRange ranking_reward_range     = 16 [(json_name) = "eventRankingRewardRanges"];
   optional string event_point_assetbundle_name         = 17 [(json_name) = "eventPointAssetbundleName"];
   optional bool is_count_leader_character_play         = 18 [(json_name) = "isCountLeaderCharacterPlay"];
+  optional int64 standby_screen_display_start_at       = 19 [(json_name) = "standbyScreenDisplayStartAt"];
 }

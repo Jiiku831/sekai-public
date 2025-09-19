@@ -132,7 +132,7 @@ class Controller : public ControllerBase {
   sekai::CardState* GetCardState(int card_id);
   void RefreshTeam(int team_index) const;
   float park_accuracy() const { return park_accuracy_ / 100.f; }
-  void SetTeamCardFromCard(int team_index, int card_index, absl::Nullable<const sekai::Card*> card);
+  void SetTeamCardFromCard(int team_index, int card_index, const sekai::Card* absl_nullable card);
   void SetTeam(int team_index, const sekai::Team& team);
 };
 

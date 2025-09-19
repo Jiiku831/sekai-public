@@ -16,12 +16,12 @@ namespace git {
 class Reference {
  public:
   // Transfers ownership of the underlying pointer.
-  explicit Reference(absl::Nonnull<git_reference*> ref);
+  explicit Reference(git_reference* absl_nonnull ref);
 
   absl::StatusOr<ObjectId> Target() const;
 
  private:
-  absl::Nonnull<std::unique_ptr<git_reference, decltype(&git_reference_free)>> ref_;
+  std::unique_ptr<git_reference, decltype(&git_reference_free) absl_nonnull> ref_;
 };
 
 }  // namespace git

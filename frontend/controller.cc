@@ -854,7 +854,7 @@ void Controller::SetTeamCard(int team_index, int card_index, int card_id,
 }
 
 void Controller::SetTeamCardFromCard(int team_index, int card_index,
-                                     absl::Nullable<const sekai::Card*> card) {
+                                     const sekai::Card* absl_nullable card) {
   if (card == nullptr) {
     SetTeamCardId(team_index, card_index, 0, false);
     SetTeamCard(team_index, card_index, 0, false);

@@ -124,7 +124,7 @@ absl::StatusOr<SegmentAnalysisResult> AnalyzeSegment(const Sequence& sequence, b
   if (result.clusters.size() < 1) {
     return absl::InternalError("Expected at least 1 clusters.");
   }
-  max_stdev = mean<float>(RangesTo<std::vector<float>>(
+  max_stdev = mean<float>(RangesTo<std::vector>(
       result.clusters |
       std::views::transform([](const Cluster& cluster) { return cluster.stdev; })));
   result.is_auto = max_stdev < kAutoStdevThreshold;
