@@ -19,7 +19,7 @@ class EventBonus {
   virtual ~EventBonus() = default;
   explicit EventBonus(const db::Event& event,
                       std::optional<WorldBloomVersion> wl_version = std::nullopt);
-  explicit EventBonus(absl::Nullable<const db::Event*> event,
+  explicit EventBonus(const db::Event* absl_nullable event,
                       std::optional<WorldBloomVersion> wl_version = std::nullopt);
   explicit EventBonus(const EventId& event_id,
                       std::optional<WorldBloomVersion> wl_version = std::nullopt);
@@ -47,7 +47,7 @@ class EventBonus {
   using DeckBonusType =
       std::vector<std::array<std::array<float, db::Unit_ARRAYSIZE>, db::Attr_ARRAYSIZE>>;
 
-  absl::Nullable<const EventBonus*> SupportUnitBonus() const { return support_bonus_.get(); }
+  const EventBonus* absl_nullable SupportUnitBonus() const { return support_bonus_.get(); }
 
   virtual float GetBonus(int card_id, int character_id, db::Attr attr, db::Unit unit,
                          db::CardRarityType rarity, int master_rank, int skill_level) const {

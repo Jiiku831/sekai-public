@@ -37,8 +37,8 @@ class Constraints {
   }
 
   // Returns a new pool with unwanted rarities removed.
-  std::vector<absl::Nonnull<const Card*>> FilterCardPool(
-      std::span<absl::Nonnull<const Card*> const> pool) const;
+  std::vector<const Card * absl_nonnull> FilterCardPool(
+      std::span<const Card * absl_nonnull const> pool) const;
 
   bool LeadSkillSatisfiesConstraint(int lead_skill) const { return lead_skill >= min_lead_skill_; }
 

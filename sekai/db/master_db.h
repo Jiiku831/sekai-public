@@ -69,7 +69,7 @@ class MasterDbImpl {
   }
 
   template <typename T>
-  const std::vector<absl::Nonnull<const T*>>& FindAll(int64_t key) {
+  const std::vector<const T * absl_nonnull>& FindAll(int64_t key) {
     return Get<T>().FindAll(key);
   }
 
@@ -79,7 +79,7 @@ class MasterDbImpl {
   }
 
   template <typename T>
-  std::vector<absl::Nonnull<const T*>> GetIf(absl::AnyInvocable<bool(const T&) const> pred) {
+  std::vector<const T * absl_nonnull> GetIf(absl::AnyInvocable<bool(const T&) const> pred) {
     return Get<T>().GetIf(std::move(pred));
   }
 
@@ -181,7 +181,7 @@ class MasterDb {
   }
 
   template <typename T>
-  static const std::vector<absl::Nonnull<const T*>>& FindAll(int64_t key) {
+  static const std::vector<const T * absl_nonnull>& FindAll(int64_t key) {
     return Get().template Get<T>().FindAll(key);
   }
 
@@ -191,7 +191,7 @@ class MasterDb {
   }
 
   template <typename T>
-  static std::vector<absl::Nonnull<const T*>> GetIf(absl::AnyInvocable<bool(const T&) const> pred) {
+  static std::vector<const T * absl_nonnull> GetIf(absl::AnyInvocable<bool(const T&) const> pred) {
     return Get().template Get<T>().GetIf(std::move(pred));
   }
 

@@ -21,7 +21,7 @@ namespace git {
 class Repository {
  public:
   // Transfers ownership of the underlying git repository.
-  explicit Repository(absl::Nonnull<git_repository*> repo);
+  explicit Repository(git_repository* absl_nonnull repo);
 
   static absl::StatusOr<Repository> Init(std::filesystem::path path);
   static absl::StatusOr<Repository> Open(std::filesystem::path path);
@@ -32,7 +32,7 @@ class Repository {
   absl::StatusOr<Index> RepositoryIndex();
 
  private:
-  absl::Nonnull<std::unique_ptr<git_repository, decltype(&git_repository_free)>> repo_;
+  std::unique_ptr<git_repository, decltype(&git_repository_free) absl_nonnull> repo_;
 };
 
 }  // namespace git

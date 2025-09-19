@@ -180,9 +180,9 @@ EventBonusProto EventBonus::ToProto() const {
 
   // Index: (Id, Attr, Unit)
   for (int char_id = 0; char_id < static_cast<int64_t>(deck_bonus_.size()); ++char_id) {
-    absl::Nullable<EventBonusProto::DeckBonus*> deck_bonus = nullptr;
+    EventBonusProto::DeckBonus* absl_nullable deck_bonus = nullptr;
     for (auto attr : EnumValues<db::Attr, db::Attr_descriptor>()) {
-      absl::Nullable<EventBonusProto::AttrBonus*> attr_bonus = nullptr;
+      EventBonusProto::AttrBonus* absl_nullable attr_bonus = nullptr;
       for (auto unit : EnumValues<db::Unit, db::Unit_descriptor>()) {
         float rate = deck_bonus_[char_id][attr][unit];
         if (rate > 0) {
@@ -194,7 +194,7 @@ EventBonusProto EventBonus::ToProto() const {
             attr_bonus = deck_bonus->add_attr_bonus();
             attr_bonus->set_attr(attr);
           }
-          absl::Nonnull<EventBonusProto::UnitBonus*> unit_bonus = attr_bonus->add_unit_bonus();
+          EventBonusProto::UnitBonus* absl_nonnull unit_bonus = attr_bonus->add_unit_bonus();
           unit_bonus->set_unit(unit);
           unit_bonus->set_rate(rate);
         }
@@ -203,8 +203,8 @@ EventBonusProto EventBonus::ToProto() const {
   }
 
   for (auto rarity : EnumValues<db::CardRarityType, db::CardRarityType_descriptor>()) {
-    absl::Nonnull<EventBonusProto::LeveledBonus*> mr_bonus = proto.add_master_rank_bonus();
-    absl::Nonnull<EventBonusProto::LeveledBonus*> sl_bonus = proto.add_skill_level_bonus();
+    EventBonusProto::LeveledBonus* absl_nonnull mr_bonus = proto.add_master_rank_bonus();
+    EventBonusProto::LeveledBonus* absl_nonnull sl_bonus = proto.add_skill_level_bonus();
     for (float bonus : master_rank_bonus_[rarity]) {
       mr_bonus->add_level_bonus(bonus);
     }
@@ -311,7 +311,7 @@ SupportUnitEventBonus::SupportUnitEventBonus(std::optional<WorldBloomVersion> ve
 SupportUnitEventBonus::SupportUnitEventBonus(const EventId& event_id,
                                              std::optional<WorldBloomVersion> version)
     : SupportUnitEventBonus(version.value_or(GetWorldBloomVersion(event_id.event_id()))) {
-  absl::Nullable<const db::WorldBloom*> world_bloom = nullptr;
+  const db::WorldBloom* absl_nullable world_bloom = nullptr;
   for (const auto* cand : MasterDb::FindAll<db::WorldBloom>(event_id.event_id())) {
     if (cand->chapter_no() == event_id.chapter_id()) {
       world_bloom = cand;

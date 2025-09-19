@@ -43,27 +43,27 @@ Histograms ComputeHistograms(const Sequence& segment, int smoothing_window,
                              absl::Duration interval) {
   Histograms histograms;
   histograms.smoothing_window = smoothing_window;
-  histograms.step_seq = segment.CopyWithNewPoints(RangesTo<std::vector<Snapshot>>(
-      std::views::zip(std::span(segment.begin(), segment.end() - 1),
-                      std::span(segment.begin() + 1, segment.end())) |
-      std::views::transform([&](const auto& window) {
-        return Snapshot{
-            std::get<1>(window).time,
-            std::get<1>(window).points - std::get<0>(window).points,
-        };
-      })));
-  histograms.steps = RangesTo<std::vector<int>>(
+  histograms.step_seq = segment.CopyWithNewPoints(
+      RangesTo<std::vector>(std::views::zip(std::span(segment.begin(), segment.end() - 1),
+                                            std::span(segment.begin() + 1, segment.end())) |
+                            std::views::transform([&](const auto& window) {
+                              return Snapshot{
+                                  std::get<1>(window).time,
+                                  std::get<1>(window).points - std::get<0>(window).points,
+                              };
+                            })));
+  histograms.steps = RangesTo<std::vector>(
       histograms.step_seq |
       std::views::transform([](const Snapshot& snapshot) { return snapshot.points; }));
-  histograms.speeds = RangesTo<std::vector<int>>(
-      histograms.steps | std::views::transform([&](int val) {
-        return static_cast<int>(val * (60.0f / (interval / absl::Minutes(1))));
-      }));
+  histograms.speeds = RangesTo<std::vector>(histograms.steps | std::views::transform([&](int val) {
+                                              return static_cast<int>(
+                                                  val * (60.0f / (interval / absl::Minutes(1))));
+                                            }));
   if (segment.size() > static_cast<uint32_t>(smoothing_window)) {
 #ifdef __cpp_lib_ranges_slide
 #warning C++23 ranges::slide is available to replace this crap.
 #endif
-    histograms.smooth_seq = segment.CopyWithNewPoints(RangesTo<std::vector<Snapshot>>(
+    histograms.smooth_seq = segment.CopyWithNewPoints(RangesTo<std::vector>(
         std::views::zip(std::span(segment.begin(), segment.end() - smoothing_window),
                         std::span(segment.begin() + smoothing_window, segment.end())) |
         std::views::transform([&](const auto& window) {
@@ -73,7 +73,7 @@ Histograms ComputeHistograms(const Sequence& segment, int smoothing_window,
                                (60.0f / (smoothing_window * interval / absl::Minutes(1)))),
           };
         })));
-    histograms.smoothed_speeds = RangesTo<std::vector<int>>(
+    histograms.smoothed_speeds = RangesTo<std::vector>(
         histograms.smooth_seq |
         std::views::transform([](const Snapshot& snapshot) { return snapshot.points; }));
     if (segment.size() > 1) {

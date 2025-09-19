@@ -10,9 +10,8 @@ extern "C" {
 
 namespace git {
 
-Commit::Commit(absl::Nonnull<git_commit*> commit)
-    : commit_(
-          commit, +[](git_commit* ptr) { git_commit_free(ptr); }) {
+Commit::Commit(git_commit* absl_nonnull commit)
+    : commit_(commit, +[](git_commit* ptr) { git_commit_free(ptr); }) {
   ABSL_CHECK_NE(commit_, nullptr);
 }
 

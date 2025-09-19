@@ -200,7 +200,9 @@ cc_library(
     deps = [
         ":parse_proto",
         "//sekai/proto:world_bloom_cc_proto",
+        "@abseil-cpp//absl/flags:flag",
         "@abseil-cpp//absl/log:absl_check",
+        "@abseil-cpp//absl/strings",
     ],
 )
 
@@ -510,6 +512,12 @@ cc_library(
 cc_library(
     name = "ranges_util",
     hdrs = ["ranges_util.h"],
+    deps = [
+        "//base:util",
+        "@abseil-cpp//absl/base",
+        "@abseil-cpp//absl/log",
+        "@abseil-cpp//absl/status:statusor",
+    ],
 )
 
 cc_library(

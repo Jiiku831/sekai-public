@@ -23,7 +23,7 @@ class Estimator : public EstimatorBase {
  public:
   enum class Mode { kSolo, kMulti, kCheerful, kAuto };
 
-  Estimator(Mode mode, std::span<absl::Nonnull<const db::MusicMeta* const>> songs);
+  Estimator(Mode mode, std::span<const db::MusicMeta* const absl_nonnull> songs);
   Estimator(double a, double b, double c, double d) : a_(a), b_(b), c_(c), d_(d) {
     PopulateLookupTable();
   }

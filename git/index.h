@@ -16,12 +16,12 @@ namespace git {
 class Index {
  public:
   // Transfers ownership of the underlying pointer.
-  explicit Index(absl::Nonnull<git_index*> index);
+  explicit Index(git_index* absl_nonnull index);
 
   absl::StatusOr<ObjectId> WriteTree();
 
  private:
-  absl::Nonnull<std::unique_ptr<git_index, decltype(&git_index_free)>> index_;
+  std::unique_ptr<git_index, decltype(&git_index_free) absl_nonnull> index_;
 };
 
 }  // namespace git

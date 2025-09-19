@@ -15,9 +15,8 @@ extern "C" {
 
 namespace git {
 
-Signature::Signature(absl::Nonnull<git_signature*> sig)
-    : sig_(
-          sig, +[](git_signature* ptr) { git_signature_free(ptr); }) {
+Signature::Signature(git_signature* absl_nonnull sig)
+    : sig_(sig, +[](git_signature* ptr) { git_signature_free(ptr); }) {
   ABSL_CHECK_NE(sig_, nullptr);
 }
 
