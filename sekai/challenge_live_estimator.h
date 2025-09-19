@@ -23,7 +23,7 @@ class ChallengeLiveSongEstimator {
 class ChallengeLiveEstimator : public EstimatorBase {
  public:
   ChallengeLiveEstimator();
-  ChallengeLiveEstimator(std::span<absl::Nonnull<const db::MusicMeta* const>> songs);
+  ChallengeLiveEstimator(std::span<const db::MusicMeta* const absl_nonnull> songs);
   double ExpectedValue(const Profile& profile, const EventBonus& event_bonus,
                        const Team& team) const override;
   double MaxExpectedValue(const Profile& profile, const EventBonus& event_bonus, const Team& team,

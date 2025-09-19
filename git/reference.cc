@@ -13,9 +13,8 @@ extern "C" {
 
 namespace git {
 
-Reference::Reference(absl::Nonnull<git_reference*> ref)
-    : ref_(
-          ref, +[](git_reference* ptr) { git_reference_free(ptr); }) {
+Reference::Reference(git_reference* absl_nonnull ref)
+    : ref_(ref, +[](git_reference* ptr) { git_reference_free(ptr); }) {
   ABSL_CHECK_NE(ref_, nullptr);
 }
 

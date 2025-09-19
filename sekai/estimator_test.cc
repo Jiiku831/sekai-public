@@ -25,7 +25,7 @@ constexpr int kMaxPower = 400'000;
 constexpr int kMaxSkill = 270;
 constexpr int kMaxBonus = 750;
 
-std::vector<absl::Nonnull<const db::MusicMeta*>> GetTestSongs() {
+std::vector<const db::MusicMeta * absl_nonnull> GetTestSongs() {
   return MasterDb::GetIf<db::MusicMeta>([](const db::MusicMeta& meta) {
     return meta.difficulty() == db::DIFF_MASTER && meta.music_id() <= 3;
   });

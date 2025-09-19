@@ -3,18 +3,13 @@
 repos:
 -   repo: local
     hooks:
-    -   id: refresh-compile-commands
-        name: Refresh compile_commands.json
-        entry: refresh_compile_commands.sh
-        language: script
-        always_run: true
-        files: 'none'
     -   id: test-all
         name: Test all targets
         entry: test.sh
         language: script
         always_run: true
         files: 'none'
+        verbose: true
 -   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
     hooks:

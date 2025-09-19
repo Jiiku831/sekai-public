@@ -38,7 +38,7 @@ struct ClusterDebug {
 
 // Run steps generally only have 2 or 3 clusters, so this only looks for one of those.
 std::vector<Cluster> FindClusters(
-    std::span<const Snapshot> pts, absl::Nullable<ClusterDebug*> debug = nullptr,
+    std::span<const Snapshot> pts, ClusterDebug* absl_nullable debug = nullptr,
     float min_size_ratio = kMinClusterSizeRatio,
     int outlier_iterations = kClusteringOutlierIterations,
     float outlier_rejection_threshold = kClusteringOutlierRejectionThresh);

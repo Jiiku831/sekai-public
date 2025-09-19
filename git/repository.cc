@@ -16,9 +16,8 @@ extern "C" {
 
 namespace git {
 
-Repository::Repository(absl::Nonnull<git_repository*> repo)
-    : repo_(
-          repo, +[](git_repository* ptr) { git_repository_free(ptr); }) {
+Repository::Repository(git_repository* absl_nonnull repo)
+    : repo_(repo, +[](git_repository* ptr) { git_repository_free(ptr); }) {
   ABSL_CHECK_NE(repo_, nullptr);
 }
 

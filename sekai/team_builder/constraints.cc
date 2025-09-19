@@ -99,9 +99,9 @@ Character Constraints::GetCharactersEligibleForLead(Character chars_present) con
   return leads;
 }
 
-std::vector<absl::Nonnull<const Card*>> Constraints::FilterCardPool(
-    std::span<absl::Nonnull<const Card*> const> pool) const {
-  std::vector<absl::Nonnull<const Card*>> new_pool;
+std::vector<const Card * absl_nonnull> Constraints::FilterCardPool(
+    std::span<const Card * absl_nonnull const> pool) const {
+  std::vector<const Card * absl_nonnull> new_pool;
   for (const Card* card : pool) {
     if (excluded_rarities_.test(card->db_rarity())) continue;
     new_pool.push_back(card);

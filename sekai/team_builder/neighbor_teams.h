@@ -27,7 +27,7 @@ class NeighborTeams {
 class SimpleNeighbors : public NeighborTeams {
  public:
   SimpleNeighbors(std::span<const Card* const> pool ABSL_ATTRIBUTE_LIFETIME_BOUND,
-                  absl::Nonnull<const Constraints*> constraints)
+                  const Constraints* absl_nonnull constraints)
       : pool_(pool), constraints_(constraints) {}
 
   std::vector<Team> GetNeighbors(const Team& team) const override;
@@ -36,7 +36,7 @@ class SimpleNeighbors : public NeighborTeams {
 
  private:
   std::span<const Card* const> pool_;
-  absl::Nonnull<const Constraints*> constraints_;
+  const Constraints* absl_nonnull constraints_;
 };
 
 class ChallengeLiveNeighbors : public NeighborTeams {

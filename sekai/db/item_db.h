@@ -48,7 +48,7 @@ class ItemDb {
     return it->second.front();
   }
 
-  const std::vector<absl::Nonnull<const T*>>& FindAll(int64_t key) const {
+  const std::vector<const T * absl_nonnull>& FindAll(int64_t key) const {
     auto it = indexed_objs_.find(key);
     if (it == indexed_objs_.end()) return empty_;
     return it->second;
@@ -56,8 +56,8 @@ class ItemDb {
 
   std::span<const T> GetAll() const { return objs_; }
 
-  std::vector<absl::Nonnull<const T*>> GetIf(absl::AnyInvocable<bool(const T&) const> pred) const {
-    std::vector<absl::Nonnull<const T*>> matching;
+  std::vector<const T * absl_nonnull> GetIf(absl::AnyInvocable<bool(const T&) const> pred) const {
+    std::vector<const T * absl_nonnull> matching;
     for (const T& obj : objs_) {
       if (pred(obj)) {
         matching.push_back(&obj);
@@ -84,7 +84,7 @@ class ItemDb {
 
  private:
   void MaybeIndexObjs() {
-    absl::Nullable<const google::protobuf::FieldDescriptor*> primary_key_field = GetPrimaryKey();
+    const google::protobuf::FieldDescriptor* absl_nullable primary_key_field = GetPrimaryKey();
     if (primary_key_field == nullptr) return;
     if (primary_key_field->is_repeated() || primary_key_field->is_map()) {
       status_ = absl::FailedPreconditionError(
@@ -115,9 +115,9 @@ class ItemDb {
     }
   }
 
-  absl::Nullable<const google::protobuf::FieldDescriptor*> GetPrimaryKey() {
-    static absl::Nullable<const google::protobuf::FieldDescriptor*> const primary_key_field =
-        []() -> absl::Nullable<const google::protobuf::FieldDescriptor*> {
+  const google::protobuf::FieldDescriptor* absl_nullable GetPrimaryKey() {
+    static const google::protobuf::FieldDescriptor* absl_nullable const primary_key_field =
+        []() -> const google::protobuf::FieldDescriptor* absl_nullable {
       const google::protobuf::Descriptor* descriptor = T::GetDescriptor();
       for (int i = 0; i < descriptor->field_count(); ++i) {
         const google::protobuf::FieldDescriptor* field = descriptor->field(i);
@@ -132,8 +132,8 @@ class ItemDb {
 
   absl::Status status_ = absl::OkStatus();
   std::vector<T> objs_;
-  absl::flat_hash_map<int64_t, std::vector<absl::Nonnull<const T*>>> indexed_objs_;
-  std::vector<absl::Nonnull<const T*>> empty_;
+  absl::flat_hash_map<int64_t, std::vector<const T * absl_nonnull>> indexed_objs_;
+  std::vector<const T * absl_nonnull> empty_;
 };
 
 }  // namespace sekai::db

@@ -118,7 +118,7 @@ double Mean(std::span<const double> data) {
 }
 
 Estimator MakeEstimator(Estimator::Mode mode,
-                        std::span<absl::Nonnull<const db::MusicMeta* const>> metas) {
+                        std::span<const db::MusicMeta* const absl_nonnull> metas) {
   std::vector<double> event_rate;
   std::vector<double> event_rate_base;
   std::vector<double> event_rate_skill;
@@ -128,7 +128,7 @@ Estimator MakeEstimator(Estimator::Mode mode,
   event_rate_skill.reserve(metas.size());
   event_rate_encore.reserve(metas.size());
 
-  for (absl::Nonnull<const db::MusicMeta*> meta : metas) {
+  for (const db::MusicMeta* absl_nonnull meta : metas) {
     SkillScores skill_scores = GetSkillScores(mode, *meta);
     double base_score = GetBaseScore(mode, *meta);
     event_rate.push_back(meta->event_rate());
@@ -156,7 +156,7 @@ Estimator MakeEstimator(Estimator::Mode mode,
 
 }  // namespace
 
-Estimator::Estimator(Mode mode, std::span<absl::Nonnull<const db::MusicMeta* const>> metas)
+Estimator::Estimator(Mode mode, std::span<const db::MusicMeta* const absl_nonnull> metas)
     : Estimator(MakeEstimator(mode, metas)) {}
 
 double Estimator::ExpectedEp(int power, double event_bonus, int average_skill,
@@ -283,7 +283,7 @@ double MySakiEstimator::SmoothOptimizationObjective(const Profile& profile,
 }
 
 Estimator RandomExEstimator(Estimator::Mode mode) {
-  std::vector<absl::Nonnull<const db::MusicMeta*>> metas = MasterDb::GetIf<db::MusicMeta>(
+  std::vector<const db::MusicMeta * absl_nonnull> metas = MasterDb::GetIf<db::MusicMeta>(
       [](const db::MusicMeta& meta) { return meta.difficulty() == db::DIFF_EXPERT; });
   return Estimator{mode, metas};
 }
