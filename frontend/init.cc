@@ -18,6 +18,8 @@
 namespace frontend {
 namespace {
 
+using ::google::protobuf::util::MessageToJsonString;
+
 EM_JS(void, CallInitialRender, (const char* context), {
     const parsed_context = JSON.parse(UTF8ToString(context));
     InitialRender(parsed_context);
