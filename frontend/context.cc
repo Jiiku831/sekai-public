@@ -374,13 +374,19 @@ TeamBuilderContext CreateTeamBuilderContext() {
     }
     if (event.event_type() == Event::WORLD_BLOOM) {
       for (const WorldBloom* world_bloom : MasterDb::FindAll<WorldBloom>(event.id())) {
-        auto character = MasterDb::FindFirst<GameCharacter>(world_bloom->game_character_id());
         TeamBuilderContext::EventContext& event_context = *context.add_events();
         event_context.set_event_id(event.id());
         event_context.set_chapter_id(world_bloom->chapter_no());
-        event_context.set_display_text(absl::StrFormat("%d-%d - %s - %s", event.id(),
-                                                       world_bloom->chapter_no(), event_name,
-                                                       character.given_name()));
+        const auto* character =
+            MasterDb::SafeFindFirst<GameCharacter>(world_bloom->game_character_id());
+        if (character != nullptr) {
+          event_context.set_display_text(absl::StrFormat("%d-%d - %s - %s", event.id(),
+                                                         world_bloom->chapter_no(), event_name,
+                                                         character->given_name()));
+        } else {
+          event_context.set_display_text(
+              absl::StrFormat("%d-%d - %s", event.id(), world_bloom->chapter_no(), event_name));
+        }
         event_context.set_event_str(
             absl::StrFormat("%d-%d", event.id(), world_bloom->chapter_no()));
       }
