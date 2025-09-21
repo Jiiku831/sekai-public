@@ -46,6 +46,10 @@ struct ReturnVoid {
   void operator()(const absl::Status& status) {}
 };
 
+struct ReturnRawCode {
+  int operator()(const absl::Status& status) { return status.raw_code(); }
+};
+
 template <typename T>
 struct ReturnValue {
  public:
