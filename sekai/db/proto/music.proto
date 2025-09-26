@@ -3,6 +3,7 @@ syntax = "proto3";
 package sekai.db;
 
 import "sekai/db/proto/descriptor.proto";
+
 message Music {
   option (master_db_file)                               = "musics.json";
   optional int32 id                                     = 1 [(json_name) = "id", (primary_key) = true];

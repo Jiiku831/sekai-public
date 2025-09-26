@@ -42,7 +42,7 @@ class ItemDb {
     return *obj;
   }
 
-  const T* SafeFindFirst(int64_t key) const {
+  const T* absl_nullable SafeFindFirst(int64_t key) const {
     auto it = indexed_objs_.find(key);
     if (it == indexed_objs_.end() || it->second.empty() || it->second.front() == nullptr) {
       return nullptr;

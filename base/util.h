@@ -1,8 +1,10 @@
 #pragma once
 
 #include <algorithm>
+#include <source_location>
 
 #include "absl/base/attributes.h"
+#include "absl/log/log.h"
 #include "absl/status/status.h"
 #include "absl/status/statusor.h"
 
@@ -48,6 +50,21 @@ struct ReturnVoid {
 
 struct ReturnRawCode {
   int operator()(const absl::Status& status) { return status.raw_code(); }
+};
+
+struct LogAndReturnRawCode {
+  LogAndReturnRawCode(absl::LogSeverity severity = absl::LogSeverity::kWarning,
+                      std::source_location loc = std::source_location::current())
+      : severity_(severity), loc_(loc) {}
+
+  int operator()(const absl::Status& status) {
+    LOG(LEVEL(severity_)).AtLocation(loc_.file_name(), loc_.line()) << status;
+    return status.raw_code();
+  }
+
+ private:
+  absl::LogSeverity severity_;
+  std::source_location loc_;
 };
 
 template <typename T>
