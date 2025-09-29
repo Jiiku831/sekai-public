@@ -714,6 +714,20 @@ MaxCharacterRank GetMaxCharacterRank(int char_id, absl::Time time) {
   max_rank.set_max_xp(total_max_xp);
   *max_rank.mutable_current_rank() = GetRank(total_xp);
   *max_rank.mutable_max_rank() = GetRank(total_max_xp);
+
+  // Adjust for 168 stamp.
+  if (max_rank.current_rank().rank() < 168 ||
+      (max_rank.current_rank().rank() == 168 && max_rank.current_rank().excess_xp() == 0)) {
+    for (CharacterRankSource& source : *max_rank.mutable_sources()) {
+      if (source.character_mission_source() == db::CHARACTER_MISSION_TYPE_COLLECT_STAMP) {
+        source.set_progress(source.progress() - 1);
+        source.set_current_xp(source.current_xp() - 1);
+      }
+    }
+    total_xp -= 1;
+    *max_rank.mutable_current_rank() = GetRank(total_xp);
+  }
+
   return max_rank;
 }
 
