@@ -50,6 +50,19 @@ T ParseTextProtoFile(std::filesystem::path path) {
 }
 
 template <typename T>
+absl::Status WriteTextProtoFile(std::filesystem::path path, const T& msg, bool use_utf8 = false) {
+  std::ofstream fs;
+  fs.open(path);
+  google::protobuf::io::OstreamOutputStream output_stream{&fs};
+  google::protobuf::TextFormat::Printer printer;
+  printer.SetUseUtf8StringEscaping(use_utf8);
+  if (!printer.Print(msg, &output_stream)) {
+    return absl::FailedPreconditionError("Failed to write text format message");
+  }
+  return absl::OkStatus();
+}
+
+template <typename T>
 T ReadCompressedBinaryProto(const std::string& data) {
   std::string decompressed_data = zstd::Decompressor{}(data);
   T msg;

@@ -25,6 +25,8 @@
 
 namespace sekai::db {
 
+std::string GetFullDbPath();
+
 namespace internal {
 
 constexpr std::string_view kFlatDbPath = "data/flat-db";
@@ -113,7 +115,9 @@ std::pair<absl::Time, std::tuple<std::vector<Ts>...>> LoadItemsFromFlatDb(
     std::tuple<Ts...> unused, absl::flat_hash_map<std::string, std::string>& thumbnails,
     const std::string& data) {
   absl::Time start = absl::Now();
-  std::filesystem::path db_path = MainRunfilesRoot() / kFlatDbPath;
+  std::filesystem::path db_path = GetFullDbPath().empty() ? MainRunfilesRoot() / kFlatDbPath
+                                                          : std::filesystem::path(GetFullDbPath());
+  LOG(INFO) << "Loading flat-db from: " << db_path;
   if (!data.empty()) {
     LOG(INFO) << "Loading data from string.";
   } else if (!std::filesystem::exists(db_path)) {
@@ -166,12 +170,12 @@ class MasterDb {
   }
 
   template <typename T>
-  static const T* SafeFindFirst(int64_t key) {
+  static const T* absl_nullable SafeFindFirst(int64_t key) {
     return Get().template Get<T>().SafeFindFirst(key);
   }
 
   template <typename T>
-  static absl::StatusOr<const T*> FindFirstOrError(int64_t key) {
+  static absl::StatusOr<const T * absl_nonnull> FindFirstOrError(int64_t key) {
     auto res = SafeFindFirst<T>(key);
     if (res == nullptr) {
       return absl::NotFoundError(

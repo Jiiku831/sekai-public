@@ -70,6 +70,18 @@ const Version<3>& GetCurrentAppVersion();
 const Version<4>& GetCurrentAssetVersion();
 const Version<4>& GetCurrentDataVersion();
 
+constexpr Version<4> kPreAnni2AssetVersion({2, 2, 0, 0});
+constexpr Version<4> kAnni2AssetVersion({2, 3, 0, 0});
+constexpr Version<4> kAnni3AssetVersion({3, 0, 0, 0});
+constexpr Version<4> kEndOfWlAssetVersion({3, 8, 0, 30});
+constexpr Version<4> kAnni4AssetVersion({4, 0, 0, 0});
+constexpr Version<4> kMovieAssetVersion({5, 0, 0, 21});
+constexpr Version<4> kAnni4p5AssetVersion({5, 2, 0, 0});
+constexpr Version<4> kAnni5AssetVersion({6, 0, 0, 0});
+
+absl::Time Get4thAnniResetTime();
+absl::Time Get4thAnniReleaseTime();
+absl::Time Get5thAnniReleaseTime();
 Version<4> GetAssetVersionAt(absl::Time time);
 
 }  // namespace sekai
