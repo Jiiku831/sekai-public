@@ -30,32 +30,13 @@ constexpr std::array kCharacterRankXpRequirement = {
     1,  2,  4,  7,  10,  14,  18,  22,  26,  30,  35,  40,  45,  50,  55,  61,  67,  73,
     79, 85, 92, 99, 106, 113, 120, 128, 136, 144, 152, 160, 169, 178, 187, 196, 205,
 };
-constexpr Version<4> kAnni2AssetVersion({2, 0, 0, 0});
-constexpr Version<4> kAnni3AssetVersion({3, 0, 0, 0});
-constexpr Version<4> kEndOfWlAssetVersion({3, 8, 0, 30});
-constexpr Version<4> kAnni4AssetVersion({4, 0, 0, 0});
-constexpr Version<4> kMovieAssetVersion({5, 0, 0, 21});
-constexpr Version<4> kAnni4p5AssetVersion({5, 2, 0, 0});
-
-absl::Time Get4thAnniUncapResetTime() {
-  return absl::FromCivil(absl::CivilSecond(2024, 9, 27, 19, 0, 0), absl::UTCTimeZone());
-}
-
-absl::Time Get4thAnniUncapReleaseTime() {
-  return absl::FromCivil(absl::CivilSecond(2024, 9, 27, 2, 0, 0), absl::UTCTimeZone());
-}
-
-absl::Time Get5thAnniReleaseTime() {
-  // TODO: change to version
-  return absl::FromCivil(absl::CivilSecond(2025, 9, 27, 2, 0, 0), absl::UTCTimeZone());
-}
 
 int GetMaxChallengeLiveStage(int char_id, absl::Time time) {
   std::vector<int> pt_reqs = GetChallengeLiveStagePointRequirement(char_id);
   int num_days_since_4th_anni_uncap =
-      time < Get4thAnniUncapReleaseTime()
+      time < Get4thAnniReleaseTime()
           ? 0
-          : std::max(std::ceil((time - Get4thAnniUncapResetTime()) / absl::Hours(24)), 1.0);
+          : std::max(std::ceil((time - Get4thAnniResetTime()) / absl::Hours(24)), 1.0);
   ABSL_CHECK_LT(static_cast<std::size_t>(kPre4thAnniCap), pt_reqs.size());
   int pre_4th_anni_max_pts = pt_reqs[kPre4thAnniCap] + kPre4thAnniExPts - 1;
   int max_pt_gain = num_days_since_4th_anni_uncap * kMaxChallengePts;
@@ -70,12 +51,11 @@ int GetMaxChallengeLiveStage(int char_id, absl::Time time) {
 
 bool WorldLink2ChapterStarted(int char_id, absl::Time time) {
   std::span<const db::WorldBloom> chapters = db::MasterDb::GetAll<db::WorldBloom>();
-  absl::Time anni5_time = Get5thAnniReleaseTime();
   for (const db::WorldBloom& chapter : chapters) {
     absl::Time start_time = absl::FromUnixMillis(chapter.chapter_start_at());
     if (chapter.event_id() < 160) continue;
+    if (chapter.event_id() > 180) continue;
     if (start_time > time) continue;
-    if (start_time > anni5_time) continue;  // TODO: switch to event id upper bound
     if (chapter.game_character_id() != char_id) continue;
     return true;
   }
@@ -102,6 +82,10 @@ int GetProgress(int char_id, CharacterRankSource::OtherSource source, absl::Time
       return GetAssetVersionAt(time) >= kAnni4p5AssetVersion ? 2 : 0;
     case CharacterRankSource::OTHER_SOURCE_WORLD_LINK_2:
       return WorldLink2ChapterStarted(char_id, time) ? 2 : 0;
+    case CharacterRankSource::OTHER_SOURCE_ANNI_5_STAMP:
+      return GetAssetVersionAt(time) >= kAnni5AssetVersion ? 2 : 0;
+    case CharacterRankSource::OTHER_SOURCE_ANNI_5_MEMORIAL_SELECT:
+      return GetAssetVersionAt(time) >= kAnni5AssetVersion ? 1 : 0;
     default:
       ABSL_CHECK(false) << "unhandled case";
   }
@@ -129,6 +113,10 @@ std::optional<int> GetMaxProgress(int char_id, CharacterRankSource::OtherSource 
       return GetAssetVersionAt(time) >= kAnni4p5AssetVersion ? 2 : 0;
     case CharacterRankSource::OTHER_SOURCE_WORLD_LINK_2:
       return GetAssetVersionAt(time) >= kAnni4AssetVersion ? 2 : 0;
+    case CharacterRankSource::OTHER_SOURCE_ANNI_5_STAMP:
+      return GetAssetVersionAt(time) >= kAnni5AssetVersion ? 2 : 0;
+    case CharacterRankSource::OTHER_SOURCE_ANNI_5_MEMORIAL_SELECT:
+      return GetAssetVersionAt(time) >= kAnni5AssetVersion ? 1 : 0;
     default:
       ABSL_CHECK(false) << "unhandled case";
   }
@@ -147,6 +135,8 @@ int ProgressToXp(int char_id, CharacterRankSource::OtherSource source, int progr
     case CharacterRankSource::OTHER_SOURCE_MOVIE_STAMP:
     case CharacterRankSource::OTHER_SOURCE_ANNI_4_5_STAMP:
     case CharacterRankSource::OTHER_SOURCE_WORLD_LINK_2:
+    case CharacterRankSource::OTHER_SOURCE_ANNI_5_STAMP:
+    case CharacterRankSource::OTHER_SOURCE_ANNI_5_MEMORIAL_SELECT:
       return progress;
     default:
       ABSL_CHECK(false) << "unhandled case";
@@ -770,13 +760,17 @@ std::string SourceDescription(CharacterRankSource::OtherSource source) {
     case CharacterRankSource::OTHER_SOURCE_ANNI_4_STAMP:
       return "4th Anni";
     case CharacterRankSource::OTHER_SOURCE_ANNI_4_MEMORIAL_SELECT:
-      return "Gacha";
+      return "4th Gacha";
     case CharacterRankSource::OTHER_SOURCE_MOVIE_STAMP:
       return "Movie";
     case CharacterRankSource::OTHER_SOURCE_ANNI_4_5_STAMP:
       return "4.5 Anni";
     case CharacterRankSource::OTHER_SOURCE_WORLD_LINK_2:
       return "WL2";
+    case CharacterRankSource::OTHER_SOURCE_ANNI_5_STAMP:
+      return "5th Anni";
+    case CharacterRankSource::OTHER_SOURCE_ANNI_5_MEMORIAL_SELECT:
+      return "5th Gacha";
     default:
       ABSL_CHECK(false) << "unhandled case";
   }

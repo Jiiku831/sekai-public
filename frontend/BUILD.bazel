@@ -1,5 +1,5 @@
 load("@gzgz_rules_sass//sass:defs.bzl", "sass_binary")
-load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library")
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library", "cc_test")
 load("@rules_pkg//pkg:mappings.bzl", "pkg_files")
 
 exports_files([
@@ -34,6 +34,19 @@ cc_library(
         "//sekai/db/proto:all",
         "//sekai/proto:team_cc_proto",
         "//sekai/proto:world_bloom_cc_proto",
+    ],
+)
+
+cc_test(
+    name = "context_test",
+    srcs = ["context_test.cc"],
+    data = [
+        "//data:flat-db",
+    ],
+    deps = [
+        ":context",
+        "//testing:test_main",
+        "@googletest//:gtest",
     ],
 )
 

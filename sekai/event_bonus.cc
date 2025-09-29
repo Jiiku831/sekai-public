@@ -337,7 +337,7 @@ SupportUnitEventBonus::SupportUnitEventBonus(const SimpleEventBonus& event_bonus
 }
 
 void SupportUnitEventBonus::PopulateChapterSpecificBonus() {
-  db_chapter_unit_ = LookupCharacterUnit(chapter_char_);
+  db_chapter_unit_ = chapter_char_ == 0 ? db::UNIT_NONE : LookupCharacterUnit(chapter_char_);
   chapter_unit_.set(db_chapter_unit_);
 
   // Index: (Id, Attr, Unit)

@@ -35,12 +35,14 @@ class ItemDb {
 
   const T& FindFirst(int64_t key) const {
     const T* obj = SafeFindFirst(key);
-    ABSL_CHECK_NE(obj, nullptr) << "While looking up item type " << typeid(T).name() << " with key "
-                                << key;
+    if (obj == nullptr) {
+      ABSL_CHECK_NE(obj, nullptr) << "While looking up item type " << typeid(T).name()
+                                  << " with key " << key;
+    }
     return *obj;
   }
 
-  const T* SafeFindFirst(int64_t key) const {
+  const T* absl_nullable SafeFindFirst(int64_t key) const {
     auto it = indexed_objs_.find(key);
     if (it == indexed_objs_.end() || it->second.empty() || it->second.front() == nullptr) {
       return nullptr;

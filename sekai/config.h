@@ -26,8 +26,8 @@ inline constexpr int kMaxSkillValue = 160 + (160 / 5) * 4;
 
 inline constexpr std::array kReferenceScoreBoostCaps = {0.f, 120.f, 130.f, 140.f, 140.f};
 
-inline constexpr int kMaxTitleBonus = 310;
-inline constexpr int kMaxCharacterRank = 160;
+inline constexpr int kMaxTitleBonus = 320;
+inline constexpr int kMaxCharacterRank = 175;
 
 inline constexpr std::array kBoostMultipliers = {1, 5, 10, 15, 20, 25, 27, 29, 31, 33, 35};
 

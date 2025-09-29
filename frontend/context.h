@@ -22,5 +22,6 @@ RarityContext CreateRarityContext(sekai::db::CardRarityType rarity);
 TeamContext CreateTeamContext(const sekai::TeamProto& team);
 
 TeamBuilderContext CreateTeamBuilderContext();
+InitialRenderContext CreateInitialRenderContext();
 
 }  // namespace frontend
