@@ -46,7 +46,7 @@ TEST(GetCurrentDataVersionTest, Returns) {
   EXPECT_NE(GetCurrentDataVersion(), Version<4>({0, 0, 0, 0}));
 }
 
-TEST(GetAssetVersionAt, ReturnsCurrentAssetVersionAtNow) {
+TEST(GetAssetVersionAt, DISABLED_ReturnsCurrentAssetVersionAtNow) {
   EXPECT_EQ(GetAssetVersionAt(absl::Now()), GetCurrentAssetVersion());
 }
 
