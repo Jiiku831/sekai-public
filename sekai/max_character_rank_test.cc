@@ -29,9 +29,9 @@ TEST(GetMaxCharacterRanksTest, ComputeMaxPlantAreaItemsForMiku) {
   std::optional<CharacterRankSource> cl_source = GetCharacterRankSource(
       max_character_ranks[21], db::CHARACTER_MISSION_TYPE_AREA_ITEM_LEVEL_UP_REALITY_WORLD);
   ASSERT_TRUE(cl_source.has_value());
-  EXPECT_EQ(cl_source->progress(), 150);
+  EXPECT_EQ(cl_source->progress(), 200);
   EXPECT_EQ(cl_source->max_progress(), cl_source->progress());
-  EXPECT_EQ(cl_source->current_xp(), 30);
+  EXPECT_EQ(cl_source->current_xp(), 40);
   EXPECT_EQ(cl_source->max_xp(), cl_source->current_xp());
 }
 
@@ -42,9 +42,9 @@ TEST(GetMaxCharacterRanksTest, ComputeMaxCharAreaItemsForMiku) {
   std::optional<CharacterRankSource> cl_source = GetCharacterRankSource(
       max_character_ranks[21], db::CHARACTER_MISSION_TYPE_AREA_ITEM_LEVEL_UP_CHARACTER);
   ASSERT_TRUE(cl_source.has_value());
-  EXPECT_EQ(cl_source->progress(), 75);
+  EXPECT_EQ(cl_source->progress(), 100);
   EXPECT_EQ(cl_source->max_progress(), cl_source->progress());
-  EXPECT_EQ(cl_source->current_xp(), 15);
+  EXPECT_EQ(cl_source->current_xp(), 20);
   EXPECT_EQ(cl_source->max_xp(), cl_source->current_xp());
 }
 
@@ -55,9 +55,9 @@ TEST(GetMaxCharacterRanksTest, ComputeMaxUnitAreaItemsForMiku) {
   std::optional<CharacterRankSource> cl_source = GetCharacterRankSource(
       max_character_ranks[21], db::CHARACTER_MISSION_TYPE_AREA_ITEM_LEVEL_UP_UNIT);
   ASSERT_TRUE(cl_source.has_value());
-  EXPECT_EQ(cl_source->progress(), 75);
+  EXPECT_EQ(cl_source->progress(), 100);
   EXPECT_EQ(cl_source->max_progress(), cl_source->progress());
-  EXPECT_EQ(cl_source->current_xp(), 15);
+  EXPECT_EQ(cl_source->current_xp(), 20);
   EXPECT_EQ(cl_source->max_xp(), cl_source->current_xp());
 }
 
@@ -69,9 +69,9 @@ TEST(GetMaxCharacterRanksTest, ComputeMaxLeaderLivesForMiku) {
       GetCharacterRankSource(max_character_ranks[21], db::CHARACTER_MISSION_TYPE_PLAY_LIVE);
   ASSERT_TRUE(cl_source.has_value());
   EXPECT_EQ(cl_source->progress(), std::numeric_limits<int>::max());
-  EXPECT_EQ(cl_source->max_progress(), 40000);
-  EXPECT_EQ(cl_source->current_xp(), 120);
-  EXPECT_EQ(cl_source->max_xp(), 120);
+  EXPECT_EQ(cl_source->max_progress(), 50000);
+  EXPECT_EQ(cl_source->current_xp(), 140);
+  EXPECT_EQ(cl_source->max_xp(), 140);
 }
 
 TEST(GetMaxCharacterRanksTest, ComputeMaxLeaderLivesExForMiku) {
