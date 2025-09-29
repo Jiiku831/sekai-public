@@ -85,7 +85,7 @@ int GetProgress(int char_id, CharacterRankSource::OtherSource source, absl::Time
     case CharacterRankSource::OTHER_SOURCE_ANNI_5_STAMP:
       return GetAssetVersionAt(time) >= kAnni5AssetVersion ? 2 : 0;
     case CharacterRankSource::OTHER_SOURCE_ANNI_5_MEMORIAL_SELECT:
-      return GetAssetVersionAt(time) >= kAnni5AssetVersion ? 1 : 0;
+      return GetAssetVersionAt(time) >= kAnni5AssetVersion ? 2 : 0;
     default:
       ABSL_CHECK(false) << "unhandled case";
   }
@@ -116,7 +116,7 @@ std::optional<int> GetMaxProgress(int char_id, CharacterRankSource::OtherSource 
     case CharacterRankSource::OTHER_SOURCE_ANNI_5_STAMP:
       return GetAssetVersionAt(time) >= kAnni5AssetVersion ? 2 : 0;
     case CharacterRankSource::OTHER_SOURCE_ANNI_5_MEMORIAL_SELECT:
-      return GetAssetVersionAt(time) >= kAnni5AssetVersion ? 1 : 0;
+      return GetAssetVersionAt(time) >= kAnni5AssetVersion ? 2 : 0;
     default:
       ABSL_CHECK(false) << "unhandled case";
   }
