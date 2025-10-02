@@ -721,7 +721,8 @@ MaxCharacterRank GetMaxCharacterRank(int char_id, absl::Time time) {
     for (CharacterRankSource& source : *max_rank.mutable_sources()) {
       if (source.character_mission_source() == db::CHARACTER_MISSION_TYPE_COLLECT_STAMP) {
         source.set_progress(source.progress() - 1);
-        source.set_current_xp(source.current_xp() - 1);
+        source.set_current_xp(
+            ProgressToXp(char_id, source.character_mission_source(), source.progress()));
       }
     }
     total_xp -= 1;
