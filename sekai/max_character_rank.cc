@@ -26,10 +26,63 @@ constexpr int kMaxChallengePts = 1030;
 constexpr int kPre4thAnniExPts = 9300;
 constexpr int kPre4thAnniCap = 101;
 constexpr int kCharacterRankXpIncrement = 10;
+constexpr int kMaxBdayXp = 1;
 constexpr std::array kCharacterRankXpRequirement = {
     1,  2,  4,  7,  10,  14,  18,  22,  26,  30,  35,  40,  45,  50,  55,  61,  67,  73,
     79, 85, 92, 99, 106, 113, 120, 128, 136, 144, 152, 160, 169, 178, 187, 196, 205,
 };
+
+const std::array<absl::Time, 27>& GetCharBday() {
+  static const auto* const kArray = [] {
+    return new std::array<absl::Time, 27>{
+        absl::UnixEpoch(),
+        // LN
+        absl::FromCivil(absl::CivilSecond(2026, 8, 10, 15, 0, 0), absl::UTCTimeZone()),
+        absl::FromCivil(absl::CivilSecond(2026, 5, 8, 15, 0, 0), absl::UTCTimeZone()),
+        absl::FromCivil(absl::CivilSecond(2025, 10, 26, 15, 0, 0), absl::UTCTimeZone()),
+        absl::FromCivil(absl::CivilSecond(2026, 1, 7, 15, 0, 0), absl::UTCTimeZone()),
+        // MMJ
+        absl::FromCivil(absl::CivilSecond(2026, 4, 13, 15, 0, 0), absl::UTCTimeZone()),
+        absl::FromCivil(absl::CivilSecond(2025, 10, 4, 15, 0, 0), absl::UTCTimeZone()),
+        absl::FromCivil(absl::CivilSecond(2026, 3, 18, 15, 0, 0), absl::UTCTimeZone()),
+        absl::FromCivil(absl::CivilSecond(2025, 12, 5, 15, 0, 0), absl::UTCTimeZone()),
+        // VBS
+        absl::FromCivil(absl::CivilSecond(2026, 3, 1, 15, 0, 0), absl::UTCTimeZone()),
+        absl::FromCivil(absl::CivilSecond(2026, 7, 25, 15, 0, 0), absl::UTCTimeZone()),
+        absl::FromCivil(absl::CivilSecond(2025, 11, 11, 15, 0, 0), absl::UTCTimeZone()),
+        absl::FromCivil(absl::CivilSecond(2026, 5, 24, 15, 0, 0), absl::UTCTimeZone()),
+        // WXS
+        absl::FromCivil(absl::CivilSecond(2026, 5, 16, 15, 0, 0), absl::UTCTimeZone()),
+        absl::FromCivil(absl::CivilSecond(2026, 9, 8, 15, 0, 0), absl::UTCTimeZone()),
+        absl::FromCivil(absl::CivilSecond(2026, 7, 19, 15, 0, 0), absl::UTCTimeZone()),
+        absl::FromCivil(absl::CivilSecond(2026, 6, 23, 15, 0, 0), absl::UTCTimeZone()),
+        // NIIGO
+        absl::FromCivil(absl::CivilSecond(2026, 2, 9, 15, 0, 0), absl::UTCTimeZone()),
+        absl::FromCivil(absl::CivilSecond(2026, 1, 26, 15, 0, 0), absl::UTCTimeZone()),
+        absl::FromCivil(absl::CivilSecond(2026, 4, 29, 15, 0, 0), absl::UTCTimeZone()),
+        absl::FromCivil(absl::CivilSecond(2026, 8, 26, 15, 0, 0), absl::UTCTimeZone()),
+        // VS
+        absl::FromCivil(absl::CivilSecond(2026, 8, 30, 15, 0, 0), absl::UTCTimeZone()),
+        absl::FromCivil(absl::CivilSecond(2025, 12, 26, 15, 0, 0), absl::UTCTimeZone()),
+        absl::FromCivil(absl::CivilSecond(2025, 12, 26, 15, 0, 0), absl::UTCTimeZone()),
+        absl::FromCivil(absl::CivilSecond(2026, 1, 29, 15, 0, 0), absl::UTCTimeZone()),
+        absl::FromCivil(absl::CivilSecond(2025, 11, 4, 15, 0, 0), absl::UTCTimeZone()),
+        absl::FromCivil(absl::CivilSecond(2026, 2, 16, 15, 0, 0), absl::UTCTimeZone()),
+    };
+  }();
+
+  return *kArray;
+}
+
+int GetCharBdayProgressAt(int char_id, absl::Time time) {
+  absl::Time bday_ref = GetCharBday()[char_id];
+  float secs_since_bday = (time - bday_ref) / absl::Seconds(1);
+  if (secs_since_bday < 0) {
+    return 0;
+  }
+  // TODO: will need to adjust for leap year at some point
+  return static_cast<int>(secs_since_bday / (365 * 24 * 3600)) + 1;
+}
 
 int GetMaxChallengeLiveStage(int char_id, absl::Time time) {
   std::vector<int> pt_reqs = GetChallengeLiveStagePointRequirement(char_id);
@@ -85,7 +138,9 @@ int GetProgress(int char_id, CharacterRankSource::OtherSource source, absl::Time
     case CharacterRankSource::OTHER_SOURCE_ANNI_5_STAMP:
       return GetAssetVersionAt(time) >= kAnni5AssetVersion ? 2 : 0;
     case CharacterRankSource::OTHER_SOURCE_ANNI_5_MEMORIAL_SELECT:
-      return GetAssetVersionAt(time) >= kAnni5AssetVersion ? 1 : 0;
+      return GetAssetVersionAt(time) >= kAnni5AssetVersion ? 2 : 0;
+    case CharacterRankSource::OTHER_SOURCE_BDAY_LIVE:
+      return GetCharBdayProgressAt(char_id, time);
     default:
       ABSL_CHECK(false) << "unhandled case";
   }
@@ -116,6 +171,8 @@ std::optional<int> GetMaxProgress(int char_id, CharacterRankSource::OtherSource 
     case CharacterRankSource::OTHER_SOURCE_ANNI_5_STAMP:
       return GetAssetVersionAt(time) >= kAnni5AssetVersion ? 2 : 0;
     case CharacterRankSource::OTHER_SOURCE_ANNI_5_MEMORIAL_SELECT:
+      return GetAssetVersionAt(time) >= kAnni5AssetVersion ? 2 : 0;
+    case CharacterRankSource::OTHER_SOURCE_BDAY_LIVE:
       return GetAssetVersionAt(time) >= kAnni5AssetVersion ? 1 : 0;
     default:
       ABSL_CHECK(false) << "unhandled case";
@@ -137,6 +194,7 @@ int ProgressToXp(int char_id, CharacterRankSource::OtherSource source, int progr
     case CharacterRankSource::OTHER_SOURCE_WORLD_LINK_2:
     case CharacterRankSource::OTHER_SOURCE_ANNI_5_STAMP:
     case CharacterRankSource::OTHER_SOURCE_ANNI_5_MEMORIAL_SELECT:
+    case CharacterRankSource::OTHER_SOURCE_BDAY_LIVE:
       return progress;
     default:
       ABSL_CHECK(false) << "unhandled case";
@@ -714,6 +772,21 @@ MaxCharacterRank GetMaxCharacterRank(int char_id, absl::Time time) {
   max_rank.set_max_xp(total_max_xp);
   *max_rank.mutable_current_rank() = GetRank(total_xp);
   *max_rank.mutable_max_rank() = GetRank(total_max_xp);
+
+  // Adjust for 168 stamp.
+  if (max_rank.current_rank().rank() < 168 ||
+      (max_rank.current_rank().rank() == 168 && max_rank.current_rank().excess_xp() == 0)) {
+    for (CharacterRankSource& source : *max_rank.mutable_sources()) {
+      if (source.character_mission_source() == db::CHARACTER_MISSION_TYPE_COLLECT_STAMP) {
+        source.set_progress(source.progress() - 1);
+        source.set_current_xp(
+            ProgressToXp(char_id, source.character_mission_source(), source.progress()));
+      }
+    }
+    total_xp -= 1;
+    *max_rank.mutable_current_rank() = GetRank(total_xp);
+  }
+
   return max_rank;
 }
 
@@ -771,6 +844,8 @@ std::string SourceDescription(CharacterRankSource::OtherSource source) {
       return "5th Anni";
     case CharacterRankSource::OTHER_SOURCE_ANNI_5_MEMORIAL_SELECT:
       return "5th Gacha";
+    case CharacterRankSource::OTHER_SOURCE_BDAY_LIVE:
+      return "Bday Live";
     default:
       ABSL_CHECK(false) << "unhandled case";
   }
