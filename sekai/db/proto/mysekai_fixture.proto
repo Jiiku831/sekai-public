@@ -109,4 +109,6 @@ message MySekaiFixture {
   repeated MysekaiFixtureAnotherColor mysekai_fixture_another_colors = 23 [(json_name) = "mysekaiFixtureAnotherColors"];
   optional int32 mysekai_fixture_game_character_group_performance_bonus_id = 24
       [(json_name) = "mysekaiFixtureGameCharacterGroupPerformanceBonusId"];
+  optional int32 first_put_cost  = 25 [(json_name) = "firstPutCost"];
+  optional int32 second_put_cost = 26 [(json_name) = "secondPutCost"];
 }
