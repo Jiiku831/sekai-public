@@ -18,6 +18,7 @@
 #include "sekai/proto/max_character_rank.pb.h"
 #include "sekai/proto_util.h"
 #include "sekai/version.h"
+#include "version.h"
 
 namespace sekai {
 namespace {
@@ -141,6 +142,8 @@ int GetProgress(int char_id, CharacterRankSource::OtherSource source, absl::Time
       return GetAssetVersionAt(time) >= kAnni5AssetVersion ? 2 : 0;
     case CharacterRankSource::OTHER_SOURCE_BDAY_LIVE:
       return GetCharBdayProgressAt(char_id, time);
+    case CharacterRankSource::OTHER_SOURCE_NEW_YEAR_5_GACHA:
+      return GetAssetVersionAt(time) >= kNewYear5AssetVersion ? 3 : 0;
     default:
       ABSL_CHECK(false) << "unhandled case";
   }
@@ -174,6 +177,8 @@ std::optional<int> GetMaxProgress(int char_id, CharacterRankSource::OtherSource 
       return GetAssetVersionAt(time) >= kAnni5AssetVersion ? 2 : 0;
     case CharacterRankSource::OTHER_SOURCE_BDAY_LIVE:
       return GetAssetVersionAt(time) >= kAnni5AssetVersion ? 1 : 0;
+    case CharacterRankSource::OTHER_SOURCE_NEW_YEAR_5_GACHA:
+      return GetAssetVersionAt(time) >= kNewYear5AssetVersion ? 3 : 0;
     default:
       ABSL_CHECK(false) << "unhandled case";
   }
@@ -195,6 +200,7 @@ int ProgressToXp(int char_id, CharacterRankSource::OtherSource source, int progr
     case CharacterRankSource::OTHER_SOURCE_ANNI_5_STAMP:
     case CharacterRankSource::OTHER_SOURCE_ANNI_5_MEMORIAL_SELECT:
     case CharacterRankSource::OTHER_SOURCE_BDAY_LIVE:
+    case CharacterRankSource::OTHER_SOURCE_NEW_YEAR_5_GACHA:
       return progress;
     default:
       ABSL_CHECK(false) << "unhandled case";
@@ -846,6 +852,8 @@ std::string SourceDescription(CharacterRankSource::OtherSource source) {
       return "5th Gacha";
     case CharacterRankSource::OTHER_SOURCE_BDAY_LIVE:
       return "Bday Live";
+    case CharacterRankSource::OTHER_SOURCE_NEW_YEAR_5_GACHA:
+      return "NY 2026";
     default:
       ABSL_CHECK(false) << "unhandled case";
   }
