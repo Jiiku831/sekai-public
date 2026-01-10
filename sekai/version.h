@@ -78,6 +78,7 @@ constexpr Version<4> kAnni4AssetVersion({4, 0, 0, 0});
 constexpr Version<4> kMovieAssetVersion({5, 0, 0, 21});
 constexpr Version<4> kAnni4p5AssetVersion({5, 2, 0, 0});
 constexpr Version<4> kAnni5AssetVersion({6, 0, 0, 0});
+constexpr Version<4> kNewYear5AssetVersion({6, 2, 0, 30});
 
 absl::Time Get4thAnniResetTime();
 absl::Time Get4thAnniReleaseTime();

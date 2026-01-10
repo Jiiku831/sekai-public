@@ -66,6 +66,10 @@ absl::Time Get5thAnniReleaseTime() {
   return absl::FromCivil(absl::CivilSecond(2025, 9, 29, 15, 0, 0), absl::UTCTimeZone());
 }
 
+absl::Time GetNewYear2026ReleaseTime() {
+  return absl::FromCivil(absl::CivilSecond(2025, 12, 31, 3, 0, 0), absl::UTCTimeZone());
+}
+
 Version<4> GetAssetVersionAt(absl::Time time) {
   // TODO: implement properly
   if (time < Get2ndAnniReleaseTime()) {
@@ -89,10 +93,10 @@ Version<4> GetAssetVersionAt(absl::Time time) {
   if (time < Get5thAnniReleaseTime()) {
     return kAnni4p5AssetVersion;
   }
-  if (time > Get5thAnniReleaseTime()) {
+  if (time < GetNewYear2026ReleaseTime()) {
     return kAnni5AssetVersion;
   }
-  return kAnni5AssetVersion;
+  return GetCurrentAssetVersion();
 }
 
 }  // namespace sekai
