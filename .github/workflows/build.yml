@@ -93,4 +93,4 @@ jobs:
       with:
         webhook_url: ${{ secrets.NOTIFY_URL }}
         webhook_secret: ${{ secrets.NOTIFY_SECRET }}
-        curl_opts: '-H "Accept: application/json" -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"'
+        curl_opts: '-H "Accept: application/json" -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"'
