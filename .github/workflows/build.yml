@@ -89,8 +89,7 @@ jobs:
         projectName: jiiku
         directory: bazel-bin/frontend/build/server.runfiles/_main/frontend/build/server_root
     - name: Notify Release
-      uses: distributhor/workflow-webhook@v3
+      uses: distributhor/workflow-webhook@2381f0e9c7b6bf061fb1405bd0804b8706116369
       with:
         webhook_url: ${{ secrets.NOTIFY_URL }}
         webhook_secret: ${{ secrets.NOTIFY_SECRET }}
-        curl_opts: '-H "Accept: application/json" -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"'
