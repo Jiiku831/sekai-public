@@ -73,7 +73,9 @@ jobs:
           bazel-${{ runner.os }}-${{ env.CACHE_KEY }}
           bazel-${{ runner.os }}
     - name: Build files to deploy
-      run: ./run_local_server.sh --build_only
+      run: |
+        ./sekai/run_analysis/run_local_server.sh --build_only
+        ./run_local_server.sh --build_only
     - name: Save bazel cache
       uses: actions/cache/save@v4
       with:
@@ -86,3 +88,8 @@ jobs:
         accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         projectName: jiiku
         directory: bazel-bin/frontend/build/server.runfiles/_main/frontend/build/server_root
+    - name: Notify Release
+      uses: distributhor/workflow-webhook@2381f0e9c7b6bf061fb1405bd0804b8706116369
+      with:
+        webhook_url: ${{ secrets.NOTIFY_URL }}
+        webhook_secret: ${{ secrets.NOTIFY_SECRET }}
