@@ -17,6 +17,12 @@ wasm_cc_binary(
 )
 
 pkg_files(
+    name = "data/assets/32",
+    srcs = ["//data:storage-sekai-best/32"],
+    prefix = "data/assets/32",
+)
+
+pkg_files(
     name = "data/assets/64",
     srcs = ["//data:storage-sekai-best/64"],
     prefix = "data/assets/64",
@@ -44,15 +50,19 @@ pkg_tar(
     name = "server_root",
     srcs = [
         ":data/assets/128",
+        ":data/assets/32",
         ":data/assets/64",
         ":images",
         ":ohnyajii_wasm",
         ":sajii_wasm",
         ":testing",
+        "//frontend:kondoyoupiece_css",
         "//frontend:licenses",
         "//frontend:ohnyajii_css",
         "//frontend:src_root",
+        "//frontend:static_files",
         "//frontend:styles",
+        "//frontend/templates:kondoyoupiece_html",
     ],
 )
 

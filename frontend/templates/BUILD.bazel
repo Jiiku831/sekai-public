@@ -13,6 +13,16 @@ genrule(
     cmd = "echo kek > $@",
 )
 
+genrule(
+    name = "card_timeline_html",
+    outs = ["card_timeline.html"],
+    cmd = "RUNFILES_DIR=$(execpath //:build_card_timeline_main).runfiles " +
+          "./$(execpath //:build_card_timeline_main) --raw --output=$@",
+    tools = [
+        "//:build_card_timeline_main",
+    ],
+)
+
 inja_template(
     name = "shell_html",
     src = "shell.html.jinja",
@@ -28,6 +38,18 @@ inja_template(
     out = "index.html",
     base_dir = ":base_dir",
     blaze_out_base_dir = ":blaze_out_base_dir",
+)
+
+inja_template(
+    name = "kondoyoupiece_html",
+    src = "kondoyoupiece.html.jinja",
+    out = "kondoyoupiece.html",
+    base_dir = ":base_dir",
+    blaze_out_base_dir = ":blaze_out_base_dir",
+    data = [
+        ":card_timeline_html",
+        ":notices_html",
+    ],
 )
 
 genrule(
