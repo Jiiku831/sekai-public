@@ -6,6 +6,13 @@ exports_files([
     "server.py",
 ])
 
+filegroup(
+    name = "static_files",
+    srcs = [
+        "kondoyoupiece_lib.js",
+    ],
+)
+
 cc_library(
     name = "console_log_sink",
     srcs = ["console_log_sink.cc"],
@@ -237,7 +244,9 @@ pkg_files(
         "ohnyajii_lib.js",
         "robots.txt",
         "sajii_lib.js",
+        ":static_files",
         "//frontend/templates:index_html",
+        "//frontend/templates:kondoyoupiece_html",
         "//frontend/templates:ohnyajii_html",
     ],
 )
@@ -266,6 +275,12 @@ pkg_files(
 sass_binary(
     name = "styles",
     src = "styles.sass",
+    sourcemap_embed_sources = True,
+)
+
+sass_binary(
+    name = "kondoyoupiece_css",
+    src = "kondoyoupiece.sass",
     sourcemap_embed_sources = True,
 )
 

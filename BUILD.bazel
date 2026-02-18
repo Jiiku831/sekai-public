@@ -1,5 +1,5 @@
-load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library")
 load("@hedron_compile_commands//:refresh_compile_commands.bzl", "refresh_compile_commands")
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library")
 
 cc_binary(
     name = "build_event_team_main",
@@ -96,6 +96,22 @@ cc_binary(
         "@abseil-cpp//absl/log:absl_check",
         "@abseil-cpp//absl/log:flags",
         "@abseil-cpp//absl/time",
+    ],
+)
+
+cc_binary(
+    name = "build_card_timeline_main",
+    srcs = ["build_card_timeline_main.cc"],
+    data = [
+        "//data:flat-db",
+    ],
+    deps = [
+        "//base",
+        "//sekai/html:card_timeline",
+        "//sekai/html:report",
+        "@abseil-cpp//absl/flags:flag",
+        "@abseil-cpp//absl/log:absl_check",
+        "@abseil-cpp//absl/log:flags",
     ],
 )
 
