@@ -54,9 +54,12 @@ std::vector<Cluster> AssignClusters(std::span<const Snapshot> pts,
                                     std::span<const int> sorted_diffs, int num_clusters,
                                     ClusterDebug::ClusterSplitDebug* absl_nullable debug) {
   constexpr float kOutlierPercentile = 0.05;
-  std::span<const int> truncated_vals = sorted_diffs.subspan(
-      int(static_cast<float>(sorted_diffs.size()) * kOutlierPercentile),
-      int(static_cast<float>(sorted_diffs.size()) * (1 - 2 * kOutlierPercentile)));
+  std::span<const int> truncated_vals =
+      sorted_diffs.size() <= 10
+          ? sorted_diffs
+          : sorted_diffs.subspan(
+                int(static_cast<float>(sorted_diffs.size()) * kOutlierPercentile),
+                int(static_cast<float>(sorted_diffs.size()) * (1 - 2 * kOutlierPercentile)));
   float min_val = 0;
   float max_val = 0;
   if (!truncated_vals.empty()) {
