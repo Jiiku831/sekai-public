@@ -198,13 +198,17 @@ cc_library(
         "@abseil-cpp//absl/status:status",
         "@abseil-cpp//absl/status:statusor",
         "@abseil-cpp//absl/strings:str_format",
+        "@nlohmann_json//:json",
     ],
 )
 
 cc_test(
     name = "parser_test",
     srcs = ["parser_test.cc"],
-    data = ["testdata/run_data_1.json"],
+    data = [
+        "testdata/run_data_1.json",
+        "testdata/run_data_v2_1.json",
+    ],
     deps = [
         ":parser",
         "//sekai:file_util",

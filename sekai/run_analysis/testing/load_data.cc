@@ -55,12 +55,7 @@ AnalyzeTeamRequest MakeAnalyzeTeamRequest(const RunData& data) {
   return req;
 }
 
-}  // namespace
-
-absl::StatusOr<LoadedData> LoadData(std::filesystem::path path) {
-  LoadedData data;
-  ASSIGN_OR_RETURN(std::string contents, SafeGetFileContents(path));
-  ASSIGN_OR_RETURN(data.raw_data, ParseRunData(contents));
+absl::StatusOr<LoadedData> LoadDataImpl(LoadedData data) {
   const PointsGraph& graph =
       absl::GetFlag(FLAGS_chapter_char) > 0
           ? data.raw_data.user_graph().chapters().at(absl::GetFlag(FLAGS_chapter_char))
@@ -72,15 +67,31 @@ absl::StatusOr<LoadedData> LoadData(std::filesystem::path path) {
   ASSIGN_OR_RETURN(data.raw_sequence, ConvertPointsGraph(data.timestamp_offset, graph));
   data.processed_sequence = ProcessSequence(data.raw_sequence, kInterval, kMaxSegmentGap);
   ASSIGN_OR_RETURN(data.segments, SegmentRuns(data.processed_sequence));
-  data.run_histograms = RangesTo<std::vector<Histograms>>(
-      data.segments.active_segments() | std::views::transform([](const Sequence& seq) {
-        return ComputeHistograms(seq, kWindow, kInterval);
-      }));
+  data.run_histograms = RangesTo<std::vector>(data.segments.active_segments() |
+                                              std::views::transform([](const Sequence& seq) {
+                                                return ComputeHistograms(seq, kWindow, kInterval);
+                                              }));
   data.histograms = Histograms::Join(data.run_histograms);
   AnalyzeTeamHandler handler;
   data.team_analysis_request = MakeAnalyzeTeamRequest(data.raw_data);
   data.team_analysis = handler.Run(data.team_analysis_request);
   return data;
+}
+
+}  // namespace
+
+absl::StatusOr<LoadedData> LoadData(std::filesystem::path path) {
+  LoadedData data;
+  ASSIGN_OR_RETURN(std::string contents, SafeGetFileContents(path));
+  ASSIGN_OR_RETURN(data.raw_data, ParseRunData(contents));
+  return LoadDataImpl(data);
+}
+
+absl::StatusOr<LoadedData> LoadDataV2(std::filesystem::path path) {
+  LoadedData data;
+  ASSIGN_OR_RETURN(std::string contents, SafeGetFileContents(path));
+  ASSIGN_OR_RETURN(data.raw_data, ParseRunDataV2(contents));
+  return LoadDataImpl(data);
 }
 
 }  // namespace sekai::run_analysis

@@ -18,5 +18,10 @@ TEST(ParserTest, ParsesRunDataSuccessfully) {
   EXPECT_THAT(ParseRunData(json_str), IsOk());
 }
 
+TEST(ParserV2Test, ParsesRunDataSuccessfully) {
+  std::string json_str = GetRunfileContents("sekai/run_analysis/testdata/run_data_v2_1.json");
+  EXPECT_THAT(ParseRunDataV2(json_str), IsOk());
+}
+
 }  // namespace
 }  // namespace sekai::run_analysis

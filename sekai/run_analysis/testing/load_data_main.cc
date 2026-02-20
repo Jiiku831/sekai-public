@@ -10,6 +10,7 @@
 ABSL_FLAG(std::string, run_data, "", "Run data to load");
 
 using ::sekai::run_analysis::LoadData;
+using ::sekai::run_analysis::LoadDataV2;
 using ::sekai::run_analysis::LoadedData;
 
 int main(int argc, char** argv) {
@@ -20,7 +21,7 @@ int main(int argc, char** argv) {
     LOG(ERROR) << "No data specified to read.";
     return 1;
   }
-  absl::StatusOr<LoadedData> data = LoadData(data_path);
+  absl::StatusOr<LoadedData> data = LoadDataV2(data_path);
   if (!data.ok()) {
     LOG(ERROR) << "Failed to load data:\n" << data.status();
     return 1;
