@@ -69,7 +69,7 @@ HistogramPlot::HistogramPlot(std::string_view title, std::span<const int> points
     : title_(title), options_(std::move(options)) {
   if (options.drop_zeros) {
     points_ =
-        RangesTo<std::vector<int>>(points | std::views::filter([](const int x) { return x != 0; }));
+        RangesTo<std::vector>(points | std::views::filter([](const int x) { return x != 0; }));
   } else {
     points_ = {points.begin(), points.end()};
   }

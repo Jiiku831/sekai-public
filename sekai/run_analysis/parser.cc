@@ -53,7 +53,7 @@ class RunDataParserV2 : public json::json_sax_t {
 
   bool number_unsigned(json::number_unsigned_t val) override {
     if (current_key_ == "x") {
-      run_data_.mutable_user_graph()->mutable_overall()->add_timestamps(val);
+      run_data_.mutable_user_graph()->mutable_overall()->add_timestamps(val * 1000);
     } else if (current_key_ == "y") {
       run_data_.mutable_user_graph()->mutable_overall()->add_points(val);
     } else {

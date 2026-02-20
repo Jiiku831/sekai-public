@@ -44,14 +44,6 @@ absl::StatusOr<int> InferMinClusterGameCount(float cluster_mean_ratio) {
   return game_count;
 }
 
-template <typename Cont>
-ValueDist ToWeightedValueDist(const Cont& cont) {
-  ValueDist dist;
-  dist.set_mean(weighted_mean<float>(cont));
-  dist.set_stdev(weighted_stdev<float>(cont, dist.mean()));
-  return dist;
-}
-
 ConfidenceInterval ValueDistTo95pCI(const ValueDist& dist) {
   ConfidenceInterval res;
   res.set_value(dist.mean());
@@ -73,6 +65,7 @@ absl::StatusOr<GameCountAnalysis> RunGameCountAnalysis(float cluster_mean_ratio,
   Sequence rejected_samples = seq.CopyEmpty();
   absl::Duration total_duration;
   int total_games = 0;
+  std::array<std::vector<float>, 3> eps;
   for (const Snapshot& pt : seq | std::views::drop(1)) {
     const float diff = pt.diff;
     float game_count_f = diff / initial_avg_ep_est;
@@ -81,12 +74,23 @@ absl::StatusOr<GameCountAnalysis> RunGameCountAnalysis(float cluster_mean_ratio,
       rejected_samples.push_back(pt);
       continue;
     }
+    eps[game_count - 1].push_back(diff);
 
     float avg_ep = diff / game_count;
     ep_breakdown.emplace_back(avg_ep, game_count);
     total_games += game_count;
     total_duration += kInterval;
   }
+
+  float var = 0;
+  for (std::size_t i = 0; i < eps.size(); ++i) {
+    if (eps[i].size() <= 1) continue;
+    float gc = i + 1;
+    var += (variance<float>(eps[i], mean<float>(eps[i])) / gc) * (eps[i].size() * gc / total_games);
+  }
+  ValueDist ep_per_game;
+  ep_per_game.set_mean(weighted_mean<float>(ep_breakdown));
+  ep_per_game.set_stdev(std::sqrt(var));
 
   // Assuming perfectly consistent play, then the observed gph will be at
   // most 1 away from true gph. However, there will be variation over time. So let's just say
@@ -99,7 +103,7 @@ absl::StatusOr<GameCountAnalysis> RunGameCountAnalysis(float cluster_mean_ratio,
   gph.set_confidence(0.95);
 
   return GameCountAnalysis{
-      .ep_per_game = ToWeightedValueDist(ep_breakdown),
+      .ep_per_game = ep_per_game,
       .game_count = total_games,
       .estimated_gph = std::move(gph),
       .rejected_samples = rejected_samples,
@@ -120,14 +124,9 @@ absl::StatusOr<SegmentAnalysisResult> AnalyzeSegment(const Sequence& sequence, b
   result.clusters =
       FindClusters(sequence | std::views::drop(1), debug ? &result.cluster_debug : nullptr);
   result.cluster_mean_ratio = std::numeric_limits<float>::quiet_NaN();
-  float max_stdev = std::numeric_limits<float>::quiet_NaN();
   if (result.clusters.size() < 1) {
     return absl::InternalError("Expected at least 1 clusters.");
   }
-  max_stdev = mean<float>(RangesTo<std::vector>(
-      result.clusters |
-      std::views::transform([](const Cluster& cluster) { return cluster.stdev; })));
-  result.is_auto = max_stdev < kAutoStdevThreshold;
   if (result.clusters.size() < 2) {
     return result;
   }
@@ -142,6 +141,11 @@ absl::StatusOr<SegmentAnalysisResult> AnalyzeSegment(const Sequence& sequence, b
   float min_mean = std::min(mean0, mean1);
   result.cluster_mean_ratio = std::max(mean0, mean1) / min_mean;
   result.game_count_analysis = RunGameCountAnalysis(result.cluster_mean_ratio, min_mean, sequence);
+  if (result.game_count_analysis.ok()) {
+    result.is_auto = result.game_count_analysis->ep_per_game.stdev() < kAutoStdevThreshold;
+  } else {
+    result.is_auto = false;
+  }
   result.is_confident =
       result.game_count_analysis.ok() && result.game_count_analysis->game_count > 0 &&
       !std::isnan(result.game_count_analysis->ep_per_game.mean()) &&

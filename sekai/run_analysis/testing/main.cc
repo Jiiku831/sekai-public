@@ -113,7 +113,7 @@ class PlotDefs {
                                  }));
     state_.selected_segment = std::clamp(state_.selected_segment, 0,
                                          static_cast<int>(data_.segments.active_segments().size()));
-    data_.run_histograms = RangesTo<std::vector<Histograms>>(
+    data_.run_histograms = RangesTo<std::vector>(
         data_.segments.active_segments() | std::views::transform([&](const Sequence& seq) {
           return ComputeHistograms(seq, state_.smoothing_window, kInterval);
         }));
@@ -152,9 +152,9 @@ class PlotDefs {
       ImPlot::TagY(state_.breakpoint_threshold_low, ImVec4(1, 0, 0, 1), "Thresh");
     }
     ImPlot::SetAxis(ImAxis_Y3);
-    auto cluster_assignments = RangesTo<std::vector<Sequence>>(
+    auto cluster_assignments = RangesTo<std::vector>(
         data_.segments.debug().cluster_assignments | std::views::transform([](const Sequence& seq) {
-          return Sequence{.points = RangesTo<std::vector<Snapshot>>(
+          return Sequence{.points = RangesTo<std::vector>(
                               seq.points | std::views::transform([](const Snapshot& pt) {
                                 return Snapshot{pt.time, pt.diff};
                               }))};
@@ -247,9 +247,9 @@ class PlotDefs {
     ImPlot::SetupAxisLimits(ImAxis_Y1, 0, 300'000);
     ImPlot::SetupAxis(ImAxis_Y2, nullptr, ImPlotAxisFlags_Opposite | ImPlotAxisFlags_AutoFit);
     ImPlot::SetNextFillStyle(IMPLOT_AUTO_COL);
-    auto seqs = RangesTo<std::vector<Sequence>>(
+    auto seqs = RangesTo<std::vector>(
         state_.segment_analysis.clusters | std::views::transform([](const Cluster& cluster) {
-          return Sequence{.points = RangesTo<std::vector<Snapshot>>(
+          return Sequence{.points = RangesTo<std::vector>(
                               cluster.vals | std::views::transform([](const Snapshot& pt) {
                                 return Snapshot{pt.time, pt.diff};
                               }))};
@@ -340,7 +340,7 @@ class PlotDefs {
           ImGui::BulletText(
               "%lu-cluster means: %s", i + 1,
               absl::StrJoin(
-                  RangesTo<std::vector<float>>(
+                  RangesTo<std::vector>(
                       debug.clusters | std::views::transform([](const auto& c) { return c.mean; })),
                   ", ")
                   .c_str());
@@ -473,7 +473,7 @@ int main(int argc, char** argv) {
     LOG(ERROR) << "No data specified to read.";
     return 1;
   }
-  absl::StatusOr<LoadedData> data = LoadData(data_path);
+  absl::StatusOr<LoadedData> data = LoadDataV2(data_path);
   if (!data.ok()) {
     LOG(ERROR) << "Failed to load data:\n" << data.status();
     return 1;
