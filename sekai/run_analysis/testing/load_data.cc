@@ -94,4 +94,11 @@ absl::StatusOr<LoadedData> LoadDataV2(std::filesystem::path path) {
   return LoadDataImpl(data);
 }
 
+absl::StatusOr<LoadedData> LoadDataCsv(std::filesystem::path path) {
+  LoadedData data;
+  ASSIGN_OR_RETURN(std::string contents, SafeGetFileContents(path));
+  ASSIGN_OR_RETURN(data.raw_data, ParseRunDataCsv(contents));
+  return LoadDataImpl(data);
+}
+
 }  // namespace sekai::run_analysis

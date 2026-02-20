@@ -23,5 +23,10 @@ TEST(ParserV2Test, ParsesRunDataSuccessfully) {
   EXPECT_THAT(ParseRunDataV2(json_str), IsOk());
 }
 
+TEST(ParserCsvTest, ParsesRunDataSuccessfully) {
+  std::string csv_str = GetRunfileContents("sekai/run_analysis/testdata/run_data_1.csv");
+  EXPECT_THAT(ParseRunDataCsv(csv_str), IsOk());
+}
+
 }  // namespace
 }  // namespace sekai::run_analysis

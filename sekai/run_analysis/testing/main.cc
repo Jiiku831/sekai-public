@@ -473,7 +473,8 @@ int main(int argc, char** argv) {
     LOG(ERROR) << "No data specified to read.";
     return 1;
   }
-  absl::StatusOr<LoadedData> data = LoadDataV2(data_path);
+  absl::StatusOr<LoadedData> data =
+      data_path.extension() == ".csv" ? LoadDataCsv(data_path) : LoadDataV2(data_path);
   if (!data.ok()) {
     LOG(ERROR) << "Failed to load data:\n" << data.status();
     return 1;

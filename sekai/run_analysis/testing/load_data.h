@@ -27,5 +27,6 @@ struct LoadedData {
 
 absl::StatusOr<LoadedData> LoadData(std::filesystem::path path);
 absl::StatusOr<LoadedData> LoadDataV2(std::filesystem::path path);
+absl::StatusOr<LoadedData> LoadDataCsv(std::filesystem::path path);
 
 }  // namespace sekai::run_analysis

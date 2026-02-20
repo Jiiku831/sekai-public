@@ -53,12 +53,8 @@ ConfidenceInterval ValueDistTo95pCI(const ValueDist& dist) {
   return res;
 }
 
-absl::StatusOr<GameCountAnalysis> RunGameCountAnalysis(float cluster_mean_ratio,
-                                                       float min_cluster_mean,
+absl::StatusOr<GameCountAnalysis> RunGameCountAnalysis(float initial_avg_ep_est,
                                                        const Sequence& seq) {
-  ASSIGN_OR_RETURN(int min_cluster_game_count, InferMinClusterGameCount(cluster_mean_ratio));
-  float initial_avg_ep_est = min_cluster_mean / min_cluster_game_count;
-
   constexpr float kEpTol = 0.2;
   // (Avg EP, Game Count)
   std::vector<std::pair<float, int>> ep_breakdown;
@@ -110,6 +106,38 @@ absl::StatusOr<GameCountAnalysis> RunGameCountAnalysis(float cluster_mean_ratio,
   };
 }
 
+absl::StatusOr<float> FindInitialEpEstimate(SegmentAnalysisResult& result) {
+  std::stable_sort(result.clusters.begin(), result.clusters.end(),
+                   [](const Cluster& lhs, const Cluster& rhs) { return lhs.mean > rhs.mean; });
+  std::optional<float> best_ratio = std::nullopt;
+  int total_size = 0;
+  std::optional<float> initial_ep_est = std::nullopt;
+  absl::Status last_status = absl::OkStatus();
+  float backup_ratio = 0;
+  for (std::size_t i = 0; i < result.clusters.size(); ++i) {
+    for (std::size_t j = 0; j < result.clusters.size(); ++j) {
+      float max_mean = std::max(result.clusters[i].mean, result.clusters[j].mean);
+      float min_mean = std::min(result.clusters[i].mean, result.clusters[j].mean);
+      float ratio = max_mean / min_mean;
+      if (absl::StatusOr<int> gc = InferMinClusterGameCount(ratio); gc.ok()) {
+        int candidate_size = result.clusters[i].vals.size() + result.clusters[j].vals.size();
+        if (total_size < candidate_size) {
+          best_ratio = ratio;
+          initial_ep_est = min_mean / *gc;
+        }
+      } else {
+        last_status = gc.status();
+        backup_ratio = ratio;
+      }
+    }
+  }
+  result.cluster_mean_ratio = best_ratio.value_or(backup_ratio);
+  if (!initial_ep_est.has_value()) {
+    return last_status;
+  }
+  return *initial_ep_est;
+}
+
 }  // namespace
 
 absl::StatusOr<SegmentAnalysisResult> AnalyzeSegment(const Sequence& sequence, bool debug) {
@@ -130,17 +158,10 @@ absl::StatusOr<SegmentAnalysisResult> AnalyzeSegment(const Sequence& sequence, b
   if (result.clusters.size() < 2) {
     return result;
   }
-  // Look at the two largest clusters
-  if (result.clusters.size() > 2) {
-    std::stable_sort(
-        result.clusters.begin(), result.clusters.end(),
-        [](const Cluster& lhs, const Cluster& rhs) { return lhs.vals.size() > rhs.vals.size(); });
-  }
-  float mean0 = result.clusters[0].mean;
-  float mean1 = result.clusters[1].mean;
-  float min_mean = std::min(mean0, mean1);
-  result.cluster_mean_ratio = std::max(mean0, mean1) / min_mean;
-  result.game_count_analysis = RunGameCountAnalysis(result.cluster_mean_ratio, min_mean, sequence);
+  absl::StatusOr<float> initial_ep_estimate = FindInitialEpEstimate(result);
+  result.game_count_analysis = initial_ep_estimate.ok()
+                                   ? RunGameCountAnalysis(*initial_ep_estimate, sequence)
+                                   : initial_ep_estimate.status();
   if (result.game_count_analysis.ok()) {
     result.is_auto = result.game_count_analysis->ep_per_game.stdev() < kAutoStdevThreshold;
   } else {

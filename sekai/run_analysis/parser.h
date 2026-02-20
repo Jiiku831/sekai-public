@@ -9,5 +9,6 @@ namespace sekai::run_analysis {
 
 absl::StatusOr<RunData> ParseRunData(std::string_view json_str);
 absl::StatusOr<RunData> ParseRunDataV2(std::string_view json_str);
+absl::StatusOr<RunData> ParseRunDataCsv(std::string_view csv_str);
 
 }  // namespace sekai::run_analysis

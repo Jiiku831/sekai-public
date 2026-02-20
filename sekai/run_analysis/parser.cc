@@ -6,7 +6,11 @@
 
 #include "absl/status/status.h"
 #include "absl/status/statusor.h"
+#include "absl/strings/ascii.h"
+#include "absl/strings/numbers.h"
 #include "absl/strings/str_format.h"
+#include "absl/strings/str_split.h"
+#include "absl/time/time.h"
 #include "base/util.h"
 #include "sekai/db/json/parser.h"
 #include "sekai/run_analysis/proto/run_data.pb.h"
@@ -108,6 +112,32 @@ absl::StatusOr<RunData> ParseRunDataV2(std::string_view json_str) {
     return absl::InternalError("Parser failed but no error status");
   }
   return parser.status();
+}
+
+absl::StatusOr<RunData> ParseRunDataCsv(absl::string_view csv_str) {
+  std::vector<std::string> lines = absl::StrSplit(csv_str, '\n');
+  absl::TimeZone jst_timezone = absl::FixedTimeZone(absl::Hours(9) / absl::Seconds(1));
+  RunData run_data;
+  for (absl::string_view line : lines) {
+    std::vector<std::string> fields = absl::StrSplit(line, ',');
+    if (fields.size() != 2) continue;
+    // Header
+    if (absl::StripAsciiWhitespace(fields[1]) == "score") continue;
+    absl::Time time;
+    std::string error;
+    if (!absl::ParseTime("%Y-%m-%d %H:%M:%S", absl::StripAsciiWhitespace(fields[0]), jst_timezone,
+                         &time, &error)) {
+      return absl::InvalidArgumentError(
+          absl::StrFormat("Failed to parse '%s' as time: %s", fields[0], error));
+    }
+    int points;
+    if (!absl::SimpleAtoi(absl::StripAsciiWhitespace(fields[1]), &points)) {
+      return absl::InvalidArgumentError(absl::StrFormat("Failed to parse '%s' as int.", fields[1]));
+    }
+    run_data.mutable_user_graph()->mutable_overall()->add_timestamps(absl::ToUnixMillis(time));
+    run_data.mutable_user_graph()->mutable_overall()->add_points(points);
+  }
+  return run_data;
 }
 
 }  // namespace sekai::run_analysis

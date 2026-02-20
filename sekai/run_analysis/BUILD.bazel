@@ -197,7 +197,9 @@ cc_library(
         "//sekai/run_analysis/proto:run_data_cc_proto",
         "@abseil-cpp//absl/status:status",
         "@abseil-cpp//absl/status:statusor",
+        "@abseil-cpp//absl/strings",
         "@abseil-cpp//absl/strings:str_format",
+        "@abseil-cpp//absl/time",
         "@nlohmann_json//:json",
     ],
 )
@@ -206,6 +208,7 @@ cc_test(
     name = "parser_test",
     srcs = ["parser_test.cc"],
     data = [
+        "testdata/run_data_1.csv",
         "testdata/run_data_1.json",
         "testdata/run_data_v2_1.json",
     ],
