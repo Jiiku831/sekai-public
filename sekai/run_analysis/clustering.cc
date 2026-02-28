@@ -20,25 +20,19 @@ inline auto GetDiffs() {
 }
 
 std::vector<float> InitialMeans(std::span<const int> sorted_vals, int num_clusters) {
-  // Given the nature of the data, we assign the initial means by equally dividing the range of the
-  // values into (num_clusters + 1) parts;
-  // TODO: should prob take by percentile instead
-  float step = static_cast<float>(sorted_vals.size()) / (num_clusters + 1);
   std::vector<float> initial;
   initial.reserve(num_clusters);
-  for (int i = 1; i <= num_clusters; ++i) {
-    float val = sorted_vals[int(step * i)];
-
-    // Add a little bias to the top and bottom elements to ensure that they are different and the
-    // result is a bit more stable.
-    constexpr float kBias = 0.1;
-    if (i == 1) {
-      val *= 1 - kBias;
-    } else if (i == num_clusters) {
-      val *= 1 + kBias;
-    }
-
-    initial.push_back(val);
+  if (sorted_vals.empty()) {
+    return std::vector<float>(num_clusters);
+  }
+  if (num_clusters >= 1) {
+    initial.push_back(*sorted_vals.begin());
+  }
+  if (num_clusters >= 2) {
+    initial.push_back(*sorted_vals.rbegin());
+  }
+  if (num_clusters >= 3) {
+    initial.push_back(sorted_vals[sorted_vals.size() / 2]);
   }
   return initial;
 }
@@ -59,7 +53,20 @@ int GetClusterAssignment(const float pt, std::span<const float> means, int num_c
 std::vector<Cluster> AssignClusters(std::span<const Snapshot> pts,
                                     std::span<const int> sorted_diffs, int num_clusters,
                                     ClusterDebug::ClusterSplitDebug* absl_nullable debug) {
-  std::vector<float> means = InitialMeans(sorted_diffs, num_clusters);
+  constexpr float kOutlierPercentile = 0.05;
+  std::span<const int> truncated_vals =
+      sorted_diffs.size() <= 10
+          ? sorted_diffs
+          : sorted_diffs.subspan(
+                int(static_cast<float>(sorted_diffs.size()) * kOutlierPercentile),
+                int(static_cast<float>(sorted_diffs.size()) * (1 - 2 * kOutlierPercentile)));
+  float min_val = 0;
+  float max_val = 0;
+  if (!truncated_vals.empty()) {
+    min_val = *truncated_vals.begin();
+    max_val = *truncated_vals.rbegin();
+  }
+  std::vector<float> means = InitialMeans(truncated_vals, num_clusters);
   if (debug != nullptr) {
     debug->initial_means = means;
   }
@@ -74,9 +81,12 @@ std::vector<Cluster> AssignClusters(std::span<const Snapshot> pts,
     std::vector<int> counts(num_clusters, 0);
     for (std::size_t j = 0; j < pts.size(); ++j) {
       auto val = pts[j].diff;
-      int assignment = GetClusterAssignment(val, means, num_clusters);
-      totals[assignment] += val;
-      ++counts[assignment];
+      int assignment =
+          val < min_val || val > max_val ? -1 : GetClusterAssignment(val, means, num_clusters);
+      if (assignment >= 0) {
+        totals[assignment] += val;
+        ++counts[assignment];
+      }
       if (cluster[j] != assignment) {
         clusters_changed = true;
         cluster[j] = assignment;
@@ -93,7 +103,9 @@ std::vector<Cluster> AssignClusters(std::span<const Snapshot> pts,
     results.push_back({.mean = means[i]});
   }
   for (std::size_t i = 0; i < pts.size(); ++i) {
-    results[cluster[i]].vals.push_back(pts[i]);
+    if (cluster[i] >= 0) {
+      results[cluster[i]].vals.push_back(pts[i]);
+    }
   }
   return results;
 }
@@ -107,8 +119,9 @@ float RssMetric(std::span<const Cluster> clusters, std::size_t total_size) {
   return rss;
 }
 
-std::vector<Cluster> FindBestClusters(std::span<const Snapshot> pts, int max_num_clusters,
-                                      float min_size_ratio, ClusterDebug* absl_nullable debug) {
+std::vector<Cluster> FindBestClusters(std::span<const Snapshot> pts, int min_num_clusters,
+                                      int max_num_clusters, float min_size_ratio,
+                                      ClusterDebug* absl_nullable debug) {
   if (pts.empty()) {
     return std::vector<Cluster>(1);
   }
@@ -145,7 +158,7 @@ std::vector<Cluster> FindBestClusters(std::span<const Snapshot> pts, int max_num
       debug->split_debug.back().min_size = std::numeric_limits<float>::infinity();
       debug->split_debug.back().clusters = new_candidate;
     }
-    if (new_rss / rss >= kRssThreshold) {
+    if (new_rss / rss >= kRssThreshold && i > min_num_clusters) {
       break;
     }
     bool reject = false;
@@ -159,7 +172,7 @@ std::vector<Cluster> FindBestClusters(std::span<const Snapshot> pts, int max_num
         reject = true;
       }
     }
-    if (reject) break;
+    if (reject && i > min_num_clusters) break;
     rss = new_rss;
     candidate = std::move(new_candidate);
   }
@@ -216,8 +229,10 @@ Cluster RemoveOutliers(std::span<Cluster> clusters, int iterations, float reject
 std::vector<Cluster> FindClusters(std::span<const Snapshot> pts, ClusterDebug* absl_nullable debug,
                                   float min_size_ratio, int outlier_iterations,
                                   float outlier_rejection_threshold) {
+  constexpr std::size_t kMinClusters = 2;
   constexpr std::size_t kMaxClusters = 3;
-  std::vector<Cluster> results = FindBestClusters(pts, kMaxClusters, min_size_ratio, debug);
+  std::vector<Cluster> results =
+      FindBestClusters(pts, kMinClusters, kMaxClusters, min_size_ratio, debug);
   RecomputeMeanStdev(results);
 
   results.push_back(
