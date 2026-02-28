@@ -1,6 +1,25 @@
 load("@emsdk//emscripten_toolchain:wasm_rules.bzl", "wasm_cc_binary")
 load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library")
 
+cc_binary(
+    name = "analyze_graphs_main",
+    srcs = ["analyze_graphs_main.cc"],
+    data = [
+        "//data:flat-db-minimal",
+    ],
+    deps = [
+        ":load_data",
+        "//base",
+        "//sekai/run_analysis:clustering",
+        "//sekai/run_analysis:segment_analysis",
+        "@abseil-cpp//absl/log",
+        "@abseil-cpp//absl/log:flags",
+        "@abseil-cpp//absl/status",
+        "@abseil-cpp//absl/status:statusor",
+        "@abseil-cpp//absl/strings:str_format",
+    ],
+)
+
 cc_library(
     name = "imgui_util",
     srcs = ["imgui_util.cc"],

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <limits>
+
 #include "absl/status/statusor.h"
 #include "absl/time/time.h"
 #include "sekai/run_analysis/clustering.h"
