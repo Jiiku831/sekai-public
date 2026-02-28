@@ -446,7 +446,7 @@ function CreateTitleBonusRow(chunkSize) {
       return CreateNode("td",
         CreateNumberInput(
             // TODO: make the max update automatically
-            0, 310, 'title-bonus',
+            0, 320, 'title-bonus',
             function(e) {
                 if (!this.validity.valid || this.value == "") {
                     return;

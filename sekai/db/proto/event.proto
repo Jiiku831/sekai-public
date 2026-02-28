@@ -22,8 +22,8 @@ message Event {
       optional int32 seq             = 4 [(json_name) = "seq"];
 
       enum ConditionType {
-        CONDITION_TYPE_UNKNOWN = 0;
-        CONDITION_TYPE_NONE    = 1 [(json_value) = "none"];
+        CONDITION_TYPE_UNKNOWN     = 0;
+        CONDITION_TYPE_NONE        = 1 [(json_value) = "none"];
         CONDITION_TYPE_LEADER_PLAY = 2 [(json_value) = "leader_character_play_count"];
       }
       optional ConditionType condition_type = 5 [(json_name) = "rewardConditionType"];
@@ -57,4 +57,5 @@ message Event {
   optional string event_point_assetbundle_name         = 17 [(json_name) = "eventPointAssetbundleName"];
   optional bool is_count_leader_character_play         = 18 [(json_name) = "isCountLeaderCharacterPlay"];
   optional int64 standby_screen_display_start_at       = 19 [(json_name) = "standbyScreenDisplayStartAt"];
+  optional int32 event_break_time_id                   = 20 [(json_name) = "eventBreakTimeId"];
 }
