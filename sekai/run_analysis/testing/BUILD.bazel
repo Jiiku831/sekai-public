@@ -30,6 +30,34 @@ cc_library(
     ],
 )
 
+cc_binary(
+    name = "likelihood_main",
+    srcs = ["likelihood_main.cc"],
+    data = [
+        "//data:flat-db-minimal",
+    ],
+    deps = [
+        ":imgui_util",
+        ":plot",
+        "//base",
+        "//base:util",
+        "//sekai:challenge_live_estimator",
+        "//sekai:estimator",
+        "//sekai:ranges_util",
+        "//sekai/db:master_db",
+        "//sekai/db/proto:all",
+        "@abseil-cpp//absl/base:nullability",
+        "@abseil-cpp//absl/log",
+        "@abseil-cpp//absl/log:flags",
+        "@abseil-cpp//absl/strings:str_format",
+        "@glfw",
+        "@imgui",
+        "@imgui//backends:platform-glfw",
+        "@imgui//backends:renderer-opengl3",
+        "@implot",
+    ],
+)
+
 cc_library(
     name = "load_data",
     srcs = ["load_data.cc"],

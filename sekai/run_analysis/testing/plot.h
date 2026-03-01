@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "imgui.h"
+#include "implot.h"
 #include "sekai/run_analysis/segmentation.h"
 #include "sekai/run_analysis/snapshot.h"
 
@@ -67,6 +68,29 @@ class PointsLineGraph : public PlotBase {
   std::optional<ImVec4> color_;
 };
 
+struct NormalDistributionOptions {
+  std::optional<double> clamp_min;
+  std::optional<double> clamp_max;
+  bool draw_mu = false;
+};
+
+class NormalDistributionPdf : public PlotBase {
+ public:
+  NormalDistributionPdf(std::string_view title, double mu, double sigma,
+                        std::optional<ImVec4> color = std::nullopt,
+                        NormalDistributionOptions options = {})
+      : mu_(mu), sigma_(sigma), title_(title), color_(color), options_(options) {}
+
+  void Draw(const PlotOptions& options) const override;
+
+ private:
+  double mu_;
+  double sigma_;
+  std::string title_;
+  std::optional<ImVec4> color_;
+  NormalDistributionOptions options_;
+};
+
 template <typename Plot>
 class SegmentsPlot : public PlotBase {
  public:
@@ -99,17 +123,31 @@ struct HistogramOptions {
   int bins = 200;
 };
 
+template <typename T>
 class HistogramPlot : public PlotBase {
  public:
-  // Input must outlive this class.
-  HistogramPlot(std::string_view title, std::span<const int> points, HistogramOptions options = {});
+  HistogramPlot(std::string_view title, std::span<const T> points, HistogramOptions options = {})
+      : title_(title), options_(std::move(options)) {
+    if (options.drop_zeros) {
+      points_ =
+          RangesTo<std::vector>(points | std::views::filter([](const int x) { return x != 0; }));
+    } else {
+      points_ = {points.begin(), points.end()};
+    }
+  }
 
-  void Draw(const PlotOptions& options) const override;
+  void Draw(const PlotOptions& options) const override {
+    ImPlot::PlotHistogram(title_.c_str(), points_.data(), points_.size(), options_.bins,
+                          /*bar_scale=*/1.0, ImPlotRange(), ImPlotHistogramFlags_Density);
+  }
 
  private:
   std::string title_;
   HistogramOptions options_;
-  std::vector<int> points_;
+  std::vector<T> points_;
 };
+
+template <typename T>
+HistogramPlot(std::string_view, const std::vector<T>&) -> HistogramPlot<T>;
 
 }  // namespace sekai::run_analysis

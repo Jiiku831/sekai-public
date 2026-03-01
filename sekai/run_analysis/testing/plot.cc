@@ -1,8 +1,10 @@
 #include "sekai/run_analysis/testing/plot.h"
 
+#include <cmath>
 #include <cstddef>
 #include <cstdint>
 #include <limits>
+#include <numbers>
 #include <ranges>
 #include <span>
 #include <vector>
@@ -64,20 +66,45 @@ void PointsLineGraph::Draw(const PlotOptions& options) const {
   ImPlot::PlotLine(title_.c_str(), seq.x.data(), seq.y.data(), seq.size());
 }
 
-HistogramPlot::HistogramPlot(std::string_view title, std::span<const int> points,
-                             HistogramOptions options)
-    : title_(title), options_(std::move(options)) {
-  if (options.drop_zeros) {
-    points_ =
-        RangesTo<std::vector>(points | std::views::filter([](const int x) { return x != 0; }));
-  } else {
-    points_ = {points.begin(), points.end()};
+void NormalDistributionPdf::Draw(const PlotOptions& options) const {
+  constexpr int kAlpha = 5;
+  constexpr int kSamples = 1000;
+  std::vector<double> x(kSamples), y(kSamples);
+  const double kOffset = mu_ - sigma_ * kAlpha;
+  const double kStep = sigma_ * kAlpha * 2 / kSamples;
+  constexpr double kDistFactor = std::numbers::inv_sqrtpi / std::numbers::sqrt2;
+  int actual_samples = kSamples;
+  bool past_min = false;
+  double actual_mu = 0;
+  for (int i = 0; i < kSamples; ++i) {
+    double pt = kOffset + kStep * i;
+    double norm_pt = (pt - mu_) / sigma_;
+    x[i] = pt;
+    y[i] = kDistFactor / sigma_ * std::exp(-0.5 * norm_pt * norm_pt);
+    if (options_.clamp_min.has_value() && pt <= *options_.clamp_min) {
+      y[i] = 0;
+    } else if (options_.clamp_min.has_value() && !past_min) {
+      past_min = true;
+      y[i] = (1.0 + std::erf(norm_pt / std::numbers::sqrt2)) / 2 / kStep;
+    }
+    actual_mu += pt * kStep * y[i];
+    if (options_.clamp_max.has_value() && pt >= *options_.clamp_max) {
+      y[i] = (1.0 - (1.0 + std::erf(norm_pt / std::numbers::sqrt2)) / 2) / kStep;
+      actual_samples = i + 1;
+      actual_mu += pt * kStep * y[i];
+      break;
+    }
   }
-}
-
-void HistogramPlot::Draw(const PlotOptions& options) const {
-  ImPlot::PlotHistogram(title_.c_str(), points_.data(), points_.size(), options_.bins,
-                        /*bar_scale=*/1.0, ImPlotRange(), ImPlotHistogramFlags_Density);
+  if (color_.has_value()) {
+    ImPlot::SetNextFillStyle(*color_);
+    ImPlot::SetNextLineStyle(*color_);
+  }
+  ImPlot::PlotLine(title_.c_str(), x.data(), y.data(), actual_samples);
+  if (options_.draw_mu) {
+    ImPlot::DragLineX(0, &actual_mu, color_.value_or(ImVec4(1, 0, 0, 1)), /*thickness=*/1,
+                      ImPlotDragToolFlags_NoInputs);
+    ImPlot::TagX(actual_mu, color_.value_or(ImVec4(1, 0, 0, 1)), "mu");
+  }
 }
 
 }  // namespace sekai::run_analysis
