@@ -1,10 +1,55 @@
 #pragma once
 
+#include <cmath>
 #include <numeric>
 #include <ranges>
 #include <utility>
 
+#include <boost/math/distributions/normal.hpp>
+
 namespace sekai::run_analysis {
+
+class DistributionBase {
+ public:
+  virtual ~DistributionBase() = default;
+  virtual double Pdf(double x) const = 0;
+  virtual double Cdf(double x) const = 0;
+  virtual double Ppf(double x) const = 0;
+  virtual double Mean() const = 0;
+  virtual double Stdev() const = 0;
+  virtual double offset() const = 0;
+  virtual double scale() const = 0;
+};
+
+template <typename Dist>
+class Distribution : public DistributionBase {
+ public:
+  Distribution(Dist dist, double offset = 0, double scale = 1)
+      : dist_(std::move(dist)),
+        offset_(offset),
+        scale_(scale),
+        mu_(boost::math::mean(dist_) + offset),
+        sigma_(boost::math::standard_deviation(dist_) * scale) {
+    std::tie(min_, max_) = boost::math::range(dist_);
+  }
+
+  double Pdf(double x) const override { return boost::math::pdf(dist_, Map(x)) * scale_; }
+  double Cdf(double x) const override { return boost::math::cdf(dist_, Map(x)) * scale_; }
+  double Ppf(double x) const override { return MapInv(boost::math::quantile(dist_, x)); }
+  double Mean() const override { return mu_; }
+  double Stdev() const override { return sigma_; }
+  double offset() const override { return offset_; }
+  double scale() const override { return scale_; }
+
+ private:
+  double Map(double x) const { return std::clamp(scale_ * (x - offset_), min_, max_); }
+  double MapInv(double x) const { return x / scale_ + offset_; }
+
+  Dist dist_;
+  double offset_, scale_;
+  double mu_, sigma_;
+  double min_, max_;
+};
 
 template <typename T, typename Cont>
 T mean(const Cont& cont) {

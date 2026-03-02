@@ -4,6 +4,8 @@
 #include <vector>
 
 #include <GLFW/glfw3.h>
+#include <boost/math/distributions/chi_squared.hpp>
+#include <boost/math/distributions/normal.hpp>
 
 #include "absl/base/nullability.h"
 #include "absl/flags/flag.h"
@@ -17,20 +19,22 @@
 #include "implot.h"
 #include "sekai/config.h"
 #include "sekai/db/master_db.h"
-#include "sekai/db/proto/music_meta.pb.h"
 #include "sekai/estimator.h"
 #include "sekai/ranges_util.h"
+#include "sekai/run_analysis/fill_analysis.h"
+#include "sekai/run_analysis/stats_util.h"
+#include "sekai/run_analysis/testing/imgui_util.h"
 #include "sekai/run_analysis/testing/plot.h"
 
 using namespace ::sekai;
 using namespace ::sekai::run_analysis;
 
-ABSL_FLAG(int, power, 358'449, "team power");
+ABSL_FLAG(int, power, 375'968, "team power");
 ABSL_FLAG(float, event_bonus, 435, "event bonus %");
-ABSL_FLAG(float, skill_min, 182, "min skill %");
-ABSL_FLAG(float, skill_max, 218, "max skill %");
-ABSL_FLAG(float, observed_gph, 28.1, "observed games/hr");
-ABSL_FLAG(float, observed_ppg, 62'900, "observed pt/game");
+ABSL_FLAG(float, skill_min, 198, "min skill %");
+ABSL_FLAG(float, skill_max, 234, "max skill %");
+ABSL_FLAG(float, observed_gph, 19.5, "observed games/hr");
+ABSL_FLAG(float, observed_ppg, 41'700, "observed pt/game");
 
 constexpr const char* kGlslVersion = "#version 130";
 constexpr float kScaleFactor = 2.0;
@@ -41,11 +45,7 @@ constexpr const char* kWindowTitle = "Run Analysis Debugger";
 constexpr std::array kClearColor = {0.45f, 0.55f, 0.60f, 1.00f};
 constexpr int kPaddingBottom = 125;
 constexpr int kPaddingRight = 35;
-constexpr int kHistogramHeight = 600;
-// Variation in play. Not sure how we can model this.
-// Probably can use player point variance?
-constexpr float kPlayVariance = 0.3;
-constexpr float kSkillOffset = 0.015;
+constexpr int kHistogramHeight = 700;
 constexpr int kLikelihoodHeatmapResolution = 200;
 
 void GlfwError(int code, const char* msg) { LOG(ERROR) << "GLFW Error " << code << ": " << msg; }
@@ -108,21 +108,6 @@ void NewFrame() {
   ImGui::NewFrame();
 }
 
-class PlayStrategy {
- public:
-  PlayStrategy(absl::string_view name, Estimator::Mode mode,
-               std::vector<const db::MusicMeta * absl_nonnull> metas)
-      : name_(name), estimator_(mode, metas) {}
-
-  const char* name() const { return name_.c_str(); }
-
-  const Estimator& estimator() const { return estimator_; }
-
- private:
-  std::string name_;
-  Estimator estimator_;
-};
-
 class PlotDefs {
  public:
   PlotDefs() = default;
@@ -131,9 +116,52 @@ class PlotDefs {
     if (!should_update()) {
       return absl::OkStatus();
     }
+    RETURN_IF_ERROR(UpdateAnalysis());
     RETURN_IF_ERROR(SimulatePlay());
     RETURN_IF_ERROR(ComputeLikelihood());
     last_state_ = state_;
+    return absl::OkStatus();
+  }
+
+  absl::Status UpdateAnalysis() {
+    data_.analyzer = FillAnalyzer(GetFillAnalysisInput(), GetFillAnalysisParams());
+    ASSIGN_OR_RETURN(data_.analysis, data_.analyzer.RunFillAnalysisForStrategy(
+                                         strategy(), state_.boost_multiplier_index));
+
+    data_.strategy_analysis.clear();
+    data_.strategy_analysis.resize(kStrategies.size());
+    for (std::size_t i = 0; i < kStrategies.size(); ++i) {
+      for (std::size_t j = 0; j < kBoostMultipliers.size(); ++j) {
+        ASSIGN_OR_RETURN(data_.strategy_analysis[i][j],
+                         data_.analyzer.RunFillAnalysisForStrategy(kStrategies[i], j));
+        data_.strategy_likelihood[i][j] = data_.strategy_analysis[i][j].likelihood;
+      }
+    }
+
+    double max_likelihood = 0;
+    data_.all_strategy_analysis.clear();
+    data_.all_strategy_analysis.resize(all_strategies_.size());
+    for (std::size_t i = 0; i < all_strategies_.size(); ++i) {
+      for (std::size_t j = 0; j < kBoostMultipliers.size(); ++j) {
+        ASSIGN_OR_RETURN(data_.all_strategy_analysis[i][j],
+                         data_.analyzer.RunFillAnalysisForStrategy(all_strategies_[i], j));
+        data_.all_strategy_likelihood[i][j] = data_.all_strategy_analysis[i][j].likelihood;
+        if (data_.all_strategy_likelihood[i][j] > max_likelihood) {
+          max_likelihood = data_.all_strategy_likelihood[i][j];
+        }
+      }
+    }
+
+    data_.strategy_candidates.clear();
+    for (std::size_t i = 0; i < all_strategies_.size(); ++i) {
+      for (std::size_t j = 0; j < kBoostMultipliers.size(); ++j) {
+        if (data_.all_strategy_likelihood[i][j] > 0.5 * max_likelihood) {
+          data_.strategy_candidates.push_back(i);
+        }
+      }
+    }
+
+    ASSIGN_OR_RETURN(data_.api_response, data_.analyzer.RunAnalysis());
     return absl::OkStatus();
   }
 
@@ -145,16 +173,17 @@ class PlotDefs {
     data_.min_event_points.reserve(kIterations);
     data_.max_event_points.reserve(kIterations);
     float multiplier = kBoostMultipliers[state_.boost_multiplier_index];
-    const Estimator& estimator = strategies_[state_.play_strategy_index].estimator();
     for (int i = 0; i < kIterations; ++i) {
       float skill_value = std::clamp(dist(gen_), static_cast<float>(kMinSkillValue),
                                      static_cast<float>(kMaxSkillValue));
       data_.min_event_points.push_back(
-          multiplier * estimator.ExpectedEpFixedEncore(state_.power, state_.event_bonus,
-                                                       state_.skill_min, skill_value, skill_value));
+          multiplier * estimator().ExpectedEpFixedEncore(state_.power, state_.event_bonus,
+                                                         state_.skill_min, skill_value,
+                                                         skill_value));
       data_.max_event_points.push_back(
-          multiplier * estimator.ExpectedEpFixedEncore(state_.power, state_.event_bonus,
-                                                       state_.skill_max, skill_value, skill_value));
+          multiplier * estimator().ExpectedEpFixedEncore(state_.power, state_.event_bonus,
+                                                         state_.skill_max, skill_value,
+                                                         skill_value));
     }
     return absl::OkStatus();
   }
@@ -165,51 +194,29 @@ class PlotDefs {
     const double kStepY = static_cast<double>(state_.skill_max - state_.skill_min) /
                           (kLikelihoodHeatmapResolution - 1);
     float multiplier = kBoostMultipliers[state_.boost_multiplier_index];
-    const Estimator& estimator = strategies_[state_.play_strategy_index].estimator();
 
     for (int i = 0; i < kLikelihoodHeatmapResolution; ++i) {
       for (int j = 0; j < kLikelihoodHeatmapResolution; ++j) {
         double filler_skill = kMinSkillValue + i * kStepX;
         double player_skill = state_.skill_min + j * kStepY;
-
-        double mu =
-            multiplier * estimator.ExpectedEpFixedEncore(state_.power, state_.event_bonus,
-                                                         player_skill, filler_skill, filler_skill);
         double filler_skill_var = state_.filler_skill_stdev * state_.filler_skill_stdev;
-        double sigma = multiplier *
-                       std::sqrt(estimator.Variance(state_.power, state_.event_bonus, player_skill,
-                                                    filler_skill_var, filler_skill_var)) *
-                       (1 + kPlayVariance);
-        double min = multiplier *
-                     estimator.ExpectedEpFixedEncore(state_.power, state_.event_bonus, player_skill,
-                                                     kMinSkillValue, kMinSkillValue) *
-                     (1 - kSkillOffset);
-        double max = multiplier *
-                     estimator.ExpectedEpFixedEncore(state_.power, state_.event_bonus, player_skill,
-                                                     kMaxSkillValue, kMaxSkillValue) *
-                     (1 + kSkillOffset);
-        if (state_.observed_ppg < min || state_.observed_ppg > max) {
-          data_.likelihood_heatmap[kLikelihoodHeatmapResolution - j - 1][i] = 0;
-        } else {
-          constexpr double kDistFactor = std::numbers::inv_sqrtpi / std::numbers::sqrt2;
-          double norm_pt = (state_.observed_ppg - mu) / sigma;
-          data_.likelihood_heatmap[kLikelihoodHeatmapResolution - j - 1][i] =
-              kDistFactor / sigma * std::exp(-0.5 * norm_pt * norm_pt);
-        }
+        data_.likelihood_heatmap[kLikelihoodHeatmapResolution - j - 1][i] =
+            FillAnalyzer::MakePlayDist(estimator(), multiplier, state_.power, state_.event_bonus,
+                                       player_skill, filler_skill, filler_skill_var)
+                .Pdf(state_.observed_ppg);
       }
     }
     return absl::OkStatus();
   }
 
   void Draw(const ImGuiViewport* viewport) const {
-    const int kHistogramWidth = (viewport->WorkSize.x - 2 * kPaddingRight);
-    constexpr int kBaseSize = 4500;
+    const int kHistogramWidth = (viewport->WorkSize.x - 2 * kPaddingRight) / 2;
     float multiplier = kBoostMultipliers[state_.boost_multiplier_index];
     ImVec2 histPlotSize(kHistogramWidth, kHistogramHeight);
     if (!ImPlot::BeginPlot("Point Distribution##Distributions", histPlotSize)) {
       return;
     }
-    ImPlot::SetupAxisLimits(ImAxis_X1, 0, kBaseSize * multiplier);
+    ImPlot::SetupAxis(ImAxis_X1, nullptr, ImPlotAxisFlags_AutoFit);
     ImPlot::SetupAxis(ImAxis_Y1, nullptr, ImPlotAxisFlags_AutoFit | ImPlotAxisFlags_NoDecorations);
     ImPlot::SetupAxis(
         ImAxis_Y2, nullptr,
@@ -219,70 +226,71 @@ class PlotDefs {
     HistogramPlot("Max Event Points", data_.max_event_points).Draw(options_);
 
     ImPlot::SetAxis(ImAxis_Y2);
-    const Estimator& estimator = strategies_[state_.play_strategy_index].estimator();
     auto color = ImVec4(1, 0, 0, 1);
     double ppg = state_.observed_ppg;
     ImPlot::DragLineX(0, &ppg, color, /*thickness=*/1, ImPlotDragToolFlags_NoInputs);
-    ImPlot::TagX(ppg, color, "Observed");
+    ImPlot::TagX(ppg, color, "Observed: %d", static_cast<int>(state_.observed_ppg));
 
     color = ImVec4(0, 1, 0, 1);
-    double min_pts = multiplier * estimator.ExpectedEpFixedEncore(
-                                      state_.power, state_.event_bonus, state_.skill_min,
-                                      state_.filler_avg_skill, state_.filler_avg_skill);
     double filler_skill_var = state_.filler_skill_stdev * state_.filler_skill_stdev;
-    double min_stdev =
-        multiplier *
-        std::sqrt(estimator.Variance(state_.power, state_.event_bonus, state_.skill_min,
-                                     filler_skill_var, filler_skill_var)) *
-        (1 + kPlayVariance);
-    // ImPlot::DragLineX(0, &min_pts, color, /*thickness=*/1, ImPlotDragToolFlags_NoInputs);
-    // ImPlot::TagX(min_pts, color, "Expect Min");
-    double abs_min =
-        multiplier *
-        estimator.ExpectedEpFixedEncore(state_.power, state_.event_bonus, state_.skill_min,
-                                        kMinSkillValue, kMinSkillValue) *
-        (1 - kSkillOffset);
-    double abs_max =
-        multiplier *
-        estimator.ExpectedEpFixedEncore(state_.power, state_.event_bonus, state_.skill_min,
-                                        kMaxSkillValue, kMaxSkillValue) *
-        (1 + kSkillOffset);
-    NormalDistributionPdf("Min Dist", min_pts, min_stdev, color,
-                          {.clamp_min = abs_min, .clamp_max = abs_max, .draw_mu = true})
+    double abs_min = multiplier * estimator().ExpectedEpFixedEncore(
+                                      state_.power, state_.event_bonus, state_.skill_min,
+                                      kMinSkillValue, kMinSkillValue);
+    double abs_max = multiplier * estimator().ExpectedEpFixedEncore(
+                                      state_.power, state_.event_bonus, state_.skill_min,
+                                      kMaxSkillValue, kMaxSkillValue);
+    DistributionPlot(
+        "Min Dist",
+        FillAnalyzer::MakePlayDist(estimator(), multiplier, state_.power, state_.event_bonus,
+                                   state_.skill_min, state_.filler_avg_skill, filler_skill_var),
+        color, {.clamp_min = abs_min, .clamp_max = abs_max, .draw_mu = true})
         .Draw(options_);
 
     color = ImVec4(0, 0, 1, 1);
-    double max_pts = multiplier * estimator.ExpectedEpFixedEncore(
-                                      state_.power, state_.event_bonus, state_.skill_max,
-                                      state_.filler_avg_skill, state_.filler_avg_skill);
-    double max_stdev =
-        multiplier *
-        std::sqrt(estimator.Variance(state_.power, state_.event_bonus, state_.skill_max,
-                                     filler_skill_var, filler_skill_var)) *
-        (1 + kPlayVariance);
-    // ImPlot::DragLineX(0, &max_pts, color, /*thickness=*/1, ImPlotDragToolFlags_NoInputs);
-    // ImPlot::TagX(max_pts, color, "Expected Max");
-    abs_min = multiplier *
-              estimator.ExpectedEpFixedEncore(state_.power, state_.event_bonus, state_.skill_max,
-                                              kMinSkillValue, kMinSkillValue) *
-              (1 - kSkillOffset);
-    abs_max = multiplier *
-              estimator.ExpectedEpFixedEncore(state_.power, state_.event_bonus, state_.skill_max,
-                                              kMaxSkillValue, kMaxSkillValue) *
-              (1 + kSkillOffset);
-    NormalDistributionPdf("Max Dist", max_pts, max_stdev, color,
-                          {.clamp_min = abs_min, .clamp_max = abs_max, .draw_mu = true})
+    abs_min = multiplier * estimator().ExpectedEpFixedEncore(state_.power, state_.event_bonus,
+                                                             state_.skill_max, kMinSkillValue,
+                                                             kMinSkillValue);
+    abs_max = multiplier * estimator().ExpectedEpFixedEncore(state_.power, state_.event_bonus,
+                                                             state_.skill_max, kMaxSkillValue,
+                                                             kMaxSkillValue);
+    DistributionPlot(
+        "Max Dist",
+        FillAnalyzer::MakePlayDist(estimator(), multiplier, state_.power, state_.event_bonus,
+                                   state_.skill_max, state_.filler_avg_skill, filler_skill_var),
+        color, {.clamp_min = abs_min, .clamp_max = abs_max, .draw_mu = true})
         .Draw(options_);
     ImPlot::EndPlot();
   }
 
+  void DrawTime(const ImGuiViewport* viewport) const {
+    const int kHistogramWidth = (viewport->WorkSize.x - 3 * kPaddingRight) / 2;
+    ImVec2 histPlotSize(kHistogramWidth, kHistogramHeight);
+    if (!ImPlot::BeginPlot("Time Distribution##Distributions", histPlotSize)) {
+      return;
+    }
+    ImPlot::SetupAxisLimits(ImAxis_X1, 0, 180);
+    ImPlot::SetupAxis(ImAxis_Y1, nullptr, ImPlotAxisFlags_AutoFit | ImPlotAxisFlags_NoDecorations);
+    ImPlot::SetNextFillStyle(IMPLOT_AUTO_COL, 0.5f);
+    auto color = ImVec4(1, 0, 0, 1);
+    DistributionPlot("Time Dist", data_.analyzer.MakeTimeDist(strategy()), color,
+                     {.draw_mu = true, .min_quantile = 0})
+        .Draw(options_);
+
+    color = ImVec4(0, 1, 0, 1);
+    double time = 3600.0 / state_.observed_gph - estimator().t_mu();
+    ImPlot::DragLineX(0, &time, color,
+                      /*thickness=*/1, ImPlotDragToolFlags_NoInputs);
+    ImPlot::TagX(time, color, "Observed: %.1f", time);
+    ImPlot::EndPlot();
+  }
+
   void DrawHeatmap(const ImGuiViewport* viewport) const {
-    ImVec2 histPlotSize(kHistogramHeight * 1.5, kHistogramHeight * 1.5);
+    ImVec2 histPlotSize(kHistogramHeight, kHistogramHeight);
 
     static ImPlotColormap map = ImPlotColormap_Viridis;
     ImPlot::PushColormap(map);
 
-    if (!ImPlot::BeginPlot("Likelihood##Heatmap", histPlotSize)) {
+    if (!ImPlot::BeginPlot("Likelihood##Heatmap", histPlotSize, ImPlotFlags_NoLegend)) {
       return;
     }
     ImPlot::SetupAxis(ImAxis_X1, "Filler Skill", ImPlotAxisFlags_AutoFit);
@@ -294,31 +302,67 @@ class PlotDefs {
                         ImPlotPoint(kMinSkillValue, state_.skill_min),
                         ImPlotPoint(kMaxSkillValue, state_.skill_max));
 
-    const Estimator& estimator = strategies_[state_.play_strategy_index].estimator();
-    float multiplier = kBoostMultipliers[state_.boost_multiplier_index];
-    double filler_skill_var = state_.filler_skill_stdev * state_.filler_skill_stdev;
-    double max_stdev = std::sqrt(estimator.VarianceInvSkill(
-        state_.power, state_.event_bonus, state_.skill_min, filler_skill_var, filler_skill_var));
-    double min_stdev = std::sqrt(estimator.VarianceInvSkill(
-        state_.power, state_.event_bonus, state_.skill_max, filler_skill_var, filler_skill_var));
-    constexpr float kAlpha = 1;
-    double max =
-        estimator.ExpectedEpFixedEncoreInvSkill(state_.power, state_.event_bonus, state_.skill_min,
-                                                state_.observed_ppg / multiplier) +
-        kAlpha * max_stdev;
-    double min =
-        estimator.ExpectedEpFixedEncoreInvSkill(state_.power, state_.event_bonus, state_.skill_max,
-                                                state_.observed_ppg / multiplier) -
-        kAlpha * min_stdev;
     auto color = ImVec4(1, 0, 0, 1);
-    if (kMinSkillValue <= min && min <= kMaxSkillValue) {
-      ImPlot::DragLineX(0, &min, color, /*thickness=*/1, ImPlotDragToolFlags_NoInputs);
-      ImPlot::TagX(min, color, "Min");
-    }
+    double min = data_.analysis.fill_power.lower_bound();
+    ImPlot::DragLineX(0, &min, color, /*thickness=*/1, ImPlotDragToolFlags_NoInputs);
+    ImPlot::TagX(min, color, "Min");
+
     color = ImVec4(0, 1, 0, 1);
-    if (kMinSkillValue <= max && max <= kMaxSkillValue) {
-      ImPlot::DragLineX(0, &max, color, /*thickness=*/1, ImPlotDragToolFlags_NoInputs);
-      ImPlot::TagX(max, color, "Max");
+    double max = data_.analysis.fill_power.upper_bound();
+    ImPlot::DragLineX(0, &max, color, /*thickness=*/1, ImPlotDragToolFlags_NoInputs);
+    ImPlot::TagX(max, color, "Max");
+
+    ImPlot::EndPlot();
+    ImPlot::PopColormap();
+  }
+
+  void DrawHeatmap2(const ImGuiViewport* viewport) const {
+    ImVec2 histPlotSize(kHistogramHeight, kHistogramHeight);
+
+    static ImPlotColormap map = ImPlotColormap_Viridis;
+    ImPlot::PushColormap(map);
+
+    if (!ImPlot::BeginPlot("Strategy Likelihood##Heatmap", histPlotSize, ImPlotFlags_NoLegend)) {
+      return;
+    }
+    ImPlot::SetupAxis(ImAxis_X1, "Boost Usage", ImPlotAxisFlags_AutoFit);
+    ImPlot::SetupAxis(ImAxis_Y1, nullptr, ImPlotAxisFlags_AutoFit);
+    ImPlot::SetupAxisTicks(ImAxis_X1, 0.5, kBoostMultipliers.size() - 0.5, kBoostMultipliers.size(),
+                           multiplier_labels_c_str_.data());
+    ImPlot::SetupAxisTicks(ImAxis_Y1, 0.5, kStrategies.size() - 0.5, kStrategies.size(),
+                           rev_strategy_names_.data());
+
+    ImPlot::PlotHeatmap("Likelihood", data_.strategy_likelihood[0], kStrategies.size(),
+                        kBoostMultipliers.size(), 0, 0, nullptr, ImPlotPoint(0, 0),
+                        ImPlotPoint(kBoostMultipliers.size(), kStrategies.size()));
+
+    ImPlot::EndPlot();
+    ImPlot::PopColormap();
+  }
+
+  void DrawHeatmap3(const ImGuiViewport* viewport) const {
+    ImVec2 histPlotSize(kHistogramHeight, kHistogramHeight);
+
+    static ImPlotColormap map = ImPlotColormap_Viridis;
+    ImPlot::PushColormap(map);
+
+    if (!ImPlot::BeginPlot("All Strategy Likelihood##Heatmap", histPlotSize,
+                           ImPlotFlags_NoLegend)) {
+      return;
+    }
+    ImPlot::SetupAxis(ImAxis_X1, "Boost Usage", ImPlotAxisFlags_AutoFit);
+    ImPlot::SetupAxisTicks(ImAxis_X1, 0.5, kBoostMultipliers.size() - 0.5, kBoostMultipliers.size(),
+                           multiplier_labels_c_str_.data());
+    ImPlot::SetupAxis(ImAxis_Y1, nullptr, ImPlotAxisFlags_AutoFit);
+
+    ImPlot::PlotHeatmap("Likelihood", data_.all_strategy_likelihood[0], all_strategies_.size(),
+                        kBoostMultipliers.size(), 0, 0, nullptr, ImPlotPoint(0, 0),
+                        ImPlotPoint(kBoostMultipliers.size(), all_strategies_.size()));
+
+    for (int strat : data_.strategy_candidates) {
+      auto color = ImVec4(1, 0, 0, 1);
+      double val = all_strategies_.size() - strat;
+      ImPlot::TagY(val, color, "%s", all_strategies_[strat].name());
     }
 
     ImPlot::EndPlot();
@@ -326,7 +370,7 @@ class PlotDefs {
   }
 
   void DrawDebug(const ImGuiViewport* viewport) const {
-    const int kWidth = (viewport->WorkSize.x - 2 * kPaddingRight) / 3 + 3;
+    const int kWidth = viewport->WorkSize.x - 2 * kPaddingRight - 3 * kHistogramHeight;
     ImVec2 childSize(kWidth, 600 * kScaleFactor);
     if (!ImGui::BeginChild("Debug Info", childSize)) {
       return;
@@ -345,6 +389,9 @@ class PlotDefs {
     if (ImGui::CollapsingHeader("Play Parameters", ImGuiTreeNodeFlags_DefaultOpen)) {
       ImGui::BulletText("Boost Usage:   %d (%dx)", state_.boost_multiplier_index,
                         kBoostMultipliers[state_.boost_multiplier_index]);
+    }
+    if (ImGui::CollapsingHeader("API Debug", ImGuiTreeNodeFlags_DefaultOpen)) {
+      PrintMessage("Segment Proto", data_.api_response);
     }
     ImGui::EndChild();
   }
@@ -384,12 +431,46 @@ class PlotDefs {
     std::string boost_multiplier =
         absl::StrFormat("%dx", kBoostMultipliers[state_.boost_multiplier_index]);
     ImGui::SetNextItemWidth(10 * ImGui::GetFontSize());
-    ImGui::SliderInt("Boost", &state_.boost_multiplier_index, 0, kBoostMultipliers.size() - 1,
+    ImGui::SliderInt("Boost", &state_.boost_multiplier_index, 0.01, kBoostMultipliers.size() - 1,
                      boost_multiplier.c_str());
     ImGui::SameLine();
     ImGui::SetNextItemWidth(30 * ImGui::GetFontSize());
     ImGui::Combo("Play Strategy", &state_.play_strategy_index, strategy_names_.data(),
                  strategy_names_.size());
+
+    // Time parameters
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(15 * ImGui::GetFontSize());
+    ImGui::SliderFloat("Time Offset", &state_.time_dist_offset, 0, 120);
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(15 * ImGui::GetFontSize());
+    ImGui::SliderFloat("Time Scale", &state_.time_dist_scale, 0, 2);
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(15 * ImGui::GetFontSize());
+    ImGui::SliderFloat("Time DOF", &state_.time_dist_dof, 1, 20);
+  }
+
+  const PlayStrategy& strategy() const { return kStrategies[state_.play_strategy_index]; }
+  const Estimator& estimator() const { return strategy().estimator(); }
+
+  const FillAnalysisInput GetFillAnalysisInput() const {
+    return FillAnalysisInput{
+        .power = state_.power,
+        .event_bonus = state_.event_bonus,
+        .skill_min = state_.skill_min,
+        .skill_max = state_.skill_max,
+        .observed_gph = state_.observed_gph,
+        .observed_ppg = state_.observed_ppg,
+    };
+  }
+
+  const FillAnalysisParameters GetFillAnalysisParams() const {
+    return FillAnalysisParameters{
+        .filler_skill_sigma = state_.filler_skill_stdev,
+        .time_offset = state_.time_dist_offset,
+        .time_scale = state_.time_dist_scale,
+        .time_dof = state_.time_dist_dof,
+    };
   }
 
  private:
@@ -404,11 +485,16 @@ class PlotDefs {
 
     // Filler parameters
     float filler_avg_skill = 230;
-    float filler_skill_stdev = 10;
+    float filler_skill_stdev = kDefaultSkillSigma;
 
     // Play parameters
     int boost_multiplier_index = 10;
     int play_strategy_index = 0;
+
+    // Time parameters
+    float time_dist_offset = kDefaultTimeOffset;
+    float time_dist_scale = kDefaultTimeScale;
+    float time_dist_dof = kDefaultTimeDof;
 
     bool operator==(const PlotState& other) const {
       constexpr float kTol = 0.01;
@@ -421,7 +507,10 @@ class PlotDefs {
              std::abs(filler_avg_skill - other.filler_avg_skill) < kTol &&
              std::abs(filler_skill_stdev - other.filler_skill_stdev) < kTol &&
              boost_multiplier_index == other.boost_multiplier_index &&
-             play_strategy_index == other.play_strategy_index;
+             play_strategy_index == other.play_strategy_index &&
+             std::abs(time_dist_offset - other.time_dist_offset) < kTol &&
+             std::abs(time_dist_scale - other.time_dist_scale) < kTol &&
+             std::abs(time_dist_dof - other.time_dist_dof) < kTol;
     }
   };
   PlotState state_;
@@ -433,24 +522,36 @@ class PlotDefs {
     std::vector<int> min_event_points;
     std::vector<int> max_event_points;
     double likelihood_heatmap[kLikelihoodHeatmapResolution][kLikelihoodHeatmapResolution];
+    FillAnalyzer analyzer;
+    FillAnalysis analysis;
+    std::vector<std::array<FillAnalysis, kBoostMultipliers.size()>> strategy_analysis;
+    std::vector<std::array<FillAnalysis, kBoostMultipliers.size()>> all_strategy_analysis;
+    double strategy_likelihood[kStrategies.size()][kBoostMultipliers.size()];
+    double all_strategy_likelihood[10'000][kBoostMultipliers.size()];
+    std::vector<int> strategy_candidates;
+    AnalyzePlayResponse api_response;
   } data_;
 
-  std::vector<PlayStrategy> strategies_ = {
-      PlayStrategy("Ebi Ex (Multi)", Estimator::Mode::kMulti,
-                   db::MasterDb::GetIf<db::MusicMeta>([](const db::MusicMeta& meta) {
-                     return meta.music_id() == 74 && meta.difficulty() == db::DIFF_EXPERT;
-                   })),
-      PlayStrategy("Ebi Mas (Multi)", Estimator::Mode::kMulti,
-                   db::MasterDb::GetIf<db::MusicMeta>([](const db::MusicMeta& meta) {
-                     return meta.music_id() == 74 && meta.difficulty() == db::DIFF_MASTER;
-                   })),
-      PlayStrategy("Random Ex (Multi)", Estimator::Mode::kMulti,
-                   db::MasterDb::GetIf<db::MusicMeta>([](const db::MusicMeta& meta) {
-                     return meta.difficulty() == db::DIFF_EXPERT;
-                   })),
-  };
   std::vector<const char*> strategy_names_ = RangesTo<std::vector>(
-      strategies_ | std::views::transform([&](const auto& strat) { return strat.name(); }));
+      kStrategies | std::views::transform([&](const auto& strat) { return strat.name(); }));
+  std::vector<const char*> rev_strategy_names_ =
+      RangesTo<std::vector>(kStrategies | std::views::reverse |
+                            std::views::transform([&](const auto& strat) { return strat.name(); }));
+  std::vector<std::string> multiplier_labels_ =
+      RangesTo<std::vector>(kBoostMultipliers | std::views::transform([&](int mult) {
+                              return absl::StrFormat("%dx", mult);
+                            }));
+  std::vector<const char*> multiplier_labels_c_str_ = RangesTo<std::vector>(
+      multiplier_labels_ | std::views::transform([&](const auto& l) { return l.c_str(); }));
+  std::vector<PlayStrategy> all_strategies_ = RangesTo<std::vector>(
+      db::MasterDb::GetAll<db::MusicMeta>() | std::views::filter([](const db::MusicMeta& music) {
+        return music.difficulty() == db::DIFF_EXPERT;
+      }) |
+      std::views::transform([](const db::MusicMeta& music) {
+        return PlayStrategy(UNKNOWN_STRATEGY, absl::StrFormat("%d", music.music_id()),
+                            Estimator::Mode::kAuto, {&music}, kAutoOffset, kAutoScale,
+                            /*is_auto=*/true);
+      }));
 
   std::random_device rd_;
   std::mt19937 gen_{rd_()};
@@ -461,15 +562,21 @@ void DrawFrame(PlotDefs& plots) {
   const ImGuiViewport* viewport = ImGui::GetMainViewport();
   ImGui::SetNextWindowPos(viewport->WorkPos);
   ImGui::SetNextWindowSize(viewport->WorkSize);
-  ImGui::Begin("Run Analysis Debugger", nullptr,
+  ImGui::Begin("Fill Analysis Debugger", nullptr,
                ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove);
   plots.DrawInputs();
   plots.Draw(viewport);
+  ImGui::SameLine();
+  plots.DrawTime(viewport);
   plots.DrawHeatmap(viewport);
+  ImGui::SameLine();
+  plots.DrawHeatmap2(viewport);
+  ImGui::SameLine();
+  plots.DrawHeatmap3(viewport);
   ImGui::SameLine();
   plots.DrawDebug(viewport);
   ImGui::End();
-  ImGui::ShowDemoWindow();
+  // ImGui::ShowDemoWindow();
   // ImPlot::ShowDemoWindow();
 }
 

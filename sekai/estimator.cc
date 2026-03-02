@@ -60,7 +60,8 @@ double GetLifeFactor(Estimator::Mode mode) {
     case Estimator::Mode::kCheerful:
       return 1.35;
     case Estimator::Mode::kAuto:
-      return 1.0;
+      // TODO: not sure why auto is overestimating
+      return 0.9;
     default:
       ABSL_CHECK(false) << "unhandled case";
       return 0;
@@ -123,10 +124,12 @@ Estimator MakeEstimator(Estimator::Mode mode,
   std::vector<double> event_rate_base;
   std::vector<double> event_rate_skill;
   std::vector<double> event_rate_encore;
+  std::vector<double> song_time;
   event_rate.reserve(metas.size());
   event_rate_base.reserve(metas.size());
   event_rate_skill.reserve(metas.size());
   event_rate_encore.reserve(metas.size());
+  song_time.reserve(metas.size());
 
   for (const db::MusicMeta* absl_nonnull meta : metas) {
     SkillScores skill_scores = GetSkillScores(mode, *meta);
@@ -135,6 +138,7 @@ Estimator MakeEstimator(Estimator::Mode mode,
     event_rate_base.push_back(meta->event_rate() * base_score);
     event_rate_skill.push_back(meta->event_rate() * skill_scores.skill_score);
     event_rate_encore.push_back(meta->event_rate() * skill_scores.encore_score);
+    song_time.push_back(meta->music_time());
   }
 
   double mean_event_rate = Mean(event_rate);
@@ -150,8 +154,9 @@ Estimator MakeEstimator(Estimator::Mode mode,
   double b = 4 * life_factor * mean_event_rate_base / ep_factor;
   double c = 4 * life_factor * mean_event_rate_skill / ep_factor;
   double d = 4 * life_factor * mean_event_rate_encore / ep_factor;
+  double t_mu = Mean(song_time);
 
-  return Estimator(a, b, c, d);
+  return Estimator(a, b, c, d, t_mu);
 }
 
 }  // namespace
@@ -202,8 +207,6 @@ double Estimator::ExpectedEpFixedEncoreInvSkill(int power, double event_bonus, f
 double Estimator::Variance(int fixed_power, double fixed_event_bonus, float fixed_player_skill,
                            float encore_skill_var, float third_party_skill_var) const {
   float sv = third_party_skill_var * 16 / 25;
-  // const double& a = a_;
-  // const double& b = b_;
   const double& c = c_;
   const double& d = d_;
   const double p = static_cast<double>(fixed_power);
@@ -217,12 +220,8 @@ double Estimator::VarianceInvSkill(int fixed_power, double fixed_event_bonus,
                                    float fixed_player_skill, float encore_skill_var,
                                    float third_party_skill_var) const {
   float sv = third_party_skill_var * 16 / 25;
-  // const double& a = a_;
-  // const double& b = b_;
   const double& c = c_;
   const double& d = d_;
-  const double p = static_cast<double>(fixed_power);
-  const double q = 1 + static_cast<double>(fixed_event_bonus) / 100;
   const double fv = static_cast<double>(sv) / 100 / 100;
   const double ev = static_cast<double>(encore_skill_var) / 100 / 100;
   return 500 * 500 * (fv * c * c + ev * d * d) / (4 * c + d) / (4 * c + d);

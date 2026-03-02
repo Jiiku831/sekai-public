@@ -66,30 +66,27 @@ void PointsLineGraph::Draw(const PlotOptions& options) const {
   ImPlot::PlotLine(title_.c_str(), seq.x.data(), seq.y.data(), seq.size());
 }
 
-void NormalDistributionPdf::Draw(const PlotOptions& options) const {
-  constexpr int kAlpha = 5;
-  constexpr int kSamples = 1000;
-  std::vector<double> x(kSamples), y(kSamples);
-  const double kOffset = mu_ - sigma_ * kAlpha;
-  const double kStep = sigma_ * kAlpha * 2 / kSamples;
-  constexpr double kDistFactor = std::numbers::inv_sqrtpi / std::numbers::sqrt2;
-  int actual_samples = kSamples;
+void DistributionPlot::Draw(const PlotOptions& options) const {
+  std::vector<double> x(options_.samples), y(options_.samples);
+  double min = dist_.Ppf(options_.min_quantile);
+  double max = dist_.Ppf(options_.max_quantile);
+  const double kStep = (max - min) / (options_.samples - 1);
+  int actual_samples = options_.samples;
   bool past_min = false;
   double actual_mu = 0;
-  for (int i = 0; i < kSamples; ++i) {
-    double pt = kOffset + kStep * i;
-    double norm_pt = (pt - mu_) / sigma_;
+  for (int i = 0; i < options_.samples; ++i) {
+    double pt = min + kStep * i;
     x[i] = pt;
-    y[i] = kDistFactor / sigma_ * std::exp(-0.5 * norm_pt * norm_pt);
+    y[i] = dist_.Pdf(pt);
     if (options_.clamp_min.has_value() && pt <= *options_.clamp_min) {
       y[i] = 0;
     } else if (options_.clamp_min.has_value() && !past_min) {
       past_min = true;
-      y[i] = (1.0 + std::erf(norm_pt / std::numbers::sqrt2)) / 2 / kStep;
+      y[i] = i == 0 ? 0 : dist_.Cdf(pt) / kStep;
     }
     actual_mu += pt * kStep * y[i];
     if (options_.clamp_max.has_value() && pt >= *options_.clamp_max) {
-      y[i] = (1.0 - (1.0 + std::erf(norm_pt / std::numbers::sqrt2)) / 2) / kStep;
+      y[i] = (1.0 - dist_.Cdf(pt)) / kStep;
       actual_samples = i + 1;
       actual_mu += pt * kStep * y[i];
       break;
@@ -103,7 +100,7 @@ void NormalDistributionPdf::Draw(const PlotOptions& options) const {
   if (options_.draw_mu) {
     ImPlot::DragLineX(0, &actual_mu, color_.value_or(ImVec4(1, 0, 0, 1)), /*thickness=*/1,
                       ImPlotDragToolFlags_NoInputs);
-    ImPlot::TagX(actual_mu, color_.value_or(ImVec4(1, 0, 0, 1)), "mu");
+    ImPlot::TagX(actual_mu, color_.value_or(ImVec4(1, 0, 0, 1)), "%.1f", actual_mu);
   }
 }
 

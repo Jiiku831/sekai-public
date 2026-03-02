@@ -1,6 +1,7 @@
 module(name="sekai-public", version="1.0")
 bazel_dep(name="abseil-cpp", version="20250814.0")
 bazel_dep(name="abseil-py", version="2.1.0")
+bazel_dep(name="boost.math", version="1.90.0.bcr.1")
 bazel_dep(name="bs-thread-pool", version="4.1.0")
 bazel_dep(name="ctml", version="2.0.0.2")
 bazel_dep(name="eigen", version="4.0.0-20241125.bcr.2")

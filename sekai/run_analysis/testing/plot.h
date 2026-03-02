@@ -5,10 +5,12 @@
 #include <string_view>
 #include <vector>
 
+#include "absl/base/attributes.h"
 #include "imgui.h"
 #include "implot.h"
 #include "sekai/run_analysis/segmentation.h"
 #include "sekai/run_analysis/snapshot.h"
+#include "sekai/run_analysis/stats_util.h"
 
 namespace sekai::run_analysis {
 
@@ -68,27 +70,30 @@ class PointsLineGraph : public PlotBase {
   std::optional<ImVec4> color_;
 };
 
-struct NormalDistributionOptions {
+struct DistributionOptions {
   std::optional<double> clamp_min;
   std::optional<double> clamp_max;
   bool draw_mu = false;
+  int samples = 1000;
+  double min_quantile = 0.001;
+  double max_quantile = 0.999;
 };
 
-class NormalDistributionPdf : public PlotBase {
+class DistributionPlot : public PlotBase {
  public:
-  NormalDistributionPdf(std::string_view title, double mu, double sigma,
-                        std::optional<ImVec4> color = std::nullopt,
-                        NormalDistributionOptions options = {})
-      : mu_(mu), sigma_(sigma), title_(title), color_(color), options_(options) {}
+  // Input must outlive this class.
+  DistributionPlot(std::string_view title,
+                   const DistributionBase& dist ABSL_ATTRIBUTE_LIFETIME_BOUND,
+                   std::optional<ImVec4> color = std::nullopt, DistributionOptions options = {})
+      : dist_(dist), title_(title), color_(color), options_(options) {}
 
   void Draw(const PlotOptions& options) const override;
 
  private:
-  double mu_;
-  double sigma_;
+  const DistributionBase& dist_;
   std::string title_;
   std::optional<ImVec4> color_;
-  NormalDistributionOptions options_;
+  DistributionOptions options_;
 };
 
 template <typename Plot>

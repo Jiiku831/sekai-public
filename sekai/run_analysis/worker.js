@@ -3,6 +3,7 @@ import Module from "./server_main.js";
 var module = null;
 var moduleReady = initModule();
 async function initModule() {
+  self.location = {href: "kek"};
   module = await Module({
     instantiateWasm: (imports, callback) => {
      const instance = new WebAssembly.Instance(WASM_MAIN, imports);
@@ -70,6 +71,7 @@ function getAllowOrigin(origin) {
 
 const allowedMethods = {
   "/analyze_graph": "POST",
+  "/analyze_play": "GET",
   "/analyze_team": "GET",
   "/batch_analyze_graph": "POST",
 };

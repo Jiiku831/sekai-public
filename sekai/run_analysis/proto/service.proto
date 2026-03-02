@@ -28,6 +28,63 @@ message ConfidenceInterval {
   optional float confidence  = 4;
 }
 
+enum PlayStrategyName {
+  UNKNOWN_STRATEGY = 0;
+  EBI_EX_MULTI     = 1;
+  EBI_EX_PUB       = 2;
+  EBI_MAS_AUTO     = 3;
+  LNF_HARD_MULTI   = 4;
+  LNF_HARD_PUB     = 5;
+  HCM_MAS_AUTO     = 6;
+  SAGE_MAS_AUTO    = 7;
+  RANDOM_EX_MULTI  = 8;
+  RANDOM_EX_PUB    = 9;
+}
+
+message AnalyzePlayRequest {
+  // Team power
+  optional int32 power = 1;
+
+  // Team event bonus, in percentage points (put 100 for 100%).
+  optional float event_bonus = 2;
+
+  // Skill min and max, in percentage points. You can obtain this with a call to
+  // AnalyzeTeam.
+  optional float skill_min               = 3;
+  optional float skill_max               = 4;
+
+  optional float observed_games_per_hour = 5;
+  optional float observed_ep_per_game    = 6;
+}
+
+message AnalyzePlayResponse {
+  message BoostUsageDetails {
+    optional PlayStrategyName strategy = 1;
+    optional int32 boost_usage         = 2;
+    optional int32 multiplier          = 3;
+    optional bool is_auto              = 4;
+    // Note that this does not make sense for auto strategies.
+    optional ConfidenceInterval estimated_avg_filler_skill = 5;
+    // Indicates this is the most likely for regular play.
+    optional bool most_likely          = 6;
+    optional float relative_likelihood = 7;
+
+    // Indicates this is the most likely for auto play.
+    optional bool most_likely_auto          = 8;
+    optional float relative_likelihood_auto = 9;
+  }
+
+  message StrategyDetails {
+    optional PlayStrategyName strategy = 1;
+
+    // Will always be the same length as the allowable boost usage.
+    repeated BoostUsageDetails boost_usage_details = 2;
+  }
+
+  optional Status status                   = 1;
+  repeated StrategyDetails play_strategies = 2;
+}
+
 message AnalyzeTeamRequest {
   optional int32 event_id   = 1;
   repeated DeckCard cards   = 2;

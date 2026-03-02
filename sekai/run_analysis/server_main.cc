@@ -16,6 +16,7 @@
 #include "emscripten/console.h"
 #include "sekai/db/master_db.h"
 #include "sekai/run_analysis/analyze_graph_handler.h"
+#include "sekai/run_analysis/analyze_play_handler.h"
 #include "sekai/run_analysis/analyze_team_handler.h"
 #include "sekai/run_analysis/batch_handler.h"
 #include "sekai/run_analysis/handler.h"
@@ -25,6 +26,7 @@ using namespace ::sekai::run_analysis;
 
 const absl::NoDestructor<absl::flat_hash_map<std::string, const HandlerBase*>> kHandlers{{
     {"/analyze_graph", new AnalyzeGraphHandler},
+    {"/analyze_play", new AnalyzePlayHandler},
     {"/analyze_team", new AnalyzeTeamHandler},
     {"/batch_analyze_graph",
      new BatchHandler<AnalyzeGraphHandler, BatchAnalyzeGraphRequest, BatchAnalyzeGraphResponse>},

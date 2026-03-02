@@ -24,6 +24,18 @@ cc_library(
 )
 
 cc_library(
+    name = "analyze_play_handler",
+    srcs = ["analyze_play_handler.cc"],
+    hdrs = ["analyze_play_handler.h"],
+    deps = [
+        ":fill_analysis",
+        ":handler",
+        "//sekai/run_analysis/proto:service_cc_proto",
+        "@abseil-cpp//absl/status:statusor",
+    ],
+)
+
+cc_library(
     name = "analyze_team_handler",
     srcs = ["analyze_team_handler.cc"],
     hdrs = ["analyze_team_handler.h"],
@@ -105,6 +117,25 @@ cc_library(
 )
 
 cc_library(
+    name = "fill_analysis",
+    srcs = ["fill_analysis.cc"],
+    hdrs = ["fill_analysis.h"],
+    deps = [
+        ":stats_util",
+        "//base:util",
+        "//sekai:challenge_live_estimator",
+        "//sekai:config",
+        "//sekai:estimator",
+        "//sekai/db:master_db",
+        "//sekai/db/proto:all",
+        "//sekai/run_analysis/proto:service_cc_proto",
+        "@abseil-cpp//absl/status",
+        "@abseil-cpp//absl/status:statusor",
+        "@abseil-cpp//absl/strings:str_format",
+    ],
+)
+
+cc_library(
     name = "handler",
     hdrs = ["handler.h"],
     deps = [
@@ -155,11 +186,12 @@ cc_binary(
         "-sEXPORTED_FUNCTIONS=_main,_HandleRequest,_Malloc,_Free",
         "-sENVIRONMENT=web",
         "-sMODULARIZE",
-        "-sUSE_PTHREADS=0",
         "-sALLOW_MEMORY_GROWTH",
+        "-pthread",
     ],
     deps = [
         ":analyze_graph_handler",
+        ":analyze_play_handler",
         ":analyze_team_handler",
         ":batch_handler",
         ":handler",
@@ -316,4 +348,5 @@ cc_library(
 cc_library(
     name = "stats_util",
     hdrs = ["stats_util.h"],
+    deps = ["@boost.math"],
 )
