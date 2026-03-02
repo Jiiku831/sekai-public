@@ -1,5 +1,7 @@
 #include "sekai/run_analysis/fill_analysis.h"
 
+#include <queue>
+
 #include <boost/math/distributions/normal.hpp>
 
 #include "absl/log/log.h"
@@ -18,6 +20,9 @@ namespace {
 // Variation in play. Not sure how we can model this.
 // Probably can use player point variance?
 constexpr float kPlayVariance = 0.3;
+
+constexpr float kInclusionThreshold = 0.5;
+constexpr float kAutoInclusionThreshold = 0.1;
 
 struct InvSkillResult {
   double mu;
@@ -142,12 +147,8 @@ absl::StatusOr<FillAnalysis> FillAnalyzer::RunFillAnalysisForStrategy(const Play
 
 absl::StatusOr<AnalyzePlayResponse> FillAnalyzer::RunAnalysis() const {
   AnalyzePlayResponse resp;
-  std::size_t most_likely_i = 0;
-  std::size_t most_likely_j = 0;
-  double max_likelihood = -std::numeric_limits<double>::infinity();
-  std::size_t most_likely_i_auto = 0;
-  std::size_t most_likely_j_auto = 0;
-  double max_likelihood_auto = -std::numeric_limits<double>::infinity();
+  std::priority_queue<std::tuple<double, std::size_t, std::size_t>> strategies;
+  std::priority_queue<std::tuple<double, std::size_t, std::size_t>> auto_strategies;
   for (std::size_t i = 0; i < kStrategies.size(); ++i) {
     AnalyzePlayResponse::StrategyDetails& strat_res = *resp.add_play_strategies();
     strat_res.set_strategy(kStrategies[i].api_name());
@@ -158,20 +159,23 @@ absl::StatusOr<AnalyzePlayResponse> FillAnalyzer::RunAnalysis() const {
       boost_res.set_multiplier(kBoostMultipliers[j]);
       boost_res.set_is_auto(kStrategies[i].is_auto());
       ASSIGN_OR_RETURN(FillAnalysis res, RunFillAnalysisForStrategy(kStrategies[i], j));
-      if (res.likelihood > max_likelihood) {
-        max_likelihood = res.likelihood;
-        most_likely_i = i;
-        most_likely_j = j;
-      }
-      if (boost_res.is_auto() && res.likelihood > max_likelihood_auto) {
-        max_likelihood_auto = res.likelihood;
-        most_likely_i_auto = i;
-        most_likely_j_auto = j;
+      strategies.emplace(res.likelihood, i, j);
+      if (boost_res.is_auto()) {
+        auto_strategies.emplace(res.likelihood, i, j);
       }
       *boost_res.mutable_estimated_avg_filler_skill() = res.fill_power;
       boost_res.set_relative_likelihood(res.likelihood);
+      boost_res.set_relative_likelihood_auto(res.likelihood);
     }
   }
+
+  double max_likelihood = strategies.empty() ? 0 : std::get<0>(strategies.top());
+  std::size_t most_likely_i = strategies.empty() ? 0 : std::get<1>(strategies.top());
+  std::size_t most_likely_j = strategies.empty() ? 0 : std::get<2>(strategies.top());
+  double max_likelihood_auto = auto_strategies.empty() ? 0 : std::get<0>(auto_strategies.top());
+  std::size_t most_likely_i_auto = auto_strategies.empty() ? 0 : std::get<1>(auto_strategies.top());
+  std::size_t most_likely_j_auto = auto_strategies.empty() ? 0 : std::get<2>(auto_strategies.top());
+  LOG(INFO) << max_likelihood_auto;
 
   if (max_likelihood > 0) {
     for (std::size_t i = 0; i < kStrategies.size(); ++i) {
@@ -195,6 +199,35 @@ absl::StatusOr<AnalyzePlayResponse> FillAnalyzer::RunAnalysis() const {
         }
       }
     }
+
+    while (!strategies.empty()) {
+      std::size_t i = std::get<1>(strategies.top());
+      std::size_t j = std::get<2>(strategies.top());
+      const AnalyzePlayResponse::BoostUsageDetails& details =
+          resp.play_strategies(i).boost_usage_details(j);
+      if (details.relative_likelihood() < kInclusionThreshold) {
+        break;
+      }
+      *resp.add_likely_play_strategies() = details;
+      strategies.pop();
+    }
+
+    while (!auto_strategies.empty()) {
+      std::size_t i = std::get<1>(auto_strategies.top());
+      std::size_t j = std::get<2>(auto_strategies.top());
+      const AnalyzePlayResponse::BoostUsageDetails& details =
+          resp.play_strategies(i).boost_usage_details(j);
+      if (details.relative_likelihood() < kAutoInclusionThreshold ||
+          details.relative_likelihood_auto() < kInclusionThreshold) {
+        break;
+      }
+      *resp.add_likely_auto_play_strategies() = details;
+      auto_strategies.pop();
+    }
+  }
+
+  if (!input_.include_full_details) {
+    resp.clear_play_strategies();
   }
   return resp;
 }

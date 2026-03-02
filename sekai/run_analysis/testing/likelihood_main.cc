@@ -29,12 +29,12 @@
 using namespace ::sekai;
 using namespace ::sekai::run_analysis;
 
-ABSL_FLAG(int, power, 375'968, "team power");
+ABSL_FLAG(int, power, 358'046, "team power");
 ABSL_FLAG(float, event_bonus, 435, "event bonus %");
-ABSL_FLAG(float, skill_min, 198, "min skill %");
-ABSL_FLAG(float, skill_max, 234, "max skill %");
-ABSL_FLAG(float, observed_gph, 19.5, "observed games/hr");
-ABSL_FLAG(float, observed_ppg, 41'700, "observed pt/game");
+ABSL_FLAG(float, skill_min, 182, "min skill %");
+ABSL_FLAG(float, skill_max, 218, "max skill %");
+ABSL_FLAG(float, observed_gph, 29.1, "observed games/hr");
+ABSL_FLAG(float, observed_ppg, 63'710, "observed pt/game");
 
 constexpr const char* kGlslVersion = "#version 130";
 constexpr float kScaleFactor = 2.0;

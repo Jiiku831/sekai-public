@@ -55,6 +55,7 @@ message AnalyzePlayRequest {
 
   optional float observed_games_per_hour = 5;
   optional float observed_ep_per_game    = 6;
+  optional bool include_full_details     = 7;
 }
 
 message AnalyzePlayResponse {
@@ -81,8 +82,10 @@ message AnalyzePlayResponse {
     repeated BoostUsageDetails boost_usage_details = 2;
   }
 
-  optional Status status                   = 1;
-  repeated StrategyDetails play_strategies = 2;
+  optional Status status                                 = 1;
+  repeated StrategyDetails play_strategies               = 2;
+  repeated BoostUsageDetails likely_play_strategies      = 3;
+  repeated BoostUsageDetails likely_auto_play_strategies = 4;
 }
 
 message AnalyzeTeamRequest {

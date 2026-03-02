@@ -34,6 +34,8 @@ struct FillAnalysisInput {
   float skill_max;
   float observed_gph;
   float observed_ppg;
+
+  bool include_full_details = true;
 };
 
 struct FillAnalysisParameters {
@@ -92,6 +94,7 @@ class FillAnalyzer {
                 .skill_max = request.skill_max(),
                 .observed_gph = request.observed_games_per_hour(),
                 .observed_ppg = request.observed_ep_per_game(),
+                .include_full_details = request.include_full_details(),
             },
             {}) {}
 
