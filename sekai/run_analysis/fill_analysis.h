@@ -20,11 +20,11 @@ constexpr float kDefaultTimeDof = 5;
 // Time adjustments
 constexpr float kPubOffset = 2;
 constexpr float kPubScale = 0.125 / kDefaultTimeScale;
-constexpr float kAutoOffset = 25 - kDefaultTimeOffset;
-constexpr float kAutoScale = 0.175 / kDefaultTimeScale;
+constexpr float kAutoOffset = 20 - kDefaultTimeOffset;
+constexpr float kAutoScale = 0.135 / kDefaultTimeScale;
 
 class PlayStrategy;
-constexpr std::size_t kPlayStrategyCount = 9;
+constexpr std::size_t kPlayStrategyCount = 13;
 extern const std::array<PlayStrategy, kPlayStrategyCount> kStrategies;
 
 struct FillAnalysisInput {

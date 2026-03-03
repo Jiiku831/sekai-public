@@ -7,7 +7,6 @@
 #include <boost/math/distributions/chi_squared.hpp>
 #include <boost/math/distributions/normal.hpp>
 
-#include "absl/base/nullability.h"
 #include "absl/flags/flag.h"
 #include "absl/log/log.h"
 #include "absl/strings/str_format.h"
@@ -29,14 +28,14 @@
 using namespace ::sekai;
 using namespace ::sekai::run_analysis;
 
-ABSL_FLAG(int, power, 382'980, "team power");
+ABSL_FLAG(int, power, 381'159, "team power");
 ABSL_FLAG(float, event_bonus, 435, "event bonus %");
-ABSL_FLAG(float, skill_min, 198, "min skill %");
-ABSL_FLAG(float, skill_max, 234, "max skill %");
+ABSL_FLAG(float, skill_min, 192, "min skill %");
+ABSL_FLAG(float, skill_max, 228, "max skill %");
 ABSL_FLAG(float, card_skill_min, 80, "min card skill %");
 ABSL_FLAG(float, card_skill_max, 140, "max card skill %");
-ABSL_FLAG(float, observed_gph, 29.7, "observed games/hr");
-ABSL_FLAG(float, observed_ppg, 67'400, "observed pt/game");
+ABSL_FLAG(float, observed_gph, 20.3, "observed games/hr");
+ABSL_FLAG(float, observed_ppg, 41'700, "observed pt/game");
 
 constexpr const char* kGlslVersion = "#version 130";
 constexpr float kScaleFactor = 2.0;
@@ -157,7 +156,7 @@ class PlotDefs {
     data_.strategy_candidates.clear();
     for (std::size_t i = 0; i < all_strategies_.size(); ++i) {
       for (std::size_t j = 0; j < kBoostMultipliers.size(); ++j) {
-        if (data_.all_strategy_likelihood[i][j] > 0.5 * max_likelihood) {
+        if (data_.all_strategy_likelihood[i][j] > 0.95 * max_likelihood) {
           data_.strategy_candidates.push_back(i);
         }
       }

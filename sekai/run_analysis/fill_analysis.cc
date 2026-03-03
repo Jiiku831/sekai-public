@@ -100,6 +100,26 @@ const std::array<PlayStrategy, kPlayStrategyCount> kStrategies = {
                    return meta.music_id() == 448 && meta.difficulty() == db::DIFF_MASTER;
                  }),
                  kAutoOffset, kAutoScale, /*is_pub=*/false, /*is_auto=*/true),
+    PlayStrategy(MEMORIA_APP_AUTO, "Memoria App (Auto)", Estimator::Mode::kAuto,
+                 db::MasterDb::GetIf<db::MusicMeta>([](const db::MusicMeta& meta) {
+                   return meta.music_id() == 488 && meta.difficulty() == db::DIFF_APPEND;
+                 }),
+                 kAutoOffset, kAutoScale, /*is_pub=*/false, /*is_auto=*/true),
+    PlayStrategy(CENDRI_MAS_AUTO, "Cendri Mas (Auto)", Estimator::Mode::kAuto,
+                 db::MasterDb::GetIf<db::MusicMeta>([](const db::MusicMeta& meta) {
+                   return meta.music_id() == 104 && meta.difficulty() == db::DIFF_MASTER;
+                 }),
+                 kAutoOffset, kAutoScale, /*is_pub=*/false, /*is_auto=*/true),
+    PlayStrategy(VIVA_MAS_AUTO, "Viva Mas (Auto)", Estimator::Mode::kAuto,
+                 db::MasterDb::GetIf<db::MusicMeta>([](const db::MusicMeta& meta) {
+                   return meta.music_id() == 11 && meta.difficulty() == db::DIFF_MASTER;
+                 }),
+                 kAutoOffset, kAutoScale, /*is_pub=*/false, /*is_auto=*/true),
+    PlayStrategy(JSG_MAS_AUTO, "JSG Mas (Auto)", Estimator::Mode::kAuto,
+                 db::MasterDb::GetIf<db::MusicMeta>([](const db::MusicMeta& meta) {
+                   return meta.music_id() == 62 && meta.difficulty() == db::DIFF_MASTER;
+                 }),
+                 kAutoOffset, kAutoScale, /*is_pub=*/false, /*is_auto=*/true),
     PlayStrategy(RANDOM_EX_MULTI, "Random Ex (Multi)", Estimator::Mode::kMulti,
                  db::MasterDb::GetIf<db::MusicMeta>([](const db::MusicMeta& meta) {
                    return meta.difficulty() == db::DIFF_EXPERT;

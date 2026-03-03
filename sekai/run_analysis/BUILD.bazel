@@ -36,6 +36,22 @@ cc_library(
 )
 
 cc_library(
+    name = "analyze_player_handler",
+    srcs = ["analyze_player_handler.cc"],
+    hdrs = ["analyze_player_handler.h"],
+    deps = [
+        ":analyze_graph_handler",
+        ":analyze_play_handler",
+        ":analyze_team_handler",
+        ":handler",
+        "//base:util",
+        "//sekai/run_analysis/proto:service_cc_proto",
+        "@abseil-cpp//absl/algorithm:container",
+        "@abseil-cpp//absl/status:statusor",
+    ],
+)
+
+cc_library(
     name = "analyze_team_handler",
     srcs = ["analyze_team_handler.cc"],
     hdrs = ["analyze_team_handler.h"],
@@ -192,6 +208,7 @@ cc_binary(
     deps = [
         ":analyze_graph_handler",
         ":analyze_play_handler",
+        ":analyze_player_handler",
         ":analyze_team_handler",
         ":batch_handler",
         ":handler",

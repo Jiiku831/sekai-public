@@ -37,6 +37,10 @@ enum PlayStrategyName {
   LNF_HARD_PUB     = 5;
   HCM_MAS_AUTO     = 6;
   SAGE_MAS_AUTO    = 7;
+  MEMORIA_APP_AUTO = 10;
+  CENDRI_MAS_AUTO  = 11;
+  VIVA_MAS_AUTO    = 12;
+  JSG_MAS_AUTO     = 13;
   RANDOM_EX_MULTI  = 8;
   RANDOM_EX_PUB    = 9;
 }
@@ -92,6 +96,24 @@ message AnalyzePlayResponse {
   repeated BoostUsageDetails likely_auto_play_strategies = 4;
 }
 
+message AnalyzePlayerRequest {
+  message PlayerRequest {
+    optional AnalyzeTeamRequest team   = 1;
+    optional AnalyzeGraphRequest graph = 2;
+  }
+  repeated PlayerRequest players = 1;
+}
+
+message AnalyzePlayerResponse {
+  optional Status status = 1;
+
+  message PlayerResponse {
+    optional AnalyzeTeamResponse team   = 1;
+    optional AnalyzeGraphResponse graph = 2;
+  }
+  repeated PlayerResponse players = 2;
+}
+
 message AnalyzeTeamRequest {
   optional int32 event_id   = 1;
   repeated DeckCard cards   = 2;
@@ -140,6 +162,9 @@ message AnalyzeGraphResponse {
 
     optional ConfidenceInterval games_per_hour = 5;
     optional ConfidenceInterval ep_per_game    = 6;
+
+    // Only populated when part of the AnalyzePlayerResponse.
+    optional AnalyzePlayResponse play_analysis = 8;
   }
   repeated Segment active_segments = 5;
 }
