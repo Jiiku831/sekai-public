@@ -57,12 +57,13 @@ class PlayStrategy {
  public:
   PlayStrategy(PlayStrategyName api_name, absl::string_view name, Estimator::Mode mode,
                std::vector<const db::MusicMeta * absl_nonnull> metas, double added_time_offset = 0,
-               double added_time_scale = 1, bool is_auto = false)
+               double added_time_scale = 1, bool is_pub = false, bool is_auto = false)
       : api_name_(api_name),
         name_(name),
         estimator_(mode, metas),
         added_time_offset_(added_time_offset),
         added_time_scale_(added_time_scale),
+        is_pub_(is_pub),
         is_auto_(is_auto) {}
 
   PlayStrategyName api_name() const { return api_name_; }
@@ -70,6 +71,7 @@ class PlayStrategy {
   const Estimator& estimator() const { return estimator_; }
   double added_time_offset() const { return added_time_offset_; }
   double added_time_scale() const { return added_time_scale_; }
+  double is_pub() const { return is_pub_; }
   double is_auto() const { return is_auto_; }
 
  private:
@@ -77,6 +79,7 @@ class PlayStrategy {
   std::string name_;
   Estimator estimator_;
   double added_time_offset_, added_time_scale_;
+  bool is_pub_;
   bool is_auto_;
 };
 
@@ -114,6 +117,8 @@ class FillAnalyzer {
   Distribution<boost::math::chi_squared> MakeTimeDist(const PlayStrategy& strategy) const {
     return MakeTimeDist(strategy.added_time_offset(), strategy.added_time_scale());
   }
+  Distribution<boost::math::chi_squared> MakeSkillDist(const PlayStrategy& strategy,
+                                                       float auto_val) const;
 
   static Distribution<boost::math::normal> MakePlayDist(const Estimator& estimator,
                                                         float multiplier, int power,

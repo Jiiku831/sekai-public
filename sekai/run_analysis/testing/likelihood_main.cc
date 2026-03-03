@@ -29,14 +29,14 @@
 using namespace ::sekai;
 using namespace ::sekai::run_analysis;
 
-ABSL_FLAG(int, power, 358'159, "team power");
+ABSL_FLAG(int, power, 382'980, "team power");
 ABSL_FLAG(float, event_bonus, 435, "event bonus %");
-ABSL_FLAG(float, skill_min, 192, "min skill %");
-ABSL_FLAG(float, skill_max, 228, "max skill %");
+ABSL_FLAG(float, skill_min, 198, "min skill %");
+ABSL_FLAG(float, skill_max, 234, "max skill %");
 ABSL_FLAG(float, card_skill_min, 80, "min card skill %");
 ABSL_FLAG(float, card_skill_max, 140, "max card skill %");
-ABSL_FLAG(float, observed_gph, 19.0, "observed games/hr");
-ABSL_FLAG(float, observed_ppg, 41'700, "observed pt/game");
+ABSL_FLAG(float, observed_gph, 29.7, "observed games/hr");
+ABSL_FLAG(float, observed_ppg, 67'400, "observed pt/game");
 
 constexpr const char* kGlslVersion = "#version 130";
 constexpr float kScaleFactor = 2.0;
@@ -47,8 +47,8 @@ constexpr const char* kWindowTitle = "Run Analysis Debugger";
 constexpr std::array kClearColor = {0.45f, 0.55f, 0.60f, 1.00f};
 constexpr int kPaddingBottom = 125;
 constexpr int kPaddingRight = 35;
-constexpr int kHistogramHeight = 700;
-constexpr int kLikelihoodHeatmapResolution = 200;
+constexpr int kHistogramHeight = 800;
+constexpr int kLikelihoodHeatmapResolution = 400;
 
 void GlfwError(int code, const char* msg) { LOG(ERROR) << "GLFW Error " << code << ": " << msg; }
 
@@ -213,7 +213,7 @@ class PlotDefs {
   }
 
   void Draw(const ImGuiViewport* viewport) const {
-    const int kHistogramWidth = (viewport->WorkSize.x - 2 * kPaddingRight) / 2;
+    const int kHistogramWidth = (viewport->WorkSize.x - 2 * kPaddingRight) / 3;
     float multiplier = kBoostMultipliers[state_.boost_multiplier_index];
     ImVec2 histPlotSize(kHistogramWidth, kHistogramHeight);
     if (!ImPlot::BeginPlot("Point Distribution##Distributions", histPlotSize)) {
@@ -266,7 +266,7 @@ class PlotDefs {
   }
 
   void DrawTime(const ImGuiViewport* viewport) const {
-    const int kHistogramWidth = (viewport->WorkSize.x - 3 * kPaddingRight) / 2;
+    const int kHistogramWidth = (viewport->WorkSize.x - 3 * kPaddingRight) / 3;
     ImVec2 histPlotSize(kHistogramWidth, kHistogramHeight);
     if (!ImPlot::BeginPlot("Time Distribution##Distributions", histPlotSize)) {
       return;
@@ -287,13 +287,35 @@ class PlotDefs {
     ImPlot::EndPlot();
   }
 
+  void DrawSkill(const ImGuiViewport* viewport) const {
+    const int kHistogramWidth = (viewport->WorkSize.x - 3 * kPaddingRight) / 3;
+    ImVec2 histPlotSize(kHistogramWidth, kHistogramHeight);
+    if (!ImPlot::BeginPlot("Skill Distribution##Distributions", histPlotSize)) {
+      return;
+    }
+    ImPlot::SetupAxisLimits(ImAxis_X1, kMinSkillValue, kMaxSkillValue);
+    ImPlot::SetupAxis(ImAxis_Y1, nullptr, ImPlotAxisFlags_AutoFit | ImPlotAxisFlags_NoDecorations);
+    ImPlot::SetNextFillStyle(IMPLOT_AUTO_COL, 0.5f);
+    auto color = ImVec4(1, 0, 0, 1);
+    double est = data_.analysis.fill_power.value();
+    DistributionPlot("Time Dist", data_.analyzer.MakeSkillDist(strategy(), est), color,
+                     {.draw_mu = true, .min_quantile = 0})
+        .Draw(options_);
+
+    color = ImVec4(0, 1, 0, 1);
+    ImPlot::DragLineX(0, &est, color,
+                      /*thickness=*/1, ImPlotDragToolFlags_NoInputs);
+    ImPlot::TagX(est, color, "Estimated: %.1f", est);
+    ImPlot::EndPlot();
+  }
+
   void DrawHeatmap(const ImGuiViewport* viewport) const {
     ImVec2 histPlotSize(kHistogramHeight, kHistogramHeight);
 
     static ImPlotColormap map = ImPlotColormap_Viridis;
     ImPlot::PushColormap(map);
 
-    if (!ImPlot::BeginPlot("Likelihood##Heatmap", histPlotSize, ImPlotFlags_NoLegend)) {
+    if (!ImPlot::BeginPlot("Skill Likelihood##Heatmap", histPlotSize, ImPlotFlags_NoLegend)) {
       return;
     }
     ImPlot::SetupAxis(ImAxis_X1, "Filler Skill", ImPlotAxisFlags_AutoFit);
@@ -375,7 +397,7 @@ class PlotDefs {
 
   void DrawDebug(const ImGuiViewport* viewport) const {
     const int kWidth = viewport->WorkSize.x - 2 * kPaddingRight - 3 * kHistogramHeight;
-    ImVec2 childSize(kWidth, 600 * kScaleFactor);
+    ImVec2 childSize(kWidth, kHistogramHeight);
     if (!ImGui::BeginChild("Debug Info", childSize)) {
       return;
     }
@@ -611,6 +633,8 @@ void DrawFrame(PlotDefs& plots) {
   plots.Draw(viewport);
   ImGui::SameLine();
   plots.DrawTime(viewport);
+  ImGui::SameLine();
+  plots.DrawSkill(viewport);
   plots.DrawHeatmap(viewport);
   ImGui::SameLine();
   plots.DrawHeatmap2(viewport);

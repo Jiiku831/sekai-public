@@ -75,12 +75,12 @@ const std::array<PlayStrategy, kPlayStrategyCount> kStrategies = {
                  db::MasterDb::GetIf<db::MusicMeta>([](const db::MusicMeta& meta) {
                    return meta.music_id() == 74 && meta.difficulty() == db::DIFF_EXPERT;
                  }),
-                 kPubOffset, kPubScale),
+                 kPubOffset, kPubScale, /*is_pub=*/true),
     PlayStrategy(EBI_MAS_AUTO, "Ebi Mas (Auto)", Estimator::Mode::kAuto,
                  db::MasterDb::GetIf<db::MusicMeta>([](const db::MusicMeta& meta) {
                    return meta.music_id() == 74 && meta.difficulty() == db::DIFF_MASTER;
                  }),
-                 kAutoOffset, kAutoScale, /*is_auto=*/true),
+                 kAutoOffset, kAutoScale, /*is_pub=*/false, /*is_auto=*/true),
     PlayStrategy(LNF_HARD_MULTI, "LnF Hard (Multi)", Estimator::Mode::kMulti,
                  db::MasterDb::GetIf<db::MusicMeta>([](const db::MusicMeta& meta) {
                    return meta.music_id() == 226 && meta.difficulty() == db::DIFF_HARD;
@@ -89,17 +89,17 @@ const std::array<PlayStrategy, kPlayStrategyCount> kStrategies = {
                  db::MasterDb::GetIf<db::MusicMeta>([](const db::MusicMeta& meta) {
                    return meta.music_id() == 226 && meta.difficulty() == db::DIFF_HARD;
                  }),
-                 kPubOffset, kPubScale),
+                 kPubOffset, kPubScale, /*is_pub=*/true),
     PlayStrategy(HCM_MAS_AUTO, "HCM Mas (Auto)", Estimator::Mode::kAuto,
                  db::MasterDb::GetIf<db::MusicMeta>([](const db::MusicMeta& meta) {
                    return meta.music_id() == 186 && meta.difficulty() == db::DIFF_MASTER;
                  }),
-                 kAutoOffset, kAutoScale, /*is_auto=*/true),
+                 kAutoOffset, kAutoScale, /*is_pub=*/false, /*is_auto=*/true),
     PlayStrategy(SAGE_MAS_AUTO, "Sage Mas (Auto)", Estimator::Mode::kAuto,
                  db::MasterDb::GetIf<db::MusicMeta>([](const db::MusicMeta& meta) {
                    return meta.music_id() == 448 && meta.difficulty() == db::DIFF_MASTER;
                  }),
-                 kAutoOffset, kAutoScale, /*is_auto=*/true),
+                 kAutoOffset, kAutoScale, /*is_pub=*/false, /*is_auto=*/true),
     PlayStrategy(RANDOM_EX_MULTI, "Random Ex (Multi)", Estimator::Mode::kMulti,
                  db::MasterDb::GetIf<db::MusicMeta>([](const db::MusicMeta& meta) {
                    return meta.difficulty() == db::DIFF_EXPERT;
@@ -108,7 +108,7 @@ const std::array<PlayStrategy, kPlayStrategyCount> kStrategies = {
                  db::MasterDb::GetIf<db::MusicMeta>([](const db::MusicMeta& meta) {
                    return meta.difficulty() == db::DIFF_EXPERT;
                  }),
-                 kPubOffset, kPubScale),
+                 kPubOffset, kPubScale, /*is_pub=*/true),
 };
 
 Distribution<boost::math::normal> FillAnalyzer::MakePlayDist(const Estimator& estimator,
@@ -159,10 +159,11 @@ absl::StatusOr<FillAnalysis> FillAnalyzer::RunFillAnalysisForStrategy(const Play
   double tl = dist.Pdf(time) / dist.scale();
   double sl = std::max(max_res.max_likelihood, min_res.max_likelihood);
   double af = is_auto && boost_usage == 0 ? 0 : 1;
+  double sf = MakeSkillDist(strategy, fill_power.value()).Pdf(fill_power.value());
 
   return FillAnalysis{
       .fill_power = fill_power,
-      .likelihood = tl * sl * af,
+      .likelihood = tl * sl * af * sf,
   };
 }
 
@@ -250,6 +251,21 @@ absl::StatusOr<AnalyzePlayResponse> FillAnalyzer::RunAnalysis() const {
     resp.clear_play_strategies();
   }
   return resp;
+}
+
+Distribution<boost::math::chi_squared> FillAnalyzer::MakeSkillDist(const PlayStrategy& strategy,
+                                                                   float auto_val) const {
+  constexpr float kPubOffset = 100;
+  constexpr float kMultiOffset = 150;
+  constexpr float kScale = 0.05;
+  constexpr float kDof = 5;
+  float offset = kMultiOffset;
+  if (strategy.is_pub()) {
+    offset = kPubOffset;
+  } else if (strategy.is_auto()) {
+    offset = auto_val - (kDof - 2) / kScale;
+  }
+  return Distribution(boost::math::chi_squared(kDof), offset, kScale);
 }
 
 }  // namespace sekai::run_analysis
