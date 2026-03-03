@@ -50,8 +50,12 @@ message AnalyzePlayRequest {
 
   // Skill min and max, in percentage points. You can obtain this with a call to
   // AnalyzeTeam.
-  optional float skill_min               = 3;
-  optional float skill_max               = 4;
+  optional float skill_min = 3;
+  optional float skill_max = 4;
+
+  // Single card skill min and max, in percentage points.
+  optional float card_skill_min          = 8;
+  optional float card_skill_max          = 9;
 
   optional float observed_games_per_hour = 5;
   optional float observed_ep_per_game    = 6;

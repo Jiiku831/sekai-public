@@ -32,6 +32,8 @@ struct FillAnalysisInput {
   float event_bonus;
   float skill_min;
   float skill_max;
+  float card_skill_min;
+  float card_skill_max;
   float observed_gph;
   float observed_ppg;
 
@@ -92,6 +94,8 @@ class FillAnalyzer {
                 .event_bonus = request.event_bonus(),
                 .skill_min = request.skill_min(),
                 .skill_max = request.skill_max(),
+                .card_skill_min = request.card_skill_min(),
+                .card_skill_max = request.card_skill_max(),
                 .observed_gph = request.observed_games_per_hour(),
                 .observed_ppg = request.observed_ep_per_game(),
                 .include_full_details = request.include_full_details(),

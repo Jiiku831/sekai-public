@@ -33,11 +33,11 @@ std::vector<const db::MusicMeta * absl_nonnull> GetTestSongs() {
 
 TEST(EstimatorTest, AutoEpEstimatorParams) {
   std::vector<double> expected = {
-      // 111.66666666666667,
-      // 0.00017507933333333332,
-      // 4.1180107149980073e-05,
-      // 8.377384042506114e-06,
-      100.5, 0.00015757139999999999, 3.7062096434982069e-05, 7.5396456382555019e-06};
+      111.66666666666667,
+      0.00017507933333333332,
+      4.1180107149980073e-05,
+      8.377384042506114e-06,
+  };
   Eigen::Vector4d actual = Estimator(Estimator::Mode::kAuto, GetTestSongs()).GetEpEstimatorParams();
   EXPECT_THAT(actual, Pointwise(FloatEq(), expected));
 }

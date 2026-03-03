@@ -29,12 +29,14 @@
 using namespace ::sekai;
 using namespace ::sekai::run_analysis;
 
-ABSL_FLAG(int, power, 358'046, "team power");
+ABSL_FLAG(int, power, 358'159, "team power");
 ABSL_FLAG(float, event_bonus, 435, "event bonus %");
-ABSL_FLAG(float, skill_min, 182, "min skill %");
-ABSL_FLAG(float, skill_max, 218, "max skill %");
-ABSL_FLAG(float, observed_gph, 29.1, "observed games/hr");
-ABSL_FLAG(float, observed_ppg, 63'710, "observed pt/game");
+ABSL_FLAG(float, skill_min, 192, "min skill %");
+ABSL_FLAG(float, skill_max, 228, "max skill %");
+ABSL_FLAG(float, card_skill_min, 80, "min card skill %");
+ABSL_FLAG(float, card_skill_max, 140, "max card skill %");
+ABSL_FLAG(float, observed_gph, 19.0, "observed games/hr");
+ABSL_FLAG(float, observed_ppg, 41'700, "observed pt/game");
 
 constexpr const char* kGlslVersion = "#version 130";
 constexpr float kScaleFactor = 2.0;
@@ -167,38 +169,39 @@ class PlotDefs {
 
   absl::Status SimulatePlay() {
     constexpr int kIterations = 100'000;
-    std::normal_distribution dist(state_.filler_avg_skill, state_.filler_skill_stdev);
+    std::normal_distribution dist(actual_filler_skill_avg(), state_.filler_skill_stdev);
     data_.min_event_points.clear();
     data_.max_event_points.clear();
     data_.min_event_points.reserve(kIterations);
     data_.max_event_points.reserve(kIterations);
     float multiplier = kBoostMultipliers[state_.boost_multiplier_index];
     for (int i = 0; i < kIterations; ++i) {
-      float skill_value = std::clamp(dist(gen_), static_cast<float>(kMinSkillValue),
-                                     static_cast<float>(kMaxSkillValue));
+      float skill_value = std::clamp(dist(gen_), static_cast<float>(actual_skill_min()),
+                                     static_cast<float>(actual_skill_max()));
       data_.min_event_points.push_back(
           multiplier * estimator().ExpectedEpFixedEncore(state_.power, state_.event_bonus,
-                                                         state_.skill_min, skill_value,
+                                                         actual_player_skill_min(), skill_value,
                                                          skill_value));
       data_.max_event_points.push_back(
           multiplier * estimator().ExpectedEpFixedEncore(state_.power, state_.event_bonus,
-                                                         state_.skill_max, skill_value,
+                                                         actual_player_skill_max(), skill_value,
                                                          skill_value));
     }
     return absl::OkStatus();
   }
 
   absl::Status ComputeLikelihood() {
-    const double kStepX =
-        static_cast<double>(kMaxSkillValue - kMinSkillValue) / (kLikelihoodHeatmapResolution - 1);
-    const double kStepY = static_cast<double>(state_.skill_max - state_.skill_min) /
+    const double kStepX = static_cast<double>(actual_skill_max() - actual_skill_min()) /
                           (kLikelihoodHeatmapResolution - 1);
+    const double kStepY =
+        static_cast<double>(actual_player_skill_max() - actual_player_skill_min()) /
+        (kLikelihoodHeatmapResolution - 1);
     float multiplier = kBoostMultipliers[state_.boost_multiplier_index];
 
     for (int i = 0; i < kLikelihoodHeatmapResolution; ++i) {
       for (int j = 0; j < kLikelihoodHeatmapResolution; ++j) {
-        double filler_skill = kMinSkillValue + i * kStepX;
-        double player_skill = state_.skill_min + j * kStepY;
+        double filler_skill = actual_skill_min() + i * kStepX;
+        double player_skill = actual_player_skill_min() + j * kStepY;
         double filler_skill_var = state_.filler_skill_stdev * state_.filler_skill_stdev;
         data_.likelihood_heatmap[kLikelihoodHeatmapResolution - j - 1][i] =
             FillAnalyzer::MakePlayDist(estimator(), multiplier, state_.power, state_.event_bonus,
@@ -234,30 +237,30 @@ class PlotDefs {
     color = ImVec4(0, 1, 0, 1);
     double filler_skill_var = state_.filler_skill_stdev * state_.filler_skill_stdev;
     double abs_min = multiplier * estimator().ExpectedEpFixedEncore(
-                                      state_.power, state_.event_bonus, state_.skill_min,
-                                      kMinSkillValue, kMinSkillValue);
+                                      state_.power, state_.event_bonus, actual_player_skill_min(),
+                                      actual_skill_min(), actual_skill_min());
     double abs_max = multiplier * estimator().ExpectedEpFixedEncore(
-                                      state_.power, state_.event_bonus, state_.skill_min,
-                                      kMaxSkillValue, kMaxSkillValue);
-    DistributionPlot(
-        "Min Dist",
-        FillAnalyzer::MakePlayDist(estimator(), multiplier, state_.power, state_.event_bonus,
-                                   state_.skill_min, state_.filler_avg_skill, filler_skill_var),
-        color, {.clamp_min = abs_min, .clamp_max = abs_max, .draw_mu = true})
+                                      state_.power, state_.event_bonus, actual_player_skill_min(),
+                                      actual_skill_max(), actual_skill_max());
+    DistributionPlot("Min Dist",
+                     FillAnalyzer::MakePlayDist(estimator(), multiplier, state_.power,
+                                                state_.event_bonus, actual_player_skill_min(),
+                                                actual_filler_skill_avg(), filler_skill_var),
+                     color, {.clamp_min = abs_min, .clamp_max = abs_max, .draw_mu = true})
         .Draw(options_);
 
     color = ImVec4(0, 0, 1, 1);
-    abs_min = multiplier * estimator().ExpectedEpFixedEncore(state_.power, state_.event_bonus,
-                                                             state_.skill_max, kMinSkillValue,
-                                                             kMinSkillValue);
-    abs_max = multiplier * estimator().ExpectedEpFixedEncore(state_.power, state_.event_bonus,
-                                                             state_.skill_max, kMaxSkillValue,
-                                                             kMaxSkillValue);
-    DistributionPlot(
-        "Max Dist",
-        FillAnalyzer::MakePlayDist(estimator(), multiplier, state_.power, state_.event_bonus,
-                                   state_.skill_max, state_.filler_avg_skill, filler_skill_var),
-        color, {.clamp_min = abs_min, .clamp_max = abs_max, .draw_mu = true})
+    abs_min = multiplier * estimator().ExpectedEpFixedEncore(
+                               state_.power, state_.event_bonus, actual_player_skill_max(),
+                               actual_skill_min(), actual_skill_min());
+    abs_max = multiplier * estimator().ExpectedEpFixedEncore(
+                               state_.power, state_.event_bonus, actual_player_skill_max(),
+                               actual_skill_max(), actual_skill_max());
+    DistributionPlot("Max Dist",
+                     FillAnalyzer::MakePlayDist(estimator(), multiplier, state_.power,
+                                                state_.event_bonus, actual_player_skill_max(),
+                                                actual_filler_skill_avg(), filler_skill_var),
+                     color, {.clamp_min = abs_min, .clamp_max = abs_max, .draw_mu = true})
         .Draw(options_);
     ImPlot::EndPlot();
   }
@@ -295,12 +298,13 @@ class PlotDefs {
     }
     ImPlot::SetupAxis(ImAxis_X1, "Filler Skill", ImPlotAxisFlags_AutoFit);
     ImPlot::SetupAxis(ImAxis_Y1, "Player Skill", ImPlotAxisFlags_AutoFit);
-    ImPlot::SetupAxesLimits(kMinSkillValue, kMaxSkillValue, state_.skill_min, state_.skill_max);
+    ImPlot::SetupAxesLimits(actual_skill_min(), actual_skill_max(), actual_player_skill_min(),
+                            actual_player_skill_max());
 
     ImPlot::PlotHeatmap("Likelihood", data_.likelihood_heatmap[0], kLikelihoodHeatmapResolution,
                         kLikelihoodHeatmapResolution, 0, 0, nullptr,
-                        ImPlotPoint(kMinSkillValue, state_.skill_min),
-                        ImPlotPoint(kMaxSkillValue, state_.skill_max));
+                        ImPlotPoint(actual_skill_min(), actual_player_skill_min()),
+                        ImPlotPoint(actual_skill_max(), actual_player_skill_max()));
 
     auto color = ImVec4(1, 0, 0, 1);
     double min = data_.analysis.fill_power.lower_bound();
@@ -376,19 +380,27 @@ class PlotDefs {
       return;
     }
     if (ImGui::CollapsingHeader("Runner Parameters", ImGuiTreeNodeFlags_DefaultOpen)) {
-      ImGui::BulletText("Power:         %d", state_.power);
-      ImGui::BulletText("Event Bonus:   %.2f%%", state_.event_bonus);
-      ImGui::BulletText("Skill:         [%.2f%%, %.2f%%]", state_.skill_min, state_.skill_max);
-      ImGui::BulletText("Observed G/hr: %.2f", state_.observed_gph);
-      ImGui::BulletText("Observed pt/G: %.2f", state_.observed_ppg);
+      ImGui::BulletText("Power:          %d", state_.power);
+      ImGui::BulletText("Event Bonus:    %.2f%%", state_.event_bonus);
+      ImGui::BulletText("Skill:          [%.2f%%, %.2f%%]", state_.skill_min, state_.skill_max);
+      ImGui::BulletText("Card Skill:     [%.2f%%, %.2f%%]", state_.card_skill_min,
+                        state_.card_skill_max);
+      ImGui::BulletText("Observed G/hr:  %.2f", state_.observed_gph);
+      ImGui::BulletText("Observed pt/G:  %.2f", state_.observed_ppg);
     }
     if (ImGui::CollapsingHeader("Filler Parameters", ImGuiTreeNodeFlags_DefaultOpen)) {
-      ImGui::BulletText("Avg. Skill:    %.2f%%", state_.filler_avg_skill);
-      ImGui::BulletText("Skill Stdev:   %.2f%%", state_.filler_skill_stdev);
+      ImGui::BulletText("Avg. Skill:     %.2f%%", state_.filler_avg_skill);
+      ImGui::BulletText("Skill Stdev:    %.2f%%", state_.filler_skill_stdev);
     }
     if (ImGui::CollapsingHeader("Play Parameters", ImGuiTreeNodeFlags_DefaultOpen)) {
-      ImGui::BulletText("Boost Usage:   %d (%dx)", state_.boost_multiplier_index,
+      ImGui::BulletText("Boost Usage:    %d (%dx)", state_.boost_multiplier_index,
                         kBoostMultipliers[state_.boost_multiplier_index]);
+    }
+    if (ImGui::CollapsingHeader("Internal Parameters", ImGuiTreeNodeFlags_DefaultOpen)) {
+      ImGui::BulletText("Player Skill:   [%.2f%%, %.2f%%]", actual_player_skill_min(),
+                        actual_player_skill_max());
+      ImGui::BulletText("Skill Range:    [%.2f%%, %.2f%%]", actual_skill_min(), actual_skill_max());
+      ImGui::BulletText("Avg Fill Skill: %.2f%%", actual_filler_skill_avg());
     }
     if (ImGui::CollapsingHeader("API Debug", ImGuiTreeNodeFlags_DefaultOpen)) {
       PrintMessage("Segment Proto", data_.api_response);
@@ -414,12 +426,21 @@ class PlotDefs {
                        kMaxSkillValue);
     ImGui::SameLine();
     ImGui::SetNextItemWidth(10 * ImGui::GetFontSize());
+    ImGui::SliderFloat("Card Skill Min", &state_.card_skill_min, kMinSkillValue,
+                       std::min(state_.card_skill_max, static_cast<float>(kMaxSkillValue)));
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(10 * ImGui::GetFontSize());
+    ImGui::SliderFloat("Card Skill Max", &state_.card_skill_max,
+                       std::max(state_.card_skill_min, static_cast<float>(kMinSkillValue)),
+                       kMaxSkillValue);
+    ImGui::SetNextItemWidth(10 * ImGui::GetFontSize());
     ImGui::SliderFloat("Observed G/hr", &state_.observed_gph, 0, 40);
     ImGui::SameLine();
     ImGui::SetNextItemWidth(15 * ImGui::GetFontSize());
     ImGui::SliderFloat("Observed pt/G", &state_.observed_ppg, 0, 150'000);
 
     // Filler parameters
+    ImGui::SameLine();
     ImGui::SetNextItemWidth(10 * ImGui::GetFontSize());
     ImGui::SliderFloat("Filler avg skill", &state_.filler_avg_skill, kMinSkillValue,
                        kMaxSkillValue);
@@ -452,6 +473,22 @@ class PlotDefs {
 
   const PlayStrategy& strategy() const { return kStrategies[state_.play_strategy_index]; }
   const Estimator& estimator() const { return strategy().estimator(); }
+  const double actual_player_skill_min() const {
+    return strategy().is_auto() ? state_.card_skill_min : state_.skill_min;
+  }
+  const double actual_player_skill_max() const {
+    return strategy().is_auto() ? state_.card_skill_max : state_.skill_max;
+  }
+  const float actual_filler_skill_avg() const {
+    return strategy().is_auto() ? (state_.card_skill_max + state_.card_skill_min) / 2
+                                : state_.filler_avg_skill;
+  }
+  const double actual_skill_min() const {
+    return strategy().is_auto() ? state_.card_skill_min : kMinSkillValue;
+  }
+  const double actual_skill_max() const {
+    return strategy().is_auto() ? state_.card_skill_max : kMaxSkillValue;
+  }
 
   const FillAnalysisInput GetFillAnalysisInput() const {
     return FillAnalysisInput{
@@ -459,6 +496,8 @@ class PlotDefs {
         .event_bonus = state_.event_bonus,
         .skill_min = state_.skill_min,
         .skill_max = state_.skill_max,
+        .card_skill_min = state_.card_skill_min,
+        .card_skill_max = state_.card_skill_max,
         .observed_gph = state_.observed_gph,
         .observed_ppg = state_.observed_ppg,
     };
@@ -480,6 +519,8 @@ class PlotDefs {
     float event_bonus = absl::GetFlag(FLAGS_event_bonus);
     float skill_min = absl::GetFlag(FLAGS_skill_min);
     float skill_max = absl::GetFlag(FLAGS_skill_max);
+    float card_skill_min = absl::GetFlag(FLAGS_card_skill_min);
+    float card_skill_max = absl::GetFlag(FLAGS_card_skill_max);
     float observed_gph = absl::GetFlag(FLAGS_observed_gph);
     float observed_ppg = absl::GetFlag(FLAGS_observed_ppg);
 
@@ -502,6 +543,8 @@ class PlotDefs {
              std::abs(event_bonus - other.event_bonus) < kTol &&
              std::abs(skill_min - other.skill_min) < kTol &&
              std::abs(skill_max - other.skill_max) < kTol &&
+             std::abs(card_skill_min - other.card_skill_min) < kTol &&
+             std::abs(card_skill_max - other.card_skill_max) < kTol &&
              std::abs(observed_gph - other.observed_gph) < kTol &&
              std::abs(observed_ppg - other.observed_ppg) < kTol &&
              std::abs(filler_avg_skill - other.filler_avg_skill) < kTol &&

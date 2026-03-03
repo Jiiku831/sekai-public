@@ -60,8 +60,7 @@ double GetLifeFactor(Estimator::Mode mode) {
     case Estimator::Mode::kCheerful:
       return 1.35;
     case Estimator::Mode::kAuto:
-      // TODO: not sure why auto is overestimating
-      return 0.9;
+      return 1.0;
     default:
       ABSL_CHECK(false) << "unhandled case";
       return 0;

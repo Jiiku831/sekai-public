@@ -32,7 +32,22 @@ struct InvSkillResult {
 
 float ClampSkillImpl(float skill, float min, float max) { return std::clamp(skill, min, max); }
 
-float ClampSkill(float skill) { return ClampSkillImpl(skill, kMinSkillValue, kMaxSkillValue); }
+float SelectSkill(bool is_auto, float card_skill, float skill_value) {
+  return is_auto ? card_skill : skill_value;
+}
+
+float SelectSkillMax(bool is_auto, float card_skill) {
+  return SelectSkill(is_auto, card_skill, kMaxSkillValue);
+}
+
+float SelectSkillMin(bool is_auto, float card_skill) {
+  return SelectSkill(is_auto, card_skill, kMinSkillValue);
+}
+
+float ClampSkill(bool is_auto, float skill, float card_min, float card_max) {
+  return ClampSkillImpl(skill, SelectSkillMin(is_auto, card_min),
+                        SelectSkillMax(is_auto, card_max));
+}
 
 InvSkillResult InvSkill(const Estimator& estimator, double base_ppg, int power, float event_bonus,
                         float skill_value, float skill_min, float skill_max, float filler_skill_var,
@@ -42,7 +57,7 @@ InvSkillResult InvSkill(const Estimator& estimator, double base_ppg, int power, 
   res.sigma = std::sqrt(estimator.VarianceInvSkill(power, event_bonus, skill_value,
                                                    filler_skill_var, filler_skill_var));
 
-  double filler_skill = is_auto ? ClampSkillImpl(res.mu, skill_min, skill_max) : ClampSkill(res.mu);
+  double filler_skill = ClampSkill(is_auto, res.mu, skill_min, skill_max);
   res.max_likelihood = FillAnalyzer::MakePlayDist(estimator, 1, power, event_bonus, skill_value,
                                                   filler_skill, filler_skill_var)
                            .Pdf(base_ppg);
@@ -121,23 +136,29 @@ absl::StatusOr<FillAnalysis> FillAnalyzer::RunFillAnalysisForStrategy(const Play
   constexpr float kAlpha = 2;
   const int multiplier = kBoostMultipliers[boost_usage];
   const double base_ppg = input_.observed_ppg / multiplier;
+  const bool is_auto = strategy.is_auto();
+  const double actual_skill_min = is_auto ? input_.card_skill_min : input_.skill_min;
+  const double actual_skill_max = is_auto ? input_.card_skill_max : input_.skill_max;
 
   InvSkillResult max_res =
-      InvSkill(strategy.estimator(), base_ppg, input_.power, input_.event_bonus, input_.skill_min,
-               input_.skill_min, input_.skill_max, filler_skill_var_, strategy.is_auto());
+      InvSkill(strategy.estimator(), base_ppg, input_.power, input_.event_bonus, actual_skill_min,
+               actual_skill_min, actual_skill_max, filler_skill_var_, is_auto);
   InvSkillResult min_res =
-      InvSkill(strategy.estimator(), base_ppg, input_.power, input_.event_bonus, input_.skill_max,
-               input_.skill_min, input_.skill_max, filler_skill_var_, strategy.is_auto());
-  fill_power.set_value(ClampSkill((min_res.mu + max_res.mu) / 2));
-  fill_power.set_upper_bound(ClampSkill(max_res.mu + max_res.sigma * kAlpha));
-  fill_power.set_lower_bound(ClampSkill(min_res.mu - min_res.sigma * kAlpha));
+      InvSkill(strategy.estimator(), base_ppg, input_.power, input_.event_bonus, actual_skill_max,
+               actual_skill_min, actual_skill_max, filler_skill_var_, is_auto);
+  fill_power.set_value(ClampSkill(is_auto, (min_res.mu + max_res.mu) / 2, input_.card_skill_min,
+                                  input_.card_skill_max));
+  fill_power.set_upper_bound(ClampSkill(is_auto, max_res.mu + max_res.sigma * kAlpha,
+                                        input_.card_skill_min, input_.card_skill_max));
+  fill_power.set_lower_bound(ClampSkill(is_auto, min_res.mu - min_res.sigma * kAlpha,
+                                        input_.card_skill_min, input_.card_skill_max));
   fill_power.set_confidence(0.95);
 
   double time = std::max(3600.0 / input_.observed_gph - strategy.estimator().t_mu(), 0.0);
   auto dist = MakeTimeDist(strategy);
   double tl = dist.Pdf(time) / dist.scale();
   double sl = std::max(max_res.max_likelihood, min_res.max_likelihood);
-  double af = strategy.is_auto() && boost_usage == 0 ? 0 : 1;
+  double af = is_auto && boost_usage == 0 ? 0 : 1;
 
   return FillAnalysis{
       .fill_power = fill_power,
@@ -175,7 +196,6 @@ absl::StatusOr<AnalyzePlayResponse> FillAnalyzer::RunAnalysis() const {
   double max_likelihood_auto = auto_strategies.empty() ? 0 : std::get<0>(auto_strategies.top());
   std::size_t most_likely_i_auto = auto_strategies.empty() ? 0 : std::get<1>(auto_strategies.top());
   std::size_t most_likely_j_auto = auto_strategies.empty() ? 0 : std::get<2>(auto_strategies.top());
-  LOG(INFO) << max_likelihood_auto;
 
   if (max_likelihood > 0) {
     for (std::size_t i = 0; i < kStrategies.size(); ++i) {
