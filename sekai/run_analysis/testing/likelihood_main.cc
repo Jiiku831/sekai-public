@@ -34,7 +34,7 @@ ABSL_FLAG(float, skill_min, 192, "min skill %");
 ABSL_FLAG(float, skill_max, 228, "max skill %");
 ABSL_FLAG(float, card_skill_min, 80, "min card skill %");
 ABSL_FLAG(float, card_skill_max, 140, "max card skill %");
-ABSL_FLAG(float, observed_gph, 20.3, "observed games/hr");
+ABSL_FLAG(float, observed_gph, 19, "observed games/hr");
 ABSL_FLAG(float, observed_ppg, 41'700, "observed pt/game");
 
 constexpr const char* kGlslVersion = "#version 130";

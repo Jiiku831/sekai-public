@@ -21,7 +21,7 @@ constexpr float kDefaultTimeDof = 5;
 constexpr float kPubOffset = 2;
 constexpr float kPubScale = 0.125 / kDefaultTimeScale;
 constexpr float kAutoOffset = 20 - kDefaultTimeOffset;
-constexpr float kAutoScale = 0.135 / kDefaultTimeScale;
+constexpr float kAutoScale = 0.3 / kDefaultTimeScale;
 
 class PlayStrategy;
 constexpr std::size_t kPlayStrategyCount = 13;

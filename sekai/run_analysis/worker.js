@@ -72,7 +72,7 @@ function getAllowOrigin(origin) {
 const allowedMethods = {
   "/analyze_graph": "POST",
   "/analyze_play": "GET",
-  "/analyze_player": "POST
+  "/analyze_player": "POST",
   "/analyze_team": "GET",
   "/batch_analyze_graph": "POST",
 };
