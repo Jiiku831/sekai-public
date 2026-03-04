@@ -71,11 +71,11 @@ const std::array<PlayStrategy, kPlayStrategyCount> kStrategies = {
                  db::MasterDb::GetIf<db::MusicMeta>([](const db::MusicMeta& meta) {
                    return meta.music_id() == 74 && meta.difficulty() == db::DIFF_EXPERT;
                  })),
-    PlayStrategy(EBI_EX_PUB, "Ebi Ex (Pub)", Estimator::Mode::kMulti,
-                 db::MasterDb::GetIf<db::MusicMeta>([](const db::MusicMeta& meta) {
-                   return meta.music_id() == 74 && meta.difficulty() == db::DIFF_EXPERT;
-                 }),
-                 kPubOffset, kPubScale, /*is_pub=*/true),
+    // PlayStrategy(EBI_EX_PUB, "Ebi Ex (Pub)", Estimator::Mode::kMulti,
+    //              db::MasterDb::GetIf<db::MusicMeta>([](const db::MusicMeta& meta) {
+    //                return meta.music_id() == 74 && meta.difficulty() == db::DIFF_EXPERT;
+    //              }),
+    //              kPubOffset, kPubScale, /*is_pub=*/true),
     PlayStrategy(EBI_MAS_AUTO, "Ebi Mas (Auto)", Estimator::Mode::kAuto,
                  db::MasterDb::GetIf<db::MusicMeta>([](const db::MusicMeta& meta) {
                    return meta.music_id() == 74 && meta.difficulty() == db::DIFF_MASTER;
@@ -85,11 +85,11 @@ const std::array<PlayStrategy, kPlayStrategyCount> kStrategies = {
                  db::MasterDb::GetIf<db::MusicMeta>([](const db::MusicMeta& meta) {
                    return meta.music_id() == 226 && meta.difficulty() == db::DIFF_HARD;
                  })),
-    PlayStrategy(LNF_HARD_PUB, "LnF Hard (Pub)", Estimator::Mode::kMulti,
-                 db::MasterDb::GetIf<db::MusicMeta>([](const db::MusicMeta& meta) {
-                   return meta.music_id() == 226 && meta.difficulty() == db::DIFF_HARD;
-                 }),
-                 kPubOffset, kPubScale, /*is_pub=*/true),
+    // PlayStrategy(LNF_HARD_PUB, "LnF Hard (Pub)", Estimator::Mode::kMulti,
+    //              db::MasterDb::GetIf<db::MusicMeta>([](const db::MusicMeta& meta) {
+    //                return meta.music_id() == 226 && meta.difficulty() == db::DIFF_HARD;
+    //              }),
+    //              kPubOffset, kPubScale, /*is_pub=*/true),
     PlayStrategy(HCM_MAS_AUTO, "HCM Mas (Auto)", Estimator::Mode::kAuto,
                  db::MasterDb::GetIf<db::MusicMeta>([](const db::MusicMeta& meta) {
                    return meta.music_id() == 186 && meta.difficulty() == db::DIFF_MASTER;
@@ -115,20 +115,20 @@ const std::array<PlayStrategy, kPlayStrategyCount> kStrategies = {
                    return meta.music_id() == 11 && meta.difficulty() == db::DIFF_MASTER;
                  }),
                  kAutoOffset, kAutoScale, /*is_pub=*/false, /*is_auto=*/true),
-    PlayStrategy(JSG_MAS_AUTO, "JSG Mas (Auto)", Estimator::Mode::kAuto,
-                 db::MasterDb::GetIf<db::MusicMeta>([](const db::MusicMeta& meta) {
-                   return meta.music_id() == 62 && meta.difficulty() == db::DIFF_MASTER;
-                 }),
-                 kAutoOffset, kAutoScale, /*is_pub=*/false, /*is_auto=*/true),
+    // PlayStrategy(JSG_MAS_AUTO, "JSG Mas (Auto)", Estimator::Mode::kAuto,
+    //              db::MasterDb::GetIf<db::MusicMeta>([](const db::MusicMeta& meta) {
+    //                return meta.music_id() == 62 && meta.difficulty() == db::DIFF_MASTER;
+    //              }),
+    //              kAutoOffset, kAutoScale, /*is_pub=*/false, /*is_auto=*/true),
     PlayStrategy(RANDOM_EX_MULTI, "Random Ex (Multi)", Estimator::Mode::kMulti,
                  db::MasterDb::GetIf<db::MusicMeta>([](const db::MusicMeta& meta) {
                    return meta.difficulty() == db::DIFF_EXPERT;
                  })),
-    PlayStrategy(RANDOM_EX_PUB, "Random Ex (Pub)", Estimator::Mode::kMulti,
-                 db::MasterDb::GetIf<db::MusicMeta>([](const db::MusicMeta& meta) {
-                   return meta.difficulty() == db::DIFF_EXPERT;
-                 }),
-                 kPubOffset, kPubScale, /*is_pub=*/true),
+    // PlayStrategy(RANDOM_EX_PUB, "Random Ex (Pub)", Estimator::Mode::kMulti,
+    //              db::MasterDb::GetIf<db::MusicMeta>([](const db::MusicMeta& meta) {
+    //                return meta.difficulty() == db::DIFF_EXPERT;
+    //              }),
+    //              kPubOffset, kPubScale, /*is_pub=*/true),
 };
 
 Distribution<boost::math::normal> FillAnalyzer::MakePlayDist(const Estimator& estimator,

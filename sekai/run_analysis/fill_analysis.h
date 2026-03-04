@@ -24,7 +24,7 @@ constexpr float kAutoOffset = 20 - kDefaultTimeOffset;
 constexpr float kAutoScale = 0.3 / kDefaultTimeScale;
 
 class PlayStrategy;
-constexpr std::size_t kPlayStrategyCount = 13;
+constexpr std::size_t kPlayStrategyCount = 9;
 extern const std::array<PlayStrategy, kPlayStrategyCount> kStrategies;
 
 struct FillAnalysisInput {
