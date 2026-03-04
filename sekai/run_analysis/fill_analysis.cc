@@ -276,8 +276,8 @@ absl::StatusOr<AnalyzePlayResponse> FillAnalyzer::RunAnalysis() const {
 Distribution<boost::math::chi_squared> FillAnalyzer::MakeSkillDist(const PlayStrategy& strategy,
                                                                    float auto_val) const {
   constexpr float kPubOffset = 100;
-  constexpr float kMultiOffset = 150;
-  constexpr float kScale = 0.05;
+  constexpr float kMultiOffset = 100;
+  constexpr float kScale = 0.02;
   constexpr float kDof = 5;
   float offset = kMultiOffset;
   if (strategy.is_pub()) {
