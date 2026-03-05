@@ -136,6 +136,8 @@ message AnalyzeTeamResponse {
     optional float skill_value_upper_bound = 4;
   }
   optional SkillDetails skill_details = 3;
+
+  optional int32 team_power           = 4;
 }
 
 message AnalyzeGraphRequest {
