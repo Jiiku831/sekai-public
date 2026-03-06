@@ -21,6 +21,15 @@ message ValueDist {
   optional float stdev = 2;
 }
 
+message ValueDist2 {
+  message Point {
+    optional float val = 1;
+    optional float pdf = 2;
+  }
+  repeated Point points      = 1;
+  repeated float percentiles = 2;
+}
+
 message ConfidenceInterval {
   optional float value       = 1;
   optional float lower_bound = 2;
@@ -102,6 +111,7 @@ message AnalyzePlayerRequest {
     optional AnalyzeGraphRequest graph = 2;
   }
   repeated PlayerRequest players = 1;
+  optional bool compute_stats    = 2;
 }
 
 message AnalyzePlayerResponse {
@@ -111,7 +121,9 @@ message AnalyzePlayerResponse {
     optional AnalyzeTeamResponse team   = 1;
     optional AnalyzeGraphResponse graph = 2;
   }
-  repeated PlayerResponse players = 2;
+  repeated PlayerResponse players     = 2;
+
+  optional ComputeStatsResponse stats = 3;
 }
 
 message AnalyzeTeamRequest {
@@ -176,4 +188,26 @@ message BatchAnalyzeGraphRequest { repeated AnalyzeGraphRequest requests = 1; }
 message BatchAnalyzeGraphResponse {
   optional Status status                  = 1;
   repeated AnalyzeGraphResponse responses = 2;
+}
+
+message ComputeStatsRequest { optional AnalyzePlayerResponse analyze_player_response = 1; }
+
+message ComputeStatsResponse {
+  optional Status status = 1;
+
+  message PopulationStats {
+    optional ValueDist2 power_dist     = 1;
+    optional ValueDist2 bonus_dist     = 2;
+    optional ValueDist2 uptime_dist    = 3;
+    optional ValueDist2 downtime_dist  = 4;
+    optional ValueDist2 auto_time_dist = 5;
+    optional ValueDist2 gph_dist       = 6;
+    optional ValueDist2 epg_dist       = 7;
+    optional ValueDist2 rate_dist      = 8;
+    optional ValueDist2 auto_gph_dist  = 9;
+    optional ValueDist2 auto_epg_dist  = 10;
+    optional ValueDist2 auto_rate_dist = 11;
+    optional ValueDist2 fill_dist      = 12;
+  }
+  optional PopulationStats population_stats = 2;
 }

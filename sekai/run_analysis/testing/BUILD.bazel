@@ -1,5 +1,6 @@
 load("@emsdk//emscripten_toolchain:wasm_rules.bzl", "wasm_cc_binary")
 load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library")
+load("@rules_python//python:defs.bzl", "py_binary")
 
 cc_binary(
     name = "analyze_graphs_main",
@@ -17,6 +18,19 @@ cc_binary(
         "@abseil-cpp//absl/status",
         "@abseil-cpp//absl/status:statusor",
         "@abseil-cpp//absl/strings:str_format",
+    ],
+)
+
+py_binary(
+    name = "analyze_main",
+    srcs = ["analyze_main.py"],
+    data = [
+        "//data:flat-db-minimal",
+    ],
+    deps = [
+        "//sekai/run_analysis:bridge",
+        "//sekai/run_analysis/proto:service_py_pb2",
+        "@protobuf//:protobuf_python",
     ],
 )
 

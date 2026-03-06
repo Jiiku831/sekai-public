@@ -14,6 +14,9 @@ absl::StatusOr<AnalyzePlayerResponse> AnalyzePlayerHandler::Run(
   for (const AnalyzePlayerRequest::PlayerRequest& player : request.players()) {
     ASSIGN_OR_RETURN(*response.add_players(), RunForPlayer(player));
   }
+  if (request.compute_stats()) {
+    ASSIGN_OR_RETURN(*response.mutable_stats(), stats_handler_.RunOnResponse(response));
+  }
   return response;
 }
 
