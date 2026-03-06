@@ -22,7 +22,6 @@ namespace {
 constexpr float kPlayVariance = 0.3;
 
 constexpr float kInclusionThreshold = 0.5;
-constexpr float kAutoInclusionThreshold = 0.1;
 
 struct InvSkillResult {
   double mu;
@@ -221,10 +220,13 @@ absl::StatusOr<AnalyzePlayResponse> FillAnalyzer::RunAnalysis() const {
   if (max_likelihood > 0) {
     for (std::size_t i = 0; i < kStrategies.size(); ++i) {
       for (std::size_t j = 0; j < kBoostMultipliers.size(); ++j) {
-        resp.mutable_play_strategies(i)->mutable_boost_usage_details(j)->set_relative_likelihood(
-            resp.play_strategies(i).boost_usage_details(j).relative_likelihood() / max_likelihood);
-        if (i == most_likely_i && j == most_likely_j) {
-          resp.mutable_play_strategies(i)->mutable_boost_usage_details(j)->set_most_likely(true);
+        if (!kStrategies[i].is_auto()) {
+          resp.mutable_play_strategies(i)->mutable_boost_usage_details(j)->set_relative_likelihood(
+              resp.play_strategies(i).boost_usage_details(j).relative_likelihood() /
+              max_likelihood);
+          if (i == most_likely_i && j == most_likely_j) {
+            resp.mutable_play_strategies(i)->mutable_boost_usage_details(j)->set_most_likely(true);
+          }
         }
 
         if (kStrategies[i].is_auto()) {
@@ -258,8 +260,7 @@ absl::StatusOr<AnalyzePlayResponse> FillAnalyzer::RunAnalysis() const {
       std::size_t j = std::get<2>(auto_strategies.top());
       const AnalyzePlayResponse::BoostUsageDetails& details =
           resp.play_strategies(i).boost_usage_details(j);
-      if (details.relative_likelihood() < kAutoInclusionThreshold ||
-          details.relative_likelihood_auto() < kInclusionThreshold) {
+      if (details.relative_likelihood_auto() < kInclusionThreshold) {
         break;
       }
       *resp.add_likely_auto_play_strategies() = details;
