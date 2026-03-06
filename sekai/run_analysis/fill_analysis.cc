@@ -248,7 +248,8 @@ absl::StatusOr<AnalyzePlayResponse> FillAnalyzer::RunAnalysis() const {
       std::size_t j = std::get<2>(strategies.top());
       const AnalyzePlayResponse::BoostUsageDetails& details =
           resp.play_strategies(i).boost_usage_details(j);
-      if (details.relative_likelihood() < kInclusionThreshold) {
+      if (details.relative_likelihood() < kInclusionThreshold ||
+          resp.likely_play_strategies_size() >= 5) {
         break;
       }
       *resp.add_likely_play_strategies() = details;
@@ -260,7 +261,8 @@ absl::StatusOr<AnalyzePlayResponse> FillAnalyzer::RunAnalysis() const {
       std::size_t j = std::get<2>(auto_strategies.top());
       const AnalyzePlayResponse::BoostUsageDetails& details =
           resp.play_strategies(i).boost_usage_details(j);
-      if (details.relative_likelihood_auto() < kInclusionThreshold) {
+      if (details.relative_likelihood_auto() < kInclusionThreshold ||
+          resp.likely_auto_play_strategies_size() >= 5) {
         break;
       }
       *resp.add_likely_auto_play_strategies() = details;
