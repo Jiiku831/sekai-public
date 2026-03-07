@@ -22,6 +22,14 @@ build:wasm \
   --cxxopt=-Wno-error=unused-function \
   --cxxopt=-DBS_THREAD_POOL_DISABLE_EXCEPTION_HANDLING
 
+build:wasm-pthreads \
+  --cxxopt=-std=c++23 \
+  --cxxopt=-Wno-error=deprecated-pragma \
+  --cxxopt=-Wno-error=deprecated-this-capture \
+  --cxxopt=-Wno-error=unused-function \
+  --cxxopt=-DBS_THREAD_POOL_DISABLE_EXCEPTION_HANDLING \
+  --cxxopt=-pthread
+
 build:wasm-dbg \
   --cxxopt=-O0 \
   --linkopt=-O0 \

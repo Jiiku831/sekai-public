@@ -1,8 +1,10 @@
 #include "sekai/run_analysis/testing/plot.h"
 
+#include <cmath>
 #include <cstddef>
 #include <cstdint>
 #include <limits>
+#include <numbers>
 #include <ranges>
 #include <span>
 #include <vector>
@@ -64,20 +66,42 @@ void PointsLineGraph::Draw(const PlotOptions& options) const {
   ImPlot::PlotLine(title_.c_str(), seq.x.data(), seq.y.data(), seq.size());
 }
 
-HistogramPlot::HistogramPlot(std::string_view title, std::span<const int> points,
-                             HistogramOptions options)
-    : title_(title), options_(std::move(options)) {
-  if (options.drop_zeros) {
-    points_ =
-        RangesTo<std::vector>(points | std::views::filter([](const int x) { return x != 0; }));
-  } else {
-    points_ = {points.begin(), points.end()};
+void DistributionPlot::Draw(const PlotOptions& options) const {
+  std::vector<double> x(options_.samples), y(options_.samples);
+  double min = dist_.Ppf(options_.min_quantile);
+  double max = dist_.Ppf(options_.max_quantile);
+  const double kStep = (max - min) / (options_.samples - 1);
+  int actual_samples = options_.samples;
+  bool past_min = false;
+  double actual_mu = 0;
+  for (int i = 0; i < options_.samples; ++i) {
+    double pt = min + kStep * i;
+    x[i] = pt;
+    y[i] = dist_.Pdf(pt);
+    if (options_.clamp_min.has_value() && pt <= *options_.clamp_min) {
+      y[i] = 0;
+    } else if (options_.clamp_min.has_value() && !past_min) {
+      past_min = true;
+      y[i] = i == 0 ? 0 : dist_.Cdf(pt) / kStep;
+    }
+    actual_mu += pt * kStep * y[i];
+    if (options_.clamp_max.has_value() && pt >= *options_.clamp_max) {
+      y[i] = (1.0 - dist_.Cdf(pt)) / kStep;
+      actual_samples = i + 1;
+      actual_mu += pt * kStep * y[i];
+      break;
+    }
   }
-}
-
-void HistogramPlot::Draw(const PlotOptions& options) const {
-  ImPlot::PlotHistogram(title_.c_str(), points_.data(), points_.size(), options_.bins,
-                        /*bar_scale=*/1.0, ImPlotRange(), ImPlotHistogramFlags_Density);
+  if (color_.has_value()) {
+    ImPlot::SetNextFillStyle(*color_);
+    ImPlot::SetNextLineStyle(*color_);
+  }
+  ImPlot::PlotLine(title_.c_str(), x.data(), y.data(), actual_samples);
+  if (options_.draw_mu) {
+    ImPlot::DragLineX(0, &actual_mu, color_.value_or(ImVec4(1, 0, 0, 1)), /*thickness=*/1,
+                      ImPlotDragToolFlags_NoInputs);
+    ImPlot::TagX(actual_mu, color_.value_or(ImVec4(1, 0, 0, 1)), "%.1f", actual_mu);
+  }
 }
 
 }  // namespace sekai::run_analysis

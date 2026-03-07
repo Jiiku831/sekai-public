@@ -82,7 +82,7 @@ int GetCharBdayProgressAt(int char_id, absl::Time time) {
     return 0;
   }
   // TODO: will need to adjust for leap year at some point
-  return static_cast<int>(secs_since_bday / (365 * 24 * 3600)) + 1;
+  return std::min(kMaxBdayXp, static_cast<int>(secs_since_bday / (365 * 24 * 3600)) + 1);
 }
 
 int GetMaxChallengeLiveStage(int char_id, absl::Time time) {
@@ -176,7 +176,7 @@ std::optional<int> GetMaxProgress(int char_id, CharacterRankSource::OtherSource 
     case CharacterRankSource::OTHER_SOURCE_ANNI_5_MEMORIAL_SELECT:
       return GetAssetVersionAt(time) >= kAnni5AssetVersion ? 2 : 0;
     case CharacterRankSource::OTHER_SOURCE_BDAY_LIVE:
-      return GetAssetVersionAt(time) >= kAnni5AssetVersion ? 1 : 0;
+      return GetAssetVersionAt(time) >= kAnni5AssetVersion ? kMaxBdayXp : 0;
     case CharacterRankSource::OTHER_SOURCE_NEW_YEAR_5_GACHA:
       return GetAssetVersionAt(time) >= kNewYear5AssetVersion ? 3 : 0;
     default:

@@ -24,14 +24,26 @@ class Estimator : public EstimatorBase {
   enum class Mode { kSolo, kMulti, kCheerful, kAuto };
 
   Estimator(Mode mode, std::span<const db::MusicMeta* const absl_nonnull> songs);
-  Estimator(double a, double b, double c, double d) : a_(a), b_(b), c_(c), d_(d) {
+  Estimator(double a, double b, double c, double d, double t_mu = 0)
+      : a_(a), b_(b), c_(c), d_(d), t_mu_(t_mu) {
     PopulateLookupTable();
   }
 
-  double ExpectedEp(int power, double event_bonus, int average_skill, int encore_skill) const;
+  double ExpectedEp(int power, double event_bonus, float player_skill, float encore_skill,
+                    float third_party_skill = 180) const;
+  double ExpectedEpFixedEncore(int power, double event_bonus, float player_skill,
+                               float encore_skill, float third_party_skill = 180) const;
+  double ExpectedEpFixedEncoreInvSkill(int power, double event_bonus, float player_skill,
+                                       double expected_ep) const;
+  // Assuming skill values are drawn independently.
+  double Variance(int fixed_power, double fixed_event_bonus, float fixed_player_skill,
+                  float encore_skill_var, float third_party_skill_var) const;
+  double VarianceInvSkill(int fixed_power, double fixed_event_bonus, float fixed_player_skill,
+                          float encore_skill_var, float third_party_skill_var) const;
   int MinRequiredPower(double ep, double max_event_bonus = kMaxEventBonus,
-                       int max_skill = kMaxSkillValue) const;
-  int MinRequiredBonus(double ep, int max_power, int max_skill = kMaxSkillValue) const;
+                       float max_skill = kMaxSkillValue, float third_party_skill = 180) const;
+  int MinRequiredBonus(double ep, int max_power, float max_skill = kMaxSkillValue,
+                       float third_party_skill = 180) const;
 
   Eigen::Vector4d GetEpEstimatorParams() const;
 
@@ -53,12 +65,17 @@ class Estimator : public EstimatorBase {
   void AnnotateTeamProto(const Profile& profile, const EventBonus& event_bonus, const Team& team,
                          TeamProto& team_proto) const override;
 
+  double t_mu() const { return t_mu_; }
+
  private:
   // EP estimator params
   double a_ = 0;
   double b_ = 0;
   double c_ = 0;
   double d_ = 0;
+
+  // Time params
+  double t_mu_ = 0;
 
   static constexpr int kPowerBucketSize = 12;
   static constexpr int kPowerBuckets = (kMaxPower >> kPowerBucketSize) + 1;

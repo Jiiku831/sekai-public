@@ -102,6 +102,7 @@ absl::StatusOr<AnalyzeTeamResponse> AnalyzeTeamHandler::Run(
                    ConstructTeam(request.cards(), event_bonus, Profile::Min()));
 
   AnalyzeTeamResponse response;
+  response.set_team_power(request.team_power());
   response.set_event_bonus(team.team.EventBonus(event_bonus));
   ASSIGN_OR_RETURN(*response.mutable_skill_details(),
                    GetSkillDetails(request.cards(), event_bonus));

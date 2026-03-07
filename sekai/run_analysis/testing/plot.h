@@ -5,9 +5,12 @@
 #include <string_view>
 #include <vector>
 
+#include "absl/base/attributes.h"
 #include "imgui.h"
+#include "implot.h"
 #include "sekai/run_analysis/segmentation.h"
 #include "sekai/run_analysis/snapshot.h"
+#include "sekai/run_analysis/stats_util.h"
 
 namespace sekai::run_analysis {
 
@@ -67,6 +70,32 @@ class PointsLineGraph : public PlotBase {
   std::optional<ImVec4> color_;
 };
 
+struct DistributionOptions {
+  std::optional<double> clamp_min;
+  std::optional<double> clamp_max;
+  bool draw_mu = false;
+  int samples = 1000;
+  double min_quantile = 0.001;
+  double max_quantile = 0.999;
+};
+
+class DistributionPlot : public PlotBase {
+ public:
+  // Input must outlive this class.
+  DistributionPlot(std::string_view title,
+                   const DistributionBase& dist ABSL_ATTRIBUTE_LIFETIME_BOUND,
+                   std::optional<ImVec4> color = std::nullopt, DistributionOptions options = {})
+      : dist_(dist), title_(title), color_(color), options_(options) {}
+
+  void Draw(const PlotOptions& options) const override;
+
+ private:
+  const DistributionBase& dist_;
+  std::string title_;
+  std::optional<ImVec4> color_;
+  DistributionOptions options_;
+};
+
 template <typename Plot>
 class SegmentsPlot : public PlotBase {
  public:
@@ -99,17 +128,31 @@ struct HistogramOptions {
   int bins = 200;
 };
 
+template <typename T>
 class HistogramPlot : public PlotBase {
  public:
-  // Input must outlive this class.
-  HistogramPlot(std::string_view title, std::span<const int> points, HistogramOptions options = {});
+  HistogramPlot(std::string_view title, std::span<const T> points, HistogramOptions options = {})
+      : title_(title), options_(std::move(options)) {
+    if (options.drop_zeros) {
+      points_ =
+          RangesTo<std::vector>(points | std::views::filter([](const int x) { return x != 0; }));
+    } else {
+      points_ = {points.begin(), points.end()};
+    }
+  }
 
-  void Draw(const PlotOptions& options) const override;
+  void Draw(const PlotOptions& options) const override {
+    ImPlot::PlotHistogram(title_.c_str(), points_.data(), points_.size(), options_.bins,
+                          /*bar_scale=*/1.0, ImPlotRange(), ImPlotHistogramFlags_Density);
+  }
 
  private:
   std::string title_;
   HistogramOptions options_;
-  std::vector<int> points_;
+  std::vector<T> points_;
 };
+
+template <typename T>
+HistogramPlot(std::string_view, const std::vector<T>&) -> HistogramPlot<T>;
 
 }  // namespace sekai::run_analysis

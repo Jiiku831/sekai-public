@@ -3,3 +3,4 @@
 #include <vector>
 
 std::vector<char*> Init(int argc, char** argv);
+void InitLogging();

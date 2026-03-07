@@ -212,7 +212,6 @@ class DetectorStateV2 {
       : min_segment_length_(std::max(opts.min_segment_length, disallow_breaks)),
         max_segment_gap_(opts.max_segment_gap),
         major_shift_threshold_(opts.major_shift_threshold),
-        mean_shift_threshold_(opts.mean_shift_threshold),
         decay_(opts.shift_detection_decay),
         outlier_threshold_(opts.shift_detection_factor),
         debug_(opts.debug),
@@ -407,7 +406,6 @@ class DetectorStateV2 {
   std::size_t min_segment_length_ = 0;
   absl::Duration max_segment_gap_ = absl::InfiniteDuration();
   float major_shift_threshold_ = 0;
-  float mean_shift_threshold_ = 0;
   float decay_ = 0;
   float last_res_ = 0;
   float outlier_threshold_ = 0;

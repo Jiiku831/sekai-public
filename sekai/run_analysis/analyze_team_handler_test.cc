@@ -50,6 +50,7 @@ TEST_F(AnalyzeTeamTest, RespondsWithEventBonus) {
       skill_value_lower_bound: 128
       skill_value_upper_bound: 164
     }
+    team_power: 291320
   )pb");
   EXPECT_THAT(Run(request), IsOkAndHolds(ProtoEquals(expected_response)));
 }
