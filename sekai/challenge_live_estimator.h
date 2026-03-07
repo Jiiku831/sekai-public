@@ -2,20 +2,21 @@
 
 #include <vector>
 
+#include "absl/base/nullability.h"
 #include "sekai/estimator_base.h"
 
 namespace sekai {
 
 class ChallengeLiveSongEstimator {
  public:
-  ChallengeLiveSongEstimator(const db::MusicMeta* meta);
+  ChallengeLiveSongEstimator(const db::MusicMeta* absl_nonnull meta);
 
   double ExpectedValue(int power, std::span<const int> sorted_skills) const;
 
-  const db::MusicMeta* meta() const { return meta_; }
+  const db::MusicMeta* absl_nonnull meta() const { return meta_; }
 
  private:
-  const db::MusicMeta* meta_;
+  const db::MusicMeta* absl_nonnull meta_;
   std::vector<float> sorted_skill_factor_;
   float base_factor_;
 };
@@ -41,7 +42,7 @@ class ChallengeLiveEstimator : public EstimatorBase {
 
   struct ValueDetail {
     double value = 0;
-    const db::MusicMeta* meta = nullptr;
+    const db::MusicMeta* absl_nullable meta = nullptr;
   };
   ValueDetail ExpectedValueImpl(const Profile& profile, const EventBonus& event_bonus,
                                 const Team& team) const;

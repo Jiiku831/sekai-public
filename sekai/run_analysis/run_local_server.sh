@@ -36,7 +36,7 @@ elif [[ "$1" = "--dbg" ]]; then
   )
 else
   build_opts=(
-    --config=wasm
+    --config=wasm-pthreads
     -c opt
   )
 fi

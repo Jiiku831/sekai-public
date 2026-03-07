@@ -7,6 +7,8 @@
 
 std::vector<char*> Init(int argc, char** argv) {
   std::vector<char*> remaining = absl::ParseCommandLine(argc, argv);
-  absl::InitializeLog();
+  InitLogging();
   return remaining;
 }
+
+void InitLogging() { absl::InitializeLog(); }

@@ -21,8 +21,10 @@ inline constexpr int kMaxPower = 400'000;
 inline constexpr int kMaxScore = 3'000'000;
 inline constexpr int kMaxEventBonus = 750;
 inline constexpr int kMaxBaseEventPoint = 3000;
-inline constexpr int kMinSkillValue = 20 + (20 / 5) * 4;
-inline constexpr int kMaxSkillValue = 160 + (160 / 5) * 4;
+inline constexpr int kMinCardSkillValue = 20;
+inline constexpr int kMaxCardSkillValue = 160;
+inline constexpr int kMinSkillValue = kMinCardSkillValue + (kMinCardSkillValue / 5) * 4;
+inline constexpr int kMaxSkillValue = kMaxCardSkillValue + (kMaxCardSkillValue / 5) * 4;
 
 inline constexpr std::array kReferenceScoreBoostCaps = {0.f, 120.f, 130.f, 140.f, 140.f};
 

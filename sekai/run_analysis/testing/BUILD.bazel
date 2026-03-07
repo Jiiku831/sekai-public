@@ -1,5 +1,6 @@
 load("@emsdk//emscripten_toolchain:wasm_rules.bzl", "wasm_cc_binary")
 load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library")
+load("@rules_python//python:defs.bzl", "py_binary")
 
 cc_binary(
     name = "analyze_graphs_main",
@@ -20,6 +21,19 @@ cc_binary(
     ],
 )
 
+py_binary(
+    name = "analyze_main",
+    srcs = ["analyze_main.py"],
+    data = [
+        "//data:flat-db-minimal",
+    ],
+    deps = [
+        "//sekai/run_analysis:bridge",
+        "//sekai/run_analysis/proto:service_py_pb2",
+        "@protobuf//:protobuf_python",
+    ],
+)
+
 cc_library(
     name = "imgui_util",
     srcs = ["imgui_util.cc"],
@@ -27,6 +41,36 @@ cc_library(
     deps = [
         "@imgui",
         "@protobuf",
+    ],
+)
+
+cc_binary(
+    name = "likelihood_main",
+    srcs = ["likelihood_main.cc"],
+    data = [
+        "//data:flat-db-minimal",
+    ],
+    deps = [
+        ":imgui_util",
+        ":plot",
+        "//base",
+        "//base:util",
+        "//sekai:challenge_live_estimator",
+        "//sekai:estimator",
+        "//sekai:ranges_util",
+        "//sekai/db:master_db",
+        "//sekai/db/proto:all",
+        "//sekai/run_analysis:fill_analysis",
+        "@abseil-cpp//absl/base:nullability",
+        "@abseil-cpp//absl/log",
+        "@abseil-cpp//absl/log:flags",
+        "@abseil-cpp//absl/strings:str_format",
+        "@boost.math",
+        "@glfw",
+        "@imgui",
+        "@imgui//backends:platform-glfw",
+        "@imgui//backends:renderer-opengl3",
+        "@implot",
     ],
 )
 
@@ -98,6 +142,7 @@ cc_library(
         "//sekai:ranges_util",
         "//sekai/run_analysis:segmentation",
         "//sekai/run_analysis:snapshot",
+        "@abseil-cpp//absl/base",
         "@abseil-cpp//absl/log",
         "@abseil-cpp//absl/strings",
         "@imgui",

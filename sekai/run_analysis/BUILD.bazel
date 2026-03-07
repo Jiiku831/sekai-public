@@ -1,4 +1,5 @@
 load("@emsdk//emscripten_toolchain:wasm_rules.bzl", "wasm_cc_binary")
+load("@nanobind_bazel//:build_defs.bzl", "nanobind_extension")
 load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library", "cc_test")
 load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
 load("@rules_python//python:defs.bzl", "py_binary")
@@ -20,6 +21,36 @@ cc_library(
         "@abseil-cpp//absl/strings:str_format",
         "@protobuf",
         "@protobuf//:time_util",
+    ],
+)
+
+cc_library(
+    name = "analyze_play_handler",
+    srcs = ["analyze_play_handler.cc"],
+    hdrs = ["analyze_play_handler.h"],
+    deps = [
+        ":fill_analysis",
+        ":handler",
+        "//sekai/run_analysis/proto:service_cc_proto",
+        "@abseil-cpp//absl/status:statusor",
+    ],
+)
+
+cc_library(
+    name = "analyze_player_handler",
+    srcs = ["analyze_player_handler.cc"],
+    hdrs = ["analyze_player_handler.h"],
+    deps = [
+        ":analyze_graph_handler",
+        ":analyze_play_handler",
+        ":analyze_team_handler",
+        ":compute_stats_handler",
+        ":handler",
+        ":stats_util",
+        "//base:util",
+        "//sekai/run_analysis/proto:service_cc_proto",
+        "@abseil-cpp//absl/algorithm:container",
+        "@abseil-cpp//absl/status:statusor",
     ],
 )
 
@@ -61,6 +92,18 @@ cc_test(
     ],
 )
 
+nanobind_extension(
+    name = "bridge",
+    srcs = ["bridge.cc"],
+    deps = [
+        ":handlers",
+        ":proto_util",
+        "//base",
+        "@abseil-cpp//absl/status",
+        "@abseil-cpp//absl/status:statusor",
+    ],
+)
+
 cc_library(
     name = "batch_handler",
     hdrs = ["batch_handler.h"],
@@ -95,12 +138,45 @@ cc_test(
 )
 
 cc_library(
+    name = "compute_stats_handler",
+    srcs = ["compute_stats_handler.cc"],
+    hdrs = ["compute_stats_handler.h"],
+    deps = [
+        ":handler",
+        ":stats_util",
+        "//base:util",
+        "//sekai/run_analysis/proto:service_cc_proto",
+        "@abseil-cpp//absl/algorithm:container",
+        "@abseil-cpp//absl/status:statusor",
+    ],
+)
+
+cc_library(
     name = "config",
     srcs = ["config.cc"],
     hdrs = ["config.h"],
     deps = [
         "@abseil-cpp//absl/flags:flag",
         "@abseil-cpp//absl/time",
+    ],
+)
+
+cc_library(
+    name = "fill_analysis",
+    srcs = ["fill_analysis.cc"],
+    hdrs = ["fill_analysis.h"],
+    deps = [
+        ":stats_util",
+        "//base:util",
+        "//sekai:challenge_live_estimator",
+        "//sekai:config",
+        "//sekai:estimator",
+        "//sekai/db:master_db",
+        "//sekai/db/proto:all",
+        "//sekai/run_analysis/proto:service_cc_proto",
+        "@abseil-cpp//absl/status",
+        "@abseil-cpp//absl/status:statusor",
+        "@abseil-cpp//absl/strings:str_format",
     ],
 )
 
@@ -114,6 +190,29 @@ cc_library(
         "@abseil-cpp//absl/status:status",
         "@abseil-cpp//absl/status:statusor",
         "@protobuf",
+    ],
+)
+
+cc_library(
+    name = "handlers",
+    srcs = [
+        "handlers.cc",
+    ],
+    hdrs = ["handlers.h"],
+    deps = [
+        ":analyze_graph_handler",
+        ":analyze_play_handler",
+        ":analyze_player_handler",
+        ":analyze_team_handler",
+        ":batch_handler",
+        ":compute_stats_handler",
+        ":handler",
+        "//base",
+        "//sekai/db:master_db",
+        "@abseil-cpp//absl/base:no_destructor",
+        "@abseil-cpp//absl/container:flat_hash_map",
+        "@abseil-cpp//absl/log",
+        "@abseil-cpp//absl/status:status",
     ],
 )
 
@@ -155,14 +254,11 @@ cc_binary(
         "-sEXPORTED_FUNCTIONS=_main,_HandleRequest,_Malloc,_Free",
         "-sENVIRONMENT=web",
         "-sMODULARIZE",
-        "-sUSE_PTHREADS=0",
         "-sALLOW_MEMORY_GROWTH",
+        "-pthread",
     ],
     deps = [
-        ":analyze_graph_handler",
-        ":analyze_team_handler",
-        ":batch_handler",
-        ":handler",
+        ":handlers",
         "//base",
         "//sekai/db:master_db",
         "@abseil-cpp//absl/base:no_destructor",
@@ -316,4 +412,12 @@ cc_library(
 cc_library(
     name = "stats_util",
     hdrs = ["stats_util.h"],
+    deps = [
+        "//sekai:ranges_util",
+        "//sekai/run_analysis/proto:service_cc_proto",
+        "@abseil-cpp//absl/base",
+        "@abseil-cpp//absl/status",
+        "@abseil-cpp//absl/status:statusor",
+        "@boost.math",
+    ],
 )
