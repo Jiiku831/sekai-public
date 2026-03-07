@@ -21,11 +21,109 @@ message ValueDist {
   optional float stdev = 2;
 }
 
+message ValueDist2 {
+  message Point {
+    optional float val = 1;
+    optional float pdf = 2;
+  }
+  repeated Point points      = 1;
+  repeated float percentiles = 2;
+}
+
 message ConfidenceInterval {
   optional float value       = 1;
   optional float lower_bound = 2;
   optional float upper_bound = 3;
   optional float confidence  = 4;
+}
+
+enum PlayStrategyName {
+  UNKNOWN_STRATEGY = 0;
+  EBI_EX_MULTI     = 1;
+  EBI_EX_PUB       = 2;
+  EBI_MAS_AUTO     = 3;
+  LNF_HARD_MULTI   = 4;
+  LNF_HARD_PUB     = 5;
+  HCM_MAS_AUTO     = 6;
+  SAGE_MAS_AUTO    = 7;
+  MEMORIA_APP_AUTO = 10;
+  CENDRI_MAS_AUTO  = 11;
+  VIVA_MAS_AUTO    = 12;
+  JSG_MAS_AUTO     = 13;
+  RANDOM_EX_MULTI  = 8;
+  RANDOM_EX_PUB    = 9;
+}
+
+message AnalyzePlayRequest {
+  // Team power
+  optional int32 power = 1;
+
+  // Team event bonus, in percentage points (put 100 for 100%).
+  optional float event_bonus = 2;
+
+  // Skill min and max, in percentage points. You can obtain this with a call to
+  // AnalyzeTeam.
+  optional float skill_min = 3;
+  optional float skill_max = 4;
+
+  // Single card skill min and max, in percentage points.
+  optional float card_skill_min          = 8;
+  optional float card_skill_max          = 9;
+
+  optional float observed_games_per_hour = 5;
+  optional float observed_ep_per_game    = 6;
+  optional bool include_full_details     = 7;
+}
+
+message AnalyzePlayResponse {
+  message BoostUsageDetails {
+    optional PlayStrategyName strategy = 1;
+    optional int32 boost_usage         = 2;
+    optional int32 multiplier          = 3;
+    optional bool is_auto              = 4;
+    // Note that this does not make sense for auto strategies.
+    optional ConfidenceInterval estimated_avg_filler_skill = 5;
+    // Indicates this is the most likely for regular play.
+    optional bool most_likely          = 6;
+    optional float relative_likelihood = 7;
+
+    // Indicates this is the most likely for auto play.
+    optional bool most_likely_auto          = 8;
+    optional float relative_likelihood_auto = 9;
+  }
+
+  message StrategyDetails {
+    optional PlayStrategyName strategy = 1;
+
+    // Will always be the same length as the allowable boost usage.
+    repeated BoostUsageDetails boost_usage_details = 2;
+  }
+
+  optional Status status                                 = 1;
+  repeated StrategyDetails play_strategies               = 2;
+  repeated BoostUsageDetails likely_play_strategies      = 3;
+  repeated BoostUsageDetails likely_auto_play_strategies = 4;
+}
+
+message AnalyzePlayerRequest {
+  message PlayerRequest {
+    optional AnalyzeTeamRequest team   = 1;
+    optional AnalyzeGraphRequest graph = 2;
+  }
+  repeated PlayerRequest players = 1;
+  optional bool compute_stats    = 2;
+}
+
+message AnalyzePlayerResponse {
+  optional Status status = 1;
+
+  message PlayerResponse {
+    optional AnalyzeTeamResponse team   = 1;
+    optional AnalyzeGraphResponse graph = 2;
+  }
+  repeated PlayerResponse players     = 2;
+
+  optional ComputeStatsResponse stats = 3;
 }
 
 message AnalyzeTeamRequest {
@@ -50,6 +148,8 @@ message AnalyzeTeamResponse {
     optional float skill_value_upper_bound = 4;
   }
   optional SkillDetails skill_details = 3;
+
+  optional int32 team_power           = 4;
 }
 
 message AnalyzeGraphRequest {
@@ -76,6 +176,9 @@ message AnalyzeGraphResponse {
 
     optional ConfidenceInterval games_per_hour = 5;
     optional ConfidenceInterval ep_per_game    = 6;
+
+    // Only populated when part of the AnalyzePlayerResponse.
+    optional AnalyzePlayResponse play_analysis = 8;
   }
   repeated Segment active_segments = 5;
 }
@@ -85,4 +188,26 @@ message BatchAnalyzeGraphRequest { repeated AnalyzeGraphRequest requests = 1; }
 message BatchAnalyzeGraphResponse {
   optional Status status                  = 1;
   repeated AnalyzeGraphResponse responses = 2;
+}
+
+message ComputeStatsRequest { optional AnalyzePlayerResponse analyze_player_response = 1; }
+
+message ComputeStatsResponse {
+  optional Status status = 1;
+
+  message PopulationStats {
+    optional ValueDist2 power_dist     = 1;
+    optional ValueDist2 bonus_dist     = 2;
+    optional ValueDist2 uptime_dist    = 3;
+    optional ValueDist2 downtime_dist  = 4;
+    optional ValueDist2 auto_time_dist = 5;
+    optional ValueDist2 gph_dist       = 6;
+    optional ValueDist2 epg_dist       = 7;
+    optional ValueDist2 rate_dist      = 8;
+    optional ValueDist2 auto_gph_dist  = 9;
+    optional ValueDist2 auto_epg_dist  = 10;
+    optional ValueDist2 auto_rate_dist = 11;
+    optional ValueDist2 fill_dist      = 12;
+  }
+  optional PopulationStats population_stats = 2;
 }

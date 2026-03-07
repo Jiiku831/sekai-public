@@ -123,10 +123,12 @@ Estimator MakeEstimator(Estimator::Mode mode,
   std::vector<double> event_rate_base;
   std::vector<double> event_rate_skill;
   std::vector<double> event_rate_encore;
+  std::vector<double> song_time;
   event_rate.reserve(metas.size());
   event_rate_base.reserve(metas.size());
   event_rate_skill.reserve(metas.size());
   event_rate_encore.reserve(metas.size());
+  song_time.reserve(metas.size());
 
   for (const db::MusicMeta* absl_nonnull meta : metas) {
     SkillScores skill_scores = GetSkillScores(mode, *meta);
@@ -135,6 +137,7 @@ Estimator MakeEstimator(Estimator::Mode mode,
     event_rate_base.push_back(meta->event_rate() * base_score);
     event_rate_skill.push_back(meta->event_rate() * skill_scores.skill_score);
     event_rate_encore.push_back(meta->event_rate() * skill_scores.encore_score);
+    song_time.push_back(meta->music_time());
   }
 
   double mean_event_rate = Mean(event_rate);
@@ -150,8 +153,9 @@ Estimator MakeEstimator(Estimator::Mode mode,
   double b = 4 * life_factor * mean_event_rate_base / ep_factor;
   double c = 4 * life_factor * mean_event_rate_skill / ep_factor;
   double d = 4 * life_factor * mean_event_rate_encore / ep_factor;
+  double t_mu = Mean(song_time);
 
-  return Estimator(a, b, c, d);
+  return Estimator(a, b, c, d, t_mu);
 }
 
 }  // namespace
@@ -159,11 +163,24 @@ Estimator MakeEstimator(Estimator::Mode mode,
 Estimator::Estimator(Mode mode, std::span<const db::MusicMeta* const absl_nonnull> metas)
     : Estimator(MakeEstimator(mode, metas)) {}
 
-double Estimator::ExpectedEp(int power, double event_bonus, int average_skill,
-                             int encore_skill) const {
-  // TODO: make option
-  average_skill = 180 + static_cast<float>(average_skill - 180) / 5;
-  encore_skill = 180 + static_cast<float>(encore_skill - 180) / 5;
+double Estimator::ExpectedEp(int power, double event_bonus, float player_skill, float encore_skill,
+                             float third_party_skill) const {
+  float average_skill = (third_party_skill * 4 + player_skill) / 5;
+  float actual_encore_skill = (third_party_skill * 4 + encore_skill) / 5;
+  const double& a = a_;
+  const double& b = b_;
+  const double& c = c_;
+  const double& d = d_;
+  const double p = static_cast<double>(power);
+  const double q = 1 + static_cast<double>(event_bonus) / 100;
+  const double f = static_cast<double>(average_skill) / 100;
+  const double e = static_cast<double>(actual_encore_skill) / 100;
+  return a * q + p * q * (b + f * c + e * d);
+}
+
+double Estimator::ExpectedEpFixedEncore(int power, double event_bonus, float player_skill,
+                                        float encore_skill, float third_party_skill) const {
+  float average_skill = (third_party_skill * 4 + player_skill) / 5;
   const double& a = a_;
   const double& b = b_;
   const double& c = c_;
@@ -175,8 +192,43 @@ double Estimator::ExpectedEp(int power, double event_bonus, int average_skill,
   return a * q + p * q * (b + f * c + e * d);
 }
 
-int Estimator::MinRequiredPower(double ep, double max_event_bonus, int max_skill) const {
-  max_skill = 180 + static_cast<float>(max_skill - 180) / 5;
+double Estimator::ExpectedEpFixedEncoreInvSkill(int power, double event_bonus, float player_skill,
+                                                double expected_ep) const {
+  const double& a = a_;
+  const double& b = b_;
+  const double& c = c_;
+  const double& d = d_;
+  const double p = static_cast<double>(power);
+  const double q = 1 + static_cast<double>(event_bonus) / 100;
+  return (((expected_ep - a * q) / p / q - b) * 500 - player_skill * c) / (4 * c + 5 * d);
+}
+
+double Estimator::Variance(int fixed_power, double fixed_event_bonus, float fixed_player_skill,
+                           float encore_skill_var, float third_party_skill_var) const {
+  float sv = third_party_skill_var * 16 / 25;
+  const double& c = c_;
+  const double& d = d_;
+  const double p = static_cast<double>(fixed_power);
+  const double q = 1 + static_cast<double>(fixed_event_bonus) / 100;
+  const double fv = static_cast<double>(sv) / 100 / 100;
+  const double ev = static_cast<double>(encore_skill_var) / 100 / 100;
+  return p * p * q * q * (fv * c * c + ev * d * d);
+}
+
+double Estimator::VarianceInvSkill(int fixed_power, double fixed_event_bonus,
+                                   float fixed_player_skill, float encore_skill_var,
+                                   float third_party_skill_var) const {
+  float sv = third_party_skill_var * 16 / 25;
+  const double& c = c_;
+  const double& d = d_;
+  const double fv = static_cast<double>(sv) / 100 / 100;
+  const double ev = static_cast<double>(encore_skill_var) / 100 / 100;
+  return 500 * 500 * (fv * c * c + ev * d * d) / (4 * c + d) / (4 * c + d);
+}
+
+int Estimator::MinRequiredPower(double ep, double max_event_bonus, float max_skill,
+                                float third_party_skill) const {
+  max_skill = (third_party_skill * 4 + max_skill) / 5;
   const double& a = a_;
   const double& b = b_;
   const double& c = c_;
@@ -191,8 +243,9 @@ int Estimator::MinRequiredPower(double ep, double max_event_bonus, int max_skill
   return static_cast<int>((x - a * q) / (q * (b + f * c + e * d)));
 }
 
-int Estimator::MinRequiredBonus(double ep, int max_power, int max_skill) const {
-  max_skill = 180 + static_cast<float>(max_skill - 180) / 5;
+int Estimator::MinRequiredBonus(double ep, int max_power, float max_skill,
+                                float third_party_skill) const {
+  max_skill = (third_party_skill * 4 + max_skill) / 5;
   const double& a = a_;
   const double& b = b_;
   const double& c = c_;

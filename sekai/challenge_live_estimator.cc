@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "absl/base/no_destructor.h"
+#include "absl/base/nullability.h"
 #include "absl/container/flat_hash_set.h"
 #include "absl/log/absl_check.h"
 #include "sekai/config.h"
@@ -49,7 +50,8 @@ void SafeAddMetas(std::span<const db::MusicMeta* const absl_nonnull> metas,
 
 }  // namespace
 
-ChallengeLiveSongEstimator::ChallengeLiveSongEstimator(const db::MusicMeta* meta) : meta_(meta) {
+ChallengeLiveSongEstimator::ChallengeLiveSongEstimator(const db::MusicMeta* absl_nonnull meta)
+    : meta_(meta) {
   ABSL_CHECK_EQ(meta->skill_score_solo_size(), kTeamSize + 1);
   sorted_skill_factor_ = {meta->skill_score_solo().begin(),
                           meta->skill_score_solo().begin() + kTeamSize};

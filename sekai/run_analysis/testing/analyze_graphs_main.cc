@@ -41,11 +41,10 @@ absl::Status RunOnFile(std::filesystem::path data_path) {
       continue;
     }
 
-    bool def_real = false;
-    if (analysis->segment_length >= absl::Hours(8)) def_real = true;
     float mean = analysis->game_count_analysis->ep_per_game.mean();
     float stdev = analysis->game_count_analysis->ep_per_game.stdev();
-    std::cout << mean << "," << stdev << "," << stdev / mean << "," << def_real << "\r\n";
+    float gph = analysis->game_count_analysis->estimated_gph.value();
+    std::cout << mean << "," << stdev << "," << gph << "\r\n";
   }
   return absl::OkStatus();
 }
