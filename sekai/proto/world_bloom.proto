@@ -8,6 +8,7 @@ enum WorldBloomVersion {
   WORLD_BLOOM_VERSION_UNKNOWN = 0;
   WORLD_BLOOM_VERSION_1       = 1;
   WORLD_BLOOM_VERSION_2       = 2;
+  WORLD_BLOOM_VERSION_3       = 3;
 }
 
 message WorldBloomConfig {
