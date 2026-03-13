@@ -347,6 +347,32 @@ const WorldBloomConfig& GetWorldBloomConfig(WorldBloomVersion version) {
       support_wl_cards: 982
       support_wl_cards: 983
       support_wl_cards: 984
+      support_wl_cards: 1151
+      support_wl_cards: 1152
+      support_wl_cards: 1153
+      support_wl_cards: 1154
+      support_wl_cards: 1169
+      support_wl_cards: 1170
+      support_wl_cards: 1171
+      support_wl_cards: 1172
+      support_wl_cards: 1185
+      support_wl_cards: 1186
+      support_wl_cards: 1187
+      support_wl_cards: 1188
+      support_wl_cards: 1189
+      support_wl_cards: 1190
+      support_wl_cards: 1191
+      support_wl_cards: 1192
+      support_wl_cards: 1218
+      support_wl_cards: 1219
+      support_wl_cards: 1220
+      support_wl_cards: 1221
+      support_wl_cards: 1235
+      support_wl_cards: 1236
+      support_wl_cards: 1237
+      support_wl_cards: 1238
+      support_wl_cards: 1239
+      support_wl_cards: 1240
       support_team_bonus {
         master_rank_bonus {
           level_bonus: 0
