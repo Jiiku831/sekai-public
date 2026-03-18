@@ -184,6 +184,8 @@ std::string GetWorldBloomVersionDisplayText(sekai::WorldBloomVersion version) {
       return "World Link 1";
     case sekai::WORLD_BLOOM_VERSION_2:
       return "World Link 2";
+    case sekai::WORLD_BLOOM_VERSION_3:
+      return "World Link 3";
     default:
       ABSL_CHECK(false) << "unhandled case";
   }

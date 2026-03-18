@@ -316,6 +316,156 @@ const WorldBloomConfig& GetWorldBloomConfig(WorldBloomVersion version) {
         }
       }
     )pb");
+
+    (*arr)[WORLD_BLOOM_VERSION_3] = ParseTextProto<WorldBloomConfig>(R"pb(
+      support_team_size: 25
+      support_char_bonus: 5
+      support_wl_card_bonus: 20
+      support_wl_cards: 785
+      support_wl_cards: 786
+      support_wl_cards: 787
+      support_wl_cards: 788
+      support_wl_cards: 848
+      support_wl_cards: 849
+      support_wl_cards: 850
+      support_wl_cards: 851
+      support_wl_cards: 884
+      support_wl_cards: 885
+      support_wl_cards: 886
+      support_wl_cards: 887
+      support_wl_cards: 921
+      support_wl_cards: 922
+      support_wl_cards: 923
+      support_wl_cards: 924
+      support_wl_cards: 961
+      support_wl_cards: 962
+      support_wl_cards: 963
+      support_wl_cards: 964
+      support_wl_cards: 979
+      support_wl_cards: 980
+      support_wl_cards: 981
+      support_wl_cards: 982
+      support_wl_cards: 983
+      support_wl_cards: 984
+      support_wl_cards: 1151
+      support_wl_cards: 1152
+      support_wl_cards: 1153
+      support_wl_cards: 1154
+      support_wl_cards: 1169
+      support_wl_cards: 1170
+      support_wl_cards: 1171
+      support_wl_cards: 1172
+      support_wl_cards: 1185
+      support_wl_cards: 1186
+      support_wl_cards: 1187
+      support_wl_cards: 1188
+      support_wl_cards: 1189
+      support_wl_cards: 1190
+      support_wl_cards: 1191
+      support_wl_cards: 1192
+      support_wl_cards: 1218
+      support_wl_cards: 1219
+      support_wl_cards: 1220
+      support_wl_cards: 1221
+      support_wl_cards: 1235
+      support_wl_cards: 1236
+      support_wl_cards: 1237
+      support_wl_cards: 1238
+      support_wl_cards: 1239
+      support_wl_cards: 1240
+      support_team_bonus {
+        master_rank_bonus {
+          level_bonus: 0
+          level_bonus: 0
+          level_bonus: 0
+          level_bonus: 0
+          level_bonus: 0
+          level_bonus: 0
+        }
+        master_rank_bonus {
+          level_bonus: 0.5
+          level_bonus: 0.6
+          level_bonus: 0.6
+          level_bonus: 0.7
+          level_bonus: 0.7
+          level_bonus: 0.8
+        }
+        master_rank_bonus {
+          level_bonus: 1
+          level_bonus: 1.2
+          level_bonus: 1.2
+          level_bonus: 1.3
+          level_bonus: 1.4
+          level_bonus: 1.5
+        }
+        master_rank_bonus {
+          level_bonus: 2
+          level_bonus: 2.3
+          level_bonus: 2.4
+          level_bonus: 2.6
+          level_bonus: 2.8
+          level_bonus: 3
+        }
+        master_rank_bonus {
+          level_bonus: 7.5
+          level_bonus: 8
+          level_bonus: 8.5
+          level_bonus: 9
+          level_bonus: 9.5
+          level_bonus: 10
+        }
+        master_rank_bonus {
+          level_bonus: 5
+          level_bonus: 5.4
+          level_bonus: 5.8
+          level_bonus: 6.2
+          level_bonus: 6.6
+          level_bonus: 7
+        }
+        skill_level_bonus {
+          level_bonus: 0
+          level_bonus: 0
+          level_bonus: 0
+          level_bonus: 0
+          level_bonus: 0
+        }
+        skill_level_bonus {
+          level_bonus: 0
+          level_bonus: 0
+          level_bonus: 0.05
+          level_bonus: 0.1
+          level_bonus: 0.3
+        }
+        skill_level_bonus {
+          level_bonus: 0
+          level_bonus: 0
+          level_bonus: 0.1
+          level_bonus: 0.2
+          level_bonus: 0.5
+        }
+        skill_level_bonus {
+          level_bonus: 0
+          level_bonus: 0
+          level_bonus: 0.15
+          level_bonus: 0.4
+          level_bonus: 1
+        }
+        skill_level_bonus {
+          level_bonus: 0
+          level_bonus: 0
+          level_bonus: 0.25
+          level_bonus: 1
+          level_bonus: 2.5
+        }
+        skill_level_bonus {
+          level_bonus: 0
+          level_bonus: 0
+          level_bonus: 0.2
+          level_bonus: 0.8
+          level_bonus: 2
+        }
+      }
+    )pb");
     return arr.release();
   }();
   ABSL_CHECK_NE(version, WORLD_BLOOM_VERSION_UNKNOWN);
