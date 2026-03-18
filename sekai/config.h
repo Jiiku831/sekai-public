@@ -33,8 +33,8 @@ inline constexpr int kMaxCharacterRank = 175;
 
 inline constexpr std::array kBoostMultipliers = {1, 5, 10, 15, 20, 25, 27, 29, 31, 33, 35};
 
-inline constexpr WorldBloomVersion kDefaultWorldBloomVersion = WORLD_BLOOM_VERSION_2;
-inline constexpr std::array kWorldBloomVersionCutoffs = {152};
+inline constexpr WorldBloomVersion kDefaultWorldBloomVersion = WORLD_BLOOM_VERSION_3;
+inline constexpr std::array kWorldBloomVersionCutoffs = {152, 198};
 
 inline constexpr int kEbiBaseFactor = 100;
 inline constexpr int kSoloScoreStep = 20'000;

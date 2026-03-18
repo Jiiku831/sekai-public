@@ -8,7 +8,7 @@ const numberFmt = new Intl.NumberFormat(
     maximumFractionDigits: 2,
   })
 
-const kMaxSupportTeamSize = 20;
+const kMaxSupportTeamSize = 25;
 
 function InitPage () {
   CreateTeamBuilder(0);
