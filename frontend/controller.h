@@ -123,13 +123,15 @@ class Controller : public ControllerBase {
     return profile_proto_.custom_event();
   };
 
+  bool is_world_bloom() const { return event_bonus_.has_diff_attr_bonus(); }
+
   // Requires the presence of target_points_.
   sekai::OptimizeExactPoints UnsafeGetParkingObjective() const;
 
   void UpdateCardListVisibilities(FilterState new_state, bool force_update = false);
   void OnProfileUpdate() override;
   void OnSaveDataRead() override;
-  sekai::CardState* GetCardState(int card_id);
+  sekai::CardState* absl_nullable GetCardState(int card_id);
   void RefreshTeam(int team_index) const;
   float park_accuracy() const { return park_accuracy_ / 100.f; }
   void SetTeamCardFromCard(int team_index, int card_index, const sekai::Card* absl_nullable card);

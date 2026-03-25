@@ -144,6 +144,10 @@ int GetProgress(int char_id, CharacterRankSource::OtherSource source, absl::Time
       return GetCharBdayProgressAt(char_id, time);
     case CharacterRankSource::OTHER_SOURCE_NEW_YEAR_5_GACHA:
       return GetAssetVersionAt(time) >= kNewYear5AssetVersion ? 3 : 0;
+    case CharacterRankSource::OTHER_SOURCE_PLATINUM_EXCHANGE:
+      return GetAssetVersionAt(time) >= kAnni5p5AssetVersion ? 5 : 0;
+    case CharacterRankSource::OTHER_SOURCE_ANNI_5_5_STAMP:
+      return GetAssetVersionAt(time) >= kAnni5p5AssetVersion ? 1 : 0;  // TODO: update
     default:
       ABSL_CHECK(false) << "unhandled case";
   }
@@ -179,6 +183,10 @@ std::optional<int> GetMaxProgress(int char_id, CharacterRankSource::OtherSource 
       return GetAssetVersionAt(time) >= kAnni5AssetVersion ? kMaxBdayXp : 0;
     case CharacterRankSource::OTHER_SOURCE_NEW_YEAR_5_GACHA:
       return GetAssetVersionAt(time) >= kNewYear5AssetVersion ? 3 : 0;
+    case CharacterRankSource::OTHER_SOURCE_PLATINUM_EXCHANGE:
+      return GetAssetVersionAt(time) >= kAnni5p5AssetVersion ? 5 : 0;
+    case CharacterRankSource::OTHER_SOURCE_ANNI_5_5_STAMP:
+      return GetAssetVersionAt(time) >= kAnni5p5AssetVersion ? 1 : 0;  // TODO: update
     default:
       ABSL_CHECK(false) << "unhandled case";
   }
@@ -201,6 +209,8 @@ int ProgressToXp(int char_id, CharacterRankSource::OtherSource source, int progr
     case CharacterRankSource::OTHER_SOURCE_ANNI_5_MEMORIAL_SELECT:
     case CharacterRankSource::OTHER_SOURCE_BDAY_LIVE:
     case CharacterRankSource::OTHER_SOURCE_NEW_YEAR_5_GACHA:
+    case CharacterRankSource::OTHER_SOURCE_PLATINUM_EXCHANGE:
+    case CharacterRankSource::OTHER_SOURCE_ANNI_5_5_STAMP:
       return progress;
     default:
       ABSL_CHECK(false) << "unhandled case";
@@ -854,6 +864,10 @@ std::string SourceDescription(CharacterRankSource::OtherSource source) {
       return "Bday Live";
     case CharacterRankSource::OTHER_SOURCE_NEW_YEAR_5_GACHA:
       return "NY 2026";
+    case CharacterRankSource::OTHER_SOURCE_PLATINUM_EXCHANGE:
+      return "Plat Ticket";
+    case CharacterRankSource::OTHER_SOURCE_ANNI_5_5_STAMP:
+      return "5.5th Anni";
     default:
       ABSL_CHECK(false) << "unhandled case";
   }

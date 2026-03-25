@@ -318,6 +318,7 @@ const WorldBloomConfig& GetWorldBloomConfig(WorldBloomVersion version) {
     )pb");
 
     (*arr)[WORLD_BLOOM_VERSION_3] = ParseTextProto<WorldBloomConfig>(R"pb(
+      max_team_power: 336000
       support_team_size: 25
       support_char_bonus: 5
       support_wl_card_bonus: 20
@@ -399,28 +400,28 @@ const WorldBloomConfig& GetWorldBloomConfig(WorldBloomVersion version) {
           level_bonus: 1.5
         }
         master_rank_bonus {
-          level_bonus: 2
+          level_bonus: 1.5
+          level_bonus: 1.8
+          level_bonus: 1.9
+          level_bonus: 2.1
           level_bonus: 2.3
-          level_bonus: 2.4
-          level_bonus: 2.6
-          level_bonus: 2.8
-          level_bonus: 3
+          level_bonus: 2.5
         }
         master_rank_bonus {
+          level_bonus: 7
           level_bonus: 7.5
           level_bonus: 8
           level_bonus: 8.5
           level_bonus: 9
           level_bonus: 9.5
-          level_bonus: 10
         }
         master_rank_bonus {
-          level_bonus: 5
-          level_bonus: 5.4
-          level_bonus: 5.8
-          level_bonus: 6.2
-          level_bonus: 6.6
-          level_bonus: 7
+          level_bonus: 4.5
+          level_bonus: 4.9
+          level_bonus: 5.3
+          level_bonus: 6.7
+          level_bonus: 6.1
+          level_bonus: 6.5
         }
         skill_level_bonus {
           level_bonus: 0

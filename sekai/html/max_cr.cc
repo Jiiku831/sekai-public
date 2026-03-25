@@ -22,7 +22,7 @@
 namespace sekai::html {
 namespace {
 
-constexpr std::array<std::variant<db::CharacterMissionType, CharacterRankSource::OtherSource>, 35>
+constexpr std::array<std::variant<db::CharacterMissionType, CharacterRankSource::OtherSource>, 37>
     source_order = {
         db::CHARACTER_MISSION_TYPE_COLLECT_MEMBER,
         db::CHARACTER_MISSION_TYPE_COLLECT_STAMP,
@@ -59,6 +59,8 @@ constexpr std::array<std::variant<db::CharacterMissionType, CharacterRankSource:
         CharacterRankSource::OTHER_SOURCE_ANNI_5_MEMORIAL_SELECT,
         CharacterRankSource::OTHER_SOURCE_BDAY_LIVE,
         CharacterRankSource::OTHER_SOURCE_NEW_YEAR_5_GACHA,
+        CharacterRankSource::OTHER_SOURCE_PLATINUM_EXCHANGE,
+        CharacterRankSource::OTHER_SOURCE_ANNI_5_5_STAMP,
 };
 
 std::string SourceToClass(db::CharacterMissionType source) { return "char_mission"; }

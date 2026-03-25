@@ -21,17 +21,16 @@
 
 namespace sekai {
 
-std::vector<Team> MaxBonusTeamBuilder::RecommendTeamsImpl(std::span<const Card* const> pool,
-                                                          const Profile& profile,
-                                                          const EventBonus& event_bonus,
-                                                          const EstimatorBase& estimator,
-                                                          std::optional<absl::Time> deadline) {
+std::vector<Team> MaxBonusTeamBuilder::RecommendTeamsImpl(
+    std::span<const Card* const> pool, const Profile& profile, const EventBonus& event_bonus,
+    const EstimatorBase& estimator, const WorldBloomConfig* absl_nullable wl_config,
+    std::optional<absl::Time> deadline) {
   // TODO: this doesnt work for world link. need optimizer that looks only at rainbow teams.
   std::vector<const Card*> sorted_pool = SortCardsByBonus(pool);
   GreedyTeamBuilder team_builder{OptimizeBonus::Get()};
   team_builder.AddConstraints(constraints_);
-  std::vector<Team> teams =
-      team_builder.RecommendTeams(sorted_pool, profile, event_bonus, estimator, deadline);
+  std::vector<Team> teams = team_builder.RecommendTeams(sorted_pool, profile, event_bonus,
+                                                        estimator, wl_config, deadline);
   stats_ = team_builder.stats();
   return teams;
 }

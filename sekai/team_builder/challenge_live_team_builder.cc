@@ -39,7 +39,7 @@ std::vector<Team> NaiveRecommendTeams(std::span<const Card* const> pool, const P
           cards_present.set(card->card_id());
         }
         ++stats.teams_considered;
-        Team candidate_team{candidate_cards};
+        Team candidate_team{candidate_cards, /*wl_config=*/nullptr};
         ++stats.teams_evaluated;
         double candidate_val = estimator.ExpectedValue(profile, event_bonus, candidate_team);
         if (candidate_val > best_val || !best_team.has_value()) {
@@ -73,8 +73,8 @@ std::vector<Team> ChallengeLiveTeamBuilder::RecommendTeamsImpl(
   opts.allow_repeat_chars = true;
   opts.initial_temp = 100'000;
   SimulatedAnnealingTeamBuilder builder{opts};
-  std::vector<Team> results =
-      builder.RecommendTeams(pool, profile, event_bonus, estimator, deadline);
+  std::vector<Team> results = builder.RecommendTeams(pool, profile, event_bonus, estimator,
+                                                     /*wl_config=*/nullptr, deadline);
   stats_ += builder.stats();
   return results;
 };

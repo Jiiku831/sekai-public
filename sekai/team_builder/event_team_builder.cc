@@ -119,21 +119,19 @@ uint64_t PrunedProgress(std::span<const int> char_ids,
 
 }  // namespace
 
-std::vector<Team> EventTeamBuilder::RecommendTeamsImpl(std::span<const Card* const> pool,
-                                                       const Profile& profile,
-                                                       const EventBonus& event_bonus,
-                                                       const EstimatorBase& estimator,
-                                                       std::optional<absl::Time> deadline) {
+std::vector<Team> EventTeamBuilder::RecommendTeamsImpl(
+    std::span<const Card* const> pool, const Profile& profile, const EventBonus& event_bonus,
+    const EstimatorBase& estimator, const WorldBloomConfig* absl_nullable wl_config,
+    std::optional<absl::Time> deadline) {
   auto cast_estimator = dynamic_cast<const Estimator*>(&estimator);
   ABSL_CHECK_NE(cast_estimator, nullptr);
-  return RecommendTeamsImpl(pool, profile, event_bonus, cast_estimator, deadline);
+  return RecommendTeamsImpl(pool, profile, event_bonus, cast_estimator, wl_config, deadline);
 }
 
-std::vector<Team> EventTeamBuilder::RecommendTeamsImpl(std::span<const Card* const> pool,
-                                                       const Profile& profile,
-                                                       const EventBonus& event_bonus,
-                                                       const Estimator* estimator,
-                                                       std::optional<absl::Time> deadline) {
+std::vector<Team> EventTeamBuilder::RecommendTeamsImpl(
+    std::span<const Card* const> pool, const Profile& profile, const EventBonus& event_bonus,
+    const Estimator* estimator, const WorldBloomConfig* absl_nullable wl_config,
+    std::optional<absl::Time> deadline) {
   ABSL_CHECK_LE(CharacterArraySize(), kCharacterArraySize);
   BS::thread_pool thread_pool;
 
@@ -226,7 +224,7 @@ std::vector<Team> EventTeamBuilder::RecommendTeamsImpl(std::span<const Card* con
               }
 
               thread_pool.detach_task([this, &char_pools, &profile, &event_bonus, &local_estimator,
-                                       char_ids, extents, lead_chars]() {
+                                       char_ids, extents, lead_chars, wl_config]() {
                 double local_best_ep = 0;
                 {
                   // Acquire the current best ep at task start time.
@@ -243,10 +241,10 @@ std::vector<Team> EventTeamBuilder::RecommendTeamsImpl(std::span<const Card* con
                         char_pools[char_ids[0]], char_pools[char_ids[1]], char_pools[char_ids[2]],
                         char_pools[char_ids[3]], char_pools[char_ids[4]]},
                     [this, &local_teams_considered, &local_teams_evaluated, &local_best_ep,
-                     &local_best_team, &local_estimator, &profile, &event_bonus,
-                     lead_chars](const std::array<const Card*, 5>& candidate_cards) {
+                     &local_best_team, &local_estimator, &profile, &event_bonus, lead_chars,
+                     wl_config](const std::array<const Card*, 5>& candidate_cards) {
                       ++local_teams_considered;
-                      Team candidate_team{candidate_cards};
+                      Team candidate_team{candidate_cards, wl_config};
                       if (!support_pool_.empty()) {
                         candidate_team.FillSupportCards(support_pool_);
                       }

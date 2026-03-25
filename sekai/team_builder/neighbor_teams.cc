@@ -41,9 +41,9 @@ class SimpleNeighborState {
     return constraints_.CharacterSetSatisfiesConstraint(new_chars);
   }
 
-  Team MakeNewTeam(const Card* new_card) {
+  Team MakeNewTeam(const Card* new_card, const WorldBloomConfig* absl_nullable wl_config) {
     cards_[index_to_replace_] = new_card;
-    return Team{cards_};
+    return Team{cards_, wl_config};
   }
 
  private:
@@ -72,9 +72,9 @@ class ChallengeLiveNeighborState {
     return true;
   }
 
-  Team MakeNewTeam(const Card* new_card) {
+  Team MakeNewTeam(const Card* new_card, const WorldBloomConfig* absl_nullable wl_config) {
     cards_[index_to_replace_] = new_card;
-    return Team{cards_};
+    return Team{cards_, wl_config};
   }
 
  private:
@@ -85,11 +85,12 @@ class ChallengeLiveNeighborState {
 
 template <typename State>
 std::optional<Team> MakeTeamIfViable(const Card* candidate, const Constraints& constraints,
+                                     const WorldBloomConfig* absl_nullable wl_config,
                                      State& state) {
   if (!state.ReplacementViable(candidate)) {
     return std::nullopt;
   }
-  Team new_team = state.MakeNewTeam(candidate);
+  Team new_team = state.MakeNewTeam(candidate, wl_config);
   if (!constraints.empty() && !new_team.SatisfiesConstraints(constraints)) {
     return std::nullopt;
   }
@@ -98,12 +99,13 @@ std::optional<Team> MakeTeamIfViable(const Card* candidate, const Constraints& c
 
 template <typename State>
 std::vector<Team> GetNeighborsImpl(const Team& team, std::span<const Card* const> pool,
-                                   const Constraints& constraints) {
+                                   const Constraints& constraints,
+                                   const WorldBloomConfig* absl_nullable wl_config) {
   std::vector<Team> teams;
   for (std::size_t i = 0; i < team.cards().size(); ++i) {
     State state{team, i, constraints};
     for (const Card* candidate : pool) {
-      std::optional<Team> new_team = MakeTeamIfViable(candidate, constraints, state);
+      std::optional<Team> new_team = MakeTeamIfViable(candidate, constraints, wl_config, state);
       if (new_team.has_value()) {
         teams.push_back(*new_team);
       }
@@ -114,7 +116,9 @@ std::vector<Team> GetNeighborsImpl(const Team& team, std::span<const Card* const
 
 template <typename State>
 std::optional<Team> GetRandomNeighborImpl(const Team& team, std::span<const Card* const> pool,
-                                          const Constraints& constraints, std::mt19937& g) {
+                                          const Constraints& constraints,
+                                          const WorldBloomConfig* absl_nullable wl_config,
+                                          std::mt19937& g) {
   std::vector<std::size_t> positions(team.cards().size());
   std::iota(positions.begin(), positions.end(), 0);
   std::shuffle(positions.begin(), positions.end(), g);
@@ -124,7 +128,7 @@ std::optional<Team> GetRandomNeighborImpl(const Team& team, std::span<const Card
     State state{team, positions[i], constraints};
     for (int j = 0; j < kMaxAttempts; ++j) {
       const Card* candidate = pool[card_dist(g)];
-      std::optional<Team> new_team = MakeTeamIfViable(candidate, constraints, state);
+      std::optional<Team> new_team = MakeTeamIfViable(candidate, constraints, wl_config, state);
       if (new_team.has_value()) {
         return new_team;
       }
@@ -136,21 +140,24 @@ std::optional<Team> GetRandomNeighborImpl(const Team& team, std::span<const Card
 
 }  // namespace
 
-std::vector<Team> SimpleNeighbors::GetNeighbors(const Team& team) const {
-  return GetNeighborsImpl<SimpleNeighborState>(team, pool_, *constraints_);
+std::vector<Team> SimpleNeighbors::GetNeighbors(
+    const Team& team, const WorldBloomConfig* absl_nullable wl_config) const {
+  return GetNeighborsImpl<SimpleNeighborState>(team, pool_, *constraints_, wl_config);
 }
 
-std::optional<Team> SimpleNeighbors::GetRandomNeighbor(const Team& team, std::mt19937& g) const {
-  return GetRandomNeighborImpl<SimpleNeighborState>(team, pool_, *constraints_, g);
+std::optional<Team> SimpleNeighbors::GetRandomNeighbor(
+    const Team& team, const WorldBloomConfig* absl_nullable wl_config, std::mt19937& g) const {
+  return GetRandomNeighborImpl<SimpleNeighborState>(team, pool_, *constraints_, wl_config, g);
 }
 
-std::vector<Team> ChallengeLiveNeighbors::GetNeighbors(const Team& team) const {
-  return GetNeighborsImpl<ChallengeLiveNeighborState>(team, pool_, constraints_);
+std::vector<Team> ChallengeLiveNeighbors::GetNeighbors(
+    const Team& team, const WorldBloomConfig* absl_nullable wl_config) const {
+  return GetNeighborsImpl<ChallengeLiveNeighborState>(team, pool_, constraints_, wl_config);
 }
 
-std::optional<Team> ChallengeLiveNeighbors::GetRandomNeighbor(const Team& team,
-                                                              std::mt19937& g) const {
-  return GetRandomNeighborImpl<ChallengeLiveNeighborState>(team, pool_, constraints_, g);
+std::optional<Team> ChallengeLiveNeighbors::GetRandomNeighbor(
+    const Team& team, const WorldBloomConfig* absl_nullable wl_config, std::mt19937& g) const {
+  return GetRandomNeighborImpl<ChallengeLiveNeighborState>(team, pool_, constraints_, wl_config, g);
 }
 
 }  // namespace sekai
