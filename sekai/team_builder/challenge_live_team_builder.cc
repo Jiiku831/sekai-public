@@ -60,7 +60,7 @@ std::vector<Team> NaiveRecommendTeams(std::span<const Card* const> pool, const P
 std::vector<Team> ChallengeLiveTeamBuilder::RecommendTeamsImpl(
     std::span<const Card* const> filtered_pool, const Profile& profile,
     const EventBonus& event_bonus, const EstimatorBase& estimator,
-    std::optional<absl::Time> deadline) {
+    const WorldBloomConfig* absl_nullable wl_config, std::optional<absl::Time> deadline) {
   std::vector<const Card*> pool = GetCharacterPool(filtered_pool, char_id_);
   // LOG(INFO) << "Character " << char_id_ << " pool size: " << pool.size();
   if (pool.size() < 70) {
