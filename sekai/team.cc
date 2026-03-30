@@ -26,7 +26,7 @@ namespace sekai {
 // Forward decls from challenge_live_estimator.h
 const EstimatorBase& SoloEbiMasEstimator();
 
-Team::Team(std::span<const Card* const> cards) {
+Team::Team(std::span<const Card* const> cards, const WorldBloomConfig* absl_nullable wl_config) {
   cards_.reserve(cards.size());
   for (const Card* card : cards) {
     cards_.push_back(card);
@@ -41,6 +41,11 @@ Team::Team(std::span<const Card* const> cards) {
   attr_match_ = attrs_count_ == 1;
   primary_units_match_ = (primary_units_.count() == 1);
   secondary_units_match_ = (secondary_units_.count() == 1);
+  if (wl_config != nullptr) {
+    if (wl_config->has_max_team_power()) {
+      max_power_ = wl_config->max_team_power();
+    }
+  }
 }
 
 int Team::CardPowerContrib(const Card* card) const {
@@ -60,7 +65,7 @@ int Team::Power(const Profile& profile) const {
     power += CardPowerContrib(card);
   }
 
-  return power;
+  return std::min(power, max_power_);
 }
 
 Eigen::Vector<int, Team::kPowerDetailComponents> Team::PowerDetailed(const Profile& profile) const {

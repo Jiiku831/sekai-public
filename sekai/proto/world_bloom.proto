@@ -17,4 +17,5 @@ message WorldBloomConfig {
   optional float support_wl_card_bonus = 3;
   repeated int32 support_wl_cards      = 4;
   EventBonusProto support_team_bonus   = 5;
+  optional int32 max_team_power        = 6;
 }

@@ -24,7 +24,8 @@ namespace {
 std::vector<Team> RecommendTeamsImplNoConstraints(
     std::span<const Card* const> sorted_pool, std::span<const Card* const> support_pool,
     const Profile& profile, const EventBonus& event_bonus, const EstimatorBase& estimator,
-    std::optional<absl::Time> deadline, TeamBuilder::Stats& stats) {
+    std::optional<absl::Time> deadline, const WorldBloomConfig* absl_nullable wl_config,
+    TeamBuilder::Stats& stats) {
   std::vector<const Card*> candidate_cards;
   std::bitset<kCharacterArraySize> chars_present;
   Attr attrs_present;
@@ -36,7 +37,7 @@ std::vector<Team> RecommendTeamsImplNoConstraints(
     if (candidate_cards.size() == 5) {
       ++stats.teams_considered;
       ++stats.teams_evaluated;
-      Team team{candidate_cards};
+      Team team{candidate_cards, wl_config};
       if (!support_pool.empty()) {
         team.FillSupportCards(support_pool);
       }
@@ -50,7 +51,8 @@ std::vector<Team> RecommendTeamsImplWithConstraints(
     std::span<const Card* const> sorted_pool, std::span<const Card* const> support_pool,
     const Profile& profile, const EventBonus& event_bonus, const EstimatorBase& estimator,
     std::optional<absl::Time> deadline, const Constraints& constraints,
-    const OptimizationObjective& obj, TeamBuilder::Stats& stats) {
+    const OptimizationObjective& obj, const WorldBloomConfig* absl_nullable wl_config,
+    TeamBuilder::Stats& stats) {
   ObjectiveFunction obj_fn = GetObjectiveFunction(obj);
   std::array<std::vector<const Card*>, kCharacterArraySize> char_pools =
       PartitionCardPoolByCharacters(sorted_pool);
@@ -91,7 +93,7 @@ std::vector<Team> RecommendTeamsImplWithConstraints(
           for (int j = 0; j < static_cast<int>(candidate_pool.size()); ++j) {
             candidate_cards[i] = candidate_pool[j];
 
-            Team candidate_team{candidate_cards};
+            Team candidate_team{candidate_cards, wl_config};
             ++stats.teams_considered;
             ++stats.teams_evaluated;
             bool constraints_satisfied = !constraints.HasLeadSkillConstraint();
@@ -127,17 +129,16 @@ std::vector<Team> RecommendTeamsImplWithConstraints(
 
 }  // namespace
 
-std::vector<Team> GreedyTeamBuilder::RecommendTeamsImpl(std::span<const Card* const> pool,
-                                                        const Profile& profile,
-                                                        const EventBonus& event_bonus,
-                                                        const EstimatorBase& estimator,
-                                                        std::optional<absl::Time> deadline) {
+std::vector<Team> GreedyTeamBuilder::RecommendTeamsImpl(
+    std::span<const Card* const> pool, const Profile& profile, const EventBonus& event_bonus,
+    const EstimatorBase& estimator, const WorldBloomConfig* absl_nullable wl_config,
+    std::optional<absl::Time> deadline) {
   if (constraints_.empty()) {
     return RecommendTeamsImplNoConstraints(pool, support_pool_, profile, event_bonus, estimator,
-                                           deadline, stats_);
+                                           deadline, wl_config, stats_);
   }
   return RecommendTeamsImplWithConstraints(pool, support_pool_, profile, event_bonus, estimator,
-                                           deadline, constraints_, obj_, stats_);
+                                           deadline, constraints_, obj_, wl_config, stats_);
 }
 
 }  // namespace sekai
