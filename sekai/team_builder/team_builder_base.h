@@ -13,15 +13,16 @@ class TeamBuilderBase : public TeamBuilder {
 
   std::vector<Team> RecommendTeams(std::span<const Card* const> pool, const Profile& profile,
                                    const EventBonus& event_bonus, const EstimatorBase& estimator,
+                                   const WorldBloomConfig* absl_nullable wl_config = nullptr,
                                    std::optional<absl::Time> deadline = std::nullopt) override {
     support_pool_ = GetSortedSupportPool(pool);
     std::vector<Team> teams = RecommendTeamsImpl(constraints_.FilterCardPool(pool), profile,
-                                                 event_bonus, estimator, deadline);
+                                                 event_bonus, estimator, wl_config, deadline);
     std::vector<Team> finalized_teams;
     finalized_teams.reserve(teams.size());
     for (const Team& team : teams) {
       finalized_teams.push_back(
-          OptimizeSkillSelection(team.cards(), profile, event_bonus, estimator));
+          OptimizeSkillSelection(team.cards(), profile, event_bonus, estimator, wl_config));
     }
     return finalized_teams;
   }
@@ -38,6 +39,7 @@ class TeamBuilderBase : public TeamBuilder {
   virtual std::vector<Team> RecommendTeamsImpl(
       std::span<const Card* const> filtered_pool, const Profile& profile,
       const EventBonus& event_bonus, const EstimatorBase& estimator,
+      const WorldBloomConfig* absl_nullable wl_config = nullptr,
       std::optional<absl::Time> deadline = std::nullopt) = 0;
 };
 

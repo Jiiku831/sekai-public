@@ -63,7 +63,9 @@ std::optional<Team> FindAnyValidTeamForChars(
     for (int j = 0; j < static_cast<int>(candidate_pool.size()); ++j) {
       candidate_cards[i] = candidate_pool[j];
 
-      Team candidate_team{candidate_cards};
+      const WorldBloomConfig* absl_nullable wl_config =
+          opts.is_world_bloom ? &GetWorldBloomConfig(opts.world_bloom_version) : nullptr;
+      Team candidate_team{candidate_cards, wl_config};
       bool bad_team = false;
       std::bitset<kCardArraySize> cards_present;
       for (const Card* card : candidate_team.cards()) {
@@ -96,7 +98,9 @@ std::optional<Team> FindAnyValidTeamForChars(
 
 std::optional<Team> GetRandomTeamAllowRepeat(std::span<const Card* const> pool,
                                              std::span<const Card* const> support_pool,
-                                             const Constraints& constraints, std::mt19937& g) {
+                                             const Constraints& constraints,
+                                             const SimulatedAnnealingTeamBuilder::Options& opts,
+                                             std::mt19937& g) {
   std::vector<const Card*> card_pool = {pool.begin(), pool.end()};
   std::shuffle(card_pool.begin(), card_pool.end(), g);
 
@@ -104,7 +108,9 @@ std::optional<Team> GetRandomTeamAllowRepeat(std::span<const Card* const> pool,
   Combinations<const Card*, 5>{
       pool,
       [&](std::span<const Card* const> candidate_cards) {
-        team = Team(candidate_cards);
+        const WorldBloomConfig* absl_nullable wl_config =
+            opts.is_world_bloom ? &GetWorldBloomConfig(opts.world_bloom_version) : nullptr;
+        team = Team(candidate_cards, wl_config);
         return false;
       },
   }();
@@ -151,7 +157,8 @@ float TransitionProbability(double start_val, double candidate_val, double temp)
 
 std::vector<Team> SimulatedAnnealingTeamBuilder::RecommendTeamsImpl(
     std::span<const Card* const> pool, const Profile& profile, const EventBonus& event_bonus,
-    const EstimatorBase& estimator, std::optional<absl::Time> deadline) {
+    const EstimatorBase& estimator, const WorldBloomConfig* absl_nullable wl_config,
+    std::optional<absl::Time> deadline) {
   std::random_device rd;
   std::mt19937 g{rd()};
   std::vector<const Card*> shuffled_pool = {pool.begin(), pool.end()};
@@ -183,7 +190,7 @@ std::vector<Team> SimulatedAnnealingTeamBuilder::RecommendTeamsImpl(
   ObjectiveFunction objective = GetObjectiveFunction(obj_);
   std::optional<Team> best_team =
       opts_.allow_repeat_chars
-          ? GetRandomTeamAllowRepeat(shuffled_pool, support_pool_, constraints_, g)
+          ? GetRandomTeamAllowRepeat(shuffled_pool, support_pool_, constraints_, opts_, g)
           : GetRandomTeam(shuffled_pool, support_pool_, constraints_, opts_, g);
 
   if (!best_team.has_value()) {
@@ -206,7 +213,7 @@ std::vector<Team> SimulatedAnnealingTeamBuilder::RecommendTeamsImpl(
           indicators::option::PostfixText{absl::StrFormat("%llu/%llu", i, max_progress)});
     }
 
-    std::optional<Team> new_team = neighbors_gen->GetRandomNeighbor(current_team, g);
+    std::optional<Team> new_team = neighbors_gen->GetRandomNeighbor(current_team, wl_config, g);
     if (new_team.has_value()) {
       ++stats_.teams_evaluated;
       if (!support_pool_.empty() && !opts_.disable_support) {
@@ -268,13 +275,14 @@ std::vector<Team> SimulatedAnnealingTeamBuilder::RecommendTeamsImpl(
 std::vector<Team> PartitionedBuildTeam(SimulatedAnnealingTeamBuilder& builder,
                                        std::span<const Card* const> pool, const Profile& profile,
                                        const EventBonus& event_bonus,
-                                       const EstimatorBase& estimator) {
+                                       const EstimatorBase& estimator,
+                                       const WorldBloomConfig* absl_nullable wl_config) {
   std::vector<Team> teams;
   for (const db::Attr attr : EnumValues<db::Attr, db::Attr_descriptor>()) {
     for (const db::Unit unit : EnumValues<db::Unit, db::Unit_descriptor>()) {
       std::vector<const Card*> new_pool = FilterCards(attr, unit, pool);
       std::vector<Team> generated_teams =
-          builder.RecommendTeams(new_pool, profile, event_bonus, estimator);
+          builder.RecommendTeams(new_pool, profile, event_bonus, estimator, wl_config);
       teams.insert(teams.end(), generated_teams.begin(), generated_teams.end());
     }
   }

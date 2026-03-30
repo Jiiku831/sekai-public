@@ -42,6 +42,7 @@ class SimulatedAnnealingTeamBuilder : public TeamBuilderBase {
     WorldBloomVersion world_bloom_version = kDefaultWorldBloomVersion;
 
     bool disable_support = false;
+    bool is_world_bloom = false;
   };
   explicit SimulatedAnnealingTeamBuilder(const OptimizationObjective& obj = OptimizePoints::Get())
       : obj_(obj) {}
@@ -58,6 +59,7 @@ class SimulatedAnnealingTeamBuilder : public TeamBuilderBase {
   std::vector<Team> RecommendTeamsImpl(std::span<const Card* const> pool, const Profile& profile,
                                        const EventBonus& event_bonus,
                                        const EstimatorBase& estimator,
+                                       const WorldBloomConfig* absl_nullable wl_config = nullptr,
                                        std::optional<absl::Time> deadline = std::nullopt) override;
 };
 
@@ -86,6 +88,7 @@ class SimulatedAnnealingSkillTeamBuilder : public SimulatedAnnealingTeamBuilder 
 std::vector<Team> PartitionedBuildTeam(SimulatedAnnealingTeamBuilder& builder,
                                        std::span<const Card* const> pool, const Profile& profile,
                                        const EventBonus& event_bonus,
-                                       const EstimatorBase& estimator);
+                                       const EstimatorBase& estimator,
+                                       const WorldBloomConfig* absl_nullable wl_config = nullptr);
 
 }  // namespace sekai

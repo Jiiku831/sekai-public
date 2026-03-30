@@ -20,8 +20,11 @@ class NeighborTeams {
  public:
   virtual ~NeighborTeams() = default;
 
-  virtual std::vector<Team> GetNeighbors(const Team& team) const = 0;
-  virtual std::optional<Team> GetRandomNeighbor(const Team& team, std::mt19937& g) const = 0;
+  virtual std::vector<Team> GetNeighbors(
+      const Team& team, const WorldBloomConfig* absl_nullable wl_config = nullptr) const = 0;
+  virtual std::optional<Team> GetRandomNeighbor(const Team& team,
+                                                const WorldBloomConfig* absl_nullable wl_config,
+                                                std::mt19937& g) const = 0;
 };
 
 class SimpleNeighbors : public NeighborTeams {
@@ -30,9 +33,12 @@ class SimpleNeighbors : public NeighborTeams {
                   const Constraints* absl_nonnull constraints)
       : pool_(pool), constraints_(constraints) {}
 
-  std::vector<Team> GetNeighbors(const Team& team) const override;
+  std::vector<Team> GetNeighbors(
+      const Team& team, const WorldBloomConfig* absl_nullable wl_config = nullptr) const override;
 
-  std::optional<Team> GetRandomNeighbor(const Team& team, std::mt19937& g) const override;
+  std::optional<Team> GetRandomNeighbor(const Team& team,
+                                        const WorldBloomConfig* absl_nullable wl_config,
+                                        std::mt19937& g) const override;
 
  private:
   std::span<const Card* const> pool_;
@@ -44,9 +50,12 @@ class ChallengeLiveNeighbors : public NeighborTeams {
   ChallengeLiveNeighbors(std::span<const Card* const> pool ABSL_ATTRIBUTE_LIFETIME_BOUND)
       : pool_(pool) {}
 
-  std::vector<Team> GetNeighbors(const Team& team) const override;
+  std::vector<Team> GetNeighbors(
+      const Team& team, const WorldBloomConfig* absl_nullable wl_config = nullptr) const override;
 
-  std::optional<Team> GetRandomNeighbor(const Team& team, std::mt19937& g) const override;
+  std::optional<Team> GetRandomNeighbor(const Team& team,
+                                        const WorldBloomConfig* absl_nullable wl_config,
+                                        std::mt19937& g) const override;
 
  private:
   std::span<const Card* const> pool_;

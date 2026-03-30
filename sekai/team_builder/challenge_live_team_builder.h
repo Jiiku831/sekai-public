@@ -31,6 +31,7 @@ class ChallengeLiveTeamBuilder : public TeamBuilderBase {
   std::vector<Team> RecommendTeamsImpl(std::span<const Card* const> filtered_pool,
                                        const Profile& profile, const EventBonus& event_bonus,
                                        const EstimatorBase& estimator,
+                                       const WorldBloomConfig* absl_nullable wl_config = nullptr,
                                        std::optional<absl::Time> deadline = std::nullopt) override;
 };
 
