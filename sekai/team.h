@@ -24,10 +24,12 @@ namespace sekai {
 class Team {
  public:
   // Cards must outlive this object.
-  explicit Team(std::span<const Card* const> cards);
-  explicit Team(std::span<const Card> cards);
+  explicit Team(std::span<const Card * absl_nonnull const> cards,
+                const WorldBloomConfig* absl_nullable wl_config = nullptr);
+  explicit Team(std::span<const Card> cards,
+                const WorldBloomConfig* absl_nullable wl_config = nullptr);
 
-  std::span<const Card* const> cards() const { return cards_; }
+  std::span<const Card * absl_nonnull const> cards() const { return cards_; }
 
   int Power(const Profile& profile) const;
   static constexpr int kPowerDetailComponents = 6;
@@ -58,7 +60,7 @@ class Team {
   TeamProto ToProto(const Profile& profile, const class EventBonus& event_bonus,
                     const EstimatorBase& estimator) const;
 
-  void FillSupportCards(std::span<const Card* const> sorted_pool,
+  void FillSupportCards(std::span<const Card * absl_nonnull const> sorted_pool,
                         WorldBloomVersion version = kDefaultWorldBloomVersion);
 
   // Guaranteed to be sorted.
@@ -80,13 +82,14 @@ class Team {
   }
 
  private:
-  int CardPowerContrib(const Card* card) const;
-  float CardBonusContrib(const Card* card) const;
-  float CardSkillContrib(const Card* card, int card_index, UnitCount& unit_count) const;
+  int CardPowerContrib(const Card* absl_nonnull card) const;
+  float CardBonusContrib(const Card* absl_nonnull card) const;
+  float CardSkillContrib(const Card* absl_nonnull card, int card_index,
+                         UnitCount& unit_count) const;
   float EventBonus() const { return event_bonus_base_ + support_bonus_base_; }
 
-  std::vector<const Card*> cards_;
-  std::vector<const Card*> support_cards_;
+  std::vector<const Card * absl_nonnull> cards_;
+  std::vector<const Card * absl_nonnull> support_cards_;
   Attr attrs_;
   int attrs_count_;
   Unit primary_units_;
@@ -98,6 +101,7 @@ class Team {
   bool secondary_units_match_ = false;
   Character chars_present_;
   CardRarityType rarities_present_;
+  int max_power_ = std::numeric_limits<int>::max();
 };
 
 }  // namespace sekai

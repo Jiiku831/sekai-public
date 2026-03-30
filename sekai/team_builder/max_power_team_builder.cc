@@ -32,7 +32,8 @@ struct CandidateState {
 std::vector<Team> RecommendTeamsForState(
     const CandidateState& state, std::span<const Card* const> pool, const Profile& profile,
     const EventBonus& event_bonus, const EstimatorBase& estimator, const Constraints& constraints,
-    std::optional<absl::Time> deadline, TeamBuilder::Stats& stats) {
+    std::optional<absl::Time> deadline, const WorldBloomConfig* absl_nullable wl_config,
+    TeamBuilder::Stats& stats) {
   std::vector<const Card*> filtered_pool = {pool.begin(), pool.end()};
   bool attr_match = false;
   if (state.attr != db::ATTR_UNKNOWN) {
@@ -56,19 +57,18 @@ std::vector<Team> RecommendTeamsForState(
       SortCardsByPower(filtered_pool, attr_match, primary_unit_match, secondary_unit_match);
   GreedyTeamBuilder team_builder{OptimizePower::Get()};
   team_builder.AddConstraints(constraints);
-  std::vector<Team> teams =
-      team_builder.RecommendTeams(sorted_pool, profile, event_bonus, estimator, deadline);
+  std::vector<Team> teams = team_builder.RecommendTeams(sorted_pool, profile, event_bonus,
+                                                        estimator, wl_config, deadline);
   stats += team_builder.stats();
   return teams;
 }
 
 }  // namespace
 
-std::vector<Team> MaxPowerTeamBuilder::RecommendTeamsImpl(std::span<const Card* const> pool,
-                                                          const Profile& profile,
-                                                          const EventBonus& event_bonus,
-                                                          const EstimatorBase& estimator,
-                                                          std::optional<absl::Time> deadline) {
+std::vector<Team> MaxPowerTeamBuilder::RecommendTeamsImpl(
+    std::span<const Card* const> pool, const Profile& profile, const EventBonus& event_bonus,
+    const EstimatorBase& estimator, const WorldBloomConfig* absl_nullable wl_config,
+    std::optional<absl::Time> deadline) {
   std::optional<Team> best_team;
   for (int attr = 0; attr <= db::Attr_MAX; ++attr) {
     for (int unit = 0; unit <= db::Unit_MAX; ++unit) {
@@ -81,8 +81,9 @@ std::vector<Team> MaxPowerTeamBuilder::RecommendTeamsImpl(std::span<const Card* 
             .primary_unit = static_cast<db::Unit>(unit),
             .secondary_unit = secondary_unit,
         };
-        std::vector<Team> candidate_teams = RecommendTeamsForState(
-            state, pool, profile, event_bonus, estimator, constraints_, deadline, stats_);
+        std::vector<Team> candidate_teams =
+            RecommendTeamsForState(state, pool, profile, event_bonus, estimator, constraints_,
+                                   deadline, wl_config, stats_);
         for (const Team& team : candidate_teams) {
           if (!best_team.has_value() || best_team->Power(profile) < team.Power(profile)) {
             best_team = team;

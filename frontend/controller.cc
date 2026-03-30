@@ -465,7 +465,7 @@ WorldBloomVersion GetWorldBloomVersion(const ProfileProto& profile) {
   return sekai::GetWorldBloomVersion(profile.event_id().event_id());
 }
 
-}  // namespace frontend
+}  // namespace
 
 bool FilterState::Eval(const Card& card, bool owned) const {
   absl::Time release_time = absl::FromUnixMillis(card.release_at());
@@ -672,7 +672,7 @@ void Controller::SetCardOwned(int card_id, bool state) {
   RefreshTeamInputs();
 }
 
-CardState* Controller::GetCardState(int card_id) {
+CardState* absl_nullable Controller::GetCardState(int card_id) {
   auto state = profile_proto_.mutable_cards()->find(card_id);
   if (state == profile_proto_.mutable_cards()->end()) {
     return nullptr;
@@ -781,8 +781,10 @@ void Controller::BuildChallengeLiveTeam(int char_id) {
   }
   ChallengeLiveTeamBuilder builder{char_id};
 
-  std::vector<sekai::Team> teams =
-      builder.RecommendTeams(profile_.TeamBuilderCardPool(), profile_, event_bonus_, cl_estimator_);
+  std::vector<sekai::Team> teams = builder.RecommendTeams(
+      profile_.TeamBuilderCardPool(), profile_, event_bonus_, cl_estimator_,
+      is_world_bloom() ? &sekai::GetWorldBloomConfig(GetWorldBloomVersion(profile_proto_))
+                       : nullptr);
   if (teams.empty()) {
     SetTeamBuilderOutput("WARNING: no teams built.");
   } else {
@@ -799,11 +801,14 @@ void Controller::BuildEventTeam() {
       .early_exit_steps = 2'000'000,
       .enable_progress = false,
       .world_bloom_version = GetWorldBloomVersion(profile_proto_),
+      .is_world_bloom = is_world_bloom(),
   }};
   builder.AddConstraints(constraints_);
 
-  std::vector<sekai::Team> teams =
-      builder.RecommendTeams(profile_.TeamBuilderCardPool(), profile_, event_bonus_, estimator());
+  std::vector<sekai::Team> teams = builder.RecommendTeams(
+      profile_.TeamBuilderCardPool(), profile_, event_bonus_, estimator(),
+      is_world_bloom() ? &sekai::GetWorldBloomConfig(GetWorldBloomVersion(profile_proto_))
+                       : nullptr);
   if (teams.empty()) {
     SetTeamBuilderOutput("WARNING: no teams built.");
   } else {
@@ -820,10 +825,13 @@ void Controller::BuildMySakiTeam() {
       .early_exit_steps = 2'000'000,
       .enable_progress = false,
       .world_bloom_version = GetWorldBloomVersion(profile_proto_),
+      .is_world_bloom = is_world_bloom(),
   }};
 
-  std::vector<sekai::Team> teams = builder.RecommendTeams(profile_.TeamBuilderCardPool(), profile_,
-                                                          event_bonus_, mysaki_estimator_);
+  std::vector<sekai::Team> teams = builder.RecommendTeams(
+      profile_.TeamBuilderCardPool(), profile_, event_bonus_, mysaki_estimator_,
+      is_world_bloom() ? &sekai::GetWorldBloomConfig(GetWorldBloomVersion(profile_proto_))
+                       : nullptr);
   if (teams.empty()) {
     SetTeamBuilderOutput("WARNING: no teams built.");
   } else {
@@ -907,7 +915,9 @@ void Controller::RefreshTeam(int team_index) const {
     }
     cards.push_back(card);
   }
-  sekai::Team team(cards);
+  sekai::Team team(cards, is_world_bloom()
+                              ? &sekai::GetWorldBloomConfig(GetWorldBloomVersion(profile_proto_))
+                              : nullptr);
   if (team_index != 2) {
     team.FillSupportCards(profile_.sorted_support(), GetWorldBloomVersion(profile_proto_));
   }
@@ -1096,18 +1106,23 @@ void Controller::BuildParkingTeam(bool ignore_constraints) {
   }
 
   OptimizeExactPoints objective = UnsafeGetParkingObjective();
-  SimulatedAnnealingTeamBuilder builder{{
-                                            .early_exit_steps = 2'000'000,
-                                            .enable_progress = false,
-                                            .disable_support = true,
-                                        },
-                                        objective};
+  SimulatedAnnealingTeamBuilder builder{
+      {
+          .early_exit_steps = 2'000'000,
+          .enable_progress = false,
+          .world_bloom_version = GetWorldBloomVersion(profile_proto_),
+          .disable_support = true,
+          .is_world_bloom = is_world_bloom(),
+      },
+      objective};
   if (!ignore_constraints) {
     builder.AddConstraints(constraints_);
   }
 
-  std::vector<sekai::Team> teams =
-      builder.RecommendTeams(profile_.TeamBuilderCardPool(), profile_, event_bonus_, estimator());
+  std::vector<sekai::Team> teams = builder.RecommendTeams(
+      profile_.TeamBuilderCardPool(), profile_, event_bonus_, estimator(),
+      is_world_bloom() ? &sekai::GetWorldBloomConfig(GetWorldBloomVersion(profile_proto_))
+                       : nullptr);
   sekai::Character all_chars;
   all_chars.set();
   if (teams.empty()) {
@@ -1135,6 +1150,7 @@ void Controller::BuildFillTeam(bool ignore_constraints, int min_power) {
           .early_exit_steps = min_power > 0 ? 200'000 : 2'000'000,
           .enable_progress = false,
           .world_bloom_version = GetWorldBloomVersion(profile_proto_),
+          .is_world_bloom = is_world_bloom(),
       },
       objective};
   if (!ignore_constraints) {
@@ -1142,10 +1158,15 @@ void Controller::BuildFillTeam(bool ignore_constraints, int min_power) {
   }
 
   std::vector<sekai::Team> teams =
-      min_power > 0 ? PartitionedBuildTeam(builder, profile_.TeamBuilderCardPool(), profile_,
-                                           event_bonus_, estimator())
-                    : builder.RecommendTeams(profile_.TeamBuilderCardPool(), profile_, event_bonus_,
-                                             estimator());
+      min_power > 0
+          ? PartitionedBuildTeam(
+                builder, profile_.TeamBuilderCardPool(), profile_, event_bonus_, estimator(),
+                is_world_bloom() ? &sekai::GetWorldBloomConfig(GetWorldBloomVersion(profile_proto_))
+                                 : nullptr)
+          : builder.RecommendTeams(
+                profile_.TeamBuilderCardPool(), profile_, event_bonus_, estimator(),
+                is_world_bloom() ? &sekai::GetWorldBloomConfig(GetWorldBloomVersion(profile_proto_))
+                                 : nullptr);
   if (teams.empty()) {
     ClearTeam(kTeamBuilderOutputSlot);
     SetTeamBuilderOutput("WARNING: no teams built.");

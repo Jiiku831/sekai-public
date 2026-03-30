@@ -13,11 +13,10 @@
 
 namespace sekai {
 
-std::vector<Team> NaiveTeamBuilder::RecommendTeamsImpl(std::span<const Card* const> pool,
-                                                       const Profile& profile,
-                                                       const EventBonus& event_bonus,
-                                                       const EstimatorBase& estimator,
-                                                       std::optional<absl::Time> deadline) {
+std::vector<Team> NaiveTeamBuilder::RecommendTeamsImpl(
+    std::span<const Card* const> pool, const Profile& profile, const EventBonus& event_bonus,
+    const EstimatorBase& estimator, const WorldBloomConfig* absl_nullable wl_config,
+    std::optional<absl::Time> deadline) {
   ObjectiveFunction objective = GetObjectiveFunction(obj_);
   std::optional<Team> best_team;
   double best_val = -std::numeric_limits<double>::infinity();
@@ -37,7 +36,7 @@ std::vector<Team> NaiveTeamBuilder::RecommendTeamsImpl(std::span<const Card* con
         }
         Character lead_chars = constraints_.GetCharactersEligibleForLead(chars_present);
 
-        Team candidate_team{candidate_cards};
+        Team candidate_team{candidate_cards, wl_config};
         if (constraints_.HasLeadSkillConstraint()) {
           Team::SkillValueDetail skill_value = candidate_team.ConstrainedMaxSkillValue(lead_chars);
           if (!constraints_.LeadSkillSatisfiesConstraint(skill_value.lead_skill)) {

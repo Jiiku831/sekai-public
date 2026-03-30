@@ -17,10 +17,10 @@ class TeamBuilder {
  public:
   virtual ~TeamBuilder() = default;
 
-  virtual std::vector<Team> RecommendTeams(std::span<const Card* const> pool,
-                                           const Profile& profile, const EventBonus& event_bonus,
-                                           const EstimatorBase& estimator,
-                                           std::optional<absl::Time> deadline = std::nullopt) = 0;
+  virtual std::vector<Team> RecommendTeams(
+      std::span<const Card* const> pool, const Profile& profile, const EventBonus& event_bonus,
+      const EstimatorBase& estimator, const WorldBloomConfig* absl_nullable wl_config = nullptr,
+      std::optional<absl::Time> deadline = std::nullopt) = 0;
 
   struct Stats {
     uint64_t teams_total = 0;

@@ -6,6 +6,7 @@
 #include "gmock/gmock.h"
 #include "sekai/bitset.h"
 #include "sekai/card.h"
+#include "sekai/config.h"
 #include "sekai/db/master_db.h"
 #include "sekai/db/proto/all.h"
 #include "sekai/event_bonus.h"
@@ -167,12 +168,13 @@ ProfileProto AltTestProfile() {
   // clang-format on
 }
 
-Team MakeTeam(std::span<const Card> cards) {
+Team MakeTeam(std::span<const Card> cards,
+              const WorldBloomConfig* absl_nullable wl_config = nullptr) {
   std::vector<const Card*> card_ptrs;
   for (const Card& card : cards) {
     card_ptrs.push_back(&card);
   }
-  return Team{card_ptrs};
+  return Team{card_ptrs, wl_config};
 }
 
 class TeamTest : public ::testing::Test {
@@ -384,6 +386,38 @@ TEST_F(TeamTest, ExampleTeam6PowerWithGateBonus) {
   // Actual power is 374710
   EXPECT_EQ(team.Power(profile), 194573 + 175110 + 9722 + 270 + 1905);
   EXPECT_EQ(team.Power(profile), team.PowerDetailed(profile).sum());
+}
+
+TEST_F(TeamTest, ExampleTeam6PowerWithGateBonusAndCap) {
+  ProfileProto profile_proto = AltTestProfile();
+  profile_proto.mutable_mysekai_gate_levels()->Resize(6, 0);
+  profile_proto.set_mysekai_gate_levels(1, 18);
+  profile_proto.set_mysekai_gate_levels(2, 2);
+  profile_proto.set_mysekai_gate_levels(3, 2);
+  profile_proto.set_mysekai_gate_levels(4, 9);
+  profile_proto.set_mysekai_gate_levels(5, 2);
+  Profile profile{profile_proto};
+  std::array cards = {
+      CreateCard(profile, /*card_id=*/509, /*level=*/60, /*master_rank=*/5, /*skill_level=*/4,
+                 /*canvas_crafted=*/true),
+      CreateCard(profile, /*card_id=*/875, /*level=*/60, /*master_rank=*/5, /*skill_level=*/4,
+                 /*canvas_crafted=*/true),
+      CreateCard(profile, /*card_id=*/198, /*level=*/60, /*master_rank=*/5, /*skill_level=*/4,
+                 /*canvas_crafted=*/true),
+      CreateCard(profile, /*card_id=*/149, /*level=*/60, /*master_rank=*/5, /*skill_level=*/4,
+                 /*canvas_crafted=*/true),
+      CreateCard(profile, /*card_id=*/126, /*level=*/60, /*master_rank=*/5, /*skill_level=*/4,
+                 /*canvas_crafted=*/true),
+  };
+  const WorldBloomConfig& config = GetWorldBloomConfig(WORLD_BLOOM_VERSION_3);
+  Team team = MakeTeam(cards, &config);
+  // Actual area item bonus is 175106
+  // Actual CR bonus is 9721
+  // Actual gate bonus is 1905
+  std::array expected = {194573, 175110, 9722, 270, 0, 1905};
+  EXPECT_THAT(team.PowerDetailed(profile), Pointwise(Eq(), expected));
+  // Actual power is 374710 capped at 336000
+  EXPECT_EQ(team.Power(profile), 336000);
 }
 
 TEST_F(TeamTest, ExampleTeam1EventBonus) {

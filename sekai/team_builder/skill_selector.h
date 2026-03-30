@@ -10,6 +10,7 @@ namespace sekai {
 
 // Optimizes the skill selection first 5 cards in the list.
 Team OptimizeSkillSelection(std::span<const Card* const> cards, const Profile& profile,
-                            const EventBonus& event_bonus, const EstimatorBase& estimator);
+                            const EventBonus& event_bonus, const EstimatorBase& estimator,
+                            const WorldBloomConfig* absl_nullable wl_config = nullptr);
 
 }  // namespace sekai
