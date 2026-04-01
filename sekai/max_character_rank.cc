@@ -147,7 +147,7 @@ int GetProgress(int char_id, CharacterRankSource::OtherSource source, absl::Time
     case CharacterRankSource::OTHER_SOURCE_PLATINUM_EXCHANGE:
       return GetAssetVersionAt(time) >= kAnni5p5AssetVersion ? 5 : 0;
     case CharacterRankSource::OTHER_SOURCE_ANNI_5_5_STAMP:
-      return GetAssetVersionAt(time) >= kAnni5p5AssetVersion ? 1 : 0;  // TODO: update
+      return GetAssetVersionAt(time) >= kAnni5p5AssetVersion ? 3 : 0;
     default:
       ABSL_CHECK(false) << "unhandled case";
   }
@@ -186,7 +186,7 @@ std::optional<int> GetMaxProgress(int char_id, CharacterRankSource::OtherSource 
     case CharacterRankSource::OTHER_SOURCE_PLATINUM_EXCHANGE:
       return GetAssetVersionAt(time) >= kAnni5p5AssetVersion ? 5 : 0;
     case CharacterRankSource::OTHER_SOURCE_ANNI_5_5_STAMP:
-      return GetAssetVersionAt(time) >= kAnni5p5AssetVersion ? 1 : 0;  // TODO: update
+      return GetAssetVersionAt(time) >= kAnni5p5AssetVersion ? 3 : 0;
     default:
       ABSL_CHECK(false) << "unhandled case";
   }
