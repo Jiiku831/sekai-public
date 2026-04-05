@@ -231,7 +231,7 @@ float EventBonus::MaxDeckBonusForChar(int character_id) const {
 }
 
 SupportUnitEventBonus::SupportUnitEventBonus(std::optional<WorldBloomVersion> version)
-    : EventBonus() {
+    : EventBonus(), version_(version.value_or(kDefaultWorldBloomVersion)) {
   // Reset deck, skill level and master rank bonuses
   deck_bonus_.clear();
   deck_bonus_.resize(CharacterArraySize());
@@ -313,9 +313,9 @@ SupportUnitEventBonus::SupportUnitEventBonus(const EventId& event_id,
     : SupportUnitEventBonus(version.value_or(GetWorldBloomVersion(event_id.event_id()))) {
   const db::WorldBloom* absl_nullable world_bloom = nullptr;
   for (const auto* cand : MasterDb::FindAll<db::WorldBloom>(event_id.event_id())) {
+    event_chars_.insert(cand->game_character_id());
     if (cand->chapter_no() == event_id.chapter_id()) {
       world_bloom = cand;
-      break;
     }
   }
   ABSL_CHECK_NE(world_bloom, nullptr);
@@ -330,6 +330,10 @@ SupportUnitEventBonus::SupportUnitEventBonus(const SimpleEventBonus& event_bonus
     : SupportUnitEventBonus(version.value_or(kDefaultWorldBloomVersion)) {
   ABSL_CHECK_GT(event_bonus.chapter_char_id(), 0);
   ABSL_CHECK_LT(event_bonus.chapter_char_id(), static_cast<int64_t>(deck_bonus_.size()));
+
+  for (const SimpleEventBonus::CharacterAndUnit& char_and_unit : event_bonus.chars()) {
+    event_chars_.insert(char_and_unit.char_id());
+  }
 
   chapter_char_ = event_bonus.chapter_char_id();
   ABSL_CHECK_LT(chapter_char_, static_cast<int64_t>(deck_bonus_.size()));
@@ -357,6 +361,21 @@ void SupportUnitEventBonus::PopulateChapterSpecificBonus() {
     if (MasterDb::FindFirst<db::Card>(card_id).character_id() == chapter_char_) {
       card_bonus_[card_id] = baseline_card_bonus_;
     }
+  }
+}
+
+bool SupportUnitEventBonus::CharacterAllowedForSupport(int character_id, db::Unit unit) const {
+  switch (version_) {
+    // In version 1 and 2 character must match chapter unit.
+    case WORLD_BLOOM_VERSION_1:
+    case WORLD_BLOOM_VERSION_2:
+      return chapter_unit_.test(db::UNIT_VS) ? LookupCharacterUnit(character_id) == db::UNIT_VS
+                                             : chapter_unit_.test(unit);
+
+    // In version 3+ character must be an event character.
+    case WORLD_BLOOM_VERSION_3:
+    default:
+      return event_chars_.contains(character_id);
   }
 }
 

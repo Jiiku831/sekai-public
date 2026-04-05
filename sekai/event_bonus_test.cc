@@ -318,5 +318,110 @@ TEST(SupportUnitEventBonusTest, WorldBloomCardBonus) {
   EXPECT_FLOAT_EQ(card_ena.support_bonus(), 7.5);
 }
 
+TEST(SupportUnitEventBonusTest, ChapterUnitBonusVersion3) {
+  auto event_bonus = ParseTextProto<SimpleEventBonus>(R"pb(
+    chars {char_id: 17}
+    chars {char_id: 18}
+    chars {char_id: 19}
+    chars {char_id: 20}
+    chars {char_id: 25}
+    cards: 785
+    cards: 786
+    cards: 787
+    cards: 788
+    chapter_char_id: 25
+  )pb");
+  EventBonus bonus(event_bonus, WORLD_BLOOM_VERSION_3);
+
+  CardState card_state;
+  Card card_miku_ln{MasterDb::FindFirst<db::Card>(198), card_state};
+  Card card_miku_25{MasterDb::FindFirst<db::Card>(116), card_state};
+  Card card_miku_vs{MasterDb::FindFirst<db::Card>(81), card_state};
+  Card card_meiko_wxs{MasterDb::FindFirst<db::Card>(146), card_state};
+  Card card_meiko_vs{MasterDb::FindFirst<db::Card>(760), card_state};
+  card_miku_ln.ApplyEventBonus(bonus);
+  card_miku_25.ApplyEventBonus(bonus);
+  card_miku_vs.ApplyEventBonus(bonus);
+  card_meiko_wxs.ApplyEventBonus(bonus);
+  card_meiko_vs.ApplyEventBonus(bonus);
+
+  EXPECT_FLOAT_EQ(card_miku_ln.support_bonus(), 0);
+  EXPECT_FLOAT_EQ(card_miku_25.support_bonus(), 0);
+  EXPECT_FLOAT_EQ(card_miku_vs.support_bonus(), 0);
+  EXPECT_FLOAT_EQ(card_meiko_wxs.support_bonus(), 12);
+  EXPECT_FLOAT_EQ(card_meiko_vs.support_bonus(), 12);
+}
+
+TEST(SupportUnitEventBonusTest, NonChapterUnitBonusVersion3) {
+  auto event_bonus = ParseTextProto<SimpleEventBonus>(R"pb(
+    chars {char_id: 17}
+    chars {char_id: 18}
+    chars {char_id: 19}
+    chars {char_id: 20}
+    chars {char_id: 25}
+    cards: 785
+    cards: 786
+    cards: 787
+    cards: 788
+    chapter_char_id: 18
+  )pb");
+  EventBonus bonus(event_bonus, WORLD_BLOOM_VERSION_3);
+
+  CardState card_state;
+  Card card_miku_ln{MasterDb::FindFirst<db::Card>(198), card_state};
+  Card card_miku_25{MasterDb::FindFirst<db::Card>(116), card_state};
+  Card card_miku_vs{MasterDb::FindFirst<db::Card>(81), card_state};
+  Card card_meiko_wxs{MasterDb::FindFirst<db::Card>(146), card_state};
+  Card card_meiko_vs{MasterDb::FindFirst<db::Card>(760), card_state};
+  card_miku_ln.ApplyEventBonus(bonus);
+  card_miku_25.ApplyEventBonus(bonus);
+  card_miku_vs.ApplyEventBonus(bonus);
+  card_meiko_wxs.ApplyEventBonus(bonus);
+  card_meiko_vs.ApplyEventBonus(bonus);
+
+  EXPECT_FLOAT_EQ(card_miku_ln.support_bonus(), 0);
+  EXPECT_FLOAT_EQ(card_miku_25.support_bonus(), 0);
+  EXPECT_FLOAT_EQ(card_miku_vs.support_bonus(), 0);
+  EXPECT_FLOAT_EQ(card_meiko_wxs.support_bonus(), 7);
+  EXPECT_FLOAT_EQ(card_meiko_vs.support_bonus(), 7);
+}
+
+TEST(SupportUnitEventBonusTest, VsUnitBonusVersion3) {
+  auto event_bonus = ParseTextProto<SimpleEventBonus>(R"pb(
+    chars {char_id: 17}
+    chars {char_id: 18}
+    chars {char_id: 19}
+    chars {char_id: 20}
+    chars {char_id: 21}
+    cards: 785
+    cards: 786
+    cards: 787
+    cards: 788
+    chapter_char_id: 20
+  )pb");
+  EventBonus bonus(event_bonus, WORLD_BLOOM_VERSION_3);
+
+  CardState card_state;
+  Card card_miku_ln{MasterDb::FindFirst<db::Card>(198), card_state};
+  Card card_miku_25{MasterDb::FindFirst<db::Card>(116), card_state};
+  Card card_miku_vs{MasterDb::FindFirst<db::Card>(509), card_state};
+  Card card_meiko_wxs{MasterDb::FindFirst<db::Card>(146), card_state};
+  Card card_meiko_vs{MasterDb::FindFirst<db::Card>(760), card_state};
+  Card card_saki{MasterDb::FindFirst<db::Card>(109), card_state};
+  card_miku_ln.ApplyEventBonus(bonus);
+  card_miku_25.ApplyEventBonus(bonus);
+  card_miku_vs.ApplyEventBonus(bonus);
+  card_meiko_wxs.ApplyEventBonus(bonus);
+  card_meiko_vs.ApplyEventBonus(bonus);
+  card_saki.ApplyEventBonus(bonus);
+
+  EXPECT_FLOAT_EQ(card_miku_ln.support_bonus(), 7);
+  EXPECT_FLOAT_EQ(card_miku_25.support_bonus(), 7);
+  EXPECT_FLOAT_EQ(card_miku_vs.support_bonus(), 7);
+  EXPECT_FLOAT_EQ(card_meiko_wxs.support_bonus(), 0);
+  EXPECT_FLOAT_EQ(card_meiko_vs.support_bonus(), 0);
+  EXPECT_FLOAT_EQ(card_saki.support_bonus(), 0);
+}
+
 }  // namespace
 }  // namespace sekai
