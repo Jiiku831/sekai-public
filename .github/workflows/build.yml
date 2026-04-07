@@ -7,8 +7,6 @@ on:
       - main
       - dev
       - en
-      - kr
-      - tw
 
 concurrency:
   group: build-${{ github.ref_name }}
