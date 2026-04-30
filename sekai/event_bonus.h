@@ -78,10 +78,7 @@ class SupportUnitEventBonus : public EventBonus {
 
   float GetBonus(int card_id, int character_id, db::Attr attr, db::Unit unit,
                  db::CardRarityType rarity, int master_rank, int skill_level) const override {
-    if (chapter_unit_.test(db::UNIT_VS) && LookupCharacterUnit(character_id) != db::UNIT_VS) {
-      return 0;
-    }
-    if (!chapter_unit_.test(db::UNIT_VS) && !chapter_unit_.test(unit)) {
+    if (!CharacterAllowedForSupport(character_id, unit)) {
       return 0;
     }
     return card_bonus(card_id) + deck_bonus(character_id, attr, unit) +
@@ -93,10 +90,13 @@ class SupportUnitEventBonus : public EventBonus {
   float baseline_card_bonus_ = 0;
   absl::flat_hash_set<int> support_bonus_cards_;
   int chapter_char_ = 0;
+  absl::flat_hash_set<int> event_chars_;
   Unit chapter_unit_;
   db::Unit db_chapter_unit_;
+  WorldBloomVersion version_;
 
   void PopulateChapterSpecificBonus();
+  bool CharacterAllowedForSupport(int character_id, db::Unit unit) const;
 };
 
 }  // namespace sekai
