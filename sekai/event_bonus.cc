@@ -366,16 +366,13 @@ void SupportUnitEventBonus::PopulateChapterSpecificBonus() {
 
 bool SupportUnitEventBonus::CharacterAllowedForSupport(int character_id, db::Unit unit) const {
   switch (version_) {
-    // In version 1 and 2 character must match chapter unit.
+    // Character must match chapter unit.
     case WORLD_BLOOM_VERSION_1:
     case WORLD_BLOOM_VERSION_2:
-      return chapter_unit_.test(db::UNIT_VS) ? LookupCharacterUnit(character_id) == db::UNIT_VS
-                                             : chapter_unit_.test(unit);
-
-    // In version 3+ character must be an event character.
     case WORLD_BLOOM_VERSION_3:
     default:
-      return event_chars_.contains(character_id);
+      return chapter_unit_.test(db::UNIT_VS) ? LookupCharacterUnit(character_id) == db::UNIT_VS
+                                             : chapter_unit_.test(unit);
   }
 }
 

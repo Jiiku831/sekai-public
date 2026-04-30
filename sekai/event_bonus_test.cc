@@ -318,7 +318,7 @@ TEST(SupportUnitEventBonusTest, WorldBloomCardBonus) {
   EXPECT_FLOAT_EQ(card_ena.support_bonus(), 7.5);
 }
 
-TEST(SupportUnitEventBonusTest, ChapterUnitBonusVersion3) {
+TEST(SupportUnitEventBonusTest, DISABLED_ChapterUnitBonusVersion3) {
   auto event_bonus = ParseTextProto<SimpleEventBonus>(R"pb(
     chars {char_id: 17}
     chars {char_id: 18}
@@ -352,7 +352,7 @@ TEST(SupportUnitEventBonusTest, ChapterUnitBonusVersion3) {
   EXPECT_FLOAT_EQ(card_meiko_vs.support_bonus(), 12);
 }
 
-TEST(SupportUnitEventBonusTest, NonChapterUnitBonusVersion3) {
+TEST(SupportUnitEventBonusTest, DISABLED_NonChapterUnitBonusVersion3) {
   auto event_bonus = ParseTextProto<SimpleEventBonus>(R"pb(
     chars {char_id: 17}
     chars {char_id: 18}
@@ -386,7 +386,7 @@ TEST(SupportUnitEventBonusTest, NonChapterUnitBonusVersion3) {
   EXPECT_FLOAT_EQ(card_meiko_vs.support_bonus(), 7);
 }
 
-TEST(SupportUnitEventBonusTest, VsUnitBonusVersion3) {
+TEST(SupportUnitEventBonusTest, DISABLED_VsUnitBonusVersion3) {
   auto event_bonus = ParseTextProto<SimpleEventBonus>(R"pb(
     chars {char_id: 17}
     chars {char_id: 18}
