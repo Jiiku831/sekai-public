@@ -28,4 +28,6 @@ message Music {
   optional int32 music_collaboration_id                 = 20 [(json_name) = "musicCollaborationId"];
   optional bool is_full_length                          = 21 [(json_name) = "isFullLength"];
   optional string creator                               = 22 [(json_name) = "creator"];
+  optional int32 sec_for_music_score_maker              = 23 [(json_name) = "secForMusicScoreMaker"];
+  optional bool is_available_for_music_score_maker      = 24 [(json_name) = "isAvailableForMusicScoreMaker"];
 }
