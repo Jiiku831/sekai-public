@@ -31,4 +31,6 @@ message Music {
   optional bool is_full_length                          = 21 [(json_name) = "isFullLength"];
   optional string creator                               = 22 [(json_name) = "creator"];
   repeated string infos                                 = 23 [(json_name) = "info"];
+  optional int32 sec_for_music_score_maker              = 24 [(json_name) = "secForMusicScoreMaker"];
+  optional bool is_available_for_music_score_maker      = 25 [(json_name) = "isAvailableForMusicScoreMaker"];
 }
