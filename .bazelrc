@@ -1,6 +1,6 @@
 common --registry https://bcr.bazel.build/
 common --registry https://raw.githubusercontent.com/Jiiku831/sekai-modules/main/
-build --config=c++23 --define=absl=1 --incompatible_enable_cc_toolchain_resolution
+build --config=c++23 --define=absl=1 --incompatible_enable_cc_toolchain_resolution --incompatible_default_to_explicit_init_py
 
 build:c++23 \
   --cxxopt=-std=c++23
