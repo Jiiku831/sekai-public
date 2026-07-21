@@ -316,7 +316,7 @@ std::vector<Team> EventTeamBuilder::RecommendTeamsImpl(
   return {};
 }
 
-void EventTeamBuilder::Wait(BS::thread_pool& thread_pool, uint64_t max_progress,
+void EventTeamBuilder::Wait(BS::thread_pool<>& thread_pool, uint64_t max_progress,
                             indicators::ProgressBar* bar) const {
   if (bar != nullptr) {
     while (!thread_pool.wait_for(std::chrono::milliseconds(100))) {
