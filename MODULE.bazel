@@ -1,33 +1,32 @@
 module(name="sekai-public", version="1.0")
-bazel_dep(name="abseil-cpp", version="20250814.0")
+bazel_dep(name="abseil-cpp", version="20260107.1")
 bazel_dep(name="abseil-py", version="2.1.0")
 bazel_dep(name="boost.math", version="1.90.0.bcr.1")
-bazel_dep(name="bs-thread-pool", version="4.1.0")
-bazel_dep(name="ctml", version="2.0.0.2")
-bazel_dep(name="eigen", version="4.0.0-20241125.bcr.2")
+bazel_dep(name="bs-thread-pool", version="5.1.0")
+bazel_dep(name="ctml", version="2.0.0.3")
+bazel_dep(name="eigen", version="5.0.1.bcr.1")
 bazel_dep(name="emscripten_license", version="3.1.51")
-bazel_dep(name="emsdk", version="4.0.15")
-bazel_dep(name="glfw", version="3.3.9")
+bazel_dep(name="emsdk", version="6.0.2")
+bazel_dep(name="glfw", version="3.4.0.bcr.1")
 bazel_dep(name="google_benchmark", version="1.9.4")
-bazel_dep(name="googletest", version="1.17.0")
+bazel_dep(name="googletest", version="1.17.0.bcr.2")
 bazel_dep(name="gzgz_rules_sass", version="1.0.4")
 bazel_dep(name="hedron_compile_commands", version="1.0", dev_dependency=True)
-bazel_dep(name="indicators", version="2.3")
-bazel_dep(name="inja", version="3.4.0")
-bazel_dep(name="imgui", version="1.91.8")
-bazel_dep(name="implot", version="0.16")
-bazel_dep(name="libgit2", version="1.9.0")
+bazel_dep(name="indicators", version="2.3.1")
+bazel_dep(name="inja", version="3.5.0")
+bazel_dep(name="imgui", version="1.92.6-docking.bcr.1")
+bazel_dep(name="implot", version="0.17")
+bazel_dep(name="libgit2", version="1.9.2.bcr.1")
 bazel_dep(name="nanobind_bazel", version="2.10.2")
-bazel_dep(name="nlohmann_json", version="3.12.0")
-bazel_dep(name="mbedtls", version="3.6.0")
-bazel_dep(name="protobuf", version="32.1")
-bazel_dep(name="platforms", version="1.0.0")
-bazel_dep(name="rules_cc", version="0.2.8")
+bazel_dep(name="nlohmann_json", version="3.12.0.bcr.1")
+bazel_dep(name="mbedtls", version="3.6.5")
+bazel_dep(name="protobuf", version="35.1")
+bazel_dep(name="platforms", version="1.1.0")
+bazel_dep(name="rules_cc", version="0.2.20")
 bazel_dep(name="rules_pkg", version="1.1.0")
-bazel_dep(name="rules_proto", version="7.1.0")  # TODO: remove
-bazel_dep(name="rules_python", version="1.6.1")
-bazel_dep(name="sekai-master-db", version="6.6.0.20.5")
-bazel_dep(name="zstd", version="1.5.7")
+bazel_dep(name="rules_python", version="2.2.0-rc2")
+bazel_dep(name="sekai-master-db", version="6.6.0.41.8")
+bazel_dep(name="zstd", version="1.5.7.bcr.1")
 bazel_dep(name="zstd_license", version="1.5.7")
 
 # Version override for KR
@@ -41,13 +40,19 @@ register_toolchains("@sass_toolchains//:all")
 
 git_override(
     module_name = "hedron_compile_commands",
-    remote = "https://github.com/hedronvision/bazel-compile-commands-extractor.git",
-    commit = "4f28899228fb3ad0126897876f147ca15026151e",
+    remote = "https://github.com/helly25/bazel-compile-commands-extractor.git",
+    commit = "1f9360db1834d115c48279d38a97f30d64d3fd4a",
 )
 
 git_override(
     module_name = "emsdk",
     remote = "https://github.com/emscripten-core/emsdk.git",
     strip_prefix = "bazel",
-    commit = "389a68bc35dcff7ebae4614e1615099dafda00d1",
+    commit = "ca38f487f28b7c3c16f8f70cd0e012099ac4b7e2",
+)
+
+git_override(
+    module_name = "gzgz_rules_sass",
+    remote = "https://github.com/GZGavinZhao/gzgz_rules_sass.git",
+    commit = "7b53a52b95a88768da45a6fe4832488d22cd85e9",
 )

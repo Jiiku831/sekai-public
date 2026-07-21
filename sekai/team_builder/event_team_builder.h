@@ -57,7 +57,7 @@ class EventTeamBuilder : public TeamBuilderBase {
   std::optional<Team> best_team_ ABSL_GUARDED_BY(writer_mutex_);
   double best_ep_ ABSL_GUARDED_BY(writer_mutex_) = 0;
 
-  void Wait(BS::thread_pool& thread_pool, uint64_t max_progress,
+  void Wait(BS::thread_pool<>& thread_pool, uint64_t max_progress,
             indicators::ProgressBar* bar = nullptr) const;
 
   std::vector<Team> RecommendTeamsImpl(std::span<const Card* const> pool, const Profile& profile,
