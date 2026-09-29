@@ -80,10 +80,14 @@ constexpr Version<4> kAnni4p5AssetVersion({5, 2, 0, 0});
 constexpr Version<4> kAnni5AssetVersion({6, 0, 0, 0});
 constexpr Version<4> kNewYear5AssetVersion({6, 2, 0, 30});
 constexpr Version<4> kAnni5p5AssetVersion({6, 4, 0, 0});
+constexpr Version<4> kAnni6AssetVersion({7, 0, 0, 0});
 
 absl::Time Get4thAnniResetTime();
 absl::Time Get4thAnniReleaseTime();
 absl::Time Get5thAnniReleaseTime();
+absl::Time Get5p5thAnniReleaseTime();
+absl::Time Get6thAnniReleaseTime();
+absl::Time Get6thAnniResetTime();
 Version<4> GetAssetVersionAt(absl::Time time);
 
 }  // namespace sekai

@@ -70,6 +70,18 @@ absl::Time GetNewYear2026ReleaseTime() {
   return absl::FromCivil(absl::CivilSecond(2025, 12, 31, 3, 0, 0), absl::UTCTimeZone());
 }
 
+absl::Time Get5p5AnniReleaseTime() {
+  return absl::FromCivil(absl::CivilSecond(2026, 3, 29, 15, 0, 0), absl::UTCTimeZone());
+}
+
+absl::Time Get6thAnniReleaseTime() {
+  return absl::FromCivil(absl::CivilSecond(2026, 9, 29, 15, 0, 0), absl::UTCTimeZone());
+}
+
+absl::Time Get6thAnniResetTime() {
+  return absl::FromCivil(absl::CivilSecond(2024, 9, 28, 19, 0, 0), absl::UTCTimeZone());
+}
+
 Version<4> GetAssetVersionAt(absl::Time time) {
   // TODO: implement properly
   if (time < Get2ndAnniReleaseTime()) {
@@ -95,6 +107,12 @@ Version<4> GetAssetVersionAt(absl::Time time) {
   }
   if (time < GetNewYear2026ReleaseTime()) {
     return kAnni5AssetVersion;
+  }
+  if (time < Get5p5AnniReleaseTime()) {
+    return kNewYear5AssetVersion;
+  }
+  if (time < Get6thAnniReleaseTime()) {
+    return kAnni5p5AssetVersion;
   }
   return GetCurrentAssetVersion();
 }
