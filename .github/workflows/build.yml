@@ -80,9 +80,8 @@ jobs:
         path: "~/.cache/bazel"
         key: bazel-${{ runner.os }}-${{ env.CACHE_KEY }}-${{ github.run_id }}
     - name: Deploy to Cloudflare
-      uses: cloudflare/pages-action@v1.5.0
+      uses: cloudflare/wrangler-action@v3
       with:
         apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        projectName: jiiku
-        directory: bazel-bin/frontend/build/server.runfiles/_main/frontend/build/server_root
+        command: pages deploy bazel-bin/frontend/build/server.runfiles/_main/frontend/build/server_root --project-name=jiiku
