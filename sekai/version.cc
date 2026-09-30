@@ -79,7 +79,7 @@ absl::Time Get6thAnniReleaseTime() {
 }
 
 absl::Time Get6thAnniResetTime() {
-  return absl::FromCivil(absl::CivilSecond(2024, 9, 28, 19, 0, 0), absl::UTCTimeZone());
+  return absl::FromCivil(absl::CivilSecond(2026, 9, 28, 19, 0, 0), absl::UTCTimeZone());
 }
 
 Version<4> GetAssetVersionAt(absl::Time time) {
