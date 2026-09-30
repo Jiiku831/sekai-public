@@ -39,9 +39,11 @@ void LoadAreaItemBonus(const ProfileProto& profile,
                        std::vector<BonusRate>& char_bonus,
                        std::array<BonusRate, db::Unit_ARRAYSIZE>& unit_bonus) {
   for (const db::AreaItemLevel& area_item_level : MasterDb::GetAll<db::AreaItemLevel>()) {
-    ABSL_CHECK_LT(area_item_level.area_item_id(),
-                  static_cast<int64_t>(profile.area_item_levels_size()));
-    const int profile_level = profile.area_item_levels(area_item_level.area_item_id());
+    // ABSL_CHECK_LT(area_item_level.area_item_id(),
+    //               static_cast<int64_t>(profile.area_item_levels_size()));
+    const int profile_level = area_item_level.area_item_id() < profile.area_item_levels_size()
+                                  ? profile.area_item_levels(area_item_level.area_item_id())
+                                  : 0;
     if (area_item_level.level() != profile_level) continue;
     if (area_item_level.has_target_unit()) {
       if (area_item_level.target_unit() == db::UNIT_MULTI) {
