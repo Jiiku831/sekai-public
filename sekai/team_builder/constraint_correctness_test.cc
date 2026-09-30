@@ -74,7 +74,9 @@ ProfileProto TestProfile() {
       # Happy plant
       15, 15,
       # Mysterious plant
-      10, 10
+      10, 10,
+      # Tree
+      0
     ]
     character_ranks: [
       # Offset (ignored)

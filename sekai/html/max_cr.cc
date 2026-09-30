@@ -144,7 +144,7 @@ CTML::Node GenerateHeader() {
 
 CTML::Node GenerateSummaryTableHeaderRow() {
   auto row = CTML::Node("tr");
-  for ([[maybe_unused]] auto unit : EnumValuesExcludingDefault<db::Unit, db::Unit_descriptor>()) {
+  for ([[maybe_unused]] auto unit : kRegularUnitsNoDefault) {
     row.AppendChild(CTML::Node("th", "Char"));
     row.AppendChild(CTML::Node("th", "Rank").SetAttribute("class", "rank"));
   }

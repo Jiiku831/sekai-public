@@ -63,8 +63,8 @@ absl::Status WriteTextProtoFile(std::filesystem::path path, const T& msg, bool u
 }
 
 template <typename T>
-T ReadCompressedBinaryProto(const std::string& data) {
-  std::string decompressed_data = zstd::Decompressor{}(data);
+T ReadCompressedBinaryProto(std::string_view data) {
+  std::string decompressed_data = zstd::Decompressor{}(std::string(data));
   T msg;
   ABSL_CHECK(msg.ParseFromString(decompressed_data));
   return msg;

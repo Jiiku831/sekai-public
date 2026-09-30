@@ -279,7 +279,7 @@ std::vector<Team> PartitionedBuildTeam(SimulatedAnnealingTeamBuilder& builder,
                                        const WorldBloomConfig* absl_nullable wl_config) {
   std::vector<Team> teams;
   for (const db::Attr attr : EnumValues<db::Attr, db::Attr_descriptor>()) {
-    for (const db::Unit unit : EnumValues<db::Unit, db::Unit_descriptor>()) {
+    for (const db::Unit unit : kRegularUnits) {
       std::vector<const Card*> new_pool = FilterCards(attr, unit, pool);
       std::vector<Team> generated_teams =
           builder.RecommendTeams(new_pool, profile, event_bonus, estimator, wl_config);

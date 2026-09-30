@@ -28,7 +28,7 @@ TEST(VersionTest, CompareGreater) {
 
 TEST(DbVersionsTest, ExactlyOneVersion) {
   std::span<const db::Version> versions = MasterDb::GetAll<db::Version>();
-  EXPECT_EQ(versions.size(), 1);
+  EXPECT_EQ(versions.size(), static_cast<std::size_t>(1));
 }
 
 TEST(GetCurrentAppVersionTest, Returns) {

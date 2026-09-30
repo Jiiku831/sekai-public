@@ -69,9 +69,9 @@ TEST(GetMaxCharacterRanksTest, ComputeMaxLeaderLivesForMiku) {
       GetCharacterRankSource(max_character_ranks[21], db::CHARACTER_MISSION_TYPE_PLAY_LIVE);
   ASSERT_TRUE(cl_source.has_value());
   EXPECT_EQ(cl_source->progress(), std::numeric_limits<int>::max());
-  EXPECT_EQ(cl_source->max_progress(), 50000);
-  EXPECT_EQ(cl_source->current_xp(), 140);
-  EXPECT_EQ(cl_source->max_xp(), 140);
+  EXPECT_EQ(cl_source->max_progress(), 60000);
+  EXPECT_EQ(cl_source->current_xp(), 160);
+  EXPECT_EQ(cl_source->max_xp(), 160);
 }
 
 TEST(GetMaxCharacterRanksTest, ComputeMaxLeaderLivesExForMiku) {

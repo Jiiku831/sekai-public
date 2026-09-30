@@ -21,6 +21,7 @@
 #include "sekai/array_size.h"
 #include "sekai/bonus_limit.h"
 #include "sekai/card.h"
+#include "sekai/config.h"
 #include "sekai/db/master_db.h"
 #include "sekai/db/proto/all.h"
 #include "sekai/fixtures.h"
@@ -40,12 +41,20 @@ void LoadAreaItemBonus(const ProfileProto& profile,
   for (const db::AreaItemLevel& area_item_level : MasterDb::GetAll<db::AreaItemLevel>()) {
     ABSL_CHECK_LT(area_item_level.area_item_id(),
                   static_cast<int64_t>(profile.area_item_levels_size()));
-    if (area_item_level.level() != profile.area_item_levels(area_item_level.area_item_id()))
-      continue;
+    const int profile_level = profile.area_item_levels(area_item_level.area_item_id());
+    if (area_item_level.level() != profile_level) continue;
     if (area_item_level.has_target_unit()) {
-      BonusRate& rate = unit_bonus[area_item_level.target_unit()];
-      rate.rate += area_item_level.power1_bonus_rate();
-      rate.matching_rate += area_item_level.power1_all_match_bonus_rate();
+      if (area_item_level.target_unit() == db::UNIT_MULTI) {
+        for (db::Unit unit : kRegularUnitsNoDefault) {
+          BonusRate& rate = unit_bonus[unit];
+          rate.rate += area_item_level.power1_bonus_rate() * 2;
+          rate.matching_rate += area_item_level.power1_bonus_rate();
+        }
+      } else {
+        BonusRate& rate = unit_bonus[area_item_level.target_unit()];
+        rate.rate += area_item_level.power1_bonus_rate();
+        rate.matching_rate += area_item_level.power1_all_match_bonus_rate();
+      }
     }
     if (area_item_level.has_target_card_attr()) {
       BonusRate& rate = attr_bonus[area_item_level.target_card_attr()];
@@ -363,6 +372,7 @@ const Profile& Profile::Max() {
     profile_proto.mutable_mysekai_gate_levels()->Resize(MySekaiGateArraySize(),
                                                         kMaxMySekaiGateLevel);
     profile_proto.set_mysekai_gate_levels(0, 0);
+    profile_proto.set_mysekai_gate_levels(6, 0);
     for (const db::MySekaiFixture* fixture : FixturesWithCharBonuses()) {
       (*profile_proto.mutable_mysekai_fixture_crafted())[fixture->id()] = true;
     }

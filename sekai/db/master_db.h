@@ -113,7 +113,7 @@ void TryUnpack(const google::protobuf::Any& msg, std::tuple<std::vector<Ts>...>&
 template <typename... Ts>
 std::pair<absl::Time, std::tuple<std::vector<Ts>...>> LoadItemsFromFlatDb(
     std::tuple<Ts...> unused, absl::flat_hash_map<std::string, std::string>& thumbnails,
-    const std::string& data) {
+    std::string_view data) {
   absl::Time start = absl::Now();
   std::filesystem::path db_path = GetFullDbPath().empty() ? MainRunfilesRoot() / kFlatDbPath
                                                           : std::filesystem::path(GetFullDbPath());
@@ -151,14 +151,14 @@ std::unique_ptr<MasterDbImpl<Ts...>> CreateMasterDbImplFromItems(
 // Empty class for backwards compatibility.
 class MasterDb {
  public:
-  static auto Create(const std::string& data = "") {
+  static auto Create(std::string_view data = "") {
     absl::flat_hash_map<std::string, std::string> thumbnails;
     auto [start_load, items] = internal::LoadItemsFromFlatDb(AllRecordTypes{}, thumbnails, data);
     return internal::CreateMasterDbImplFromItems(start_load, std::move(thumbnails),
                                                  std::move(items));
   }
 
-  static const auto& Get(const std::string& data = "") {
+  static const auto& Get(std::string_view data = "") {
     static const auto* const kMasterDb = MasterDb::Create(data).release();
     return *kMasterDb;
   }

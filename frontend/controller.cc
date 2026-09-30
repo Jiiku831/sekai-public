@@ -356,7 +356,7 @@ void ResetView() {
   for (const GameCharacter& game_char : MasterDb::GetAll<GameCharacter>()) {
     SetCustomEventCharacterCheckbox(game_char.id(), 0, false);
     if (sekai::LookupCharacterUnit(game_char.id()) == sekai::db::UNIT_VS) {
-      for (Unit unit : sekai::EnumValues<Unit, sekai::db::Unit_descriptor>()) {
+      for (Unit unit : sekai::kRegularUnits) {
         if (unit == sekai::db::UNIT_VS || unit == sekai::db::UNIT_NONE) continue;
         SetCustomEventCharacterCheckbox(game_char.id(), static_cast<int>(unit), false);
       }

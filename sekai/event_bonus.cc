@@ -25,7 +25,7 @@ void PopulateAttrBonus(db::Attr attr, float rate, EventBonus::DeckBonusType& dec
     db::Unit char_unit = LookupCharacterUnit(char_id);
     deck_bonus[char_id][attr][char_unit] = std::max(deck_bonus[char_id][attr][char_unit], rate);
     if (char_unit == db::UNIT_VS) {
-      for (db::Unit unit : EnumValues<db::Unit, db::Unit_descriptor>()) {
+      for (db::Unit unit : kRegularUnits) {
         if (unit == db::UNIT_NONE) continue;
         deck_bonus[char_id][attr][unit] = std::max(deck_bonus[char_id][attr][unit], rate);
       }
@@ -183,7 +183,7 @@ EventBonusProto EventBonus::ToProto() const {
     EventBonusProto::DeckBonus* absl_nullable deck_bonus = nullptr;
     for (auto attr : EnumValues<db::Attr, db::Attr_descriptor>()) {
       EventBonusProto::AttrBonus* absl_nullable attr_bonus = nullptr;
-      for (auto unit : EnumValues<db::Unit, db::Unit_descriptor>()) {
+      for (auto unit : kRegularUnits) {
         float rate = deck_bonus_[char_id][attr][unit];
         if (rate > 0) {
           if (deck_bonus == nullptr) {
@@ -349,7 +349,7 @@ void SupportUnitEventBonus::PopulateChapterSpecificBonus() {
     if (attr == db::ATTR_UNKNOWN) continue;
     deck_bonus_[chapter_char_][attr][db_chapter_unit_] = baseline_char_bonus_;
     if (db_chapter_unit_ == db::UNIT_VS) {
-      for (auto subunit : EnumValues<db::Unit, db::Unit_descriptor>()) {
+      for (auto subunit : kRegularUnits) {
         if (subunit != db::UNIT_NONE && subunit != db::UNIT_VS) {
           deck_bonus_[chapter_char_][attr][subunit] = baseline_char_bonus_;
         }

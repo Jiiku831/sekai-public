@@ -276,9 +276,7 @@ std::vector<int> GetValidAreaItemsForMission(int char_id, db::CharacterMissionTy
 
 int GetMaxAreaItemLevelForMission(int char_id, db::CharacterMissionType type) {
   std::vector<int> area_item_ids = GetValidAreaItemsForMission(char_id, type);
-  // TODO: remove if
-  if (type != db::CHARACTER_MISSION_TYPE_AREA_ITEM_LEVEL_UP_ALL_CHARACTER)
-    ABSL_CHECK(!area_item_ids.empty());
+  ABSL_CHECK(!area_item_ids.empty());
   int total_levels = 0;
   for (int area_item_id : area_item_ids) {
     std::vector<const db::AreaItemLevel*> levels =
@@ -732,14 +730,9 @@ int ProgressToXp(int char_id, db::CharacterMissionType source, int progress) {
       break;
     }
   }
-  // TODO: remove if
-  if (source != db::CHARACTER_MISSION_TYPE_AREA_ITEM_LEVEL_UP_ALL_CHARACTER) {
-    ABSL_CHECK_NE(char_mission, nullptr)
-        << "Cannot find character " << char_id << " mission with type "
-        << db::CharacterMissionType_Name(source);
-  } else {
-    return 0;
-  }
+  ABSL_CHECK_NE(char_mission, nullptr)
+      << "Cannot find character " << char_id << " mission with type "
+      << db::CharacterMissionType_Name(source);
   std::vector<const db::CharacterMissionV2ParameterGroup*> params =
       db::MasterDb::FindAll<db::CharacterMissionV2ParameterGroup>(
           char_mission->parameter_group_id());

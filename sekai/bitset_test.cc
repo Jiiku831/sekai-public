@@ -39,7 +39,7 @@ TEST(BitsetTest, OrOp) {
 
 TEST(CharacterTest, TestSize) {
   Character character;
-  EXPECT_GE(character.size(), CharacterArraySize());
+  EXPECT_GE(character.size(), static_cast<std::size_t>(CharacterArraySize()));
 }
 
 }  // namespace

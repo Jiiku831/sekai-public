@@ -73,7 +73,9 @@ ProfileProto TestProfile() {
       # Happy plant
       15, 10,
       # Mysterious plant
-      9, 8
+      9, 8,
+      # Tree
+      0
     ]
     character_ranks: [
       # Offset (ignored)
@@ -145,7 +147,9 @@ ProfileProto AltTestProfile() {
       # Happy plant
       15, 15,
       # Mysterious plant
-      10, 10
+      10, 10,
+      # Tree
+      0
     ]
     character_ranks: [
       # Offset (ignored)
@@ -430,7 +434,6 @@ TEST_F(TeamTest, ExampleTeam1EventBonus) {
   };
   auto event_id = ParseTextProto<EventId>(R"pb(event_id: 111)pb");
   EventBonus bonus(event_id);
-  EventBonusProto bonus_proto = bonus.ToProto();
   for (Card& card : cards) {
     card.ApplyEventBonus(bonus);
   }
@@ -448,7 +451,6 @@ TEST_F(TeamTest, ExampleTeam2EventBonus) {
   };
   auto event_id = ParseTextProto<EventId>(R"pb(event_id: 112)pb");
   EventBonus bonus(event_id);
-  EventBonusProto bonus_proto = bonus.ToProto();
   for (Card& card : cards) {
     card.ApplyEventBonus(bonus);
   }
@@ -466,7 +468,6 @@ TEST_F(TeamTest, ExampleTeam1SoloEbiPoints) {
   };
   auto event_id = ParseTextProto<EventId>(R"pb(event_id: 111)pb");
   EventBonus bonus(event_id);
-  EventBonusProto bonus_proto = bonus.ToProto();
   for (Card& card : cards) {
     card.ApplyEventBonus(bonus);
   }
@@ -540,7 +541,6 @@ TEST_F(TeamTest, FillSupportUnit) {
   }
   auto event_id = ParseTextProto<EventId>(R"pb(event_id: 112 chapter_id: 1)pb");
   EventBonus bonus(event_id);
-  EventBonusProto bonus_proto = bonus.ToProto();
   for (Card& card : cards) {
     card.ApplyEventBonus(bonus);
   }

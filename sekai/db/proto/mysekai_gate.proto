@@ -6,10 +6,11 @@ import "sekai/db/proto/descriptor.proto";
 import "sekai/db/proto/enums.proto";
 
 message MySekaiGate {
-  option (master_db_file)          = "mysekaiGates.json";
+  option (master_db_file)            = "mysekaiGates.json";
 
-  optional int32 id                = 1 [(json_name) = "id", (primary_key) = true];
-  optional Unit unit               = 2 [(json_name) = "unit"];
-  optional string name             = 3 [(json_name) = "name"];
-  optional string assetbundle_name = 4 [(json_name) = "assetbundleName"];
+  optional int32 id                  = 1 [(json_name) = "id", (primary_key) = true];
+  optional Unit unit                 = 2 [(json_name) = "unit"];
+  optional string name               = 3 [(json_name) = "name"];
+  optional string assetbundle_name   = 4 [(json_name) = "assetbundleName"];
+  optional MySekaiGateType gate_type = 5 [(json_name) = "mysekaiGateType"];
 }

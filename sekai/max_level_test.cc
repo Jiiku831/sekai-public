@@ -15,6 +15,7 @@ using ::sekai::db::MasterDb;
 
 TEST(MaxLevelTest, TestMySekaiGateMaxLevel) {
   for (const auto& gate : MasterDb::GetAll<db::MySekaiGate>()) {
+    if (gate.gate_type() == db::GATE_TYPE_SHUFFLE) continue;
     int max_level = 0;
     for (const auto* level : MasterDb::FindAll<db::MySekaiGateLevel>(gate.id())) {
       max_level = std::max(max_level, level->level());

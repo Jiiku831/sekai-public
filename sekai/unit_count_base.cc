@@ -39,7 +39,8 @@ float UnitCountBase::ReferenceBoostAverageCappedSkillValue(int card_index) {
     PopulateUnitCount();
   }
   ABSL_CHECK_GE(card_index, 0);
-  ABSL_CHECK_LT(card_index, reference_boost_average_capped_skill_value_.size());
+  ABSL_CHECK_LT(static_cast<std::size_t>(card_index),
+                reference_boost_average_capped_skill_value_.size());
   return reference_boost_average_capped_skill_value_[card_index];
 }
 

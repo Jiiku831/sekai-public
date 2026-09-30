@@ -134,20 +134,36 @@ std::string GetAreaDisplayTextShort(int area_id) {
 }
 
 std::string GetAreaDisplayText(int area_id) {
-  static std::array names = {"",
-                             "",
-                             "",
-                             "",
-                             "",
-                             "教室のセカイ　　　　　 LN Sekai",
-                             "",
-                             "ステージのセカイ　　　 MMJ Sekai",
-                             "ストリートのセカイ　　 VBS Sekai",
-                             "ワンダーランドのセカイ WxS Sekai",
-                             "誰もいないセカイ　　　 25 Sekai",
-                             "神山高校　　　　　　　 Kamikou",
-                             "",
-                             "宮益坂女子学園　　　　 Miyajyo"};
+  static std::array names = {
+      "",
+      "",
+      "",
+      "",
+      "",
+      "教室のセカイ　　　　　 LN Sekai",
+      "",
+      "ステージのセカイ　　　 MMJ Sekai",
+      "ストリートのセカイ　　 VBS Sekai",
+      "ワンダーランドのセカイ WxS Sekai",
+      "誰もいないセカイ　　　 25 Sekai",
+      "神山高校　　　　　　　 Kamikou",
+      "",
+      "宮益坂女子学園　　　　 Miyajyo",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "大樹のセカイ　　　　　 Tree Sekai",
+  };
   ABSL_CHECK_NE(area_id, 0);
   ABSL_CHECK_LT(static_cast<std::size_t>(area_id), names.size());
   ABSL_CHECK(names[area_id][0] != '0');

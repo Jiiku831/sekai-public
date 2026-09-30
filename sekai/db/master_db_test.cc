@@ -21,7 +21,7 @@ TEST(MasterDbTest, TryLoad) {
 
 TEST(MasterDbTest, CheckIndex) {
   const auto& master_db = MasterDb::Get();
-  EXPECT_EQ(master_db.Get<db::GameCharacter>().FindAll(1).size(), 1);
+  EXPECT_EQ(master_db.Get<db::GameCharacter>().FindAll(1).size(), static_cast<std::size_t>(1));
 }
 
 }  // namespace

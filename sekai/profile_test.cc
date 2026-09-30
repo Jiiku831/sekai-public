@@ -84,7 +84,9 @@ ProfileProto TestProfile() {
       # Happy plant
       15, 10,
       # Mysterious plant
-      9, 8
+      9, 8,
+      # Tree
+      0
     ]
     character_ranks: [
       # Offset (ignored)
@@ -226,7 +228,8 @@ TEST(ProfileTest, CheckTestProfileCrBonus) {
 
 TEST(ProfileTest, CheckTestProfileUnitBonus) {
   Profile profile(TestProfile());
-  std::vector<BonusRate> unit_bonus = {profile.unit_bonus().begin(), profile.unit_bonus().end()};
+  std::vector<BonusRate> unit_bonus = {profile.unit_bonus().begin(),
+                                       profile.unit_bonus().begin() + kRegularUnits.size()};
   EXPECT_THAT(unit_bonus, ElementsAre(_,                                      // Offset
                                       BonusRateIs(FloatEq(15), FloatEq(30)),  // LN
                                       BonusRateIs(FloatEq(10), FloatEq(20)),  // MMJ
@@ -234,6 +237,24 @@ TEST(ProfileTest, CheckTestProfileUnitBonus) {
                                       BonusRateIs(FloatEq(10), FloatEq(20)),  // WXS
                                       BonusRateIs(FloatEq(10), FloatEq(20)),  // 25ji
                                       BonusRateIs(FloatEq(15), FloatEq(30))   // VS
+                                      ));
+}
+
+TEST(ProfileTest, CheckTestProfileUnitBonusTree) {
+  ProfileProto profile_proto = TestProfile();
+  profile_proto.set_area_item_levels(56, 10);
+  // 5% bonus
+  // 10% bonus when mismatched
+  Profile profile(profile_proto);
+  std::vector<BonusRate> unit_bonus = {profile.unit_bonus().begin(),
+                                       profile.unit_bonus().begin() + kRegularUnits.size()};
+  EXPECT_THAT(unit_bonus, ElementsAre(_,                                               // Offset
+                                      BonusRateIs(FloatEq(15 + 10), FloatEq(30 + 5)),  // LN
+                                      BonusRateIs(FloatEq(10 + 10), FloatEq(20 + 5)),  // MMJ
+                                      BonusRateIs(FloatEq(10 + 10), FloatEq(20 + 5)),  // VBS
+                                      BonusRateIs(FloatEq(10 + 10), FloatEq(20 + 5)),  // WXS
+                                      BonusRateIs(FloatEq(10 + 10), FloatEq(20 + 5)),  // 25ji
+                                      BonusRateIs(FloatEq(15 + 10), FloatEq(30 + 5))   // VS
                                       ));
 }
 
@@ -261,8 +282,8 @@ TEST(ProfileTest, CheckTestProfileGateBonus) {
                           FloatEq(2.0),  // VBS
                           FloatEq(3.0),  // WxS
                           FloatEq(4.0),  // Niigo
-                          FloatEq(4.0)   // VSQkj:w
-                                         //
+                          FloatEq(4.0),  // VS
+                          FloatEq(0.0)   //
                           ));
 }
 

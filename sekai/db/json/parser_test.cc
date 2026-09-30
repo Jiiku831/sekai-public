@@ -20,7 +20,7 @@ TEST(ParserTest, TryParseCards) {
   ifs.open(MasterDbRoot() / "cards.json", std::ifstream::in);
   bool status = nlohmann::json::sax_parse(ifs, &parser);
   EXPECT_TRUE(status) << parser.status();
-  EXPECT_GT(parser.objs().size(), 700);
+  EXPECT_GT(parser.objs().size(), static_cast<std::size_t>(700));
 }
 
 }  // namespace

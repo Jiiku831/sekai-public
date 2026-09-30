@@ -19,17 +19,24 @@ inline constexpr int kSkillLevelArraySize = kSkillLevelMax + 1;
 
 inline constexpr int kMaxPower = 400'000;
 inline constexpr int kMaxScore = 3'000'000;
-inline constexpr int kMaxEventBonus = 750;
+inline constexpr int kMaxEventBonus = 1000;
 inline constexpr int kMaxBaseEventPoint = 3000;
 inline constexpr int kMinCardSkillValue = 20;
 inline constexpr int kMaxCardSkillValue = 160;
 inline constexpr int kMinSkillValue = kMinCardSkillValue + (kMinCardSkillValue / 5) * 4;
 inline constexpr int kMaxSkillValue = kMaxCardSkillValue + (kMaxCardSkillValue / 5) * 4;
 
+constexpr std::array kRegularUnits = {
+    db::UNIT_NONE, db::UNIT_LN, db::UNIT_MMJ, db::UNIT_VBS, db::UNIT_WXS, db::UNIT_25, db::UNIT_VS,
+};
+constexpr std::array kRegularUnitsNoDefault = {
+    db::UNIT_LN, db::UNIT_MMJ, db::UNIT_VBS, db::UNIT_WXS, db::UNIT_25, db::UNIT_VS,
+};
+
 inline constexpr std::array kReferenceScoreBoostCaps = {0.f, 120.f, 130.f, 140.f, 140.f};
 
-inline constexpr int kMaxTitleBonus = 320;
-inline constexpr int kMaxCharacterRank = 175;
+inline constexpr int kMaxTitleBonus = 340;
+inline constexpr int kMaxCharacterRank = 205;
 
 inline constexpr std::array kBoostMultipliers = {1, 5, 10, 15, 20, 25, 27, 29, 31, 33, 35};
 
