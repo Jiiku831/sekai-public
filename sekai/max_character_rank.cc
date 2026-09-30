@@ -26,7 +26,6 @@ namespace {
 constexpr int kMaxChallengePts4 = 1030;
 constexpr int kMaxChallengePts6 = 1200;
 constexpr int kPre4thAnniExPts = 9300;
-constexpr int kPre6thAnniExPts = 9300;
 constexpr int kPre4thAnniCap = 101;
 constexpr int kPre6thAnniCap = 151;
 constexpr int kCharacterRankXpIncrement = 10;
@@ -101,7 +100,7 @@ int GetMaxChallengeLiveStage(int char_id, absl::Time time) {
   ABSL_CHECK_LT(static_cast<std::size_t>(kPre4thAnniCap), pt_reqs.size());
   ABSL_CHECK_LT(static_cast<std::size_t>(kPre6thAnniCap), pt_reqs.size());
   int pre_4th_anni_max_pts = pt_reqs[kPre4thAnniCap] + kPre4thAnniExPts - 1;
-  int pre_6th_anni_max_pts = pt_reqs[kPre6thAnniCap] + kPre6thAnniExPts - 1;
+  int pre_6th_anni_max_pts = pt_reqs[kPre6thAnniCap];
   int max_pt_gain_4 = num_days_since_4th_anni_uncap * kMaxChallengePts4;
   int max_pt_gain_6 = num_days_since_6th_anni_uncap * kMaxChallengePts6;
   int max_theoretical_pts_4 = pre_4th_anni_max_pts + max_pt_gain_4;
