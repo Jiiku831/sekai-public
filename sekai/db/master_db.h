@@ -106,7 +106,7 @@ void TryUnpack(const google::protobuf::Any& msg, std::tuple<std::vector<Ts>...>&
   if (msg.Is<T>()) {
     std::vector<T>& msg_vec = std::get<std::vector<T>>(out);
     msg_vec.emplace_back();
-    msg.UnpackTo(&msg_vec.back());
+    (void)msg.UnpackTo(&msg_vec.back());
   }
 }
 

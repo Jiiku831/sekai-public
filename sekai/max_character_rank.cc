@@ -178,6 +178,8 @@ int GetProgress(int char_id, CharacterRankSource::OtherSource source, absl::Time
       return WorldLink3ChapterStarted(char_id, time) ? 2 : 0;
     case CharacterRankSource::OTHER_SOURCE_ANNI_6_STAMP:
       return GetAssetVersionAt(time) >= kAnni6AssetVersion ? 3 : 0;
+    case CharacterRankSource::OTHER_SOURCE_ANNI_6_MEMORIAL_SELECT:
+      return GetAssetVersionAt(time) >= kAnni6AssetVersion ? 1 : 0;
     default:
       ABSL_CHECK(false) << "unhandled case";
   }
@@ -221,6 +223,8 @@ std::optional<int> GetMaxProgress(int char_id, CharacterRankSource::OtherSource 
       return GetAssetVersionAt(time) >= kAnni5p5AssetVersion ? 2 : 0;
     case CharacterRankSource::OTHER_SOURCE_ANNI_6_STAMP:
       return GetAssetVersionAt(time) >= kAnni6AssetVersion ? 3 : 0;
+    case CharacterRankSource::OTHER_SOURCE_ANNI_6_MEMORIAL_SELECT:
+      return GetAssetVersionAt(time) >= kAnni6AssetVersion ? 1 : 0;
     default:
       ABSL_CHECK(false) << "unhandled case";
   }
@@ -247,6 +251,7 @@ int ProgressToXp(int char_id, CharacterRankSource::OtherSource source, int progr
     case CharacterRankSource::OTHER_SOURCE_ANNI_5_5_STAMP:
     case CharacterRankSource::OTHER_SOURCE_WORLD_LINK_3:
     case CharacterRankSource::OTHER_SOURCE_ANNI_6_STAMP:
+    case CharacterRankSource::OTHER_SOURCE_ANNI_6_MEMORIAL_SELECT:
       return progress;
     default:
       ABSL_CHECK(false) << "unhandled case";
@@ -271,7 +276,9 @@ std::vector<int> GetValidAreaItemsForMission(int char_id, db::CharacterMissionTy
 
 int GetMaxAreaItemLevelForMission(int char_id, db::CharacterMissionType type) {
   std::vector<int> area_item_ids = GetValidAreaItemsForMission(char_id, type);
-  ABSL_CHECK(!area_item_ids.empty());
+  // TODO: remove if
+  if (type != db::CHARACTER_MISSION_TYPE_AREA_ITEM_LEVEL_UP_ALL_CHARACTER)
+    ABSL_CHECK(!area_item_ids.empty());
   int total_levels = 0;
   for (int area_item_id : area_item_ids) {
     std::vector<const db::AreaItemLevel*> levels =
@@ -570,6 +577,7 @@ int CountMembers(int char_id, absl::Time time) {
 int GetProgress(int char_id, db::CharacterMissionType source, absl::Time time) {
   switch (source) {
     case db::CHARACTER_MISSION_TYPE_AREA_ITEM_LEVEL_UP_CHARACTER:
+    case db::CHARACTER_MISSION_TYPE_AREA_ITEM_LEVEL_UP_ALL_CHARACTER:
     case db::CHARACTER_MISSION_TYPE_AREA_ITEM_LEVEL_UP_REALITY_WORLD:
     case db::CHARACTER_MISSION_TYPE_AREA_ITEM_LEVEL_UP_UNIT:
       return GetMaxAreaItemLevelForMission(char_id, source);
@@ -684,6 +692,7 @@ std::optional<int> GetMaxProgressFromMissionParams(int char_id, db::CharacterMis
 std::optional<int> GetMaxProgress(int char_id, db::CharacterMissionType source, absl::Time time) {
   switch (source) {
     case db::CHARACTER_MISSION_TYPE_AREA_ITEM_LEVEL_UP_CHARACTER:
+    case db::CHARACTER_MISSION_TYPE_AREA_ITEM_LEVEL_UP_ALL_CHARACTER:
     case db::CHARACTER_MISSION_TYPE_AREA_ITEM_LEVEL_UP_REALITY_WORLD:
     case db::CHARACTER_MISSION_TYPE_AREA_ITEM_LEVEL_UP_UNIT:
       return GetMaxAreaItemLevelForMission(char_id, source);
@@ -723,9 +732,14 @@ int ProgressToXp(int char_id, db::CharacterMissionType source, int progress) {
       break;
     }
   }
-  ABSL_CHECK_NE(char_mission, nullptr)
-      << "Cannot find character " << char_id << " mission with type "
-      << db::CharacterMissionType_Name(source);
+  // TODO: remove if
+  if (source != db::CHARACTER_MISSION_TYPE_AREA_ITEM_LEVEL_UP_ALL_CHARACTER) {
+    ABSL_CHECK_NE(char_mission, nullptr)
+        << "Cannot find character " << char_id << " mission with type "
+        << db::CharacterMissionType_Name(source);
+  } else {
+    return 0;
+  }
   std::vector<const db::CharacterMissionV2ParameterGroup*> params =
       db::MasterDb::FindAll<db::CharacterMissionV2ParameterGroup>(
           char_mission->parameter_group_id());
@@ -908,6 +922,8 @@ std::string SourceDescription(CharacterRankSource::OtherSource source) {
       return "WL3";
     case CharacterRankSource::OTHER_SOURCE_ANNI_6_STAMP:
       return "6th Anni";
+    case CharacterRankSource::OTHER_SOURCE_ANNI_6_MEMORIAL_SELECT:
+      return "6th Gacha";
     default:
       ABSL_CHECK(false) << "unhandled case";
   }
@@ -918,6 +934,8 @@ std::string SourceDescription(db::CharacterMissionType source) {
   switch (source) {
     case db::CHARACTER_MISSION_TYPE_AREA_ITEM_LEVEL_UP_CHARACTER:
       return "Char Items";
+    case db::CHARACTER_MISSION_TYPE_AREA_ITEM_LEVEL_UP_ALL_CHARACTER:
+      return "Tree";
     case db::CHARACTER_MISSION_TYPE_AREA_ITEM_LEVEL_UP_REALITY_WORLD:
       return "Plants";
     case db::CHARACTER_MISSION_TYPE_AREA_ITEM_LEVEL_UP_UNIT:

@@ -22,7 +22,7 @@
 namespace sekai::html {
 namespace {
 
-constexpr std::array<std::variant<db::CharacterMissionType, CharacterRankSource::OtherSource>, 39>
+constexpr std::array<std::variant<db::CharacterMissionType, CharacterRankSource::OtherSource>, 41>
     source_order = {
         db::CHARACTER_MISSION_TYPE_COLLECT_MEMBER,
         db::CHARACTER_MISSION_TYPE_COLLECT_STAMP,
@@ -40,6 +40,7 @@ constexpr std::array<std::variant<db::CharacterMissionType, CharacterRankSource:
         db::CHARACTER_MISSION_TYPE_AREA_ITEM_LEVEL_UP_CHARACTER,
         db::CHARACTER_MISSION_TYPE_AREA_ITEM_LEVEL_UP_UNIT,
         db::CHARACTER_MISSION_TYPE_AREA_ITEM_LEVEL_UP_REALITY_WORLD,
+        db::CHARACTER_MISSION_TYPE_AREA_ITEM_LEVEL_UP_ALL_CHARACTER,
         db::CHARACTER_MISSION_TYPE_SKILL_LEVEL_UP_RARE,
         db::CHARACTER_MISSION_TYPE_SKILL_LEVEL_UP_STANDARD,
         db::CHARACTER_MISSION_TYPE_MASTER_RANK_UP_RARE,
@@ -63,6 +64,7 @@ constexpr std::array<std::variant<db::CharacterMissionType, CharacterRankSource:
         CharacterRankSource::OTHER_SOURCE_ANNI_5_5_STAMP,
         CharacterRankSource::OTHER_SOURCE_WORLD_LINK_3,
         CharacterRankSource::OTHER_SOURCE_ANNI_6_STAMP,
+        CharacterRankSource::OTHER_SOURCE_ANNI_6_MEMORIAL_SELECT,
 };
 
 std::string SourceToClass(db::CharacterMissionType source) { return "char_mission"; }
