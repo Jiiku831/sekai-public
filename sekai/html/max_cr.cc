@@ -15,6 +15,7 @@
 #include "frontend/display_text.h"
 #include "sekai/array_size.h"
 #include "sekai/character.h"
+#include "sekai/config.h"
 #include "sekai/max_character_rank.h"
 #include "sekai/proto/max_character_rank.pb.h"
 #include "sekai/proto_util.h"

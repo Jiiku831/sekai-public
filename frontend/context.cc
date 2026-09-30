@@ -290,6 +290,7 @@ std::vector<MySekaiFixtureCharGroupContext> CreateMySekaiFixtureContexts() {
 std::vector<MySekaiGateContext> CreateMySekaiGateContexts() {
   std::vector<MySekaiGateContext> contexts;
   for (const MySekaiGate& gate : MasterDb::GetAll<MySekaiGate>()) {
+    if (gate.gate_type() == sekai::db::GATE_TYPE_SHUFFLE) continue;
     MySekaiGateContext context;
     context.set_display_text(gate.name());
     context.set_gate_id(gate.id());

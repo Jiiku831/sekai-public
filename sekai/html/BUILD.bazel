@@ -32,6 +32,7 @@ cc_library(
         "//frontend:display_text",
         "//sekai:array_size",
         "//sekai:character",
+        "//sekai:config",
         "//sekai:max_character_rank",
         "//sekai:proto_util",
         "//sekai/db:master_db",
